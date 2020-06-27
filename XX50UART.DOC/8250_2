@@ -1,0 +1,283 @@
+From news-service Sun May 17 13:24:01 1992
+To: subscribers
+From: scott@mycro.UUCP (Scott C. Sadow)
+Newsgroups:
+comp.sys.ibm.pc.hardware,comp.sys.ibm.pc.misc,comp.sys.ibm.pc.programmer
+Subject: [News] UART information: 8250 vs 16450 vs 16550 vs 16550A
+Message-ID: <1992May15.094715@mycro.UUCP>
+Date: Fri, 15 May 92 13:47:15 GMT
+Sender: L-usenet@kiae.su
+Status: R
+
+
+
+   This message describes the differences between the 8250, 16450, 16550,
+and 16550A UART chips and some programming information for the 16550A. All
+of this information is from the National Semiconductor manuals. This means
+there is no guarantee that this is correct for other chips. Any and all
+information is supplied as-is. Also, if there are any typos or errors,
+they are probably due to transmission errors. :)
+
+
+   8250: Used in the original PC. For more information on this, refer to
+any of the many books on serial communtications.
+
+   16450: This is essentially an 8250, but the inside of the chip was
+designed using the latest technology. This chip has a scratch register for
+programmer use at offset BASE+7.
+
+   16550: This is essentially a 16450, but FIFO buffers were added for
+both transmit and receive. (FIFO means first-in-first-out and is the same
+as a queue) This was done to lower the overhead of serial communication by
+decreasing the amount of interrupts needed. However, there were bugs in
+the chip, so FIFOs should NOT be used. (Characters may be lost in FIFO
+mode)
+
+   16550A: This is a 16550 with working FIFOs.
+
+
+
+   Chip Detection
+
+   It is rather easy to detect what kind of UART is installed:
+
+      An 8250 does not have a scratch register
+      A 16450 does not have a FIFO
+      A 16550 has bad FIFOs, indicated by bit 7 of IIR
+      A 16550A has good FIFOs, indicated by bit 7 and bit 6 of IIR
+
+   You can use the following algorithm to detect the UART type. BASE is
+the base address of the serial port. (usually 3F8 for COM1, 2F8 for COM2,
+etc)
+
+      IIR = BASE+2 = interrupt identification register (read only)
+      FCR = BASE+2 = FIFO control register (write only)
+      SCR = BASE+7 = scratch register (read and write)
+      Bits are numbered from 0 to 7, 7 is high bit
+
+
+      Read and save the SCR
+      Store a test value into SCR (hex 5A is good)
+      Read SCR and compare to test value
+      If not equal, there is no scratch register, so the chip is an 8250
+
+      Store another test value into SCR (hex A5 is good)
+      Read SCR and compare to test value
+      If not equal, there is no scratch register, so the chip is an 8250
+
+      Restore the saved value from the SCR
+      Read and save the IIR (saves current possible FIFO status)
+      Store 1 into FCR (enables possible FIFOs)
+      Read IIR
+      If saved IIR value had bit 7 clear, store 1 into FCR (FIFOs were off)
+      If IIR had bit 6 set, the chip is a 16550A
+      If IIR had bit 7 set, the chip is a 16550
+      Otherwise, the chip is a 16450
+
+
+   How to use the 16550 FIFOs
+      National semiconductor says not to - you can lose characters. Get a
+16550A (see below)
+
+
+   How to use the 16550A FIFOs
+
+      Changes to the UART registers compared to an 8250
+
+      IIR = BASE+2 = interrupt identification register (read only)
+         The upper 2 bits (bits 7 and 6) indicate if the FIFOs are
+enabled. A one in both means the FIFOs are enabled. A one in bit 7 only
+means you have a 16550, not a 16550A. (see above about chip detection and
+using 16550 FIFOs)
+         Bit 3 is used to indicate character time-out. This is set to
+indicate that there are bytes in the receive FIFO that need to be read.
+This happens after a short amount of time has elapsed that no characters
+have been recieved. If Bit 3 is set, Bit 2 is also set (which means
+receive data available), so for most applications, Bit 3 can be ignored.
+         On an 8250 and 16450, bits 7, 6, and 3 are always zero. Bits 5
+and 4 are reserved. For compatability, after reading the IIR, mask the
+value with 7.
+
+
+      FCR = BASE+2 = FIFO control register (write only)
+         Bit 0 - FIFO enable
+         Bit 1 - receive FIFO reset
+         Bit 2 - transmit FIFO reset
+         Bit 3 - DMA mode select
+         Bit 4 - reserved
+         Bit 5 - reserved
+         Bit 6 - receiver trigger (LSB)
+         Bit 7 - receiver trigger (MSB)
+
+      Bit 0 - Set to 1 to enable both receive and transmit FIFOs. This bit
+must be set when any other bits are set.
+
+      Bit 1 - Set to 1 to clear the receiver FIFO. (flush the queue). This
+bit automatically resets to 0.
+
+      Bit 2 - Set to 1 to clear the transmit FIFO. (flush the queue). This
+bit automatically resets to 0.
+
+      Bit 3 - not used on most PC serial boards
+
+      Bit 6 & 7 - Receiver interrupt trigger level. Without a FIFO, the
+UART generates an interrupt every time a character is received. With the
+FIFO enabled, the UART generates an interrupt after N characters are
+received.
+         Bit 7    Bit 6       Trigger Level
+            0        0        1 byte
+            0        1        4 bytes
+            1        0        8 bytes
+            1        1        14 bytes
+
+
+
+   Why use the FIFOs, how they work, and how to use them
+
+      Normally when transmitting or receving, the UART generates an
+interrupt for every character sent or received. For 2400 baud, typically
+this is 240/second. For 115,200 baud, this means 11,520/second. With FIFOs
+enabled, the number of interrupt is greatly reduced. For transmit
+interrupts, the UART indicates the transmit holding register is not busy
+until the 16 byte FIFO is full. A transmit hold register empty interrupt
+is not generated until the FIFO is empty (last byte is being sent) Thus,
+the number of transmit interrupts is reduced by a factor of 16. For
+115,200 baud, this means only 7,200 interrupts/second. For receive data
+interrupts, the processing is similar to transmit interrupts. The main
+difference is that the number of bytes in the FIFO before generating an
+interrupt can be set. When the trigger level is reached, a recieve data
+interrupt is generated, but any other data received is put in the FIFO.
+The receive data interrupt is not cleared until the number of bytes in the
+FIFO is below the trigger level.
+
+      To added 16550A support to existing code, there are 2 requirements.
+
+         1) When reading the IIR to determine the interrupt source, only
+use the lower 3 bits.
+
+         2) After the existing UART initialization code, try to enable the
+FIFOs by writing to the FCR. (A value of C7 hex will enable FIFO mode,
+clear both FIFOs, and set the receive trigger level at 14 bytes) Next,
+read the IIR. If Bit 6 of the IIR is not set, the UART is not a 16550A, so
+write 0 to the FCR to disable FIFO mode.
+
+
+
+   Upgrading to a 16550A from an existing 8250, 16450, or 16550
+
+      This information is not for the hardware-squeemish. Like all other
+hardware modifications, if you don't know what you are doing, get help
+and/or have someone do it for you. Desoldering a 40 pin chip (or worse) is
+not for beginners.
+
+      The 16550A is pin-for-pin compatabile with the other chips except
+pin 24 and pin 29. Pin 24 is an output on the old chips, and pin 29 was
+not connected. Pin 24 and Pin 29 are now output pins used for DMA mode.
+Thus, there should be no problem just removing the old chips and inserting
+the new one. I have done this on about a dozen boards with no problem.
+
+
+   Scott C. Sadow
+   scott@mycro.UUCP
+   ...gatech!nanovx!mycro!scott
+------------------------------
+
+From news-service Sat May 23 05:31:58 1992
+To: subscribers
+From: bweaver@quack.sac.ca.us (Brian Weaver)
+Newsgroups:
+comp.sys.ibm.pc.hardware,comp.sys.ibm.pc.misc,comp.sys.ibm.pc.programmer
+Subject: [News] Re: UART information: 8250 vs 16450 vs 16550 vs 16550A
+Message-ID: <fNnycbQ@quack.sac.ca.us>
+Date: Tue, 19 May 92 00:00:42 GMT
+References: <7060318454537@jaber.eecs.umich.edu> <1992May15.094715@mycro.UUCP>
+<1992May17.232539@mycro.UUCP>
+Organization: The Duck Pond public unix: +1 408 249 9630, log in as 'guest'.
+Sender: L-usenet@kiae.su
+Status: R
+
+I just picked up a serial card with a 16550AFN UART chip. Is this
+the same as 16550A ? Also, will qmodem use the FIFO or do I need
+to install a fossil driver first? OR should i?
+
+--
+Brian Weaver
+bweaver@quack.sac.ca.us
+KD6CFA@N0ARY.#NOCAL.CA.USA.NA
+
+From news-service Sun May 24 08:00:43 1992
+To: subscribers
+From: scott@mycro.UUCP (Scott C. Sadow)
+Newsgroups:
+comp.sys.ibm.pc.hardware,comp.sys.ibm.pc.misc,comp.sys.ibm.pc.programmer
+Subject: [News] Re: UART information: 8250 vs 16450 vs 16550 vs 16550A
+Message-ID: <1992May20.100137@mycro.UUCP>
+Date: Wed, 20 May 92 14:01:37 GMT
+Article-I.D.: mycro.1992May20.100137
+References: <fNnycbQ@quack.sac.ca.us> <7060318454537@jaber.eecs.umich.edu>
+<1992May15.094715@mycro.UUCP> <1992May17.232539@mycro.UUCP>
+Sender: L-usenet@kiae.su
+Status: R
+
+In article <fNnycbQ@quack.sac.ca.us>, bweaver@quack.sac.ca.us (Brian Weaver)
+writes:
+
+>I just picked up a serial card with a 16550AFN UART chip. Is this
+>the same as 16550A ?
+
+   Yes - a 16550AFN is a 16550A, and the "FN" suffix indicate something
+like plastic case and 40-pin dip package.
+
+>                     Also, will qmodem use the FIFO or do I need
+>to install a fossil driver first? OR should i?
+
+   I don't know the answer to this question.
+
+
+   Scott C. Sadow
+   scott@mycro.UUCP
+   ...gatech!nanovx!mycro!scott
+
+From news-service Sun May 24 08:00:43 1992
+To: subscribers
+From: scott@mycro.UUCP (Scott C. Sadow)
+Newsgroups:
+comp.sys.ibm.pc.hardware,comp.sys.ibm.pc.misc,comp.sys.ibm.pc.programmer
+Subject: [News] Re: UART information: 8250 vs 16450 vs 16550 vs 16550A
+Message-ID: <1992May20.100351@mycro.UUCP>
+Date: Wed, 20 May 92 14:03:51 GMT
+Article-I.D.: mycro.1992May20.100351
+References: <j=rk6ma.mortal@netcom.com> <1992May15.094715@mycro.UUCP>
+Sender: L-usenet@kiae.su
+Status: R
+
+In article <j=rk6ma.mortal@netcom.com>, mortal@netcom.com (Phyllis Schlafley)
+writes:
+
+>
+>  I have a question. What good does having an 8250 vs. 16450 vs.
+>    16550 vs. 16550A. Why is the higher ones needed? What abilities
+>    does the 16550A have over teh 16550A or the 16550?
+>  Email or post. Thanks.
+>
+>Mortal@netcom.com
+
+
+   The 8250 is the original serial chip.
+   The 16450 is a newer version, but is essentially the same.
+   The 16550 was created to have internal FIFO queues for both transmit
+      and receive, but the are bugs in the chip, so the manufacturer says
+      not to use the FIFOs on that chip.
+   The 16550A is the same as a 16550A, but with working FIFOs.
+
+   The only real difference: If you have a 16550A and have software that
+can use the FIFOs, the chip will generate fewer interrupts. This means
+that the CPU has less to do to communicate at the same speeds, or can now
+communicate at higher speeds with the same CPU load.
+
+
+   Scott C. Sadow
+   scott@mycro.UUCP
+   ...gatech!nanovx!mycro!scott
+========================================================================
+ * Origin: Power CAD BBS, Kiev, Ukraine (FidoNet 2:463/16)

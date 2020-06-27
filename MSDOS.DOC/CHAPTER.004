@@ -1,0 +1,2199 @@
+
+   **  Programmer's  Technical  Reference  for  MSDOS  and  the  IBM  PC **
+                        ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+                        ³ Shareware Version, 12/16/88 ³
+                        ³  Please Register Your Copy  ³
+                        ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+                       Copyright (c) 1988 Dave Williams
+
+
+                           C H A P T E R    F O U R
+
+                       DOS INTERRUPTS AND FUNCTION CALLS
+
+
+
+DOS REGISTERSÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+ DOS uses the following registers, pointers, and flags when it executes 
+interrupts and function calls:
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³GENERAL REGISTERS  ³ register ³                  definition                   ³
+³                   ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                   ³    AX    ³  accumulator (16 bit)                         ³
+³                   ³    AH    ³  accumulator high-order byte (8 bit)          ³
+³                   ³    AL    ³  accumulator low order byte (8 bit)           ³
+³                   ³    BX    ³  base (16 bit)                                ³
+³                   ³    BH    ³  base high-order byte (8 bit)                 ³
+³                   ³    BL    ³  base low-order byte (8 bit)                  ³
+³                   ³    CX    ³  count (16 bit)                               ³
+³                   ³    CH    ³  count high order byte (8 bit)                ³
+³                   ³    CL    ³  count low order byte (8 bit)                 ³
+³                   ³    DX    ³  data (16 bit)                                ³
+³                   ³    DH    ³  date high order byte (8 bit)                 ³
+³                   ³    DL    ³  data low order byte (8 bit)                  ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³SEGMENT REGISTERS  ³ register ³                  definition                   ³
+³                   ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                   ³    CS    ³  code  segment (16 bit)                       ³
+³                   ³    DS    ³  data  segment (16 bit)                       ³
+³                   ³    SS    ³  stack segment (16 bit)                       ³
+³                   ³    ES    ³  extra segment (16 bit)                       ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³INDEX REGISTERS    ³ register ³                  definition                   ³
+³                   ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                   ³    DI    ³  destination index (16 bit)                   ³
+³                   ³    SI    ³  stack       index (16 bit)                   ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³SEGMENT REGISTERS  ³ register ³                  definition                   ³
+³                   ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                   ³    CS    ³  code  segment (16 bit)                       ³
+³                   ³    DS    ³  data  segment (16 bit)                       ³
+³                   ³    SS    ³  stack segment (16 bit)                       ³
+³                   ³    ES    ³  extra segment (16 bit)                       ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³INDEX REGISTERS    ³ register ³                  definition                   ³
+³                   ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                   ³    DI    ³  destination index (16 bit)                   ³
+³                   ³    SI    ³  stack       index (16 bit)                   ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³POINTERS           ³ register ³                  definition                   ³
+³                   ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                   ³    SP    ³  stack pointer (16 bit)                       ³
+³                   ³    BP    ³  base pointer (16 bit)                        ³
+³                   ³    IP    ³  instruction pointer (16 bit)                 ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³FLAGS                   AF, CF, DF, IF, OF, PF, SF, TF, ZF                    ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+ These registers, pointers, and flags are "lowest common denominator" 8088-8086 
+CPU oriented. DOS makes no attempt to use any of the special or enhanced 
+instructions availible on the later CPUs which will execute 8088 code, such as 
+the 80186, 80286, 80386, or NEV V20, V30, V40, or V50.
+
+ When DOS takes control after a function call, it switches to an internal 
+stack. Registers which are not used to return information (other than AX) are 
+preserved. The calling program's stack must be large enough to accomodate the 
+interrupt system - at least 128 bytes in addition to other interrupts. 
+ DOS actually maintains three stacks -
+stack 1: 384 bytes (in DOS 3.1)
+         for functions 00h and for 0Dh and up, and for ints 25h and 26h.
+
+stack 2: 384 bytes (in DOS 3.1)
+         for function calls 01h through 0Ch.
+
+stack 3: 48 bytes (in DOS 3.1)
+         for functions 0Dh and above. This stack is the initial stack used by
+         the int 21h handler before it decides which of the other two to use.
+         It is also used by function 59h (get extended error), and 01h to 0Ch if
+         they are called during an int 24h (critical error) handler. Functions
+         33h (get/set break flag), 50h (set process ID), 51h (get process ID)
+         and 62h (get PSP address) do not use any DOS stack under DOS 3.x
+         (under 2.x, 50h and 51h use stack number 2). 
+
+ IBM and Microsoft made a change back in DOS 3.0 or 3.1 to reduce the size of
+DOS. They reduced the space allocated for scratch areas when interrupts are
+being processed. The default seems to vary with the DOS version and the
+machine, but 8 stack frames seems to ring a bell. That means that if you get
+more than 8 interrupts at the same time, clock, disk, printer spooler,
+keyboard, com port, etc., the system will crash. It seems to happen usually on
+a network. STACKS=16,256 means allow 16 interrupts to interrupt each other and
+allow 256 bytes for each for scratch area. Eight is marginal.
+
+ DOS 3.2 does some different stack switching than previous versions. The
+interrupts which are switched are 02h, 08h, 09h, 0Ah, 0Bh, 0Ch, 0Dh, 0Eh, 70h,
+72h, 73h, 74h, 75h, 76h, and 77h. DOS 3.2 has a special check in the
+initialization code for a PCjr and don't enable stack switching on that machine.
+
+
+
+INTERRUPTSÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+ Microsoft recommends that a program wishing to examine or set the contents of
+any interrupt vector use the DOS function calls 35h and 25h provided for those 
+purposes and avoid referencing the interrupt vector locations directly.
+ DOS reserves interrupt numbers 20h to 3Fh for its own use. This means absolute 
+memory locations 80h to 0FFh are reserved by DOS. The defined interrupts are as 
+follows with all values in hexadecimal.
+
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³Interrupt 21h  Function Call Request                                         ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+(0:0084h)
+ DOS provides a wide variety of function calls for character device I/O, file 
+management, memory management, date and time functions,execution of other 
+programs, and more. They are grouped as follows:
+
+          call              description
+        00h             program terminate
+        01h-0Ch         character device I/O, CP/M compatibility format
+        0Dh-24h         file management,      CP/M compatibility format
+        25h-26h         nondevice functions,  CP/M compatibility format
+        27h-29h         file management,      CP/M compatibility format
+        2Ah-2Eh         nondevice functions,  CP/M compatibility format
+        2Fh-38h         extended functions
+        39h-3Bh         directory group
+        3Ch-46h         extended file management
+        47h             directory group
+        48h-4Bh         extended memory management
+        54h-57h         extended functions
+        5Eh-5Fh         networking
+        60h-62h         extended functions
+        63h-66h         enhanced foreign language support
+
+
+List of DOS services:   * = undocumented
+        00h     terminate program
+        01h     get keyboard input 
+        02h     display character to STDIO
+        03h     get character from STDAUX
+        04h     output character to STDAUX
+        05h     output character to STDPRN
+        06h     direct console I/O - keyboard to screen
+        07h     get char from std I/O without echo
+        08h     get char from std I/O without echo, checks for ^C
+        09h     display a string to STDOUT
+        0Ah     buffered keyboard input
+        0Bh     check STDIN status
+        0Ch     clear keyboard buffer and invoke keyboard function
+        0Dh     flush all disk buffers
+        0Eh     select disk
+        0Fh     open file with File Control Block
+        10h     close file opened with File Control Block
+        11h     search for first matching file entry
+        12h     search for next matching file entry
+        13h     delete file specified by File Control Block
+        14h     sequential read from file specified by File Control Block
+        15h     sequential write to file specified by File Control Block
+        16h     find or create firectory entry for file
+        17h     rename file specified by file control block
+        18h*    unknown
+        19h     return current disk drive
+        1Ah     set disk transfer area (DTA)
+        1Bh     get current disk drive FAT
+        1Ch     get disk FAT for any drive
+        1Dh*    unknown
+        1Eh*    unknown
+        1Fh*    read DOS disk block, default drive
+        20h*    unknown
+        21h     random read from file specified by FCB
+        22h     random write to file specified by FCB
+        23h     return number of records in file specified by FCB
+        24h     set relative file record size field for file specified by FCB
+        25h     set interrupt vector
+        26h     create new Program Segment Prefix (PSP)
+        27h     random file block read from file specified by FCB
+        28h     random file block write to file specified by FCB
+        29h     parse the command line for file name
+        2Ah     get the system date
+        2Bh     set the system date
+        2Ch     get the system time
+        2Dh     set the system time
+        2Eh     set/clear disk write VERIFY
+        2Fh     get the Disk Transfer Address (DTA)
+        30h     get DOS version number
+        31h     TSR, files opened remain open
+        32h*    read DOS Disk Block
+        33h     get or set Ctrl-Break
+        34h*    INDOS  Critical Section Flag
+        35h     get segment and offset address for an interrupt
+        36h     get free disk space
+        37h*    get/set option marking character (SWITCHAR)
+        38h     return country-dependent information
+        39h     create subdirectory
+        3Ah     remove subdirectory
+        3Bh     change current directory
+        3Ch     create and return file handle
+        3Dh     open file and return file handle
+        3Eh     close file referenced by file handle
+        3Fh     read from file referenced by file handle
+        40h     write to file referenced by file handle
+        41h     delete file
+        42h     move file pointer (move read-write pointer for file)
+        43h     set/return file attributes
+        44h     device IOCTL (I/O control) info
+        45h     duplicate file handle
+        46h     force a duplicate file handle
+        47h     get current directory
+        48h     allocate memory
+        49h     release allocated memory
+        4Ah     modify allocated memory
+        4Bh     load or execute a program
+        4Ch     terminate prog and return to DOS
+        4Dh     get return code of subprocess created by 4Bh
+        4Eh     find first matching file
+        4Fh     find next matching file
+        50h*    set new current Program Segment Prefix (PSP)
+        51h*    puts current PSP into BX
+        52h*    pointer to the DOS list of lists
+        53h*    translates BPB (Bios Parameter Block, see below)
+        54h     get disk verification status (VERIFY)
+        55h*    create PSP: similar to function 26h
+        56h     rename a file
+        57h     get/set file date and time
+        58h     get/set allocation strategy             (DOS 3.x)
+        59h     get extended error information
+        5Ah     create a unique filename
+        5Bh     create a DOS file
+        5Ch     lock/unlock file contents
+        5Dh*    network
+        5Eh*    network printer
+        5Fh*    network redirection   
+        60h*    parse pathname
+        61h*    unknown
+        62h     get program segment prefix (PSP)
+        63h*    get lead byte table                     (DOS 2.25)
+        64h*    unknown
+        65h     get extended country information        (DOS 3.3)
+        66h     get/set global code page table          (DOS 3.3)
+        67h     set handle count                        (DOS 3.3)
+        68h     commit file                             (DOS 3.3)
+        69h     disk serial number                      (DOS 4.0)
+        6Ah     unknown
+        6Bh     unknown
+        6Ch     extended open/create                    (DOS 4.0)
+
+
+CALLING THE DOS SERVICESÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+ The DOS services are invoked by placing the number of the desired function in 
+register AH, subfunction in AL, setting the other registers to any specific 
+requirements of the function, and invoking int 21h. 
+
+ On return, the requested service will be performed if possible. Most codes 
+will return an error; some return more information. Details are contained in 
+the listings for the individual functions. Extended error return may be 
+obtained by calling function 59h (see 59h).
+
+ Register settings listed are the ones used by DOS. Some functions will return 
+with garbage values in unused registers. Do not test for values in unspecified 
+registers; your program may exhibit odd behavior.
+
+ DS:DX pointers are the data segment register (DS) indexed to the DH and DL
+registers (DX). DX always contains the offset address, DS contains the segment 
+address.
+
+ The File Control Block services (FCB services) were part of DOS 1.0. Since 
+the release of DOS 2.0, Microsoft has recommended that these services not be 
+used. A set of considerably more enhanced services (handle services) were 
+introduced with DOS 2.0. The handle services provide support for wildcards and 
+subdirectories, and enhanced error detection via function 59h.
+
+ The data for the following calls was compiled from various Intel, Microsoft, 
+IBM, and other publications. There are many subtle differences between MSDOS 
+and PCDOS and between the individual versions. Differences between the 
+versions are noted as they occur.
+
+ There are various ways of calling the DOS functions. For all methods, the
+function number is loaded into register AH, subfunctions and/or parameters are
+loaded into AL or other registers, and call int 21 by one of the following 
+methods:
+ A) call interrupt 21h directly  (the recommended procedure)
+ B) perform a long call to offset 50h in the program's PSP.
+     1) This method will not work under DOS 1.x
+     2) Though recommended by Microsoft for DOS 2.0, this method takes more
+        time and is no longer recommended.
+ C) place the function number in CL and perform an intrasegment call to 
+    location 05h in the current code segment. This location contains a long
+    call to the DOS function dispatcher. 
+     1) IBM recommends this method be used only when using existing programs 
+        written for different calling conventions. (such as converting CP/M
+        programs). This method should be avoided unless you have some specific
+        use for it.
+     2) AX is always destroyed by this method.
+     3) This method is valid only for functions 00h-24h.
+
+ There are also various ways of exiting from a program. (assuming it is not
+intended to be a TSR). All methods except call 4Ch must ensure that the 
+segment register contains the segment address of the PSP.
+ A) Interrupt 21h, function 4Ch (Terminate with Result Code). This is the
+    "official" recommended method of returning to DOS.
+ B) Interrupt 21h, function 00h (Exit Program). This is the early style
+    int 21 function call. It simply calls int 20h.
+ C) Interrupt 20h (Exit).
+ D) A JMP instruction to offset 00h (int 20h vector) in the Program Segment
+    Prefix. This is just a roundabout method to call int 20h. This method
+    was set up in DOS 1.0 for ease of conversion for CP/M programs. It is no
+    longer recommended for use.
+ E) A JMP instruction to offset 05h (int 21 vector) in the Program Segment
+    Prefix, with AH set to 00h or 4Ch. This is another CP/M type function.
+
+
+
+
+INT 21H   DOS services
+          Function (hex)
+
+* Indicates Functions not documented in the IBM DOS Technical Reference.
+ Note some functions have been documented in other Microsoft or licensed OEM
+documentation.
+
+
+Function  00h   Terminate Program
+      Ends program, updates, FAT, flushes buffers, restores registers
+entry   AH      00h
+        CS      segment address of PSP
+return  none
+note 1) Program must place the segment address of the PSP control block in CS 
+        before calling this function.                       
+     2) The terminate, ctrl-break,and critical error exit addresses (0Ah, 0Eh, 
+        12h) are restored to the values they had on entry to the terminating
+        program, from the values saved in the program segment prefix at 
+        locations PSP:000Ah, PSP:000Eh, and PSP:0012h. 
+     3) All file buffers are flushed and the handles opened by the process are 
+        closed. 
+     4) Any files that have changed in length and are not closed are not 
+        recorded properly in the directory. 
+     5) Control transfers to the terminate address.
+     6) This call performs exactly the same function as int 20h.
+     7) All memory used by the program is returned to DOS.
+
+
+Function  01h     Get Keyboard Input
+        Waits for char at STDIN (if nescessary), echoes to STDOUT
+entry   AH      01h
+return  AL      ASCII character from STDIN (8 bits)
+note 1) Checks char for Ctrl-C, if char is Ctrl-C, executes int 23h.
+     2) For function call 06h, extended ASCII codes require two function calls. 
+        The first call returns 00h as an indicator that the next call will be an
+        extended ASCII code.
+     3) Input and output are redirectable. If redirected, there is no way to 
+        detect EOF.
+
+
+Function  02h   Display Output
+      Outputs char in DL to STDOUT
+entry   AH      02h
+        DL      8 bit data (usually ASCII character)
+return  none
+note 1) If char is 08 (backspace) the cursor is moved 1 char to the left 
+        (nondestructive backspace).
+     2) If Ctrl-C is detected after input, int 23h is executed.
+     3) Input and output are redirectable. If redirected, there is no way to 
+        detect disk full.
+
+
+Function  03h   Auxiliary Input
+      Get (or wait until) character from STDAUX
+entry   AH      03h
+return  AL      char from auxiliary device
+note 1) AUX, COM1, COM2 is unbuffered and not interrupt driven
+     2) This function call does not return status or error codes. For greater 
+        control it is recommended that you use ROM BIOS routine (int 14h) or 
+        write an AUX device driver and use IOCTL.
+     3) At startup, PC-DOS initializes the first auxiliary port (COM1) to 2400 
+        baud, no parity, one stop bit, and an 8-bit word. MSDOS may differ.
+     4) If Ctrl-C is has been entered from STDIN, int 23h is executed.
+
+
+Function  04h   Auxiliary Output
+      Write character to STDAUX
+entry   AH      04h
+        DL      char to send to AUX
+return  none
+note 1) This function call does not return status or error codes. For greater 
+        control it is recommended that you use ROM BIOS routine (int 14h) or 
+        write an AUX device driver and use IOCTL.
+     2) If Ctrl-C is has been entered from STDIN, int 23h is executed.
+     3) Default is COM1 unless redirected by DOS.
+     4) If the device is busy, this function will wait until it is ready.
+
+
+Function  05h   Printer Output
+      Write character to STDPRN
+entry   AL      05h
+        DL      character to send
+return  none
+note 1) If Ctrl-C is has been entered from STDIN, int 23h is executed.
+     2) Default is PRN or LPT1 unless redirected with the MODE command.
+     3) If the printer is busy, this function will wait until it is ready.
+     
+
+Function  06h   Direct Console I/O
+      Get character from STDIN; echo character to STDOUT
+entry   AH      06h
+        DL      0FFh for console input, or 00h-0FEh for console output
+return  ZF      set   (1) = no character
+                clear (0) = character recieved
+        AL      character
+note 1) Extended ASCII codes require two function calls. The first call returns
+        00h to indicate the next call will return an extended code.
+     2) If DL is not 0FFh, DL is assumed to have a valid character that is 
+        output to STDOUT. 
+     3) This function does not check for Ctrl-C or Ctrl-PrtSc.
+     4) Does not echo input to screen
+     5) If I/O is redirected, EOF or disk full cannot be detected.
+
+
+Function  07h   Direct Console Input Without Echo         (does not check BREAK)
+      Get or wait for char at STDIN, returns char in AL
+entry   AH      07h
+return  AL      character from standard input device
+note 1) Extended ASCII codes require two function calls. The first call returns
+        00h to indicate the next call will return an extended code.
+     2) No checking for Ctrl-C or Ctrl-PrtSc is done.
+     3) Input is redirectable.
+
+
+Function  08h   Console Input Without Echo                (checks BREAK)
+      Get or Wait for char at STDIN, return char in AL
+entry   AH      08h
+return  AL      char from standard input device
+note 1) Char is checked for ctrl-C. If ctrl-C is detected, executes int 23h.
+     2) For function call 08h, extended ASCII characters require two function 
+        calls. The first call returns 00h to signify an extended ASCII code. 
+        The next call returns the actual code.
+     3) Input is redirectable. If redirected, there is no way to check EOF.
+
+
+Function  09h   Print String
+      Outputs Characters in the Print String to the STDOUT
+entry   AH      09h
+        DS:DX   pointer to the Character String to be displayed
+return  none                                                       
+note 1) The character string in memory must be terminated by a $ (24h)
+        The $ is not displayed.
+     2) Output to STDOUT is the same as function call 02h.
+
+
+Function  0Ah   Buffered Keyboard Input
+      Reads characters from STDIN and places them in the buffer beginning
+      at the third byte.
+entry   AH      0Ah
+        DS:DX   pointer to an input buffer
+return  none
+note 1) Min buffer size = 1, max = 255
+     2) Char is checked for ctrl-C. If ctrl-C is detected, executes int 23h.
+     3) Format of buffer DX:
+        byte       contents
+         1      Maximum number of chars the buffer will take, including CR.
+                Reading STDIN and filling the buffer continues until a carriage
+                return (<Enter> or 0Dh) is read. If the buffer fills to one less
+                than the maximum number the buffer can hold, each additional 
+                number read is ignored and ASCII 7 (BEL) is output to the 
+                display until a carriage return is read. (you must set this
+                value)
+         2      Actual number of characters received, excluding the carriage
+                return, which is always the last character. (the function sets
+                this value)
+         3-n    Characters received are placed into the buffer starting here.
+                Buffer must be at least as long as the number in byte 1.
+     4) Input is redirectable. If redirected, there is no way to check EOF.
+     5) The string may be edited with the standard DOS editing commands as it
+        is being entered.
+     6) Extended ASCII characters are stored as 2 bytes, the first byte being 
+        zero.
+
+
+Function  0Bh   Check Standard Input (STDIN) status
+      Checks for character availible at STDIN 
+entry   AH      0Bh
+return  AL      0FFh    if a character is availible from STDIN
+                00h     if no character is availible from STDIN
+note 1) Checks for Ctrl-C. If Ctrl-C is detected, int 23h is executed
+     2) Input can be redirected.
+     3) Checks for character only, it is not read into the application
+     4) IBM reports that this call does not work properly under the DOSSHELL
+        program in DOS 4.00 and 4.01. DOSSHELL will return all zeroes. This
+        function works correctly from the command line or application.
+
+
+Function  0Ch   Clear Keyboard Buffer & Invoke a Keyboard Function       (FCB)
+      Dumps buffer, executes function in AL (01h,06h,07h,08h,0Ah only)
+entry   AH      0Ch
+        AL      function number (must be 01h, 06h, 07h, 08h, or 0Ah)
+return  AL      00h     buffer was flushed, no other processing performed
+                other   any other value has no meaning
+note 1) Forces system to wait until a character is typed. 
+     2) Flushes all typeahead input, then executes function specified by AL (by
+        moving it to AH and repeating the int 21 call).
+     3) If AL contains a value not in the list above, the keyboard buffer is
+        flushed and no other action is taken.
+
+
+Function  0Dh   Disk Reset
+      Flushes all currently open file buffers to disk
+entry   AH      0Dh
+return          none
+note 1) Does not close files. Does not update directory entries; files changed
+        in size but not closed are not properly recorded in the directory
+     2) Sets DTA address to DS:0080h
+     3) Should be used before a disk change, Ctrl-C handlers, and to flush
+        the buffers to disk.
+     
+
+Function  0Eh   Select Disk
+      Sets the drive specified in DL (if valid) as the default drive
+entry   AL      0Eh
+        DL      new default drive number (0=A:,1=B:,2=C:,etc.)
+return  AL      total number of logical drives (not nescessarily physical)
+note 1) For DOS 1.x and 2.x, the minimum value for AL is 2.
+     2) For DOS 3.x and 4.x, the minimum value for AL is 5.
+     3) The drive number returned is not nescessarily a valid drive.
+     4) For DOS 1.x: 16 logical drives are availible, A-P.
+        For DOS 2.x: 63 logical drives are availible. (Letters are only used for
+                     the first 26 drives. If more than 26 logical drives are
+                     used, further drive letters will be other ASCII characters
+                     ie {,], etc.
+        For DOS 3.x: 26 logical drives are availible, A-Z.
+        For DOS 4.x: 26 logical drives are availible, A-Z.
+
+
+Function  0Fh   Open Disk File                                            (FCB)
+      Searches current directory for specified filename and opens it
+entry   AH      0Fh
+        DS:DX   pointer to an unopened FCB
+return  AL      00h     if file found
+                0FFh    if file not not found
+note 1) If the drive code was 0 (default drive) it is changed to the actual 
+        drive used (1=A:,2=B:,3=C:, etc). This allows changing the default drive
+        without interfering with subsequent operations on this file. 
+     2) The current block field (FCB bytes C-D, offset 0Ch) is set to zero. 
+     3) The size of the record to be worked with (FCB bytes E-F, offset 0Eh) is
+        set to the system default of 80h. The size of the file (offset 10h) and
+        the date (offset 14h) are set from information obtained in the root
+        directory. You can change the default value for the record size (FCB
+        bytes E-F) or set the random record size and/or current record field.
+        Perform these actions after the open but before any disk operations.
+     4) The file is opened in compatibility mode. 
+     5) Microsoft recommends handle function call 3Dh be used instead.
+     6) This call is also used by the APPEND command in DOS 3.2+
+     7) Before performing a sequential disk operation on the file, you must 
+        set the Current Record field (offset 20h). Before performing a random 
+        disk operation on the file, you must set the Relative Record field
+        (offset 21h). If the default record size of 128 bytes is incorrect, set
+        it to the correct value.
+
+
+Function  10h  Close File                                              (FCB)
+     Closes a File After a File Write 
+entry   AH      10h
+        DS:DX   pointer to an opened FCB
+return  AL      00h     if the file is found and closed
+                0FFh    if the file is not found in the current directory
+note 1) This function call must be done on open files that are no longer needed,
+        and after file writes to insure all directory information is updated. 
+     2) If the file is not found in its correct position in the current 
+        directory, it is assumed that the diskette was changed and AL returns 
+        0FFh. This error return is reportedly not completely reliable with DOS
+        version 2.x.
+     3) If found, the directory is updated to reflect the status in the FCB, the
+        buffers to that file are flushed, and AL returns 00h.
+
+
+Function  11h   Search For First Matching Entry                           (FCB)
+      Searches current disk & directory for first matching filename
+entry   AH      11h
+        DS:DX   pointer to address of FCB
+return  AL      00h     successful match
+                0FFh    no matching filename found
+note 1) The FCB may contain the wildcard character ? under Dos 2.x, and ? or * 
+        under 3.x and 4.x.
+     2) The original FCB at DS:DX contains information to continue the search
+        with function 12h, and should not be modified.
+     3) If a matching filename is found, AL returns 00h and the locations at the
+        Disk Transfer Address are set as follows:
+        a) If the FCB provided for searching was an extended FCB, then the first
+           byte at the disk transfer address is set to 0FFh followed by 5 bytes
+           of zeroes, then the attribute byte from the search FCB, then the 
+           drive number used (1=A, 2=B, etc) then the 32 bytes of the directory
+           entry. Thus, the disk transfer address contains a valid unopened FCB
+           with the same search attributes as the search FCB.
+        b) If the FCB provided for searching was a standard FCB, then the first 
+           byte is set to the drive number used (1=A,2=b,etc), and the next 32 
+           bytes contain the matching directory entry. Thus, the disk transfer 
+           address contains a valid unopened normal FCB.
+     4) If an extended FCB is used, the following search pattern is used:
+        a) If the FCB attribute byte is zero, only normal file entries are 
+           found. Entries for volume label, subdirectories, hidden or system 
+           files, are not returned.
+        b) If the attribute byte is set for hidden or system files, or 
+           subdirectory entries, it is to be considered as an inclusive search.
+           All normal file entries plus all entries matching the specified 
+           attributes are returned. To look at all directory entries except the
+           volume label, the attribute byte may be set to hidden + system + 
+           directory (all 3 bits on).
+        c) If the attribute field is set for the volume label, it is considered
+           an exclusive search, and ONLY the volume label entry is returned.
+     5) This call is also used by the APPEND command in DOS 3.2+
+
+
+Function  12h   Search For Next Entry Using FCB                          (FCB)
+      Search for next matching filename
+entry   AH      12h 
+        DS:DX   pointer to the unopened FCB specified from the previous Search
+                First (11h) or Search Next (12h)
+return  AL      00h     if matching filename found
+                0FFh    if matching filename was not found
+note 1) After a matching filename has been found using function call 11h, 
+        function 12h may be called to find the next match to an ambiguous 
+        request. For DOS 2.x, ?'s are allowed in the filename. For DOS 3.x 
+        and 4.x, global (*) filename characters are allowed.
+     2) The DTA contains info from the previous Search First or Search Next. 
+     3) All of the FCB except for the name/extension field is used to keep 
+        information nescessary for continuing the search, so no disk operations 
+        may be performed with this FCB between a previous function 11h or 12h 
+        call and this one.
+     4) If the file is found, an FCB is created at the DTA address and set up to
+        open or delete it.
+
+
+Function  13h   Delete File Via FCB                                       (FCB)
+      Deletes file specified in FCB from current directory
+entry   AH      13h
+        DS:DX   pointer to address of FCB
+return  AL      00h     file deleted
+                0FFh    if file not found or was read-only
+note 1) All matching current directory entries are deleted. The global filename 
+        character "?" is allowed in the filename.
+     2) Will not delete files with read-only attribute set
+     3) Close open files before deleting them.
+     4) Requires Network Access Rights
+
+
+Function  14h   Sequential Disk File Read                                 (FCB)
+      Reads record sequentially from disk via FCB
+entry   AH  14h
+        DS:DX   pointer to an opened FCB
+return  AL      00h     successful read
+                01h     end of file (no data read)
+                02h     Data Transfer Area too small for record size specified
+                        or segment overflow
+                03h     partial record read, EOF found
+note 1) The record size is set to the value at offset 0Eh in the FCB.
+     2) The record pointed to by the Current Block (offset 0Ch) and the Current
+        Record (offset 20h) fields is loaded at the DTA, then the Current Block
+        and Current Record fields are incremented.
+     3) The record is read into memory at the current DTA address as specified 
+        by the most recent call to function 1Ah. If the size of the record and
+        location of the DTA are such that a segment overflow or wraparound would
+        occur, the error return is set to AL=02h
+     4) If a partial record is read at the end of the file, it is passed to the
+        requested size with zeroes and the error return is set to AL=03h.
+
+
+Function  15h   Sequential Disk Write                                     (FCB)
+      Writes record specified by FCB sequentially to disk
+entry   AH      15h
+        DS:DX   pointer to address of FCB 
+return  AL      00h     successful write
+                01h     diskette full, write canceled
+                02h     disk transfer area (DTA) too small or segment wrap
+note 1) The data to write is obtained from the disk transfer area
+     2) The record size is set to the value at offset 0Eh in the FCB.
+     3) This service cannot write to files set as read-only
+     4) The record pointed to by the Current Block (offset 0Ch) and the Current
+        Record (offset 20h) fields is loaded at the DTA, then the Current Block
+        and Current Record fields are incremented.
+     5) If the record size is less than a sector, the data in the DTA is written
+        to a buffer; the buffer is written to disk when it contains a full 
+        sector of data, the file is closed, or a Reset Disk (function 0Dh) is
+        issued.
+     6) The record is written to disk at the current DTA address as specified 
+        by the most recent call to function 1Ah. If the size of the record and
+        location of the DTA are such that a segment overflow or wraparound would
+        occur, the error return is set to AL=02h
+
+
+Function  16h   Create A Disk File                                        (FCB)
+      Search and open or create directory entry for file
+entry   AH      16h
+        DS:DX   pointer to an FCB
+return  AL      00h     successful creation
+                0FFh    no room in directory
+note 1) If a matching directory entry is found, the file is truncated to zero
+        bytes.
+     2) If there is no matching filename, a filename is created.
+     3) This function calls function 0Fh (Open File) after creating or 
+        truncating a file.
+     4) A hidden file can be created by using an extended FCB with the attribute
+        byte (offset FCB-1) set to 2.
+
+
+Function  17h   Rename File Specified by File Control Block              (FCB)
+      Renames file in current directory
+entry   AH      17h
+        DS:DX   pointer to an FCB (see note 4)
+return  AL      00h     successfully renamed
+                0FFh    file not found or filename already exists
+note 1) This service cannot rename read-only files
+     2) The "?" wildcard may be used.
+     3) If the "?" wildcard is used in the second filename, the corresponding 
+        letters in the filename of the directory entry are not changed.
+     4) The FCB must have a drive number, filename, and extension in the usual
+        position, and a second filename starting 6 bytes after the first, at 
+        offset 11h.
+     5) The two filenames cannot have the same name.
+     6) FCB contains new name starting at byte 17h.
+
+
+Function  18h  Internal to DOS
+ *   Unknown
+entry   AH      18h
+return  AL      0
+
+
+Function  19h   Get Current Disk Drive
+      Return designation of current default disk drive
+entry   AH      19h
+return  AL      current default drive (0=A, 1=B,etc.)  
+note    Some other DOS functions use 0 for default, 1=A, 2=B, etc.
+
+
+Function  1Ah   Set Disk Transfer Area Address (DTA) 
+      Sets DTA address to the address specified in DS:DX
+entry   AH      1Ah
+        DS:DX   pointer to buffer
+return  none
+note 1) The default DTA is 128 bytes at offset 80h in the PSP. DOS uses the 
+        DTA for all file I/O. 
+     2) Registers are unchanged.
+     3) No error codes are returned.
+     2) Disk transfers cannot wrap around from the end of the segment to the 
+        beginning or overflow into another segment.
+
+
+Function  1Bh   Get Current Drive File Allocation Table Information
+      Returns information from the FAT on the current drive
+entry   AH      1Bh
+exit    AL      number of sectors per allocation unit (cluster)
+        DS:BX   address of the current drive's media descriptor byte
+        CX      number of bytes per sector
+        DX      number of allocation units (clusters) for default drive
+note 1) Save DS before calling this function.
+     2) This call returned a pointer to the FAT in DOS 1.x. Beginning with
+        DOS 2.00, it returns a pointer only to the table's ID byte.
+     3) IBM recommends programmers avoid this call and use int 25h instead.
+
+ 
+Function  1Ch   Get File Allocation Table Information for Specific Device 
+      Returns information on specified drive
+entry   AH      1Ch
+        DL      drive number (1=A, 2=B, 3=C, etc)
+return  AL      number of sectors per allocation unit (cluster)
+        DS:BX   address of media descriptor byte for drive in DL
+        CX      sector size in bytes
+        DX      number of allocation units (clusters)
+note 1) DL = 0 for default.
+     2) Save DS before calling this function.
+     3) Format of media-descriptor byte:
+        bits:   0       0   (clear)   not double sided
+                        1   (set)     double sided
+                1       0   (clear)   not 8 sector
+                        1   (set)     8 sector
+                2       0   (clear)   nonremovable device
+                        1   (set)     removable device
+                3-7     always set (1)
+     4) This call returned a pointer to the FAT in DOS 1.x. Beginning with
+        DOS 2.00, it returns a pointer only to the table's ID byte.
+     5) IBM recommends programmers avoid this call and use int 25h instead.
+
+
+Function  1Dh   Not Documented by Microsoft
+ *    Unknown
+entry   AH      1Dh
+return  AL      0
+
+
+Function  1Eh   Not Documented by Microsoft
+ *    Unknown
+entry   AH      1Eh
+return  AL      0
+note    Apparently does nothing
+
+
+Function  1Fh Get Default Drive Parameter Block 
+ *  Same as function call 32h (below), except that the table is accessed from 
+    the default drive
+entry   AH      1Fh
+        other registers unknown
+return  AL      00h     no error
+                0FFh    error
+        DS:BX   points to DOS Disk Parameter Block for default drive.
+note 1) Unknown vector returned in ES:BX.
+     2) For DOS 2.x and 3.x, this just invokes function 32h (undocumented, 
+        Read DOS Disk Block) with DL=0
+
+
+Function  20h  Unknown
+ *   Internal - does nothing? 
+entry   AH      20h
+return  AL      0
+
+
+Function  21h  Random Read from File Specified by File Control Block     (FCB)
+     Reads one record as specified in the FCB into the current DTA.
+entry   AH      21h
+        DS:DX   address of the opened FCB
+return  AL      00h     successful read operation
+                01h     end of file (EOF), no data read
+                02h     DTA too small for the record size specified
+                03h     end of file (EOF), partial data read
+note 1) The current block and current record fields are set to agree with the
+        random record field. Then the record addressed by these fields is read
+        into memory at the current Disk Transfer Address.
+     2) The current file pointers are NOT incremented this function.
+     3) If the DTA is larger than the file, the file is padded to the requested
+        length with zeroes.
+
+
+Function  22h  Random Write to File Specified by FCB                      (FCB)
+     Writes one record as specified in the FCB to the current DTA
+entry   AH      22h
+        DS:DX   address of the opened FCB
+return  AL      00h     successful write operation
+                01h     disk full; no data written (write was canceled)
+                02h     DTA too small for the record size specified (write was
+                        canceled)
+note 1) This service cannot write to read-only files.
+     2) The record pointed to by the Current Block (offset 0Ch) and the Current
+        Record (offset 20h) fields is loaded at the DTA, then the Current Block
+        and Current Record fields are incremented.
+     3) If the record size is less than a sector, the data in the DTA is written
+        to a buffer; the buffer is written to disk when it contains a full 
+        sector of data, the file is closed, or a Reset Disk (function 0Dh) is
+        issued.
+     4) The current file pointers are NOT incremented this function.
+     5) The record is written to disk at the current DTA address as specified 
+        by the most recent call to function 1Ah. If the size of the record and
+        location of the DTA are such that a segment overflow or wraparound would
+        occur, the error return is set to AL=02h
+
+
+Function  23h  Get File Size                                             (FCB)
+     Searches current subdirectory for matching file, returns size in FCB
+entry   AH      23h
+        DS:DX   address of an unopened FCB
+return  AL      00h file found
+                0FFh file not found
+note 1) Record size field (offset 0Eh) must be set before invoking this function
+     2) The disk directory is searched for the matching entry. If a matching
+        entry is found, the random record field is set to the number of records
+        in the file. If the value of the Record Size field is not an even
+        divisor of the file size, the value set in the relative record field is 
+        rounded up. This gives a returned value larger than the actual file size
+     3) This call is used by the APPEND command in DOS 3.2+
+
+ 
+Function  24h  Set Relative Record Field                                  (FCB)
+     Set random record field specified by an FCB
+entry   AH      24h
+        DS:DX   address of an opened FCB
+return  Random Record Field of FCB is set to be same as Current Block
+        and Current Record.
+note 1) You must invoke this function before performing random file access.
+     2) The relative record field of FCB (offset 21h) is set to be same as the
+        Current Block (offset 0Ch) and Current Record (offset 20h).
+     3) No error codes are returned.
+     4) The FCB must already be opened.
+
+
+Function  25h  Set Interrupt Vector
+     Sets the address of the code DOS is to perform each time the specified
+     interrupt is invoked.
+entry   AH      25h
+        AL      int number to reassign the handler to
+        DS:DX   address of new interrupt vector
+return  none
+note 1) Registers are unchanged.
+     2) No error codes are returned.
+     3) The interrupt vector table for the interrupt number specified in AL
+        is set to the address contained in DS:DX. Use function 35h (Get Vector)
+        to get the contents of the interrupt vector and save it for later use.
+     4) When you use function 25 to set an interrupt vector, DOS 3.2 doesn't
+        point the actual interrupt vector to what you requested. Instead, it
+        sets the interrupt vector to point to a routine inside DOS, which does
+        this:
+                1. Save old stack pointer
+                2. Switch to new stack pointer allocated from DOS's stack pool
+                3. Call your routine
+                4. Restore old stack pointer
+        The purpose for this was to avoid possible stack overflows when there
+        are a large number of active interrupts. IBM was concerned (this was an
+        IBM change, not Microsoft) that on a Token Ring network there would be
+        a lot of interrupts going on, and applications that hadn't allocated
+        very much stack space would get clobbered. 
+
+
+Function  26h  Create New Program Segment Prefix (PSP)
+     This service copies the current program-segment prefix to a new memory 
+     location for the creation of a new program or overlay. Once the new PSP is
+     in place, a DOS program can read a DOS COM or overlay file into the memory 
+     location immediately following the new PSP and pass control to it.
+entry   AH      26h
+        DX      segment number for the new PSP
+return  none
+note 1) Microsoft recommends you use the newer DOS service 4Bh (EXEC) instead.
+     2) The entire 100h area at location 0 in the current PSP is copied into
+        location 0 of the new PSP. The memory size information at location 6
+        in the new segment is updated and the current termination, ctrl-break,
+        and critical error addresses from interrupt vector table entries for
+        ints 22h, 23h, and 24 are saved in the new program segment starting at
+        0Ah. They are restored from this area when the program terminates.
+     3) Current PSP is copied to specified segment
+                   
+
+Function  27h  Random Block Read From File Specified by FCB
+     Similar to 21h (Random Read) except allows multiple files to be read.
+entry   AH      27h
+        CX      number of records to be read
+        DS:DX   address of an opened FCB
+return  AL      00h     successful read
+                01h     end of file, no data read
+                02h     DTA too small for record size specified (read canceled)
+                03h     end of file
+        CX      actual number of records read (includes partial if AL=03h)
+note 1) The record size is specified in the FCB. The service updates the Current
+        Block (offset 0Ch) and Current Record (offset 20h) fields to the next
+        record not read.
+     2) If CX contained 0 on entry, this is a NOP.
+     3) If the DTA is larger than the file, the file is padded to the requested
+        length with zeroes.
+     4) This function assumes that the FCB record size field (0Eh) is correctly
+        set. If not set by the user, the default is 128 bytes.
+     5) The record is written to disk at the current DTA address as specified 
+        by the most recent call to function 1Ah. If the size of the record and
+        location of the DTA are such that a segment overflow or wraparound would
+        occur, the error return is set to AL=02h
+
+
+Function  28h  Random Block Write to File Specified in FCB
+     Similar to 27h (Random Write) except allows multiple files to be read.
+entry   AH      28h
+        CX      number of records to write
+        DS:DX   address of an opened FCB
+return  AL      00h     successful write
+                01h     disk full, no data written
+                02h     DTA too small for record size specified (write canceled)
+        CX      number of records written
+note 1) The record size is specified in the FCB.
+     2) This service allocates disk clusters as required.
+     3) This function assumes that the FCB Record Size field (offset 0Eh) is
+        correctly set. If not set by the user, the default is 128 bytes.
+     4) The record size is specified in the FCB. The service updates the Current
+        Block (offset 0Ch) and Current Record (offset 20h) fields to the next
+        record not read.
+     5) The record is written to disk at the current DTA address as specified 
+        by the most recent call to function 1Ah. If the size of the record and
+        location of the DTA are such that a segment overflow or wraparound would
+        occur, the error return is set to AL=02h
+     6) If called with CX=0, no records are written, but the FCB's File Size
+        entry (offset 1Ch) is set to the size specified by the FCB's Relative 
+        Record field (offset 21h).
+
+
+Function  29h  Parse the Command Line for Filename
+     Parses a text string into the fields of a File Control Block
+entry   AH      29h
+        DS:SI   pointer to string to parse
+        ES:DI   pointer to memory buffer to fill with unopened FCB
+        AL      bit mask to control parsing
+                bit 0 = 0: parsing stops if file seperator found
+                        1: causes service to scan past leading chars such as
+                           blanks. Otherwise assumes the filename begins in
+                           the first byte
+                    1 = 0: drive number in FCB set to default (0) if string
+                           contains no drive number
+                        1: drive number in FCB not changed
+                    2 = 0: filename in FCB set to 8 blanks if no filename in 
+                           string
+                        1: filename in FCB not changed if string does not 
+                           contain a filename
+                    3 = 0: extension in FCB set to 3 blanks if no extension in 
+                           string
+                        1: extension left unchanged
+                    4-7    must be zero
+return  AL      00h     no wildcards in name or extension
+                01h     wildcards appeared in name or extension
+                0FFh    invalid drive specifier
+        DS:SI   pointer to the first byte after the parsed string
+        ES:DI   pointer to a buffer filled with the unopened FCB
+note 1) If the * wildcard characters are found in the command line, this service
+        will replace all subsequent chars in the FCB with question marks.
+     2) This service uses the characters as filename separators
+        DOS 1       : ; . , + / [ ] = " TAB SPACE
+        DOS 2,3     : ; . , + = TAB SPACE
+     3) This service uses the characters
+        : ; . , + < > | / \ [ ] = " TAB SPACE
+        or any control characters as valid filename separators
+     4) A filename cannot contain a filename terminator. If one is encountered,
+        all processing stops. The handle functions will allow use of some of
+        these characters.
+     5) If no valid filename was found on the command line, ES:DI +1 points
+        to a blank (ASCII 32).
+     6) This function cannot be used with filespecs which include a path
+     7) Parsing is in the form D:FILENAME.EXT. If one is found, a corresponding
+        unopened FCB is built at ES:DI
+
+
+Function  2Ah  Get Date
+     Returns day of the week, year, month, and date
+entry   AH      2Ah
+return  CX      year    (1980-2099)
+        DH      month   (1-12)
+        DL      day     (1-31)
+        AL      weekday 00h     Sunday
+                        01h     Monday
+                        02h     Tuesday
+                        03h     Wednesday
+                        04h     Thursday
+                        05h     Friday
+                        06h     Saturday
+note 1) Date is adjusted automatically if clock rolls over to the next day,
+        and takes leap years and number of days in each month into account.
+     2) Although DOS cannot set an invalid date, it can read one, such as
+        1/32/80, etc.
+     3) DesQview also accepts CX = 4445h and DX = 5351h, i.e. 'DESQ' as valid
+     4) DOS will accept CH=0 (midnight) as a valid time, but if a file's time
+        is set to exactly midnight the time will not be displayed by the DIR
+        command.
+
+
+Function  2Bh  Set Date
+     set current system date
+entry   AH      2Bh
+        CX      year    (1980-2099)
+        DH      month   (1-12)
+        DL      day     (1-31)
+return  AL      00h     no error (valid date)
+                0FFh    invalid date specified
+note 1) On entry, CX:DX must have a valid date in the same format as returned 
+        by function call 2Ah
+     2) DOS 3.3 also sets CMOS clock
+
+
+Function  2Ch  Get Time
+     Get current system time from CLOCK$ driver
+entry   AH      2Ch
+return  CH      hours   (0-23)
+        CL      minutes (0-59)
+        DH      seconds (0-59)
+        DL      hundredths of a second (0-99)
+note 1) Time is updated every 5/100 second.
+     2) The date and time are in binary format
+
+
+Function  2Dh  Set Time
+     Sets current system time
+entry   AH      2Dh
+        CH      hours   (0-23)
+        CL      minutes (0-59)
+        DH      seconds (0-59)
+        DL      hundredths of seconds (0-99)
+return  AL      00h     if no error
+                0FFh    if bad value sent to routine
+note 1) DOS 3.3 also sets CMOS clock
+     2) CX and DX must contain a valid time in binary
+
+
+Function  2Eh  Set/Reset Verify Switch
+     Set verify flag                                                     
+entry   AH      2Eh
+        AL      00      to turn verify off (default)
+                01      to turn verify on
+return  none
+note 1) This is the call invoked by the DOS VERIFY command
+     2) Setting of the verify switch can be obtained by calling call 54h
+     3) This call is not supported on network drives
+     4) DOS checks this flag each time it accesses a disk
+
+
+Function  2Fh  Get Disk Transfer Address (DTA)
+     Returns current disk transfer address used by all DOS read/write operations
+entry   AH      2Fh
+return  ES:BX   address of DTA
+note 1) The DTA is set by function call 1Ah
+     2) Default DTA address is a 128 byte buffer at offset 80h in that program's
+        Program Segment Prefix
+
+
+Function  30h  Get DOS Version Number
+     Return DOS version and/or user number
+entry   AH      30h
+return  AH      minor version number  (i.e., DOS 2.10 returns AX = 0A02h)
+        AL      major version number
+        BH      OEM ID number
+                00h     IBM
+                16h     DEC    (others not known)
+        BL:CX   24-bit user serial number
+note 1) If AL returns a major version number of zero, the DOS version is 
+        below 1.28 for MSDOS and below 2.00 for PCDOS.
+     2) IBM PC-DOS always returns 0000h in BX and CX. 
+     3) OS/2 v1.0 Compatibility Box returns a value of 10 for major version.
+     4) Due to the OS/2 return and the fact that some European versions of DOS
+        carry higher version numbers than IBM's DOS, utilities which check
+        for a DOS version should not abort if a higher version than required
+        is found unless some specific problems are known.
+
+
+Function  31h  Terminate Process and Stay Resident
+     KEEP, or TSR
+entry   AH      31h
+        AL      exit code
+        DX      program memory requirement in 16 byte paragraphs
+return  AX      return code (retrieveable by function 4Dh)
+note 1) Files opened by the application are not closed when this call is made
+     2) Memory can be used more efficiently if the block containing the copy of
+        the DOS environment is deallocated before terminating. This can be done
+        by loading ES with the segment contained in 2Ch of the PSP and issuing
+        function call 49h (Free Allocated Memory).
+     3) Unlike int 27h, more than 64k may be made resident with this call
+     
+
+Function  32h  Read DOS Disk Block
+ *   Retrieve the pointer to the drive parameter block for a drive 
+entry   AH      32h
+        DL      drive (0=default, 1=A:, etc.). 
+return  AL      00h     if drive is valid
+                0FFh    if drive is not valid
+        DS:BX   pointer to DOS Drive Parameter Table. Format of block:
+                Bytes   Type        Value
+                00h     byte    Drive: 0=A:, 1=B:, etc.
+                01h     byte    Unit within drive (0, 1, 2, etc.)
+                02h-03h word    Bytes per sector
+                04h     byte    Sectors per cluster - 1
+                05h     byte    Cluster to sector shift (i.e., how far to shift-
+                                left the bytes/sector to get bytes/cluster)
+                06h-07h word    Number of reserved (boot) sectors
+                08h     byte    Number of FATs
+                09h-0Ah word    Number of root directory entries
+                0Bh-0Ch word    Sector # of 1st data. Should be same as # of 
+                                sectors/track.
+                0Dh-0Eh word    # of clusters + 1 (=last cluster #)
+                0Fh     byte    Sectors for FAT
+                10h-11h word    First sector of root directory
+                12h-15h dword   Address of device driver header for this drive
+                16h     byte    Media Descriptor Byte for this drive
+                17h     byte    0FFh indicates block must be rebuilt
+                                (DOS 3.x) 00h indicates block device has 
+                                been accessed
+                18h-1Bh dword   address of next DOS Disk Block (0FFFFh means 
+                                last in chain)
+                22h     byte    Current Working Directory (2.0 only) (64 bytes)
+note 1) Use [BX+0D] to find no. of clusters (>1000H, 16-bit FAT; if not, 12-bit
+        (exact dividing line is probably a little below 1000h to allow for
+        bad sectors, EOF markers, etc.)
+     2) Short article by C.Petzold, PC Magazine  Vol.5,no.8, and the article
+        "Finding Disk Parameters" in the May 1986 issue of PC Tech Journal.
+     3) This call is mostly supported in OS/2 1.0's DOS Compatibility Box. The
+        dword at 12h will not return the address of the next device driver when
+        in the Compatibility Box.
+     4) used by CHKDSK
+
+
+Function  33h  Control-Break Check
+     Get or set control-break checking at CON
+entry   AH      33h
+        AL      00h     to test for break checking
+                01h     to set break checking
+                        DL      00h     to disable break checking
+                                01h     to enable break checking
+                02h     internal, called by PRINT.COM (DOS 3.1)
+                03h     unknown
+                04h     unknown
+                05h     boot drive (DOS 4.0+)
+return  DL      00h     if break=off 
+                01h     if break=on
+                (if AL=05h) boot drive, A=1, B=2, etc)
+        AL      0FFh    error
+
+
+Function  34h  Return INDOS Flag
+ *   Returns ES:BX pointing to Critical Section Flag, byte indicating whether 
+     it is safe to interrupt DOS.
+entry   AH      34h
+return  ES:BX   points to DOS "critical section flag"
+note 1) If byte is 0, it is safe to interrupt DOS. This was mentioned in some
+        documentation by Microsoft on a TSR standard, and PC Magazine reports
+        it functions reliably under DOS versions 2.0 through 3.3. Chris 
+        Dunford (of CED fame) and a number of anonymous messages on the BBSs
+        indicate it may not be totally reliable.
+     2) The byte at ES:BX+1 is used by the Print program for this same purpose,
+        so it's probably safer to check the WORD at ES:BX.
+     3) Reportedly, examination of DOS 2.10 code in this area indicates that the
+        byte immediately following this "critical section flag" must be 00h to
+        permit the PRINT.COM interrupt to be called. For DOS 3.0 and 3.1 (except
+        Compaq DOS 3.0), the byte before the "critical section flag" must be
+        zero; for Compaq DOS 3.0, the byte 01AAh before it must be zero.
+     4) In DOS 3.10 this reportedly changed to word value, with preceding byte.
+     5) This call is supported in OS/2 1.0's DOS Compatibility Box
+     6) Gordon Letwin of Microsoft discussed this call on ARPAnet in 1984. He
+        stated:
+        a) this is not supported under any version of the DOS
+        b) it usually works under DOS 2, but there may be circumstances
+           when it doesn't (general disclaimer, don't know of a specific
+           circumstance)
+        c) it will usually not work under DOS 3 and DOS 3.1; the DOS is
+           considerably restructured and this flag takes on additional
+           meanings and uses
+        d) it will fail catastrophically under DOS 4.0 and forward.
+           Obviously this information is incorrect since the call works fine
+           through DOS 3.3. Microsoft glasnost?
+
+
+Function  35h  Get Vector
+     Get interrupt vector 
+entry   AH      35h
+        AL      interrupt number (hexadecimal)
+return  ES:BX   address of interrupt vector
+note    Use function call 25h to set the interrupt vectors
+
+
+Function  36h  Get Disk Free Space
+     get information on specified drive
+entry   AH      36h
+        DL      drive number (0=default, 1=A:, 2=B:, etc)
+return  AX      number of sectors per cluster 
+                0FFFFh means drive specified in DL is invalid
+        BX      number of availible clusters
+        CX      bytes per sector
+        DX      clusters per drive
+note 1) Mult AX * CX * BX for free space on disk
+     2) Mult AX * CX * DX for total disk space
+     3) Function 36h returns an incorrect value after an ASSIGN command. Prior 
+        to ASSIGN, the DX register contains 0943h on return, which is the free
+        space in clusters on the HC diskette. After ASSIGN, even with no 
+        parameters, 0901h is returned in the DX register; this is an incorrect 
+        value. Similar results occur with DD diskettes on a PC-XT or a PC-AT.
+        This occurs only when the disk is not the default drive. Results are as
+        expected when the drive is the default drive. Therefore, the 
+        circumvention is to make the desired drive the default drive prior to 
+        issuing this function call.
+     4) Int 21h, function call 36h returns an incorrect value after an ASSIGN 
+        command. Prior to ASSIGN, the DX register contains 0943h on return, 
+        which is the free space in clusters on the HC diskette. After ASSIGN, 
+        even with no parameters, 0901h is returned in the DX register; this is 
+        an incorrect value. Similar results occur with DD diskettes on a PC-XT 
+        or a PC-AT. This occurs only when the disk is not the default drive.
+        Results are as expected when the drive is the default drive. Therefore,
+        the circumvention is to make the desired drive the default drive prior 
+        to issuing this function call.
+     5) This function supercedes functions 1Bh and 1Ch.
+ 
+
+Function  37h  SWITCHAR / AVAILDEV
+ *   Get/set option marking character (is usually "/"), and device type
+entry   AH      37h
+        AL      00h     read switch character (returns current character in DL)
+                01h     set character in DL as new switch character
+      (DOS 2.x) 02h     read device availability (as set by function AL=3) into
+                        DL. A 0 means devices that devices must be accessed in 
+                        file I/O calls by /dev/device. A non-zero value means 
+                        that devices are accessible at every level of the 
+                        directory tree (e.g., PRN is the printer and not a file 
+                        PRN).
+                        AL=2 to return flag in DL, AL=3 to set from DL (0 = set,
+                        1 = not set).
+      (DOS 2.x) 03h     get device availability, where:
+        DL      00h     means /dev/ must precede device names
+                01h     means /dev/ need not precede device names
+return  DL      switch character (if AL=0 or 1)
+                device availability flag (if AL=2 or 3)
+        AL      0FFh    the value in AL was not in the range 0-3.
+note 1) Functions 2 & 3 appear not to be implemented for DOS 3.x.
+     2) It is documented on page 4.324 of the MS-DOS (version 2) Programmer's
+        Utility Pack (Microsoft - published by Zenith).  
+     3) Works on all versions of IBM PC-DOS from 2.0 through 3.3.1.
+     4) The SWITCHAR is the character used for "switches" in DOS command 
+        arguments (defaults to '/', as in "DIR/P"). '-' is popular to make a 
+        system look more like UNIX; if the SWITCHAR is anything other than '/',
+        then '/' may be used instead of '\' for pathnames 
+     5) Ignored by XCOPY, PKARC, LIST
+     6) SWITCHAR may not be set to any character used in a filename
+     7) In DOS 3.x you can still read the "AVAILDEV" byte with subfunction 02h 
+        but it always returns 0FFh even if you try to change it to 0 with
+        subfunction 03h.
+     8) AVAILDEV=0 means that devices must be referenced in an imaginary
+        subdirectory "\dev" (similar to UNIX's /dev/*); a filename "PRN.DAT"
+        can be created on disk and manipulated like any other. If AVAILDEV != 0
+        then device names are recognized anywhere (this is the default):
+        "PRN.DAT" is synonymous with "PRN:". 
+     9) These functions reportedly are not supported in the same fashion in 
+        various implementations of DOS. 
+    10) used by DOS 3.3 CHKDSK, BASIC, DEBUG
+
+
+Function  38h   Return Country Dependent Information
+                (PCDOS 2.0, 2.1, MSDOS 2.00 only)
+entry   AH      38h
+        AL      function code  (must be 0 in DOS 2.x)
+        DS:DX   pointer to 32 byte memory buffer for returned information
+return  CF      set on error
+                AX      error code (02h)
+        BX      country code
+        DS:DX   pointer to buffer filled with country information:
+                bytes 0,1       date/time format
+                                0       USA standard       H:M:S   M/D/Y
+                                1       European standard  H:M:S   D/M/Y
+                                2       Japanese standard  H:M:S   D:M:Y
+                byte2   ASCIIZ string currency symbol
+                byte3   zeroes
+                byte4   ASCIIZ string thousands separator
+                byte5   zeroes
+                byte6   ASCIIZ string decimal separator
+                byte7   zeroes
+                bytes 8,1Fh  24 bytes   reserved
+
+
+Function  38h   Get Country Dependent Information
+                (PCDOS 3.x+, MSDOS 2.01+)
+entry   AH      38h
+        AL      function code
+                00h     to get current country information
+                01h-0FEh country code to get information for, for countries
+                        with codes less than 255
+                0FFh    to get country information for countries with a code
+                        greater than 255
+                        BX      16 bit country code if AL=0FFh
+        DS:DX   pointer to the memory buffer where the data will be returned
+                DX      0FFFFh if setting country code rather than getting info
+return  CF      0 (clear) function completed
+                1 (set) error
+                   AX   error code
+                        02h     invalid country code (no table for it)
+        (if DX <> 0FFFFh)
+        BX      country code (usually international telephone code)
+        DS:DX   pointer to country data buffer
+          bytes 0,1     date/time format
+                        0       USA standard       H:M:S   M/D/Y
+                        1       European standard  H:M:S   D/M/Y
+                        2       Japanese standard  H:M:S   D:M:Y
+          bytes 2-6     currency symbol null terminated
+          byte  07h     thousands separator null terminated
+          byte  08h     zeroes
+          byte  09h     decimal separator null terminated
+          byte  0Ah     zeroes
+          byte  0Bh     date separator null terminated
+          byte  0Ch     zeroes
+          byte  0Dh     time separator null terminated
+          byte  0Eh     zeroes
+          byte  0Fh     bit field currency format
+                        bit 0 = 0  if currency symbol precedes the value
+                                1  if currency symbol is after the value
+                        bit 1 = 0  no spaces between value and currency symbol
+                                1  one space between value and currency symbol
+                        bit 2 = 1  set if currency symbol replaces decimal pt
+                        bits 3-7   not defined by Microsoft
+          byte  10h     number of significant decimal digits in currency
+                        (number of places to right of decimal point)
+          byte  11h     time format
+                        bit 0 = 0       12 hour clock
+                                1       24 hour clock
+                        bits 1-7 unknown, probably not used
+          bytes 12h-15h address of case map routine (FAR CALL, AL = char)
+                        entry   AL  ASCII code of character to be converted to 
+                                    uppercase
+                        return  AL  ASCII code of the uppercase input character
+          byte  16h     data-list separator character
+          byte  17h     zeroes
+          bytes 18h-21h 5 words reserved
+note 1) When an alternate keyboard handler is invoked, the keyboard routine is 
+        loaded into user memory starting at the lowest portion of availible 
+        user memory. The BIOS interrupt vector that services the keyboard is
+        redirected to the memory area where the new routine resides. Each new
+        routine takes up about 1.6K of memory and has lookup tables that return
+        values unique to each language. (KEYBxx in the DOS book)
+         Once the keyboard interrupt vector is changed by the DOS keyboard
+        routine, the new routine services all calls unless the system is 
+        returned to the US format by the ctrl-alt-F1 keystroke combination. This
+        does not change the interrupt vector back to the BIOS location; it
+        merely passes the table lookup to the ROM locations. 
+     2) Ctrl-Alt-F1 will only change systems with US ROMS to the US layout.
+        Some systems are delivered with non-US keyboard handler routines in ROM
+     3) Case mapping call: the segment/offset of a FAR procedure that performs 
+        country-specific lower-to-upper case mapping on ASCII characters 80h to
+        0FFh. It is called with the character to be mapped in AL. If there is
+        an uppercase code for the letter, it is returned in AL, if there is no
+        code or the function was called with a value of less than 80h AL is
+        returned unchanged.
+     4) This call is fully implemented in MS-DOS version 2.01 and higher. It
+        is in version 2.00 but not fully implemented (according to Microsoft)
+
+
+Function  38h   Set Country Dependent Information
+entry   AH      38h
+        AL      code    country code to set information for, for countries
+                        with codes less than 255
+                0FFh    to set country information for countries with a code
+                        greater than 255
+        BX      16 bit country code if AL=0FFh
+        DX      0FFFFh
+return  CF      clear   successful
+                set     if error
+                        AX      error code (02h)
+
+ 
+Function  39h   Create Subdirectory (MKDIR)
+                Makes a subdirectory along the indicated path
+entry   AH      39h
+        DS:DX   address of ASCIIZ pathname string
+return  flag CF 0       successful
+                1       error
+                        AX      error code if any  (3, 5) 
+note 1) The ASCIIZ string may contain drive and subdirectory.
+     2) Drive may be any valid drive (not nescessarily current drive)
+     3) The pathname cannot exceed 64 characters
+
+
+Function  3Ah   Remove Subdirectory  (RMDIR)
+entry   AH      3Ah
+        DS:DX   address of ASCIIZ pathname string
+return  CF      clear     successful
+                set       AX      error code if any  (3, 5, 16)
+note 1) The ASCIIZ string may contain drive and subdirectory.
+     2) Drive may be any valid drive (not nescessarily current drive)
+     3) The pathname cannot exceed 64 characters
+
+
+Function  3Bh   Change Current Directory  (CHDIR)
+entry   AH      3Bh
+        DS:DX   address of ASCIIZ string
+return  flag CF 0       successful
+                1       error
+        AX      error code if any (3)
+note 1) The pathname cannot exceed 64 characters
+     2) The ASCIIZ string may contain drive and subdirectory.
+     3) Drive may be any valid drive (not nescessarily current drive)
+
+
+Function  3Ch   Create A File (CREAT)
+                Create a file with handle 
+entry   AH      3Ch
+        CX      attributes for file
+                00h     normal
+                01h     read only
+                02h     hidden
+                03h     system
+        DS:DX   address of ASCIIZ filename string
+return  flag CF 0       successful creation
+                1       error
+        AX      16 bit file handle
+                or error code  (3, 4, 5)
+note 1) The ASCIIZ string may contain drive and subdirectory.
+     2) Drive may be any valid drive (not nescessarily current drive)
+     3) If the volume label or subdirectory bits are set in CX, they are ignored
+     4) The file is opened in read/write mode
+     5) If the file does not exist, it is created. If one of the same name 
+        exists, it is truncated to a length of 0.
+     6) Good practice is to attempt to open a file with fn 3Dh and jump to an
+        error routine if successful, create file if 3Dh fails. That way an
+        existing file will not be truncated and overwritten.
+
+
+Function  3Dh   Open A File
+                Open disk file with handle 
+entry   AH      3Dh
+        AL      access code byte
+(DOS 2.x)       bits 0-2  file attribute
+                000     read only
+                001     write only
+                010     read/write
+                bits 3-7 should be set to zero
+(DOS 3.x)       bits 0-2  file attribute
+                000     read only
+                001     write only
+                010     read/write
+                bit 3   reserved
+                0       should be set to zero
+                bits 4-6 sharing mode (network)
+                000     compatibility mode (the way FCBs open files)
+                001     read/write access denied (exclusive)
+                010     write access denied
+                011     read access denied
+                100     full access permitted
+                bit 7   inheritance flag
+                0       file inherited by child process
+                1       file private to child process
+        DS:DX   address of ASCIIZ pathname string
+return  flag CF set on error
+                AX      error code
+                1       error
+        AX      16 bit file handle
+                or error code (1, 2, 4, 5, 0Ch)
+note 1) Opens any normal, system, or hidden file
+     2) Files that end in a colon are not opened
+     3) The rear/write pointer is set at the first byte of the file and the
+        record size of the file is 1 byte (the read/write pointer can be changed
+        through function call 42h). The returned file handle must be used for 
+        all subsequent input and output to the file. 
+     4) If the file handle was inherited from a parent process or was 
+        duplicated by DUP or FORCEDUP, all sharing and access restrictions are
+        also inherited.
+     5) A file sharing error (error 1) causes an int 24h to execute with an 
+        error code of 2
+
+
+Function  3Eh   Close A File Handle 
+                Close a file and release handle for reuse
+entry   AH      3Eh
+        BX      file handle
+return  flag CF 0       successful close
+                1       error
+        AX      error code if error (6)
+note 1) When executed, the file is closed, the directory is updated, and all
+        buffers for that file are flushed. If the file was changed, the time 
+        and date stamps are changed to current
+     2) If called with the handle 00000, it will close STDIN (normally the 
+        keyboard).
+
+
+Function  3Fh   Read From A File Or Device
+                Read from file with handle 
+entry   AH      3Fh
+        BX      file handle
+        CX      number of bytes to read
+        DS:DX   address of buffer
+return  flag CF 0       successful read
+                1       error
+        AX      0       pointer was already at end of file
+                        or number of bytes read
+                        or error code (5, 6)
+note 1) This function attempts to transfer the number of bytes specified in CX
+        to a buffer location. It is not guaranteed that all bytes will be read.
+        If AX < CX a partial record was read.
+     2) If performed from STDIN (file handle 0000), the input can be redirected
+     3) If used to read the keyboard, it will only read to the first CR
+     4) The file pointer is incremented to the last byte read.
+
+
+Function  40h   Write To A File Or Device
+                Write to file with handle 
+entry   AH      40h
+        BX      file handle
+        CX      number of bytes to write
+        DS:DX   address of buffer
+return  flag CF 0       successful write
+                1       error
+        AX      number of bytes written
+                or error code  (5, 6)
+note 1) This call attempts to transfer the number of bytes indicated in CX
+        from a buffer to a file. If CX and AX do not match after the write,
+        an error has taken place; however no error code will be returned for
+        this problem. This is usually caused by a full disk.
+     2) If the write is performed to STDOUT (handle 0001), it may be redirected
+     3) To truncate the file at the current position of the file pointer, set
+        the number of bytes in CX to zero before calling int 21h. The pointer
+        can be moved to any desired position with function 42h.
+     4) This function will not write to a file or device marked read-only.
+     5) May also be used to display strings to CON instead of fn 09h. This
+        function will write CX bytes and stop; fn 09h will continue to write
+        until a $ character is found.
+     6) This is the call that DOS actually uses to write to the screen in DOS
+        2.x and above.
+
+
+Function  41h   Delete A File From A Specified Subdirectory  (UNLINK)
+entry   AH      41h
+        DS:DX   pointer to ASCIIZ filespec to delete
+return  CF      0       successful
+                1       error
+                AX      error code if any  (2, 5)
+note 1) This function will not work on a file marked read-only
+     2) Wildcards are not accepted
+
+
+Function  42h   Move a File Read/Write Pointer  (LSEEK)
+entry   AH      42h
+        AL      method code 
+                00h     offset from beginning of file
+                01h     offset from present location
+                02h     offset from end of file
+        BX      file handle
+        CX      most significant half of offset
+        DX      least significant half of offset
+return  AX      low offset of new file pointer
+        DX      high offset of new file pointer
+        CF      0       successful move
+                1       error
+                AX      error code (1, 6)
+note 1) If pointer is at end of file, reflects file size in bytes.
+     2) The value in DX:AX is the absolute 32 bit byte offset from the beginning
+        of the file
+
+
+Function   43h  Get/Set file attributes  (CHMOD)
+entry   AH      43h
+        AL      00h     get file attributes
+                01h     set file attributes
+                CX      file attributes to set
+                    bit 0       read only
+                        1       hidden file
+                        2       system file
+                        3       volume label
+                        4       subdirectory
+                        5       written since backup
+        DS:DX   pointer to full ASCIIZ file name
+return  CF      set if error
+        AX      error code  (1, 2, 3, 5)
+        CX      file attributes on get
+                attributes:
+                01h     read only
+                02h     hidden
+                04h     system
+                0FFh    archive
+note 1) This call will not change the volume label or directory bits
+
+
+Function  44h   I/O Control for Devices (IOCTL)
+                Get or Set Device Information
+entry   AH      44h
+        AL      00h     Get Device Information (from DX)
+                        BX      file or device handle
+                        return  DX      device info
+                                        If bit 7 set: (character device)
+                                           bit 0: console input device
+                                               1: console output device
+                                               2: NUL device
+                                               3: CLOCK$ device
+                                               4: device is special
+                                               5: binary (raw) mode
+                                               6: not EOF
+                                              12: network device (DOS 3.x)
+                                              14: can process IOCTL control
+                                                  strings (func 2-5)
+                                        If bit 7 clear: (file)
+                                           bits 0-5: block device number
+                                                6: file has not been written
+                                               12: Network device (DOS 3.x)
+                                               15: file is remote (DOS 3.x)
+                01h     Set Device Information (DH must be zero for this call)
+                        DX bits: 
+                        0    1  console input device
+                        1    1  console output device
+                        2    1  null device
+                        3    1  clock device
+                        4    1  reserved
+                        5    0  binary mode - don't check for control chars
+                             1  cooked mode - check for control chars
+                        6    0  EOF - End Of File on input
+                        7       device is character device if set, if not, EOF
+                                is 0 if channel has been written, bits 0-5 are 
+                                block device number
+                        12      network device
+                        14   1  can process control strings (AL 2-5, can only be
+                                read, cannot be set)
+                        15   n  reserved
+                02h     Read CX bytes to device in DS:DX from BX control chan
+                03h     Write Device Control String
+                        BX      device handle
+                        CX      number of bytes to write
+                        DS:DX   pointer to buffer
+                        return  AX      number of bytes written
+                04h     Read From Block Device (drive number in BL)
+                        BL      drive number (0=default)
+                        CX      number of bytes to read
+                        DS:DX   pointer to buffer
+                        return  AX      number of bytes read
+                05h     Write to Block Device  (drive number in BL)
+                        AX      number of bytes transfered
+                06h     Get Input Handle Status
+                        BX      file or device handle
+                        return  AL      0FFh    device ready
+                                        00h     device not ready
+                07h     Get Output Handle Status
+                        return  AL      00h     not ready
+                                        0FFh    ready
+                         note: for DOS 2.x, files are always ready for output
+                08h     Removable Media Bit (DOS 3.x+)
+                        return  AX      00h     device is removable
+                                        01h     device is nonremovable
+                                        0Fh     invalid drive specification
+                09h     Test whether Local or Network Device in BL (DOS 3.x+)
+                        BL      drive number (0=default)
+                        return  DX      attribute word, bit 12 set if device is
+                                        remote
+                0Ah     Is Handle in BX Local or Remote? (DOS 3.x+)
+                        BX     file handle
+                        return DX (attribute word) bit 15 set if file is remote
+                0Bh     Change Sharing Retry Count to DX (default=3), (DOS 3.x+)
+                        CX     delay (default=1)
+                        DX     retry count (default=3)
+                0Ch     General IOCTL (DOS 3.3 [3.2?]) allows a device driver to
+                        prepare, select, refresh, and query Code Pages
+                0Dh     Block Device Request (DOS 3.3+)
+                        BL      drive number (0=default)
+                        CH      major subfunction
+                        CL      minor subfunction
+                                40h set device parameters
+                                41h write logical device track
+                                42h format and verify logical device track
+                                60h get device parameters
+                                61h read logical device track
+                                62h verify logical device track
+                        DS:DX   pointer to parameter block
+                0Eh     Get Logical Device (DOS 3.3+)
+                        BL      drive number (0=default)
+                        return  AL=0 block device has only one logical drive
+                                assigned 1..n the last letter used to reference
+                                the device (1=A:,etc)
+                0Fh     Set Logical Device (DOS 3.3+)
+        BL      drive number:  0=default, 1=A:, 2=B:, etc.
+        BX      file handle
+        CX      number of bytes to read or write
+        DS:DX   data or buffer
+        DX      data
+return  AX      number of bytes transferred
+                or error code (call function 59h for extended error codes)
+                or status  00h     not ready
+                           0FFh    ready
+        CF      set if error
+
+
+Function  45h   Duplicate a File Handle (DUP)
+entry   AH      45h
+        BX      file handle to duplicate
+return  CF      clear   AX      duplicate handle
+                set     AX      error code  (4, 6)
+note 1) If you move the pointed of one handle, the pointer of the other will 
+        also be moved.
+     2) The handle in BX must be open
+          
+
+Function  46h   Force Duplicate of a Handle (FORCEDUP or CDUP)
+                Forces handle in CX to refer to the same file at the same
+                position as BX
+entry   AH      46h
+        BX      existing file handle
+        CX      new file handle
+return  CF      clear   both handles now refer to existing file
+                set     error
+                AX      error code (4, 6)
+note 1) If CX was an open file, it is closed first
+     2) If you move the read/write pointer of either file, both will move
+     3) The handle in BX must be open
+
+              
+Function  47h   Get Current Directory
+                Places full pathname of current directory/drive into a buffer
+entry   AH      47h
+        DL      drive (0=default, 1=A:, etc.)
+        DS:SI   points to 64-byte buffer area
+return  CF      clear   DS:DI   pointer to ASCIIZ pathname of current directory
+                set     AX      error code (0Fh)
+note   String does not begin with a drive identifier or a backslash   
+
+
+Function  48h   Allocate Memory
+                Allocates requested number of 16-byte paragraphs of memory
+entry   AH      48h
+        BX      number of 16-byte paragraphs desired
+return  CF      clear   AX      segment address of allocated space
+                        BX      maximum number paragraphs available
+                set     AX      error code (7, 8)
+note    BX indicates maximum memory availible only if allocation fails
+
+
+Function  49h   Free Allocated Memory
+                Frees specified memory blocks
+entry   AH      49h
+        ES      segment address of area to be freed
+return  CF      clear   successful
+                set     AX      error code (7, 9)
+note 1) This call is only valid when freeing memory obtained by function 48h.
+     2) A program should not try to release memory not belonging to it.
+
+
+Function  4Ah   Modify Allocated Memory Blocks (SETBLOCK)
+                Expand or shrink memory for a program
+entry   AH      4AH
+        BX      new size in 16 byte paragraphs
+        ES      segment address of block to change
+return  CF      clear   nothing
+                set     AX      error code (7, 8, 9)
+                    or  BX      max number paragraphs available
+note 1) Max number paragraphs availible is returned only if the call fails
+     2) Memory can be expanded only if there is memory availible
+
+
+Function  4Bh   Load or Execute a Program  (EXEC)
+entry   AH      4Bh
+        AL      00h     load and execute program. A PSP is built for the program
+                        the ctrl-break and terminate addresses are set to the
+                        new PSP.
+               *01h     load but don't execute  (note 1)
+               *01h     load but don't execute (internal, DOS 3.x & DESQview) 
+               *02h     load but do not execute (internal, DOS 2.x only) 
+                03h     load overlay (do not create PSP, do not begin execution)
+        DS:DX   points to the ASCIIZ string with the drive, path, and filename
+                to be loaded
+        ES:BX   points to a parameter block for the load
+               (AL=00h) word    segment address of environment string to be
+                                passed
+                       dword    pointer to the command line to be placed at
+                                PSP+80h
+                       dword    pointer to default FCB to be passed at PSP+5Ch
+                       dword    pointer to default FCB to be passed at PSP+6Ch
+              (*AL=01h) word    segment of environment (0 = use current) 
+                       dword    pointer to command line 
+                       dword    pointer to FCB 1 
+                       dword    pointer to FCB 2 
+                       dword    will hold SS:SP on return 
+                       dword    will hold program entry point (CS:IP) on return 
+              (*AL=02h) word    segment of environment (0 = use current) 
+                       dword    pointer to command line 
+                       dword    pointer to FCB 1 
+                       dword    pointer to FCB 2 
+               (AL=03h) word    segment address where file will be loaded
+                        word    relocation factor to be applied to the image
+return  CF      set     error
+                        AX      error code (1, 2, 8, 0Ah, 0Bh)
+note 1) If you make this call with AL=1 the program will be loaded as if you 
+        made the call with AL=0 except that the program will not be executed.
+        Additionally, with AL=1 the stack segment and pointer along with the 
+        program's CS:IP entry point are returned to the program which made the 
+        4B01h call. These values are put in the four words at ES:BX+0Eh. On 
+        entry to the call ES:BX points to the environment address, the command 
+        line and the two default FCBs. This form of EXEC is used by DEBUG.COM.
+     2) Application programs may invoke a secondary copy of the command 
+        processor (normally COMMAND.COM) by using the EXEC function.  Your 
+        program may pass a DOS command as a parameter that the secondary 
+        command processor will execute as though it had been entered from the 
+        standard input device.
+        The procedure is:
+         A. Assure that adequate free memory (17k for 2.x and 3.0, 23k for 3.1 
+            up) exists to contain the second copy of the command processor and 
+            the command it is to execute. This is accomplished by executing 
+            function call 4Ah to shrink memory allocated to that of your current
+            requirements. Next, execute function call 48h with BX=0FFFFh. This 
+            returns the amount of memory availible.
+        B. Build a parameter string for the secondary command processor in the 
+           form:
+                         1 byte   length of parameter string
+                        xx bytes  parameter string
+                         1 byte   0Dh (carriage return)
+           For example, the assembly language statement below would build the 
+           string to cause execution of the command FOO.EXE:
+                              DB 19,"/C C:FOO",13
+        C. Use the EXEC function call (4Bh), function value 0 to cause execution
+           of the secondary copy of the command processor. (The drive, 
+           directory, and name of the command processor can be gotten from the 
+           COMSPEC variable in the DOS environment passed to you at PSP+2Ch.)
+        D. Remember to set offset 2 of the EXEC control block to point to the 
+           string built above.
+     3) All open files of a process are duplicated in the newly created 
+        process after an EXEC, except for files originally opened with the 
+        inheritance bit set to 1.
+     4) The environment is a copy of the original command processor's 
+        environment. Changes to the EXECed environment are not passed back to
+        the original. The environment is followed by a copy of the DS:DX 
+        filename passed to the child process. A zero value will cause the 
+        child process to inherit the environment of the calling process. The
+        segment address of the environment is placed at offset 2Ch of the
+        PSP of the program being invoked.
+     5) This function uses the same resident part of COMMAND.COM, but makes a
+        duplicate of the transient part. 
+     6) How EXEC knows where to return to: Basically the vector for int 22h
+        holds the terminate address for the current process. When a process 
+        gets started, the previous contents of int 22h get tucked away in the 
+        PSP for that process, then int 22h gets modified. So if Process A 
+        EXECs process B, while Process B is running, the vector for int 22h 
+        holds the address to return to in Process A, while the save location in
+        Process B's PSP holds the address that process A will return to when
+        *it* terminates. When Process B terminates by one of the usual legal 
+        means, the contents of int 22h are (surmising) shoved onto the stack, 
+        the old terminate vector contents are copied back to int 22h vector from
+        Process B's PSP, then a RETF or equivalent is executed to return control
+        to process A.
+     7) To load an overlay file with 4B: first, don't de-allocate the memory
+        that the overlay will load into. With the other 4Bh functions, the
+        opposite is true--you have to free the memory first, with function 4Ah.
+        Second, the "segment address where the file will be loaded" (first item
+        in the parameter block for sub-function 03) should be a paragraph 
+        boundary within your currently-allocated memory. Third, if the
+        procedures within the overlay are FAR procs (while they execute, CS will
+        be equal to the segment address of the overlay area), the relocation
+        factor should be set to zero. On the other hand, if the CS register
+        will be different from the overlay area's segment address, the
+        relocation factor should be set to represent the difference. You
+        determine where in memory the overlay file will load by using the
+        segment address mentioned above. Overlay files are .EXEs (containing
+        header, relocation table, and memory image).
+     8) When function 00h returns, all registers are changed, including the
+        stack. You must resore SS, SP, and any other required registers.
+
+
+Function  4Ch   Terminate a Process (EXIT)
+                Quit with ERRORLEVEL exit code 
+entry   AH      4Ch
+        AL      exit code in AL when called, if any, is passed to next process
+return  none
+note 1) Control passes to DOS or calling program
+     2) return code from AL can be retrieved by ERRORLEVEL or function 4Dh
+     3) all files opened by this process are closed, buffers are flushed, and 
+        the disk directory is updated
+     4) Restores Terminate vector from PSP:000Ah
+                 Ctrl-C vector from PSP:000Eh
+                 Critical Error vector from PSP:0012h
+
+
+Function  4Dh   Get Return Code of a Subprocess (WAIT)
+                Gets return code from functions 31h and 4Dh  (ERRORLEVEL)
+entry   AH      4Dh
+return  AL      exit code of subprogram (functions 31h or 4Ch)
+        AH      circumstance which caused termination
+                00h     normal termination
+                01h     control-break
+                02h     critical device error
+                03h     terminate and stay resident (function 31h)
+note    The exit code is only returned once
+                                         
+
+Function  4Eh   Find First Matching File (FIND FIRST)
+entry   AH      4Eh
+        CX      search attributes
+        DS:DX   pointer to ASCIIZ filename (with attributes)
+return  CF      set     AX      error code (2, 12h)
+                clear   data block written at current DTA
+                        format of block is:  (info from BIX)
+  documented by Micro-  |00h   1 byte   attribute byte of search
+  soft as "reserved for |01h   1 byte   drive letter for search
+  DOS' use on subsquent |02h   11 bytes the search name used
+  Find Next calls"      |0Ch   2 bytes  word value of last entry
+  function 4Fh          |0Fh   4 bytes  dword pointer to this DTA
+                        |13h   2 bytes  word directory start
+                        | PC-DOS 3.10 (from INTERRUP.ARC)
+                        |00h   1 byte   drive letter
+                        |01h-0Bh    bytes  search template
+                        |0Ch   1 byte   search attributes
+                        | DOS 2.x (and DOS 3.x except 3.1?) (from INTERRUP.ARC)
+                        |00h   1 byte   search attributes
+                        |01h   1 byte   drive letter
+                        |02h-0Ch bytes  search template
+                        |0Dh-0Eh 2 bytes entry count within directory
+                        |0Fh-12h   bytes reserved
+                        |13h-14h 2 bytes cluster number of parent directory
+                        
+                         15h   1 byte   file attribute
+                         16h   2 bytes  file time
+                         18h   2 bytes  file date
+                         1Ah   2 bytes  low word of file size
+                         1Ch   2 bytes  high word of file size
+                         1Eh  13 bytes  name and extension of file found, plus
+                                        1 byte of 0s. All blanks are removed 
+                                        from the name and extension, and if an 
+                                        extension is present it is preceded by a
+                                        period.
+note 1) Will not find volume label
+     2) This function does not support network operations
+     3) Wildcards are allowed in the filespec
+     4) If the attribute is zero, only ordinary files are found. If the volume 
+        label bit is set, only volume labels will be found. Any other attribute
+        will return that attribute and all normal files together.
+     5) To look for everything except the volume label, set the hidden, system,
+        and subdirectory bits all to 1
+
+
+Function  4Fh   Find Next Matching File (FIND NEXT)
+                Find next ASCIIZ file
+entry   AH      4Fh
+return  CF      clear   data block written at current DTA
+                set     AX      error code (2, 12h)
+note 1) If file found, DTA is formatted as in call 4Eh
+     2) Volume label searches using 4Eh/4Fh reportedly aren't 100% reliable 
+        under DOS 2.x. The calls sometime report there's a volume label and 
+        point to a garbage DTA, and if the volume label is the only item they
+        often won't find it
+     3) This function does not support network operations
+     4) Use of this call assumes that the original filespec contained wildcards
+
+                                         
+Function  50h   "Used Internally by DOS" - Set PSP
+ *              Set new Program Segment Prefix (current Process ID)
+entry   AH      50h
+        BX      segment address of new PSP
+return  none - swaps PSP's regarded as current by DOS
+note 1) By putting the PSP segment value into BX and issuing call 50h DOS stores
+        that value into a variable and uses that value whenever a file call is 
+        made. 
+     2) Note that in the PSP (or PDB) is a table of 20 (decimal) open file 
+        handles. The table starts at offset 18h into the PSP. If there is an 
+        0FFh in a byte then that handle is not in use. A number in one of the 
+        bytes is an index into an internal FB table for that handle. For 
+        instance the byte at offset 18h is for handle 0, at offset 19h handle 
+        1, etc. up to 13h. If the high bit is set then the file associated by 
+        the handle is not shared by child processes EXEC'd with call 4Bh.
+     3) Function 50h is dangerous in background operations prior to DOS 3.x as 
+        it uses the wrong stack for saving registers.  (same as functions 
+        0..0Ch in DOS 2.x)
+     4) Under DOS 2.x, this function cannot be invoked inside an int 28h handler
+        without setting the Critical Error flag
+     5) Open File information, etc. is stored in the PSP DOS views as current. 
+        If a program (eg. a resident program) creates a need for a second PSP,
+        then the second PSP should be set as current to make sure DOS closes 
+        that as opposed to the first when the second application finishes.
+     6) See PC Mag Vol.5, No 9, p.314 for discussion. 
+     7) Used by DOS 3.3 PRINT & DEBUG, DesQview 2.01, Windows 1.03, SYMDEB
+        from MASM 4.0
+
+                                         
+Function  51h    "Used Internally by DOS" - Get Program Segment Prefix
+ *               Returns the PSP address of currently executing program
+entry   AH      51h
+return  BX      address of currently executing program
+                offset
+                00h     program exit point
+                02h     memory size in paragraphs
+                04h     unused (0)
+                05h     CP/M style entry point (far call to DOS)
+                0Ah     terminate address (old int 22h)
+                0Ch     terminate segment
+                0Eh     break address (old int 23h)
+                10h     break segment
+                12h     error address (old int 24h)
+                14h     error segment
+                16h     parent PSP segment
+                18h     DOS 2.0+ open files, 0FFh = unused
+                2Ch     DOS 2.0+ environment segment
+                2Eh     far ptr to process's SS:SP
+                32h     DOS 3.x max open files
+                34h     DOS 3.x openfile table address
+                36h     DOS 3.x openfile table segment
+                38h     unused by DOS versions <= 3.3
+                50h     DOS function dispatcher (FAR routine)
+                53h     unused
+                55h     FCB #1 extension
+                5Ch     FCB #1
+                6Ch     FCB #2
+                80h     command tail / default DTA buffer
+note 1) Used in DOS 2.x, 3.x uses 62h
+     2) Function 51h is dangerous in background operations prior to DOS 3.x as 
+        it uses the wrong stack for saving registers.  (same as functions 
+        0..0Ch in DOS 2.x)                                           
+     3) 50h and 51h might be used if you have more than one process in a PC.
+        For instance if you have a resident program that needs to open a file
+        you could first call 51h to save the current id and then call 50h to set
+        the ID to your PSP.
+     4) Under DOS 2.x, this function cannot be invoked inside an int 28h handler
+        without setting the Critical Error flag
+     5) Used by DOS 3.3 PRINT, DEBUG
+
+
+Function  52h   "Used Internally by DOS" - IN-VARS   
+ *              Returns a pointer to a set of DOS data variables MCB chain,
+                pointer to first device driver and a pointer to disk parameter
+                blocks (first one)
+entry   AH      52h
+return  ES:BX   pointer to the DOS list of lists, for disk information. Does not
+                access the disk, so information in tables might be incorrect if
+                disk has been changed. Returns a pointer to the following array
+                of longword pointers:
+                Bytes   Value
+                -2h,-1h segment of first memory control block
+                00h-03h pointer to first DOS disk block (see function 36h)
+                04h-07h Pointer to list of DOS file tables
+                        dword   pointer to next file table
+                        word    number of files in this table
+                                35h bytes per file
+                                00h-01h number of file handles referring to
+                                        this file
+                                02h-06h unknown
+                                07h-0Ah pointer to device driver header if
+                                        character device; pointer to DOS Device
+                                        Control Block if block device (see
+                                        fn 32h for format)
+                                0Bh-1Fh unknown
+                                20h-2Ah filename in FCB format (no path, no
+                                        period, blank-padded)
+                                2Bh-2Ch PSP segment of file's owner
+                                2Dh-30h unknown -  0 always
+                                31h-32h unknown
+                                33h-34h unknown
+                8h-0Bh  pointer to CLOCK$ device driver, whether installable or
+                        resident
+                0Ch-0Fh pointer to actual CON: device driver, whether 
+                        installable or resident
+        (DOS 2.x)
+                10      number of logical drives in system
+                11-12   maximum bytes/block of any block device
+                13-16   unknown
+                17      beginning (not a pointer. The real beginning!) of NUL
+                        device driver. This is the first device on DOS's linked
+                        list of device drivers.
+        (DOS 3.x)
+                10h-11h maximum bytes/block of any block device (0200h)
+                12h-15h pointer to first disk buffer
+                16h-19h partially undefined: Pointer to array of drive info:
+                        51h bytes per drive, starting with A: ...
+                        00h-3Fh current path as ASCIIZ, starting with 'x:\'
+                        40h-43h unknown    zeros always
+                        44h     unknown    flags? Usually 40h, except for
+                                entry after last valid entry = 00h
+                        45h-48h pointer to DOS disk block for this drive
+                        49h-4Ah unknown. Current track or block? 
+                                -1 if never accessed
+                        4Bh-4Eh unknown  -1 always
+                        4Fh-52h unknown   2 always
+                1Ah-1Dh pointer to FCB table (if CONFIG.SYS contains FCBS=)
+                1Eh-1Fh size of FCB table
+                20h     number of block devices
+                21h     value of LASTDRIVE command in CONFIG.SYS (default 5)
+                22h     beginning (not a pointer. The real beginning!) of NUL 
+                        device driver. This is the first device on DOS's linked 
+                        list of device drivers.
+note 1) This call is not supported in OS/2 1.0's DOS Compatibility Box
+     2) Used by DOS 4.0 MEM.EXE, DOS 3.3 ASSIGN.COM, PRINT.COM, SUBST.EXE
+ 
+                                                                              
+Function  53h   "Used Internally by DOS" - Translate BPB
+ *              Translates BPB (BIOS Parameter Block, see below) into a DOS Disk
+                Block (see function call 32h).  
+entry   AH      53h
+        DS:SI   pointer to BPB 
+        ES:BP   pointer to area for DOS Disk Block.
+                Layout of Disk Block:
+                bytes   value
+                00h-01h bytes per sector, get from DDB bytes 02h-03h.
+                02h     sectors per cluster, get from (DDB byte 4) + 1
+                03h-04h reserved sectors, get from DDB bytes 06h-07h
+                05h     number of FATs, get from DDB byte 08h
+                06h-07h number of root dir entries, get from DDB bytes 09h-0Ah
+                08h-09h total number of sectors, get from: 
+                        ((DDB bytes 0Dh-0Eh) - 1) * (sectors per cluster (BPB 
+                        byte 2)) + (DDB bytes 0Bh-0Ch)
+                0Ah     media descriptor byte, get from DDB byte 16h
+                0Bh-0Ch number of sectors per FAT, get from DDB byte 0Fh
+return  unknown                          
+
+
+Function  54h   Get Verify Setting
+                Get verify flag status
+entry   AH      54h
+return  AL      00h if flag off
+                01h if flag on
+note    Flag can be set with function 2Eh
+        
+                                         
+Function  55h   "Used Internally by DOS" - Create "Child" PSP
+ *              Create PSP: similar to function 26h (which creates a new Program
+                Segment Prefix at segment in DX) except creates a "child" PSP
+                rather than copying the existing one.
+entry   AH      55h
+        DX      segment number at which to create new PSP.
+return  unknown
+note 1) This call is similar to call 26h which creates a PSP except that unlike
+        call 26h the segment address of the parent process is obtained from the
+        current process ID rather than from the CS value on the stack (from the
+        INT 21h call). DX has the new PSP value and SI contains the value to be
+        placed into PSP:2 (top of memory).
+     2) Function 55 is merely a substitute for function 26h. It will copy the
+        current PSP to the segment address DX with the addition that SI is
+        assumed to hold the new memory top segment. This means that function 
+        26h sets SI to the segment found in the current PSP and then calls
+        function 55h. 
+
+                                         
+Function  56h   Rename a File
+entry   AH      56h
+        DS:DX   pointer to ASCIIZ old pathname
+        ES:DI   pointer to ASCIIZ new pathname
+return  CF      clear   successful rename
+                set     AX      error code (2, 3, 5, 11h)
+note 1) Works with files in same drive only
+     2) Global characters not allowed in filename
+     3) The name of a file is its full pathname. The file's full pathname can
+        be changed, while leaving the actual FILENAME.EXT unchanged. Changing
+        the pathname allows the file to be "moved" from subdirectory to
+        subdirectory on a logical drive without actually copying the file.
+     4) DOS 3.x allows renaming of directories
+

@@ -1,0 +1,981 @@
+From: JULIUS@BTVLABVM.VNET.IBM.COM ("Julius C. Chang")
+Newsgroups: comp.sys.ibm.pc.hardware
+
+I got this from the OPTi data book.  Hopefully, there aren't too
+many typos.
+
+Julius
+------------------------------------------------------------------------
+
+SYSC (82C493) Register Description, OPTi chipset 486SXWB
+
+Ref:  OPTi-486SXWB PC/AT Chipset Preliminary Data Book
+      Version 1.1, August 16, 1991
+
+
+          There are twelve configuration registers in the 82C493 -
+          REG1-REG12.  The registers are accessed through I/O ports 22H
+          and 24H.  Location 22H is the "Index Address".  This address
+          corresponds to the specific register which points to the
+          required data value accessed through port 24H.  Thus,
+          reading or writing to a specific register is a two step
+          operation:
+
+          1) write to I/O port 22H with the register index.
+
+          2) write or read the data to or from I/O port 24H.
+
+          Every access to port 24H must be preceded by a write of the
+          index value to port 22H even if the same data register is
+          being accessed.  After power up, the configuration registers
+          assume default values.  All bits marked as Reserved must be
+          programmed zero.
+
+          Reg#  Register Name                     Index
+
+           1    Control Register 1                 20H
+           2    Control Register 2                 21H
+           3    Shadow RAM Control Register 1      22H
+           4    Shadow RAM Control Register 2      23H
+           5    DRAM Control Register 1            24H
+           6    DRAM Control Register 2            25H
+           7    Shadow RAM Control Register 3      26H
+           8    Control Register 3                 27H
+           9    Non-cacheable Block 1 Register 1   28H
+           10   Non-cacheable Block 1 Register 2   29H
+           11   Non-cacheable Block 2 Register 1   2AH
+           12   Non-cacheable Block 2 Register 2   2BH
+
+
+          Control Register 1
+          Index : 20H
+
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+           0        Fast Reset Enable - alternative fast         0
+                    CPU reset. 0 = disable, 1 = enable
+
+           1*       Emulation Keyboard Reset Control - turn      0
+                    on this bit requires "Halt" instruction
+                    to be executed before SYSC generates CPURST
+                    0 = disable, 1 = enable
+                    *Note:  This bit must be set to "1" in BIOS
+
+           2       Extra AT Cycle Wait State Enable.  Insert     0
+                   one extra wait state in standard AT bus
+                   cycle.  0 = disable, 1 = enable
+
+           3       Single ALE Enable - SYSC will activate        0
+                   single ALE instead of multiple ALEs during
+                   bus conversion cycle if this bit is enabled.
+                   0 = disable, 1 = enable
+
+           4       Cache memory data buffer output enable        0
+                   control.  0 = disable, 1 = enable
+                   When enabled, it will be activated half
+                   T state earlier during read hit cycle.
+                   Bit 4 must be set "0" for frequency smaller
+                   than or equal to 33 Mhz.  Otherwise, it
+                   must be set to "1".
+
+           5       Burst wait state control                      0
+                   1 = secondary cache read hit cycle is
+                   3-2-2-2 or 2-2-2-2
+                   0 = secondary cache read hit cycle is
+                   3-1-1-1 or 2-1-1-1
+                   If bit 5 is set to "1", bit 4 of index 20h
+                   must be set to "0".
+
+           7-6     Revision of 82C493 and is read-only           01
+
+
+          Control Register 2
+          Index : 21H
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+
+           0        Cache Write Wait State Control               0
+                    0 = 1 wait state
+                    1 = 0 wait state
+
+           1        Secondary Cache Read Burst Cycles Control    0
+                    0 = 3-1-1-1 cycle
+                    1 = 2-1-1-1 cycle
+
+           3-2      Cache Size                                   00
+                    00   64KB
+                    01   128KB
+                    10   256KB
+                    11   512KB
+
+           4        Cache Enable                                 0
+                    0 = Cache is disabled and DRAM burst mode
+                        is enabled
+                    1 = Cache enable and DRAM burst mode is
+                        disabled
+
+           5        Parity Check                                 0
+                    0 = enable
+                    1 = disable
+
+           6        Emulation Keyboard Reset Delay Control       0
+                    0 = Generate reset pulse 2 us later
+                    1 = Generate reset pulse immediately
+
+           7        Master Mode Byte Swap Enable                 0
+                    0 = disable
+                    1 = enable
+
+
+          Shadow RAM Control Register 1
+          Index : 22H
+
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+           0        Slow Refresh Enable (4 times slower than   0
+                    normal refresh)
+                    0 = disable
+                    1 = enable
+
+           1        Unused bit                                 0
+
+           2*       Hidden refresh enable (without holding     1
+                    CPU)
+                    0 = enable
+                    1 = disable
+
+           3        Shadow RAM at E0000H-EFFFFH                0
+                    write protect enable
+                    0 = disable,
+                    1 = enable.
+
+           4        Shadow RAM at D0000H-DFFFFH                0
+                    write protect enable
+                    0 = disable,
+                    1 = enable.
+
+           5        Shadow RAM at E0000H-EFFFFH area           0
+                    0 = Disable shadow RAM, enable ROMCS#.
+                        The E0000-EFFFFh ROM is defaulted to
+                        reside on XD bus.
+                    1 = Enable shadow RAM and disable ROMCS#
+                        generation.
+
+           6        Shadow RAM at D0000H-DFFFFH                0
+                    0 = Disable
+                    1 = Enable
+
+           7        Shadow RAM enable for system BIOS ROM      1
+                    at F0000H-FFFFFH.
+                    0 = Read/write on DRAM and DRAM is
+                        write-protected
+                    1 = Reads from ROM, write to DRAM.  ROMCS#
+                        is generated during read accesses only.
+
+   * Hidden refresh must be disabled if 4Mx1 or 1Mx4 DRAM is used.
+
+
+          Shadow RAM Control Register 2
+          Index : 23H
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+           0        Shadow RAM enable in D0000H-D3FFFH area.   0
+                    0 = Disable,
+                    1 = Enable.
+
+           1        Shadow RAM enable in D4000H-D7FFFH area.   0
+                    0 = Disable,
+                    1 = Enable.
+
+           2        Shadow RAM enable in D8000H-DBFFFH area.   0
+                    0 = Disable,
+                    1 = Enable.
+
+           3        Shadow RAM enable in DC000H-DFFFFH area.   0
+                    0 = Disable,
+                    1 = Enable.
+
+           4        Shadow RAM enable in E0000H-E3FFFH area.   0
+                    0 = Disable,
+                    1 = Enable.
+
+           5        Shadow RAM enable in E4000H-E7FFFH area.   0
+                    0 = Disable,
+                    1 = Enable.
+
+           6        Shadow RAM enable in E8000H-EBFFFH area.   0
+                    0 = Disable,
+                    1 = Enable.
+
+           7        Shadow RAM enable in EC000H-EFFFFH area.   0
+                    0 = Disable,
+                    1 = Enable.
+
+
+          DRAM Control Register 1
+          Index : 24H
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+           2-0      DRAM types used for bank 2 and bank 3.     111
+                    See the following table.
+
+           3        Unused
+
+           6-4      DRAM types used for bank 0 and bank 1.     000
+                    See the following table.
+
+           7        0 = 256KB DRAM mode                        1
+                    1 = 1M and 4M DRAM mode.  See the
+                        following table.
+
+                 7 6 5 4     Bank 0    Bank 1
+
+                 0 0 0 0     256K      X
+                 0 0 0 1     256K      256K
+                 0 0 1 0     256K      1M
+                 0 0 1 1     X         X
+                 0 1 X X     X         X
+                 1 0 0 0     1M        X
+                 1 0 0 1     1M        1M
+                 1 0 1 0     1M        4M
+                 1 0 1 1     4M        1M
+                 1 1 0 0     4M        X
+                 1 1 0 1     4M        4M
+                 1 1 1 1     X         X
+
+
+                 7 2 1 0     Bank 2    Bank 3
+
+                 X 0 0 0     1M        X
+                 X 0 0 1     1M        1M
+                 X 0 1 0     X         X
+                 X 0 1 1     4M        1M
+                 X 1 0 0     4M        X
+                 X 1 0 1     4M        4M
+                 X 1 1 X     X         X
+
+
+          DRAM Control Register 2
+          Index : 25H
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+           1-0      ATCLK selection.                           00 or 01
+                    00  CLKI/6                                 depending on
+                    01  CLKI/4                                 low or high
+                    10  CLKI/3                                 state of BCLKS
+                    11  CLK2I/5                                respectively
+                                                               during power-on
+                                                               reset.
+
+           2        Unused                                     0
+
+
+           3        Fast Decode Enable                         0
+                    0 = Disable.  DRAM base wait states not
+                        changed.
+                    1 = Enable.  DRAM base wait states are
+                        decreased by 1.
+                    This bit is automatically disabled even when
+                    it is set to 1 when bit 4 of Index Register
+                    21h (cache enable bit) is enabled.
+
+           5-4      Write cycle wait state                     11
+                                Additional Wait States
+                    00                   0
+                    01                   1
+                    10                   2
+                    11                   3
+                    Note: Base wait states is 2.
+
+           7-6      Read cycle wait state                      11
+                                Additional Wait States
+                    00                   Not used
+                    01                   0
+                    10                   1
+                    11                   2
+                    Note: Base wait states is 3.
+
+
+          Shadow RAM Control Register 3
+          Index : 26H
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+
+           0        Shadow Ram Enable in C0000H-C3FFFH area.   0
+                    0 = disable, 1 = enable
+
+           1        Shadow Ram Enable in C4000H-C7FFFH area.   0
+                    0 = disable, 1 = enable
+
+           2        Shadow Ram Enable in C8000H-CBFFFH area.   0
+                    0 = disable, 1 = enable
+
+           3        Shadow Ram Enable in CC000H-CFFFFH area.   0
+                    0 = disable, 1 = enable
+
+           4        ROM located at C0000H-CFFFFH               0
+                     0 = disable, 1 = enable
+
+           5        Shadow write protect at C0000h-CFFFFh      0
+                     0 = write protect disble
+                     1 = write protect enable
+
+           6        Shadow RAM Copy Enable Control for         0
+                    C0000H-CFFFFH
+                     0 = read/write at AT bus
+                     1 = read from AT bus and write into
+                         shadow RAM
+
+           7        Not used                                   0
+
+
+
+          Control Register 3
+          Index : 27H
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+           3-0      Cacheable address range for local          0001
+                    memory, see following table
+
+           4        Video BIOS at C0000h-C8000h area           1
+                    non-cacheable
+                    0 = Cacheable, 1 = Non-cacheable
+
+           6-5      Unused                                     00
+
+           7       Enable NCA# pin to low state, 0 = disable   1
+                   1 = enable
+
+                    3 2 1 0        Cacheable Address Range
+
+                    0 0 0 1         4 MByte
+                    0 0 1 0         8 MByte
+                    0 0 1 1         12 MByte
+                    0 1 0 0         16 MByte
+                    0 1 0 1         20 MByte
+                    0 1 1 0         24 MByte
+                    0 1 1 1         28 MByte
+                    1 0 0 0         32 MByte
+                    1 0 0 1         36 MByte
+                    1 0 1 0         40 MByte
+                    1 0 1 1         44 MByte
+                    1 1 0 0         48 MByte
+                    1 1 0 1         52 MByte
+                    1 1 1 0         56 MByte
+                    1 1 1 1         60 MByte
+                    0 0 0 0         64 MByte
+
+
+          Non-Cacheable Block 1 Register
+          Index : 28H
+
+
+          This register is used in conjunction with Index 29H register
+          to define a non-cacheable block.  The starting address for
+          the non-cacheable block must have the same granularity as
+          the block size.  For example, if a 512KB non-cacheable block
+          is selected, its starting address is a multiple of 512KB;
+          consequently, only address bits are A19-A23 are significant,
+          A16-A18 are "don't care".
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+           1-0      Address bits of A25 and A24 of             00
+                    non-cacheable memory block 1
+
+           4-2      Unused                                     000
+
+           7-5      Size of non-cacheable memory               100
+                    block 1.
+
+                    7 6 5    Block size
+
+                    0 0 0    64K
+                    0 0 1    128K
+                    0 1 0    256K
+                    0 1 1    512K
+                    1 X X    Disabled
+
+
+          Non-cacheable Block 1 Register 2
+          Index : 29H
+
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+           0-7      Address bits A23-A16 of                    0001xxxx
+                    non-cacheable memory block 1.
+
+                    Block    Valid Starting Address Bits
+                    Size     A23  A22  A21  A20  A19  A18  A17  A16
+
+                    64K      V    V    V    V    V    V    V    V
+                    128K     V    V    V    V    V    V    V    X
+                    256K     V    V    V    V    V    V    X    X
+                    512K     V    V    V    V    V    X    X    X
+
+                    X = Don't Care
+                    V = Valid Bit
+
+
+          Non-Cacheable Block 2 Register 1
+          Index : 2AH
+
+
+          This register is used in conjunction with Index 2BH register
+          to define a non-cacheable block.  The starting address for
+          the non-cacheable block must have the same granularity as
+          the block size.  For example, if a 512KB non-cacheable block
+          is selected, its starting address is a multiple of 512KB;
+          consequently, only address bits are A19-A23 are significant,
+          A16-A18 are "don't care".
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+
+           1-0      Address bits of A25 and A24 of             00
+                    non-cacheable memory block 2
+
+           4-2      Unused                                     000
+
+           7-5      Size of non-cacheable memory               100
+                    block 2.
+
+                    7 6 5    Block size
+
+                    0 0 0    64K
+                    0 0 1    128K
+                    0 1 0    256K
+                    0 1 1    512K
+                    1 X X    Disabled
+
+
+          Non-cacheable Block 2 Register 2
+          Index : 2BH
+
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+           7-0      Address bit A23-A16 of non-cacheable       0001xxxx
+                    memory block 2.
+
+                    Block    Valid Starting Address Bits
+                    Size     A23  A22  A21  A20  A19  A18  A17  A16
+
+                    64K      V    V    V    V    V    V    V    V
+                    128K     V    V    V    V    V    V    V    X
+                    256K     V    V    V    V    V    V    X    X
+                    512K     V    V    V    V    V    X    X    X
+
+                    X = Don't Care
+                    V = Valid Bit
+
+
+          Cacheable Area Register
+          Index : 1CH
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+           0-2      Reserved                                   000
+
+           3        256KB Remapped area cacheable.             1
+                    1 = Cacheable,
+                    0 = Non-cacheable.
+
+           4-7      Cacheable address range for local          0
+                    memory.
+
+
+Here is some info on the 82C482 chip that was given to me by a friend.
+
+
+          There are fourteen configuration registers in the 82C482_C -
+          REG0-REG13.  The registers are accessed through IO ports 22H
+          and 24H.  Location 22H is the "Index Address".  This address
+          corresponds to the specific register which points to the
+          required data value accessed through port 24H.  Thus,
+          reading or writing to a specific register is a two step
+          operation:
+
+          1) write to I/O port 22H with the register index.
+
+          2) write or read the data to or from I/O port 24H.
+
+          Every access to port 24H must be preceded by a write of the
+          index value to port 22H even if the same data register is
+          being accessed.  After power up, the configuration registers
+          assume default values.  All bits marked as Reserved must be
+          programmed zero.
+
+          Reg#  Register Name                  Index
+
+           0    Remapping Address              10H
+           1    Shadow Ram                     11H
+           2    Memory Enable                  12H
+           3    Bank Configuration             13H
+           4    DRAM Configuration             14H
+           5    Video Adapter Shadow RAM       15H
+           6    Fast GateA20                   16H
+           7    Cache Configuration            17H
+           8    Non-cacheable Block 1 size     18H
+           9    Non-cacheable Block 1          19H
+           10   Non-cacheable Block 2 size     1AH
+           11   Non-cacheable Block 2          1BH
+           12   Cacheable area                 1CH
+           13   Additional DRAM configuration  1DH
+
+
+          Remapping Address Register
+          Index : 10H
+
+          Note, the remap address is always on a 1MB boundary.
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+           0-3      Address range to be remapped(A20-A23)      0001H
+
+                    A23  A22  A21  A20    Remap Address
+
+                    0    0    0    0      no mapping
+                    0    0    0    1      1MB
+                    0    0    1    0      2MB
+                    0    0    1    1      3MB
+                    0    1    0    0      4MB
+                    0    1    0    1      5MB
+                    0    1    1    0      6MB
+                    0    1    1    1      7MB
+                    1    0    0    0      8MB
+                    1    0    0    1      9MB
+                    1    0    1    0      10MB
+                    1    0    1    1      11MB
+                    1    1    0    0      12MB
+                    1    1    0    1      13MB
+                    1    1    1    0      14MB
+                    1    1    1    1      15MB
+
+           4        Remap enable bit                           0
+                    0 = disable,
+                    1 = enable.
+
+           5-7      Reserved                                   000
+
+
+          Shadow Ram Register
+          Index : 11H
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+           0-1      Reserved                                   00
+
+           2        Disable RAS* timeout precharge counter.    0
+                    0 = enable counter,
+                    1 = disable counter.
+
+           3        Shadow RAM at E0000H-EFFFFH                0
+                    read/write status.
+                    0 = read/write,
+                    1 = read only.
+                    (while shadow RAM is being loaded, this
+                    must be set to 0) after it is loaded
+                    shadow RAM is write-protected by setting
+                    this bit to 1)
+
+           4        Shadow RAM at D0000H-DFFFFH                0
+                    read/write status.
+                    0 = read/write,
+                    1 = read only.
+                    (while shadow RAM is being loaded, this
+                    must be set to 0) after it is loaded
+                    shadow RAM is write-protected by setting
+                    this bit to 1)
+
+           5        Adapter ROM located at E0000H-EFFFFH       1
+                    0 = All accesses are to System Board
+                        ROM, shadow RAM is disabled,
+                    1 = Shadow RAM is selectively enables
+                        in 16KB blocks by CFG Reg 12h; other
+                        accesses are AT channel cycles.
+
+           6        ROM located at D0000H-DFFFFH               1
+                    0 = All accesses are on the AT channel
+                        and shadow RAM is disabled,
+                    1 = Shadow RAM is selectively enabled
+                        in 16KB blocks by CFG Reg 12h; other
+                        accesses are AT channel cycles.
+
+           7        Shadow RAM enable for system BIOS ROM      1
+                    at F0000H-FFFFFH.
+                    0 = Read Only from Shadow RAM,
+                    1 = Reads go to ROM and writes
+                        go to shadow RAM.
+
+
+          Memory Enable Register
+          Index : 12H
+
+          This register selectively enables shadow RAM in 16KB blocks
+          from D0000H to EFFFFH.  These controls in conjunction with
+          the Shadow RAM Register (CFG Reg 11H), are used to implement
+          selective shadowing for the full range of systems
+          implementations.
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+           0        Shadow RAM enable in D0000H-D3FFFH area.   0
+                    0 = Disable,
+                    1 = Enable.
+
+           1        Shadow RAM enable in D4000H-D7FFFH area.   0
+                    0 = Disable,
+                    1 = Enable.
+
+           2        Shadow RAM enable in D8000H-DBFFFH area.   0
+                    0 = Disable,
+                    1 = Enable.
+
+           3        Shadow RAM enable in DC000H-DFFFFH area.   0
+                    0 = Disable,
+                    1 = Enable.
+
+           4        Shadow RAM enable in E0000H-E3FFFH area.   0
+                    0 = Disable,
+                    1 = Enable.
+
+           5        Shadow RAM enable in E4000H-E7FFFH area.   0
+                    0 = Disable,
+                    1 = Enable.
+
+           6        Shadow RAM enable in E8000H-EBFFFH area.   0
+                    0 = Disable,
+                    1 = Enable.
+
+           7        Shadow RAM enable in EC000H-EFFFFH area.   0
+                    0 = Disable,
+                    1 = Enable.
+
+
+          Bank Configuration Register
+          Index : 13H
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+           0-2      These bits contains the                    111
+                    information for the DRAM types
+                    used for BANK2 and BANK3.
+
+                    2 1 0    BANK2     BANK3
+
+                    0 0 0    256K      none
+                    0 0 1    256K      256K
+                    0 1 0    256K      1M
+                    0 1 1    1M        256K
+                    1 0 0    1M        none
+                    1 0 1    1M        1M
+                    1 1 x    none      none
+
+           3        Reserved                                   0
+
+           4-6      These bits contains the                    111
+                    information for the DRAM types
+                    used for BANK0 and BANK1.
+
+                    6 5 4    BANK0     BANK1
+
+                    0 0 0    256K      none
+                    0 0 1    256K      256K
+                    0 1 0    256K      1M
+                    0 1 1    1M        256K
+                    1 0 0    1M        none
+                    1 0 1    1M        1M
+                    1 1 0    none      none
+                    1 1 1    256K      none
+
+           7        Reserved                                   0
+
+
+          DRAM Configuration Register
+          Index : 14H
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+           0-4      Reserved                                   00000
+
+           5        DRAM write cycle wait state                1
+                    0 = 0 wait state,
+                    1 = 1 wait state.
+
+           7,6      DRAM read cycle wait state                 01
+
+                    7 6      # of wait states
+
+                    0 0      0
+                    0 1      1
+                    1 0      2
+                    1 1      3
+
+
+          Adapter Region Shadow Register
+          Index : 15H
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+           0        Shadow Ram Enable in C0000H-C3FFFH area.   0
+
+           1        Shadow Ram Enable in C4000H-C7FFFH area.   0
+
+           2        Shadow Ram Enable in C8000H-CBFFFH area.   0
+
+           3        Shadow Ram Enable in CC000H-CFFFFH area.   0
+
+           4        ROM located at C0000H-CFFFFH               1
+                     0 = All accesses are to AT Channel,
+                         Shadow RAM disabled
+                     1 = Shadow RAM is selectively enabled
+                         in 16KB Blocks by Bits<0:3>.
+
+           5        Shadow RAM at C0000H-CFFFFH R/W Control    0
+                     0 = Read/Write,
+                     1 = Read only.
+
+           6        Shadow RAM Copy Enable Control for         0
+                    C0000H-EFFFFH
+                     0 = Write to the AT Channel,
+                     1 = Write to the Local DRAM.
+
+           7        Reserved                                   0
+
+
+          Fast GateA20 Register
+          Index : 16H
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+           0-2      Reserved                                   000
+
+           3        Fast GateA20 Control                       1
+                    0 = GA20 signal is controlled by
+                        GATEA20 signal
+                    1 = CPUA20 is enabled onto GA20
+
+           4-7      Reserved                                   0000
+
+
+          Cache Configuration Register
+          Index : 17H
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+           0-2      Reserved                                   000
+
+           3,4      Burst Mode Support Bits                    00
+
+                    4 3      Line Size
+
+                    0 0      Disabled
+                    0 1      Reserved
+                    1 0      Enable with Secondary Cache
+                    1 1      Enable DRAM Burst with no
+                             Secondary Cache
+
+           5        This bit has to be set to 1                1
+
+           6        This bit has to be set to 1                1
+
+           7        Force NCA* output pin to be low            1
+                    if this bit is a one, otherwise
+                    this bit has no effect on NCA*
+                    output pin.
+
+
+          Non-Cacheable Block 1 Size Register
+          Index : 18H
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+           0-4      Reserved                                   00000
+
+           5-7      Size of non-cacheable memory               111
+                    block 1.
+
+                    7 6 5    Block size
+
+                    0 0 0    64K
+                    0 0 1    128K
+                    0 1 0    256K
+                    0 1 1    512K
+                    1 0 0    1M
+                    1 0 1    4M
+                    1 1 0    8M
+                    1 1 1    Disable
+
+
+          Non-cacheable Block Address 1 Register
+          Index : 19H
+
+          This register is used in conjunction with Index 18H register
+          to define a non-cacheable block.  The starting address for
+          the non-cacheable block must have the same granularity as
+          the block size.  For example, if a 1MB non-cacheable block
+          is selected, its starting address is a multiple of 1MB;
+          consequently, only address bits are A20-A23 are significant,
+          A16-A19 are don't care..
+
+           BIT
+          POSITION  FUNCTION
+
+           0-7      Valid starting address bits A16-A23 of
+                    non-cacheable memory block 1.
+
+                    Block    Valid Starting Address Bits
+                    Size     A23  A22  A21  A20  A19  A18  A17  A16
+
+                    64K      V    V    V    V    V    V    V    V
+                    128K     V    V    V    V    V    V    V    X
+                    256K     V    V    V    V    V    V    X    X
+                    512K     V    V    V    V    V    X    X    X
+                    1M       V    V    V    V    X    X    X    X
+                    4M       V    V    X    X    X    X    X    X
+                    8M       V    X    X    X    X    X    X    X
+
+                    X = Don't Care
+                    V = Valid Bit
+
+
+          Non-Cacheable Block 2 Size Register
+          Index : 1AH
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+          0-4       Reserved                                   00000
+
+          5-7       Size of non-cacheable memory               111
+                    block 2.
+
+                    7 6 5    Block size
+
+                    0 0 0    64K
+                    0 0 1    128K
+                    0 1 0    256K
+                    0 1 1    512K
+                    1 0 0    1M
+                    1 0 1    Reserved
+                    1 1 0    Reserved
+                    1 1 1    Disable
+
+
+          Non-cacheable Block Address 2 Register
+          Index : 1BH
+
+          This register is used in conjunction with Index 18H register
+          to define a non-cacheable block.  The starting address for
+          the non-cacheable block must have the same granularity as
+          the block size.  For example, if a 1MB non-cacheable block
+          is selected, its starting address is a multiple of 1MB;
+          consequently, only address bits are A20-A23 are significant,
+          A16-A19 are don't care..
+
+           BIT
+          POSITION  FUNCTION
+
+           0-7      Address bit A16-A23 of non-cacheable
+                    memory block 2.
+
+                    Block    Valid Starting Address Bits
+                    Size     A23  A22  A21  A20  A19  A18  A17  A16
+
+                    64K      V    V    V    V    V    V    V    V
+                    128K     V    V    V    V    V    V    V    X
+                    256K     V    V    V    V    V    V    X    X
+                    512K     V    V    V    V    V    X    X    X
+                    1M       V    V    V    V    X    X    X    X
+
+                    X = Don't Care
+                    V = Valid Bit
+
+
+          Cacheable Area Register
+          Index : 1CH
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+           0-2      Reserved                                   000
+
+           3        256KB Remapped area cacheable.             1
+                    1 = Cacheable,
+                    0 = Non-cacheable.
+
+           4-7      Cacheable address range for local          0
+                    memory.
+
+                    7 6 5 4         Address Range
+
+                    0 0 0 1         1 MByte
+                    0 0 1 0         2 MByte
+                    0 0 1 1         3 MByte
+                    0 1 0 0         4 MByte
+                    0 1 0 1         5 MByte
+                    0 1 1 0         6 MByte
+                    0 1 1 1         7 MByte
+                    1 0 0 0         8 MByte
+                    1 0 0 1         9 MByte
+                    1 0 1 0         10 MByte
+                    1 0 1 1         11 MByte
+                    1 1 0 0         12 MByte
+                    1 1 0 1         13 MByte
+                    1 1 1 0         14 MByte
+                    1 1 1 1         15 MByte
+                    0 0 0 0         16 MByte
+
+
+          Additional DRAM configuration
+          Index : 1DH
+
+           BIT
+          POSITION  FUNCTION                                   DEFAULT
+
+           0-3      4M DRAM support. These bits are valid      0
+                    only when Index 13H register is
+                    programmed to "66H" (no 256k or 1M DRAM).
+
+                    3 2 1 0        Bank 0 Bank 1 Total Memory
+
+                    0 0 0 0        4M     none   16 MByte
+                    0 0 0 1        4M     4M     32 MByte
+
+                    All other combinations are not supported
+
+           4-7      Rev C identity bits.                       0101
+
+

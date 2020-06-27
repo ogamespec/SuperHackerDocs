@@ -1,0 +1,84 @@
+
+         IntrList ÄÄ The Encyclopaedic Reference for PC Interrupts
+
+Window Books are on-line reference manuals that can be read under DOS, 
+MS-Windows, and there's even a dual-platform version that works
+under both. Call (617) 661-9515 or fax (617) 354-3961 for information 
+about other operating platforms: Unix, Xenix, OS/2, etc...
+  
+These books are easy to use, apply state-of-the-art data compression   
+(so you don't waste valuable disk space), can be run on a network (yes, one   
+book can be simultaneously read by two or more people running either DOS or   
+MS-Windows or any combination), and are easier to use than printed manuals   
+because of our unique cross-referencing and indexing technology.
+  
+Window Books are so easy to use that printed documentation is generally not   
+needed - although you can print out any or all of the documentation that is   
+contained in the Window Book itself. Just be sure to press the F1 help key
+while you are first using your new Window Book.
+  
+Note: This Window Book is designed to work under DOS only. 
+Call (617) 661-9515 or fax (617) 354-3961 if you want an MS-Windows version.
+
+You can run INTRLIST directly from the diskette. Place the diskette
+in drive A, then at the DOS prompt type   A:INTRLIST
+           C>A:INTRLIST
+
+Here is the one-step installation procedure:
+  
+        1) Place the disk in drive A:,
+           then at the DOS prompt type   A:INSTALL
+           C>A:INSTALL
+
+Following installation, to run INTRLIST, at the DOS Prompt, type  INTRLIST
+           C>INTRLIST
+           
+To run INTRLIST as a background-resident pop-up, with the Alt+Esc "hotkey"
+combination, add the /B parameter:
+        C>INTRLIST /B
+
+To run INTRLIST as a background-resident pop-up, with your own private "hotkey"
+combination, add the /B and the /HK:? parameters:
+        C>INTRLIST /B /HK:?
+
+where ? can be a function key F1-F10 (yielding hotkey combinations
+Alt-F1 thru Alt+F10), or a letter A-Z (yielding hotkey combinations
+Ctrl+Shift+A thru Ctrl+Shift+Z), or a number 0-9 (yielding hotkey 
+combinations Ctrl+Shift+0 thru Ctrl+Shift+9)
+                                     
+Basic Keyboard Commands: 
+  
+Grey+  The + key on the numeric keypad. Displays the next topic in the Table 
+       of Contents. This is like turning a page forward in a book. This 
+       isn't operational when you are reading a topic at which you arrived 
+       using Cross-Reference.
+Shift+PgDn does the same.
+   
+Grey-  The - key on the numeric keypad. Displays the previous topic in the 
+       Table of Contents. This is like turning a page back in a book. 
+Shift+PgUp does the same.
+
+Insert The 0 key on the numeric keypad. When a topic contains hypertext
+       links, this key alternately activates/deactivates them.
+   
+PgDn   Moves the text in the topic you are reading up by one windowful.
+           
+PgUp   Moves the text in the topic you are reading down by one windowful.
+   
+Home   Takes you to the top of the topic you are reading. 
+   
+End    Takes you to the bottom of the topic you are reading.
+
+F1     Provides on-line HELP on how to operate the Window Book.
+
+F2     Pops up the Table of Contents window.
+
+F3     Pops up the Index window
+
+F10    Closes the Window Book
+
+Esc    Returns you to the previous screen.
+
+If you have any questions, please feel free to call (617) 661-9515.
+
+

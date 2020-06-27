@@ -1,0 +1,1150 @@
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+Chapter 12  The EXEC Function
+
+  The MS-DOS EXEC function (Int 21H Function 4BH) allows a program (called
+  the parent) to load any other program (called the child) from a storage
+  device, execute it, and then regain control when the child program is
+  finished.
+
+  A parent program can pass information to the child in a command line, in
+  default file control blocks, and by means of a set of strings called the
+  environment block (discussed later in this chapter). All files or devices
+  that the parent opened using the handle file-management functions are
+  duplicated in the newly created child task; that is, the child inherits
+  all the active handles of the parent task. Any file operations on those
+  handles by the child, such as seeks or file I/O, also affect the file
+  pointers associated with the parent's handles.
+
+  MS-DOS suspends execution of the parent program until the child program
+  terminates. When the child program finishes its work, it can pass an exit
+  code back to the parent, indicating whether it encountered any errors. It
+  can also, in turn, load other programs, and so on through many levels of
+  control, until the system runs out of memory.
+
+  The MS-DOS command interpreter, COMMAND.COM, uses the EXEC function to run
+  its external commands and other application programs. Many popular
+  commercial programs, such as database managers and word processors, use
+  EXEC to run other programs (spelling checkers, for example) or to load a
+  second copy of COMMAND.COM, thereby allowing the user to list directories
+  or copy and rename files without closing all the application files and
+  stopping the main work in progress. EXEC can also be used to load program
+  overlay segments, although this use is uncommon.
+
+
+Making Memory Available
+
+  In order for a parent program to use the EXEC function to load a child
+  program, sufficient unallocated memory must be available in the transient
+  program area.
+
+  When the parent itself was loaded, MS-DOS allocated it a variable amount
+  of memory, depending upon its original file typeÄÄ.COM or .EXEÄÄand any
+  other information that was available to the loader. (See Chapter 11 for
+  further details.) Because the operating system has no foolproof way of
+  predicting how much memory any given program will require, it generally
+  allocates far more memory to a program than is really necessary.
+
+  Therefore, a prospective parent program's first action should be to use
+  Int 21H Function 4AH (Resize Memory Block) to release any excess memory
+  allocation of its own to MS-DOS. In this case, the program should call Int
+  21H Function 4AH with the ES register pointing to the program segment
+  prefix of the program releasing memory and the BX register containing the
+  number of paragraphs of memory to retain for that program. (See Figure
+  11-1 for an example.)
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  WARNING
+    A .COM program must move its stack to a safe area if it is reducing its
+    memory allocation to less than 64 KB.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+Requesting the EXEC Function
+
+  To load and execute a child program, the parent must execute an Int 21H
+  with the registers set up as follows:
+
+    AH = 4BH
+    AL = 00H (subfunction to load child program)
+    DS:DX = segment:offset of pathname for child program
+    ES:BX = segment:offset of parameter block
+
+  The parameter block, in turn, contains addresses of other information
+  needed by the EXEC function.
+
+The Program Name
+
+  The name of the program to be run, which the calling program provides to
+  the EXEC function, must be an unambiguous file specification (no wildcard
+  characters) and must include an explicit .COM or .EXE extension. If the
+  path and disk drive are not supplied in the program name, MS-DOS uses the
+  current directory and default disk drive. (The sequential search for .COM,
+  .EXE, and .BAT files in all the locations listed in the PATH variable is
+  not a function of EXEC, but rather of the internal logic of COMMAND.COM.)
+
+  You cannot EXEC a batch file directly; instead, you must EXEC a copy of
+  COMMAND.COM and pass the name of the batch file in the command tail, along
+  with the /C switch.
+
+The Parameter Block
+
+  The parameter block contains the addresses of four data objects:
+
+  ş  The environment block
+
+  ş  The command tail
+
+  ş  Two default file control blocks
+
+  The space reserved in the parameter block for the address of the
+  environment block is only 2 bytes and holds a segment address. The
+  remaining three addresses are all double-word addresses; that is, they are
+  4 bytes, with the offset in the first 2 bytes and the segment address in
+  the last 2 bytes.
+
+  The Environment Block
+
+  Each program that the EXEC function loads inherits a data structure called
+  an environment block from its parent. The pointer to the segment of the
+  block is at offset 002CH in the PSP. The environment block holds certain
+  information used by the system's command interpreter (usually COMMAND.COM)
+  and may also hold information to be used by transient programs. It has no
+  effect on the operation of the operating system proper.
+
+  If the environment-block pointer in the EXEC parameter block contains
+  zero, the child program acquires a copy of the parent program's
+  environment block. Alternatively, the parent program can provide a segment
+  pointer to a different or expanded environment. The maximum size of the
+  environment block is 32 KB, so very large chunks of information can be
+  passed between programs by this mechanism.
+
+  The environment block for any given program is static, implying that if
+  more than one generation of child programs is resident in RAM, each one
+  will have a distinct and separate copy of the environment block.
+  Furthermore, the environment block for a program that terminates and stays
+  resident is not updated by subsequent PATH and SET commands.
+
+  You will find more details about the environment block later in this
+  chapter.
+
+  The Command Tail
+
+  MS-DOS copies the command tail into the child program's PSP at offset
+  0080H, as described in Chapter 3. The information takes the form of a
+  count byte, followed by a string of ASCII characters, terminated by a
+  carriage return; the carriage return is not included in the count.
+
+  The command tail can include filenames, switches, or other parameters.
+  From the child program's point of view, the command tail should provide
+  the same information that would be present if the program had been run by
+  a direct user command at the MS-DOS prompt. EXEC ignores any
+  I/O-redirection parameters placed in the command tail; the parent program
+  must provide for redirection of the standard devices before the EXEC
+  call is made.
+
+  The Default File Control Blocks
+
+  MS-DOS copies the two default file control blocks pointed to by the EXEC
+  parameter block into the child program's PSP at offsets 005CH and 006CH.
+  To emulate the function of COMMAND.COM from the child program's point of
+  view, the parent program should use Int 21H Function 29H (the system
+  parse-filename service) to parse the first two parameters of the command
+  tail into the default file control blocks before invoking the EXEC
+  function.
+
+  File control blocks are not much use under MS-DOS versions 2 and 3,
+  because they do not support the hierarchical file structure, but some
+  application programs do inspect them as a quick way to get at the first
+  two switches or other parameters in the command tail. Chapter 8 discusses
+  file control blocks in more detail.
+
+
+Returning from the EXEC Function
+
+  In MS-DOS version 2, the EXEC function destroys the contents of all
+  registers except the code segment (CS) and instruction pointer (IP).
+  Therefore, before making the EXEC call, the parent program must push the
+  contents of any other registers that are important onto the stack and then
+  save the stack segment (SS) and stack pointer (SP) registers in variables.
+  Upon return from a successful EXEC call (that is, the child program has
+  finished executing), the parent program should reload SS and SP from the
+  variables where they were saved and then pop the other saved registers off
+  the stack. In MS-DOS versions 3.0 and later, the stack and other registers
+  are preserved across the EXEC call in the usual fashion.
+
+  Finally, the parent can use Int 21H Function 4DH to obtain the
+  termination type and return code of the child program.
+
+  The EXEC function will fail under the following conditions:
+
+  ş  Not enough unallocated memory is available to load and execute the
+     requested program file.
+
+  ş  The requested program can't be found on the disk.
+
+  ş  The transient portion of COMMAND.COM in highest RAM (which contains the
+     actual loader) has been destroyed and not enough free memory is
+     available to reload it (PC-DOS version 2 only).
+
+  Figure 12-1 summarizes the calling convention for function 4BH. Figure
+  12-2 shows a skeleton of a typical EXEC call. This particular example
+  uses the EXEC function to load and run the MS-DOS utility CHKDSK.COM. The
+  SHELL.ASM program listing later in this chapter (Figure 12-5) presents a
+  more complete example that includes the use of Int 21H Function 4AH to
+  free unneeded memory.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Called with:
+
+    AH           = 4BH
+    AL           = function type
+                   00 = load and execute program
+                   03 = load overlay
+    ES:BX        = segment:offset of parameter block
+    DS:DX        = segment:offset of program specification
+
+  Returns:
+
+  If call succeeded
+
+  Carry flag clear. In MS-DOS version 2, all registers except for CS:IP may
+  be destroyed. In MS-DOS versions 3.0 and later, registers are preserved in
+  the usual fashion.
+
+  If call failed
+
+  Carry flag set and AX = error code.
+
+  Parameter block format:
+
+  If AL = 0 (load and execute program)
+
+    Bytes 0Ä1          = segment pointer, environment block
+    Bytes 2Ä3          = offset of command-line tail
+    Bytes 4Ä5          = segment of command-line tail
+    Bytes 6Ä7          = offset of first file control block to be copied
+                         into new PSP + 5CH
+    Bytes 8Ä9          = segment of first file control block
+    Bytes 10Ä11        = offset of second file control block to be copied
+                         into new PSP + 6CH
+    Bytes 12Ä13        = segment of second file control block
+
+  If AL = 3 (load overlay)
+
+    Bytes 0Ä1    = segment address where file will be loaded
+    Bytes 2Ä3    = relocation factor to apply to loaded image
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 12-1.  Calling convention for the EXEC function (Int 21H Function
+  4BH).
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  cr      egu     0dh             ; ASCII carriage return
+          .
+          .
+          .
+          mov     stkseg,ss       ; save stack pointer
+          mov     stkptr,sp
+
+          mov     dx,offset pname ; DS:DX = program name
+          mov     bx,offset pars  ; ES:BX = param block
+          mov     ax,4b00h        ; function 4bh, subfunction 00h
+          int     21h             ; transfer to MS-DOS
+
+          mov     ax,_DATA        ; make our data segment
+          mov     ds,ax           ; addressable again
+          mov     es,ax
+
+          cli                     ; (for bug in some 8088s)
+          mov     ss,stkseg       ; restore stack pointer
+          mov     sp,stkptr
+          sti                     ; (for bug in some 8088s)
+
+          jc      error           ; jump if EXEC failed
+          .
+          .
+          .
+
+  stkseg  dw      0               ; original SS contents
+  stkptr  dw      0               ; original SP contents
+
+  pname   db      '\CHKDSK.COM',0 ; pathname of child program
+
+  pars    dw      envir           ; environment segment
+          dd      cmdline         ; command line for child
+          dd      fcb1            ; file control block #1
+          dd      fcb2            ; file control block #2
+
+  cmdline db      4,' *.*',cr     ; command line for child
+
+  fcb1    db      0               ; file control block #1
+          db      11 dup ('?')
+          db      25 dup (0)
+  fcb2    db      0               ; file control block #2
+          db      11 dup (' ')
+          db      25 dup (0)
+
+
+  envir   segment para 'ENVIR'    ; environment segment
+
+          db      'PATH=',0       ; empty search path
+                                  ; location of COMMAND.COM
+          db      'COMSPEC=A:\COMMAND.COM',0
+          db      0               ; end of environment
+
+  envir   ends
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 12-2.  A brief example of the use of the MS-DOS EXEC call, with all
+  necessary variables and command blocks. Note the protection of the
+  registers for MS-DOS version 2 and the masking of interrupts during
+  loading of SS:SP to circumvent a bug in some early 8088 CPUs.
+
+
+More About the Environment Block
+
+  The environment block is always paragraph aligned (starts at an address
+  that is a multiple of 16 bytes) and contains a series of ASCIIZ strings.
+  Each of the strings takes the following form:
+
+    NAME=PARAMETER
+
+  An additional zero byte (Figure 12-3) indicates the end of the entire set
+  of strings. Under MS-DOS version 3, the block of environment strings and
+  the extra zero byte are followed by a word count and the complete drive,
+  path, filename, and extension used by EXEC to load the program.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+        0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F 0123456789ABCDEF
+  0000 43 4F 4D 53 50 45 43 3D 43 3A 5C 43 4F 4D 4D 41 COMSPEC=C:\COMMA
+  0010 4E 44 2E 43 4F 4D 00 50 52 4F 4D 50 54 3D 24 70 NDcom.PROMPT=$p
+  0020 24 5F 24 64 20 20 20 24 74 24 68 24 68 24 68 24 $_$d   $t$h$h$h$
+  0030 68 24 68 24 68 20 24 71 24 71 24 67 00 50 41 54 h$h$h $q$q$g.PAT
+  0040 48 3D 43 3A 5C 53 59 53 54 45 4D 3B 43 3A 5C 41 H=C:\SYSTEM;C:\A
+  0050 53 4D 3B 43 3A 5C 57 53 3B 43 3A 5C 45 54 48 45 SM;C:\WS;C:\ETHE
+  0060 52 4E 45 54 3B 43 3A 5C 46 4F 52 54 48 5C 50 43 RNET;C:\FORTH\PC
+  0070 33 31 3B 00 00 01 00 43 3A 5C 46 4F 52 54 48 5C 31;....C:\FORTH\
+  0080 50 43 33 31 5C 46 4F 52 54 48 2E 43 4F 4D 00 20 PC31\FORTH.COM.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 12-3.  Dump of a typical environment block under MS-DOS version 3.
+  This particular example contains the default COMSPEC parameter and two
+  relatively complex PATH and PROMPT control strings that were set up by
+  entries in the user's AUTOEXEC file. Note the path and file specification
+  of the executing program following the double zeros at offset 0073H that
+  denote the end of the environment block.
+
+  Under normal conditions, the environment block inherited by a program will
+  contain at least three strings:
+
+    COMSPEC=variable
+    PATH=variable
+    PROMPT=variable
+
+  MS-DOS places these three strings into the environment block at system
+  initialization, during the interpretation of SHELL, PATH, and PROMPT
+  directives in the CONFIG.SYS and AUTOEXEC.BAT files. The strings tell the
+  MS-DOS command interpreter, COMMAND.COM, the location of its executable
+  file (to enable it to reload the transient portion), where to search for
+  executable external commands or program files, and the format of the user
+  prompt.
+
+  You can add other strings to the environment block, either interactively
+  or in batch files, with the SET command. Transient programs can use these
+  strings for informational purposes. For example, the Microsoft C Compiler
+  looks in the environment block for INCLUDE, LIB, and TMP strings to tell
+  it where to find its #include files and library files and where to build
+  its temporary working files.
+
+
+Example Programs: SHELL.C and SHELL.ASM
+
+  As a practical example of use of the MS-DOS EXEC function, I have included
+  a small command interpreter called SHELL, with equivalent Microsoft C
+  (Figure 12-4) and Microsoft Macro Assembler (Figure 12-5) source code.
+  The source code for the assembly-language version is considerably more
+  complex than the code for the C version, but the names and functionality
+  of the various procedures are quite parallel.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  /*
+      SHELL.C     Simple extendable command interpreter
+                  for MS-DOS versions 2.0 and later
+
+      Copyright 1988 Ray Duncan
+
+      Compile:    C>CL SHELL.C
+
+      Usage:      C>SHELL
+  */
+  #include <stdio.h>
+  #include <process.h>
+  #include <stdlib.h>
+  #include <signal.h>
+
+                                      /* macro to return number of
+                                         elements in a structure  */
+  #define dim(x) (sizeof(x) / sizeof(x[0]))
+
+  unsigned intrinsic(char *);         /* function prototypes      */
+  void extrinsic(char *);
+  void get_cmd(char *);
+  void get_comspec(char *);
+  void break_handler(void);
+  void cls_cmd(void);
+  void dos_cmd(void);
+  void exit_cmd(void);
+
+  struct cmd_table {                  /* intrinsic commands table */
+                     char *cmd_name;
+                     int  (*cmd_fxn)();
+                   }   commands[] =
+
+                   { "CLS",   cls_cmd,
+                     "DOS",   dos_cmd,
+                     "EXIT",  exit_cmd, };
+
+  static char com_spec[64];           /* COMMAND.COM filespec     */
+
+  main(int argc, char *argv[])
+  {
+      char inp_buf[80];               /* keyboard input buffer    */
+
+      get_comspec(com_spec);          /* get COMMAND.COM filespec */
+
+                                      /* register new handler
+                                         for Ctrl-C interrupts    */
+      if(signal(SIGINT, break_handler) == (int(*)()) -1)
+      {
+          fputs("Can't capture Control-C Interrupt", stderr);
+          exit(1);
+      }
+
+      while(1)                        /* main interpreter loop    */
+      {
+          get_cmd(inp_buf);           /* get a command            */
+          if (! intrinsic(inp_buf) )  /* if it's intrinsic,
+                                         run its subroutine       */
+             extrinsic(inp_buf);      /* else pass to COMMAND.COM */
+          }
+  }
+
+
+  /*
+      Try to match user's command with intrinsic command
+      table. If a match is found, run the associated routine
+      and return true; else return false.
+  */
+
+  unsigned intrinsic(char *input_string)
+  {
+      int i, j;                       /* some scratch variables   */
+
+                                      /* scan off leading blanks  */
+      while(*input_string == '\x20') input_string++ ;
+
+                                      /* search command table     */
+      for(i=0; i < dim(commands); i++)
+      {
+          j = strcmp(commands[i].cmd_name, input_string);
+
+          if(j == 0)                  /* if match, run routine    */
+          {
+              (*commands[i].cmd_fxn)();
+              return(1);              /* and return true          */
+          }
+      }
+      return(0);                      /* no match, return false   */
+  }
+
+
+  /*
+      Process an extrinsic command by passing it
+      to an EXEC'd copy of COMMAND.COM.
+  */
+
+  void extrinsic(char *input_string)
+  {
+      int status;
+      status = system(input_string);      /* call EXEC function   */
+
+      if(status)                          /* if failed, display
+                                             error message        */
+          fputs("\nEXEC of COMMAND.COM failed\n", stderr);
+  }
+
+
+  /*
+      Issue prompt, get user's command from standard input,
+      fold it to uppercase.
+  */
+
+  void get_cmd(char *buffer)
+  {
+      printf("\nsh: ");                   /* display prompt       */
+      gets(buffer);                       /* get keyboard entry   */
+      strupr(buffer);                     /* fold to uppercase    */
+  }
+
+
+  /*
+      Get the full path and file specification for COMMAND.COM
+      from the COMSPEC variable in the environment.
+  */
+
+  void get_comspec(char *buffer)
+  {
+      strcpy(buffer, getenv("COMSPEC"));
+
+      if(buffer[0] == NULL)
+      {
+          fputs("\nNo COMSPEC in environment\n", stderr);
+          exit(1);
+      }
+  }
+
+
+  /*
+      This Ctrl-C handler keeps SHELL from losing control.
+      It just reissues the prompt and returns.
+  */
+  void break_handler(void)
+  {
+      signal(SIGINT, break_handler);      /* reset handler        */
+      printf("\nsh: ");                   /* display prompt       */
+  }
+
+
+  /*
+      These are the subroutines for the intrinsic commands.
+  */
+
+  void cls_cmd(void)                      /* CLS command          */
+  {
+      printf("\033[2J");                  /* ANSI escape sequence */
+  }                                       /* to clear screen      */
+
+  void dos_cmd(void)                      /* DOS command          */
+  {
+      int status;
+                                          /* run COMMAND.COM      */
+      status = spawnlp(P_WAIT, com_spec, com_spec, NULL);
+
+      if (status)
+          fputs("\nEXEC of COMMAND.COM failed\n",stderr);
+  }
+
+  void exit_cmd(void)                     /* EXIT command         */
+  {
+      exit(0);                            /* terminate SHELL      */
+  }
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 12-4.  SHELL.C: A table-driven command interpreter written in
+  Microsoft C.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+          name    shell
+          page    55,132
+          title   SHELL.ASM--simple MS-DOS shell
+  ;
+  ; SHELL.ASM     Simple extendable command interpreter
+  ;               for MS-DOS versions 2.0 and later
+  ;
+  ; Copyright 1988 by Ray Duncan
+  ;
+  ; Build:        C>MASM SHELL;
+  ;               C>LINK SHELL;
+  ;
+  ; Usage:        C>SHELL;
+  ;
+
+  stdin   equ     0                       ; standard input handle
+  stdout  equ     1                       ; standard output handle
+  stderr  equ     2                       ; standard error handle
+
+  cr      equ     0dh                     ; ASCII carriage return
+  lf      equ     0ah                     ; ASCII linefeed
+  blank   equ     20h                     ; ASCII blank code
+  escape  equ     01bh                    ; ASCII escape code
+
+  _TEXT   segment word public 'CODE'
+
+          assume  cs:_TEXT,ds:_DATA,ss:STACK
+
+  shell   proc    far                     ; at entry DS = ES = PSP
+
+          mov     ax,_DATA                ; make our data segment
+          mov     ds,ax                   ; addressable
+
+          mov     ax,es:[002ch]           ; get environment segment
+          mov     env_seg,ax              ; from PSP and save it
+
+                                          ; release unneeded memory...
+                                          ; ES already = PSP segment
+          mov     bx,100h                 ; BX = paragraphs needed
+          mov     ah,4ah                  ; function 4ah = resize block
+          int     21h                     ; transfer to MS-DOS
+          jnc     shell1                  ; jump if resize OK
+
+          mov     dx,offset msg1          ; resize failed, display
+          mov     cx,msg1_length          ; error message and exit
+          jmp     shell4
+
+  shell1: call    get_comspec             ; get COMMAND.COM filespec
+          jnc     shell2                  ; jump if it was found
+
+          mov     dx,offset msg3          ; COMSPEC not found in
+          mov     cx,msg3_length          ; environment, display error
+          jmp     shell4                  ; message and exit
+  shell2: mov     dx,offset shell3        ; set Ctrl-C vector (int 23h)
+          mov     ax,cs                   ; for this program's handler
+          mov     ds,ax                   ; DS:DX = handler address
+          mov     ax,2523h                ; function 25h = set vector
+       n  int     21h                     ; transfer to MS-DOS
+
+          mov     ax,_DATA                ; make our data segment
+          mov     ds,ax                   ; addressable again
+          mov     es,ax
+
+  shell3:                                 ; main interpreter loop
+
+          call    get_cmd                 ; get a command from user
+
+          call    intrinsic               ; check if intrinsic function
+          jnc     shell3                  ; yes, it was processed
+
+          call    extrinsic               ; no, pass it to COMMAND.COM
+          jmp     shell3                  ; then get another command
+
+  shell4:                                 ; come here if error detected
+                                          ; DS:DX = message address
+                                          ; CX = message length
+          mov     bx,stderr               ; BX = standard error handle
+          mov     ah,40h                  ; function 40h = write
+          int     21h                     ; transfer to MS-DOS
+
+          mov     ax,4c01h                ; function 4ch = terminate with
+                                          ; return code = 1
+          int     21h                     ; transfer to MS-DOS
+
+  shell   endp
+
+
+
+  intrinsic proc  near                    ; decode user entry against
+                                          ; the table "COMMANDS"
+                                          ; if match, run the routine,
+                                          ; and return carry = false
+                                          ; if no match, carry = true
+                                          ; return carry = true
+
+          mov     si,offset commands      ; DS:SI = command table
+
+  intr1:  cmp     byte ptr [si],0         ; end of table?
+          je      intr7                   ; jump, end of table found
+          mov     di,offset inp_buf       ; no, let DI = addr of user input
+
+  intr2:  cmp     byte ptr [di],blank     ; scan off any leading blanks
+          jne     intr3
+
+          inc     di                      ; found blank, go past it
+          jmp     intr2
+
+  intr3:  mov     al,[si]                 ; next character from table
+
+          or      al,al                   ; end of string?
+          jz      intr4                   ; jump, entire string matched
+
+          cmp     al,[di]                 ; compare to input character
+          jnz     intr6                   ; jump, found mismatch
+
+          inc     si                      ; advance string pointers
+          inc     di
+          jmp     intr3
+
+  intr4:  cmp     byte ptr [di],cr        ; be sure user's entry
+          je      intr5                   ; is the same length...
+          cmp     byte ptr [di],blank     ; next character in entry
+          jne     intr6                   ; must be blank or return
+
+  intr5:  call    word ptr [si+1]         ; run the command routine
+
+          clc                             ; return carry flag = false
+          ret                             ; as success flag
+
+  intr6:  lodsb                           ; look for end of this
+          or      al,al                   ; command string (null byte)
+          jnz     intr6                   ; not end yet, loop
+
+          add     si,2                    ; skip over routine address
+          jmp     intr1                   ; try to match next command
+
+  intr7:  stc                             ; command not matched, exit
+          ret                             ; with carry = true
+
+  intrinsic endp
+  extrinsic proc  near                    ; process extrinsic command
+                                          ; by passing it to
+                                          ; COMMAND.COM with a
+                                          ; " /C " command tail
+
+          mov     al,cr                   ; find length of command
+          mov     cx,cmd_tail_length      ; by scanning for carriage
+          mov     di,offset cmd_tail+1    ; return
+          cld
+          repnz scasb
+
+          mov     ax,di                   ; calculate command-tail
+          sub     ax,offset cmd_tail+2    ; length without carriage
+          mov     cmd_tail,al             ; return, and store it
+
+                                          ; set command-tail address
+          mov     word ptr par_cmd,offset cmd_tail
+          call    exec                    ; and run COMMAND.COM
+          ret
+
+  extrinsic endp
+
+
+  get_cmd proc    near                    ; prompt user, get command
+
+                                          ; display the shell prompt
+          mov     dx,offset prompt        ; DS:DX = message address
+          mov     cx,prompt_length        ; CX = message length
+          mov     bx,stdout               ; BX = standard output handle
+          mov     ah,40h                  ; function 40h = write
+          int     21h                     ; transfer to MS-DOS
+
+                                          ; get entry from user
+          mov     dx,offset inp_buf       ; DS:DX = input buffer
+          mov     cx,inp_buf_length       ; CX = max length to read
+          mov     bx,stdin                ; BX = standard input handle
+          mov     ah,3fh                  ; function 3fh = read
+          int     21h                     ; transfer to MS-DOS
+
+          mov     si,offset inp_buf       ; fold lowercase characters
+          mov     cx,inp_buf_length       ; in entry to uppercase
+  gcmd1:  cmp     byte ptr [si],'a'       ; check if 'a-z'
+          jb      gcmd2                   ; jump, not in range
+          cmp     byte ptr [si],'z'       ; check if 'a-z'
+          ja      gcmd2                   ; jump, not in range
+          sub     byte ptr [si],'a'-'A'   ; convert to uppercase
+
+  gcmd2:  inc     si                      ; advance through entry
+          loop    gcmd1
+          ret                             ; back to caller
+
+  get_cmd endp
+
+
+
+  get_comspec proc near                   ; get location of COMMAND.COM
+                                          ; from environment "COMSPEC="
+                                          ; returns carry = false
+                                          ; if COMSPEC found
+                                          ; returns carry = true
+                                          ; if no COMSPEC
+
+          mov     si,offset com_var       ; DS:SI = string to match...
+          call    get_env                 ; search environment block
+          jc      gcsp2                   ; jump if COMSPEC not found
+
+                                          ; ES:DI points past "="
+          mov     si,offset com_spec      ; DS:SI = local buffer
+
+  gcsp1:  mov     al,es:[di]              ; copy COMSPEC variable
+          mov     [si],al                 ; to local buffer
+          inc     si
+          inc     di
+          or      al,al                   ; null char? (turns off carry)
+          jnz     gcsp1                   ; no, get next character
+
+  gcsp2:  ret                             ; back to caller
+
+  get_comspec endp
+
+
+  get_env proc    near                    ; search environment
+                                          ; call DS:SI = "NAME="
+                                          ; uses contents of "ENV_SEG"
+                                          ; returns carry = false and ES:DI
+                                          ; pointing to parameter if found,
+                                          ; returns carry = true if no match
+          mov     es,env_seg              ; get environment segment
+          xor     di,di                   ; initialize env offset
+
+  genv1:  mov     bx,si                   ; initialize pointer to name
+          cmp     byte ptr es:[di],0      ; end of environment?
+          jne     genv2                   ; jump, end not found
+
+          stc                             ; no match, return carry set
+          ret
+
+  genv2:  mov     al,[bx]                 ; get character from name
+          or      al,al                   ; end of name? (turns off carry)
+          jz      genv3                   ; yes, name matched
+
+          cmp     al,es:[di]              ; compare to environment
+          jne     genv4                   ; jump if match failed
+
+          inc     bx                      ; advance environment
+          inc     di                      ; and name pointers
+          jmp     genv2
+
+  genv3:                                  ; match found, carry = clear,
+          ret                             ; ES:DI = variable
+
+  genv4:  xor     al,al                   ; scan forward in environment
+          mov     cx,-1                   ; for zero byte
+          cld
+          repnz   scasb
+          jmp     genv1                   ; go compare next string
+
+  get_env endp
+
+
+  exec    proc    near                    ; call MS-DOS EXEC function
+                                          ; to run COMMAND.COM
+
+          mov     stkseg,ss               ; save stack pointer
+          mov     stkptr,sp
+
+                                          ; now run COMMAND.COM
+          mov     dx,offset com_spec      ; DS:DX = filename
+          mov     bx,offset par_blk       ; ES:BX = parameter block
+          mov     ax,4b00h                ; function 4bh = EXEC
+                                          ; subfunction 0 =
+                                          ; load and execute
+          int     21h                     ; transfer to MS-DOS
+
+          mov     ax,_DATA                ; make data segment
+          mov     ds,ax                   ; addressable again
+          mov     es,ax
+
+          cli                             ; (for bug in some 8088s)
+          mov     ss,stkseg               ; restore stack pointer
+          mov     sp,stkptr
+          sti                             ; (for bug in some 8088s)
+
+          jnc     exec1                   ; jump if no errors
+
+                                          ; display error message
+          mov     dx,offset msg2          ; DS:DX = message address
+          mov     cx,msg2_length          ; CX = message length
+          mov     bx,stderr               ; BX = standard error handle
+          mov     ah,40h                  ; function 40h = write
+          int     21h                     ; transfer to MS-DOS
+
+  exec1:  ret                             ; back to caller
+
+  exec    endp
+
+
+
+  cls_cmd proc    near                    ; intrinsic CLS command
+
+          mov     dx,offset cls_str       ; send the ANSI escape
+          mov     cx,cls_str_length       ; sequence to clear
+          mov     bx,stdout               ; the screen
+          mov     ah,40h
+          int     21h
+          ret
+
+  cls_cmd endp
+
+
+  dos_cmd proc    near                    ; intrinsic DOS command
+
+                                          ; set null command tail
+          mov     word ptr par_cmd,offset nultail
+          call    exec                    ; and run COMMAND.COM
+          ret
+
+  dos_cmd endp
+  exit_cmd proc   near                    ; intrinsic EXIT command
+
+          mov     ax,4c00h                ; call MS-DOS terminate
+          int     21h                     ; function with
+                                          ; return code of zero
+  exit_cmd endp
+
+  _TEXT   ends
+
+
+  STACK   segment para stack 'STACK'      ; declare stack segment
+
+          dw      64 dup (?)
+
+  STACK   ends
+
+  _DATA   segment word public 'DATA'
+
+  commands equ $                          ; "intrinsic" commands table
+                                          ; each entry is ASCIIZ string
+                                          ; followed by the offset
+                                          ; of the procedure to be
+                                          ; executed for that command
+          db      'CLS',0
+          dw      cls_cmd
+
+          db      'DOS',0
+          dw      dos_cmd
+
+          db      'EXIT',0
+          dw      exit_cmd
+
+          db      0                       ; end of table
+
+  com_var db      'COMSPEC=',0            ; environment variable
+
+                                          ; COMMAND.COM filespec
+  com_spec db     80 dup (0)              ; from environment COMSPEC=
+
+  nultail db      0,cr                    ; null command tail for
+                                          ; invoking COMMAND.COM
+                                          ; as another shell
+
+  cmd_tail db     0,' /C '                ; command tail for invoking
+                                          ; COMMAND.COM as a transient
+  inp_buf db      80 dup (0)              ; command line from standard input
+
+  inp_buf_length equ $-inp_buf
+  cmd_tail_length equ $-cmd_tail-1
+
+  prompt  db      cr,lf,'sh: '            ; SHELL's user prompt
+  prompt_length equ $-prompt
+
+  env_seg dw      0                       ; segment of environment block
+
+  msg1    db      cr,lf
+          db      'Unable to release memory.'
+          db      cr,lf
+  msg1_length equ $-msg1
+
+  msg2    db      cr,lf
+          db      'EXEC of COMMAND.COM failed.'
+          db      cr,lf
+  msg2_length equ $-msg2
+
+  msg3    db      cr,lf
+          db      'No COMSPEC variable in environment.'
+          db      cr,lf
+  msg3_length equ $-msg3
+
+  cls_str db      escape,'[2J'            ; ANSI escape sequence
+  cls_str_length equ $-cls_str            ; to clear the screen
+
+                                          ; EXEC parameter block
+  par_blk dw      0                       ; environment segment
+  par_cmd dd      cmd_tail                ; command line
+          dd      fcb1                    ; file control block #1
+          dd      fcb2                    ; file control block #2
+
+  fcb1    db      0                       ; file control block #1
+          db      11 dup (' ')
+          db      25 dup (0)
+
+  fcb2    db      0                       ; file control block #2
+          db      11 dup (' ')
+          db      25 dup (0)
+
+  stkseg  dw      0                       ; original SS contents
+  stkptr  dw      0                       ; original SP contents
+
+  _DATA   ends
+
+          end     shell
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 12-5.  SHELL.ASM: A simple table-driven command interpreter written
+  in Microsoft Macro Assembler.
+
+  The SHELL program is table driven and can easily be extended to provide a
+  powerful customized user interface for almost any application. When SHELL
+  takes control of the system, it displays the prompt
+
+  sh:
+
+  and waits for input from the user. After the user types a line terminated
+  by a carriage return, SHELL tries to match the first token in the line
+  against its table of internal (intrinsic) commands. If it finds a match,
+  it calls the appropriate subroutine. If it does not find a match, it calls
+  the MS-DOS EXEC function and passes the user's input to COMMAND.COM with
+  the /C switch, essentially using COMMAND.COM as a transient command
+  processor under its own control.
+
+  As supplied in these listings, SHELL "knows" exactly three internal
+  commands:
+
+  Command            Action
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  CLS                Uses the ANSI standard control sequence to clear the
+                     display screen and home the cursor.
+  DOS                Runs a copy of COMMAND.COM.
+  EXIT               Exits SHELL, returning control of the system to the
+                     next lower command interpreter.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  You can quickly add new intrinsic commands to either the C version or the
+  assembly-language version of SHELL. Simply code a procedure with the
+  appropriate action and insert the name of that procedure, along with the
+  text string that defines the command, into the table COMMANDS. In
+  addition, you can easily prevent SHELL from passing certain "dangerous"
+  commands (such as MKDIR or ERASE) to COMMAND.COM simply by putting the
+  names of the commands to be screened out into the intrinsic command table
+  with the address of a subroutine that prints an error message.
+
+  To summarize, the basic flow of both versions of the SHELL program is
+  as follows:
+
+  1.  The program calls MS-DOS Int 21H Function 4AH (Resize Memory Block)
+      to shrink its memory allocation, so that the maximum possible space
+      will be available for COMMAND.COM if it is run as an overlay. (This is
+      explicit in the assembly-language version only. To keep the example
+      code simple, the number of paragraphs to be reserved is coded as a
+      generous literal value, rather than being figured out at runtime from
+      the size and location of the various program segments.)
+
+  2.  The program searches the environment for the COMSPEC variable, which
+      defines the location of an executable copy of COMMAND.COM. If it can't
+      find the COMSPEC variable, it prints an error message and exits.
+
+  3.  The program puts the address of its own handler in the Ctrl-C vector
+      (Int 23H) so that it won't lose control if the user enters a Ctrl-C
+      or a Ctrl-Break.
+
+  4.  The program issues a prompt to the standard output device.
+
+  5.  The program reads a buffered line from the standard input device to
+      get the user's command.
+
+  6.  The program matches the first blank-delimited token in the line
+      against its table of intrinsic commands. If it finds a match, it
+      executes the associated procedure.
+
+  7.  If the program does not find a match in the table of intrinsic
+      commands, it synthesizes a command-line tail by appending the user's
+      input to the /C switch and then EXECs a copy of COMMAND.COM, passing
+      the address of the synthesized command tail in the EXEC parameter
+      block.
+
+  8.  The program repeats steps 4 through 7 until the user enters the
+      command EXIT, which is one of the intrinsic commands, and which causes
+      SHELL to terminate execution.
+
+  In its present form, SHELL allows COMMAND.COM to inherit a full copy of
+  the current environment. However, in some applications it may be helpful,
+  or safer, to pass a modified copy of the environment block so that the
+  secondary copy of COMMAND.COM will not have access to certain information.
+
+
+Using EXEC to Load Overlays
+
+  Loading overlays with the EXEC function is much less complex than using
+  EXEC to run another program. The overlay can be constructed as either a
+  memory image (.COM) or relocatable (.EXE) file and need not be the same
+  type as the program that loads it. The main program, called the root
+  segment, must carry out the following steps to load and execute an
+  overlay:
+
+  1.  Make a memory block available to receive the overlay. The program that
+      calls EXEC must own the memory block for the overlay.
+
+  2.  Set up the overlay parameter block to be passed to the EXEC function.
+      This block contains the segment address of the block that will receive
+      the overlay, plus a segment relocation value to be applied to the
+      contents of the overlay file (if it is a .EXE file). These are
+      normally the same value.
+
+  3.  Call the MS-DOS EXEC function to load the overlay by issuing an Int
+      21H with the registers set up as follows:
+
+      AH = 4BH
+      AL = 03H (EXEC subfunction to load overlay)
+      DS:DX = segment:offset of overlay file pathname
+      ES:BX = segment:offset of overlay parameter block
+
+      Upon return from the EXEC function, the carry flag is clear if the
+      overlay was found and loaded. The carry flag is set if the file could
+      not be found or if some other error occurred.
+
+  4.  Execute the code within the overlay by transferring to it with a far
+      call. The overlay should be designed so that either the entry point or
+      a pointer to the entry point is at the beginning of the module after
+      it is loaded. This technique allows you to maintain the root and
+      overlay modules separately, because the root module does not contain
+      any "magical" knowledge of addresses within the overlay segment.
+
+  To prevent users from inadvertently running an overlay directly from the
+  command line, you should assign overlay files an extension other than .COM
+  or .EXE. It is most convenient to relate overlays to their root segment by
+  assigning them the same filename but a different extension, such as .OVL
+  or .OV1, .OV2, and so on.
+
+  Figure 12-6 shows the use of EXEC to load and execute an overlay.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+          .
+          .
+          .
+                                  ; allocate memory for overlay
+          mov     bx,1000h        ; get 64 KB (4096 paragraphs)
+          mov     ah,48h          ; function 48h = allocate block
+          int     21h             ; transfer to MS-DOS
+          jc      error           ; jump if allocation failed
+
+          mov     pars,ax         ; set load address for overlay
+          mov     pars+2,ax       ; set relocation segment for overlay
+
+                                  ; set segment of entry point
+          mov     word ptr entry+2,ax
+
+          mov     stkseg,ss       ; save root's stack pointer
+          mov     stkptr,sp
+
+          mov     ax,ds           ; set ES = DS
+          mov     es,ax
+
+          mov     dx,offset oname ; DS:DX = overlay pathname
+          mov     bx,offset pars  ; ES:BX = parameter block
+          mov     ax,4b03h        ; function 4bh, subfunction 03h
+          int     21h             ; transfer to MS-DOS
+
+          mov     ax,_DATA        ; make our data segment
+          mov     ds,ax           ; addressable again
+          mov     es,ax
+
+          cli                     ; (for bug in some early 8088s)
+          mov     ss,stkseg       ; restore stack pointer
+          mov     sp,stkptr
+          sti                     ; (for bug in some early 8088s)
+
+          jc      error           ; jump if EXEC failed
+
+                                  ; otherwise EXEC succeeded...
+          push    ds              ; save our data segment
+          call    dword ptr entry ; now call the overlay
+          pop     ds              ; restore our data segment
+          .
+          .
+          .
+
+  oname   db      'OVERLAY.OVL',0 ; pathname of overlay file
+
+  pars    dw      0               ; load address (segment) for file
+          dw      0               ; relocation (segment) for file
+
+  entry   dd      0               ; entry point for overlay
+
+  stkseg  dw      0               ; save SS register
+  stkptr  dw      0               ; save SP register
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 12-6.  A code skeleton for loading and executing an overlay with
+  the EXEC function. The overlay file may be in either .COM or .EXE format.
+
+
+

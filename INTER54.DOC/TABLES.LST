@@ -1,0 +1,177 @@
+SELECTED TABLES			Release 54		Last change 29jun97
+Copyright (c) 1989,1990,1991,1992,1993,1994,1995,1996,1997 Ralf Brown
+--------!------------------------------------
+
+Country-Specific Information:
+	country codes (see #1054 at INT 21/AH=38h)
+	country-specific information (see #1052,#1053)
+	country-dependent capitalization (see INT 21/AX=6520h)
+	code pages (see #0389,#1411)
+	extended country-specific info (see #1405 at INT 21/AX=6500h)
+		uppercase table (see #1406)
+		filename uppercase table (see #1407)
+		filename terminator table (see #1408)
+		collating table (see #1409)
+		DBCS lead byte table (see #1410)
+	yes/no response (see INT 21/AX=6523h)
+
+DESQview
+	.PIF / .DVP file format (see #0346 at INT 15/AX=102Ch)
+	TopView panel file format (see #0355 at INT 15/AH=12h)
+	TopView/DESQview streams (see #0365,#0366,#0367 at INT 15/AH=12h)
+
+Device Drivers
+	command code (see #2249 at INT 2F/AX=0802h)
+	device driver header (see #1298 at INT 21/AH=52h)
+	device attributes (see #1299,#1300 at INT 21/AH=52h)
+	error codes (see #2252 at INT 2F/AX=0802h)
+	request header (see #2250 at INT 2F/AX=0802h)
+
+Disks
+	BIOS Parameter Block (BPB) (see #1315)
+	diskette drive type (see #0167 at INT 13/AH=08h)
+	diskette parameter table (see #0929 at INT 1E)
+	DOS drive parameter block (see #1011 at INT 21/AH=1Fh)
+	DOS media ID byte (see #1010 at INT 21/AH=1Bh)
+	hard disk master boot sector (see #0567 at INT 19)
+	hard disk partition record (see #0568 at INT 19)
+	IDE controller commands (see #P125)
+	serial number (see #1420 at INT 21/AH=69h)
+
+DOS (general)
+	DOS commandline (see #2240 at INT 2E)
+	DOS Environment block (see #1032 at INT 21/AH=26h,#1049)
+	DOS memory allocation strategy (see #1331 at INT 21/AH=58h)
+	DOS OEM number (see #1048 at INT 21/AH=30h)
+
+DOS error codes (see INT 21/AH=59h)
+	critical error (see #2200 at INT 24)
+	extended error codes (see #1332)
+	error class (see #1334)
+	error locus (see #1336)
+	media ID structure (see #1333)
+	recommended action (see #1335)
+
+DOS EXEC function (see INT 21/AH=4Bh):
+	EXEC parameter block (see #1242,#1243,#1244)
+	.EXE file formats (see #1246,#1248,#1261,#1268)
+	Program Segment Prefix (PSP) (see #1032 at INT 21/AH=26h)
+
+DOS extenders
+	DPMI error codes (see #2775 at INT 21/AX=0000h)
+	DPMI mode switch (see #2366 at INT 2F/AX=1687h)
+	DPMI vendor-specific API (see #2367 at INT 2F/AX=168Ah)
+	DPMS registration structure (see #2441 at INT 2F/AX=43E0h)
+	VCPI (see INT 67/AX=DE00h)
+		mode switch (see #3297 at INT 67/AX=DE0Ch)
+
+DOS-internal data (see INT 21/AH=52h)
+	Current Directory Structure (see #1295,#1296,#1297)
+	Disk buffer (see #1301,#1302,#1304,#1305,#1307)
+	DOS Parameter List (DPL) (see #1338 at INT 21/AX=5D00h)
+	IFS entry point (see #1310)
+	List of Lists (SYSVARS) (see #1279)
+	Memory Control Block (see #1280,#1282,#1285)
+	Novell DOS (see #1236,#1237 at INT 21/AX=4458h)
+	SHARE hooks (see #1288)
+	Swappable Data Area (SDA) (see #1339,#1342 at INT 21/AX=5D0Bh)
+	System File Table (SFT) (see #1291,#1292,#1293,#1294)
+
+Error Codes (Other)
+	AMI BIOS diagnostics codes (see #P089)
+	Advanced Power Management [APM] (see #0392 at INT 15/AX=5300h)
+	EMS (see #3280 at INT 67/AH=40h)
+	PRINT.EXE (see #2248 at INT 2F/AX=0101h)
+	XMS (see #2423 at INT 2F/AX=4310h)
+
+Files and Directories
+	Directory Entry (see #1007)
+	file attributes (see #1055 at INT 21/AH=3Ch)
+	File Control Block (FCB) (see #1000 at INT 21/AH=0Fh)
+	File Date and Time (see #1317,#1318 at INT 21/AX=5700h)
+	file-sharing behavior (see #1057 at INT 21/AH=3Dh)
+	FindFirst data block (see #1278 at INT 21/AH=4Eh)
+
+Keyboard
+	keyboard controller commands (see #P066,#P081)
+	scan codes (see #0005 at INT 09"IRQ1")
+	shift states (see #0504,#0505 at INT 16/AH=12h)
+
+NetWare
+	DOS Requester entry point (see #2506 at INT 2F/AX=7A20h)
+	error codes (see #1460 at INT 21/AH=BCh,#1464,#1487 at INT 21/AH=E1h)
+	LSL status (see #2634 at INT 2F/AX=C000h"LSL")
+	NetWare Core Protocol functions (see #1750 at INT 21/AH=F2h)
+	VLM error codes (see #2507 at INT 2F/AX=7A20h)
+	VLM header (see #2509 at INT 2F/AX=7A20h)
+	VLM identifier (see #2508 at INT 2F/AX=7A20h)
+
+PCI Bus
+	PCI BIOS error codes (see #0646 at INT 1A/AX=B101h)
+	PCI configuration data (see #0790 at INT 1A/AX=B10Ah)
+	PCI vendor ID (see #0649 at INT 1A/AX=B10Ah)
+	PCI IRQ Routing Table (see #0924 at INT 1A/AX=B406h)
+
+Plug-and-Play
+	Plug-and-Play Installation Structure (see #F024)
+	Plug-and-Play error codes (see #F055)
+	Plug-and-Play device type codes (see #F059)
+	Extended System Configuration Data (ESCD)(see #0909 at INT 1A/AX=B401h)
+	generic device IDs (see #F060)
+
+Power Management
+	Advanced Power Management [APM] (see INT 15/AX=5300h)
+	Advanced Configuration and Power Interface [ACPI] 
+		(see #M068 at MEM xxxxh:xxx0h"ACPI")
+
+Real-Time Clock (see also CMOS.LST)
+	status registers (see #0325,#0326,#0327 at INT 15/AH=01h"Amstrad")
+
+Serial Port
+	serial port parameters (see #0219 at INT 14/AH=00h)
+	serial line status (see #0223 at INT 14/AH=03h)
+	modem status (see #0224 at INT 14/AH=03h)
+
+Sound
+	Adlib/SoundBlaster registers (see #P219 at PORT 0388h"AdLib")
+	Gravis UltraSound
+		registers (see #P192 at PORT 0340h"Gravis")
+		board version (see PORT 0746h"Gravis")
+		MegaEm (see INT 21/AX=FD12h,#3607 at INT 81/AX=0200h)
+	SoundBlaster SBSIM (see #3604 at INT 80"SBSIM")
+	Windows Sound System (see #P315 at PORT 0530h"Windows Sound")
+
+Video
+	character attributes (see #0013 at INT 10/AH=08h)
+	Display Combination Code (DCC) (see #0037 at INT 10/AX=1A00h)
+	TopView/RSIS shadow buffer [virtual screen] (see INT 10/AH=FEh)
+	VESA SuperVGA information (see #0075 at INT 10/AX=4F00h)
+	video modes
+		mode numbers (see #0009 at INT 10/AH=00h)
+		UltraVision modes (see #0145 at INT 10/AX=CD04h)
+		VESA modes (see #0081 at INT 10/AX=4F02h)
+	video parameters (see #0928 at INT 1D)
+
+Windows
+	Global EMM Import record (see #1168 at INT 21/AX=4402h)
+	Startup Information Structure (see #2279 at INT 2F/AX=1605h)
+	WMMCALL (see INT 20"Windows")
+	VxD identifiers (see #2290 at INT 2F/AX=1684h)
+
+Other Tables
+	AMIS signatures (see #2224,#2225 at INT 2D/AH=00h)
+	BIOS equipment list (see #0151 at INT 11)
+	BIOS32 Service Directory (see #F021)
+	Interrupt Sharing Protocol (ISP) header (see #2223 at INT 2D)
+	Multiprocessor Specification - Floating Pointer Structure (see #M079)
+	Option ROM header (see #F056)
+	ROM configuration table (see #0426 at INT 15/AH=C0h)
+	Universal Serial Bus OpenHCI (see #0891 at INT 1A/AX=B10Ah)
+
+--------!---CONTACT_INFO---------------------
+Internet: ralf@pobox.com (currently forwards to ralf@telerama.lm.com)
+UUCP: {uunet,harvard}!pobox.com!ralf
+FIDO: Ralf Brown 1:129/26.1
+	or post a message to me in the DR_DEBUG echo (I probably won't see it
+	unless you address it to me)
+CIS:  >INTERNET:ralf@pobox.com

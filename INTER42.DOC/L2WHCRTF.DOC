@@ -1,0 +1,47 @@
+#
+# L2WHCRTF.AWK - List To WinHelp Compiler Rich Text Format
+#
+# Converts Ralf Brown's DOS Interrupt List Release 40 into
+#    RTF rich text for Microsoft's Help Compiler (HC31.EXE V3.10.445).
+# Creates:
+#    6250 topic pages, about
+#   20000 WinHelp searchable key-items,
+#   10750 cross-references resolved to winhelp hyperlinks, and
+#     750 groups available with a new WinHelp Group button.
+#
+# Usage:
+#   X> AWK -fL2WHCRTF.AWK -vdosavestate=true INTERRUP.LST
+#   X> AWK -fL2WHCRTF.AWK INTERRUP.LST
+#   X> AWK -fL2WHindx.AWK INTERRUP.HPJ
+#   X> AWK -fL2WHlink.AWK INTERRUP.RTF
+#   X> HC31 INTERRUP
+# 
+# Notes:
+#  Creates subdirs .\g and .\i for temporary files (group-topics and indices). 
+#  This DOS awk script leaks memory, so the names of the temporary
+#    files are kept short and the list is processed in two AWK runs.
+#  You must have free disk space for:
+#           6.2 MB RTF file
+#           6.0 MB LTF file
+#           8.1 MB for 720 files in .\g and .\i subdirs (clustersize 8 KB)
+#           6.1 MB HLP file
+#           1.0 MB in %TEMP% directory (used by HC31.EXE)
+#         -------- +
+#        < 30.0 MB
+#
+# Time needed to process the 3324004 bytes long REL40 listfile on a
+#  33 Mhz 486DX /w 16 MB RAM in a DOS-box of WFW 3.11 (with enabled
+#  32-bit file- and disk-i/o) using Rob Duff's (Vancouver/Canada)
+#  AWK.EXE V3.20 of 22-May-91:
+#
+#   13 min. for AWK to create rich text, flag cross-reference candidates
+#   15 min.  from SeeAlso lines and group the topics  (LST -> RTF)
+#   18 min. for AWK to build verified hyperlinks (RTF -> LTF)
+#   20 min. for HC31 to create the compressed HLP-file
+#  -------- +
+#  about 1 hour and 10 minutes for the total job.
+#
+# Fred de Jong / Heerlen / Netherlands  (Internet: fjng@cbs.nl)
+# Central Bureau for Statistics
+# 9 May 94
+#

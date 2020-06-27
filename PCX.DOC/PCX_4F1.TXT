@@ -1,0 +1,3472 @@
+                * * * * * * * * * * * * * * * * * *
+                       pcxBeginPaletteGrab 
+                * * * * * * * * * * * * * * * * * * 
+     СВОДКА
+
+     Си
+
+     int far pcxBeginPaletteGrab( pal );
+     char *pal;
+
+     Паскаль
+
+     pcxBeginPaletteGrab( palptr: pointer ) : integer;
+
+     Бейсик
+
+     pcxBeginPaletteGrab%(SEG pal%)
+
+     Фортран
+
+     INTEGER*2 pcxBeginPaletteGrab(pal)
+     CHARACTER pal
+
+     Клиппер
+
+     pcxBD(<expC> pal)
+
+     ОПИСАНИЕ
+
+    Функция    pcxBeginPaletteGrab   устанавливает   сохраняемую 
+область 256-ти байтной  палитры.  Эта область обновляется каждый 
+раз когда программное обеспечение БСВВ (BIOS)  изменяет палитру. 
+В  силу  того,  что регистры палитры графического  адаптера  EGA 
+предназначены   только  для  записи,   это  единственный  способ 
+получить текущую палитру, когда вы пишете программу для работы с 
+экраном.   Эта  функция  может быть вызвана только  один  раз  в 
+программе.   Когда программа завершается,  для  удаления  буфера 
+должна быть вызвана функция pcxEndPaletteGrab,  иначе произойдет 
+крах системы. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция   pcxBeginPaletteGrab   возвращает   код   успешного 
+завершения или код ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxEndPaletteGrab
+
+     ПРИМЕРЫ
+
+     Си
+
+     char pal[256];
+     char clrma[20];
+
+     /* Установить рабочую область */
+     if ((retcode = pcxBeginPaletteGrab(pal)) = = pcxSUCCESS) {
+          /* Кодировать текущую палитру */
+          retcode = pcxEncodePalette(pcxCGA_4,clrma,pal);
+          /* Теперь наблюдение закончить */
+          retcode = pcxEndPaletteGrab();
+     }
+
+     Паскаль
+
+     var
+          pal       : array[0..255] of byte;
+          clrma : array[0..19] of byte;
+          
+          { Установить рабочую область }
+          retcode   := pcxBeginPaletteGrab(@pal);
+          if (retcode = pcxSUCCESS) then begin
+               { Кодировать текущую палитру }
+               retcode  := pcxEncodePalette(pcxCGA_4,@clrma,@pal); 
+               { Теперь наблюдение закончить }
+               retcode  := pcxEndPaletteGrab();
+          end; {if} 
+
+
+     Бейсик
+
+     DIM  pal%(128)
+     DIM      clrma%(10)
+
+     'Установить рабочую область 
+     retcode%  = pcxBeginPaletteGrab%(pal%(0))
+     IF (retcode%  = pcxSUCCESS) THEN
+          ' Кодировать текущую палитру 
+          retcode% = pcxEncodePalette%(pcxCGA_4,clrma%(0),pal%(0))
+          ' Теперь наблюдение закончить 
+          retcode% = pcxEndPaletteGrab%()
+     ENDIF
+
+     Фортран
+
+     CHARACTER   pal(256)
+     CHARACTER   clrma(20)
+
+     * Установить рабочую область 
+     retcode  = pcxBeginPaletteGrab(pal)
+     IF (retcode.EQ. pcxSUCCESS) THEN
+          *  Кодировать текущую палитру 
+          retcode = pcxEncodePalette(pcxCGA_4,clrma,pal)
+          *  Теперь наблюдение закончить 
+          retcode = pcxEndPaletteGrab()
+     ENDIF
+
+
+     Клиппер
+
+     pal      = SPACE(256)
+     clrma = SPACE(20)
+
+     * Установить рабочую область 
+     retcode  = pcxBPG(pal)
+     IF (retcode = pcxSUCCESS) 
+          *  Делать что-нибудь...
+          ....
+          *  Кодировать текущую палитру 
+          retcode = pcxEP(pcxCGA_4,clrma,pal)
+          ....
+          *  Теперь наблюдение закончить 
+          retcode = pcxEPG()
+     ENDIF
+
+                * * * * * * * * * * * * * * * * * * 
+                        pcxBufferDisplay
+                * * * * * * * * * * * * * * * * * * 
+
+     СВОДКА
+
+     Си
+
+     int far pcxBufferDisplay(buffer, bufsize, x, y, page);
+     char *buffer;
+     int bufsize, x, y, page;
+
+     Паскаль
+
+     pcxBufferDisplay(bufptr : pointer;  bufsize, x, y, page : 
+          integer) : integer;
+
+     Бейсик
+
+     pcxBufferDisplay%(SEG buffer%,  bufsize%, x%, y%, page%) 
+
+     Фортран
+
+     INTEGER*2 pcxBufferDisplay(buffer, bufsize, x, y, page)
+     CHARACTER buffer
+     INTEGER*2 bufsize, x, y, page
+
+     Клиппер
+
+     pcxBD(<expC>buffer,<expN>bufsize, x, y, page)
+
+     ОПИСАНИЕ
+
+    Функция     pcxBufferDisplay    отображает    предварительно 
+загруженный  или сохраненный буфер изображения пакета PCX.   Тип 
+буфера  должен  соответствовать  текущему  установленному   типу 
+дисплея,   иначе  буфер может отображаться  некорректно.   Буфер 
+отображается  на  указанную страницу,  в  область  с  указанными 
+координатами (x,y). 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция    pcxBufferDisplay    возвращает   код    успешного 
+завершения или код ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxDisplayBuffer, pcxFileBuffer, pcxBufferFile
+
+     ПРИМЕРЫ     
+
+     Си
+
+     #defined BUFMAX 10000
+     char buffer[BUFMAX];
+     int  bufsize;
+
+     /* Загрузить файл в буфер */
+     bufsize = pcxFileBuffer("pcxTest.PCX", buffer, BUFMAX);
+     if (bufsize > 0) {
+          /* Теперь отобразить буфер в область с координатами (100,200) на 
+          странице 0 */
+          retcode = pcxBufferDisplay(buffer, bufsize, 100, 200, 0);
+     }
+
+     Паскаль
+
+     const
+          bufmax = 10000;
+     var
+          buffer : array[0..10000] of byte;
+          bufsize : integer;
+
+     { Загрузить файл в буфер }
+     bufsize   :=  pcxFileBuffer('pcxTest.PCX', @buffer, bufmax);
+     if (bufsize > 0) then begin
+          { Теперь отобразить буфер в область с координатами (100,200) на 
+          странице 0 }
+          retcode   :=  pcxBufferDisplay(@buffer, bufsize, 100, 200, 0);     
+     end; {if} 
+
+     Бейсик
+
+     CONST BUFMAX = 10000
+     DIM buffer%(BUFMAX/2) ' Определен в байтах, а не словах
+
+     ' Загрузить файл в буфер 
+     bufsize% =  pcxFileBuffer%("pcxTest.PCX", buffer%(0), BUFMAX)
+     IF (bufsize > 0) THEN
+          ' Теперь отобразить буфер в область с координатами (100,200) на 
+          ' странице 0 
+          retcode% =  pcxBufferDisplay%(buffer%(0), bufsize%, 100, 200, 0);     
+     ENDIF     
+
+     Фортран
+
+     PARAMETER (BUFMAX = 10000)
+     CHARACTER  buffer(BUFMAX) 
+
+     * Загрузить файл в буфер 
+     bufsize  =  pcxFileBuffer('pcxTest.PCX', buffer, BUFMAX)
+     IF (bufsize.GT.0) THEN
+          * Теперь отобразить буфер в область с координатами (100,200) на 
+          * странице 0 
+          retcode  =  pcxBufferDisplay(buffer, bufsize, 100, 200, 0);     
+     ENDIF     
+
+     Клиппер
+
+     bufmax  = 10000
+     buffer  = SPACE(bufmax) 
+
+     * Загрузить файл в буфер 
+     bufsize =  pcxFB("pcxTest.PCX", buffer, bufmax )
+     IF (bufsize > 0) 
+          * Теперь отобразить буфер в область с координатами (100,200) на 
+          * странице 0 
+          retcode =  pcxBD(buffer, bufsize, 100, 200, 0);     
+     ENDIF     
+
+                * * * * * * * * * * * * * * * * * * 
+                          pcxBufferFile
+                * * * * * * * * * * * * * * * * * * 
+
+     
+     СВОДКА
+
+     Си
+
+     int far pcxBufferFile(buffer, bufsize, filename);
+     char *buffer;
+     int bufsize;
+     char *filename;
+
+     Паскаль
+
+     pcxBufferFile(bufptr : pointer;  bufsize : integer; 
+         filename : string ) : integer;
+
+     Бейсик
+
+     pcxBufferFile%(SEG buffer%,  bufsize%, filename$) 
+
+     Фортран
+
+     INTEGER*2 pcxBufferFile(buffer, bufsize, filename)
+     CHARACTER buffer
+     INTEGER*2 bufsize
+     CHARACTER filename
+
+     Клиппер
+
+     pcxBF(<expC>buffer,<expN>bufsize, <expC>filename)
+
+     ОПИСАНИЕ
+
+    Функция  pcxBufferFile  сохраняет буфер изображения в  файле 
+PCX.   Буфер может быть предварительно загруженным из файла PCX, 
+или  сохраненной областью экрана. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция  pcxBufferFile  возвращает код успешного  завершения 
+или код ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxFileBuffer, pcxDisplayBuffer, pcxBufferDisplay
+
+     ПРИМЕРЫ
+
+     Си
+
+     #defined bufmax 10000
+     char buffer[bufmax];
+
+     /* Сохранить в буфере часть изображения, находящуюся в координатах 
+        от (10,10) до (20,20) */
+     bufsize = pcxDisplayBuffer( buffer, bufmax, 10, 10, 20, 20, 0);
+     if (bufsize > 0) {
+          /*  Теперь сохранить буфер в файле PCX */
+          bufsize = pcxBufferFile(buffer, bufsize, "pcxTest.PCX");
+     }
+
+     Паскаль
+
+     const
+          bufmax = 10000;
+     var
+          buffer : array[0..bufmax] of byte;
+          bufsize : integer;
+
+     { Сохранить в буфере часть изображения, находящуюся в координатах 
+        от (10,10) до (20,20) }
+     bufsize   :=  pcxDisplayBuffer(@buffer, bufmax, 10, 10, 20, 20, 0);
+     if (bufsize > 0) then begin
+          { Теперь сохранить буфер в файле PCX }
+          bufsize :=  pcxBufferFile(@buffer, bufsize,'pcxTest.PCX');
+     end; {if}
+
+     Бейсик
+
+     CONST BUFMAX = 10000
+     DIM buffer%(BUFMAX/2) ' Определен в байтах, а не словах
+
+     ' Сохранить в буфере часть изображения, находящуюся в координатах 
+     '  от (10,10) до (20,20) 
+     bufsize%   =  pcxDisplayBuffer%(buffer%(0), bufmax%, 10, 10, 20, 20, 0)
+     IF (bufsize > 0) THEN
+          ' Теперь сохранить буфер в файле PCX
+          bufsize% =  pcxBufferFile%(buffer%(0), bufsize%, "pcxTest.PCX")
+     ENDIF
+
+     Фортран
+
+     PARAMETER (BUFMAX = 10000)
+     CHARACTER  buffer(BUFMAX) 
+     INTEGER*2 bufsize
+
+     * Сохранить в буфере часть изображения, находящуюся в координатах 
+     *   от (10,10) до (20,20) 
+     bufsize  =  pcxDisplayBuffer(buffer, bufmax, 10, 10, 20, 20, 0)
+     IF (bufsize.GT.0) THEN
+          *  Теперь сохранить буфер в файле PCX
+          bufsize =  pcxBufferFile(buffer, bufsize, 'pcxTest.PCX')
+     ENDIF
+
+     Клиппер
+
+     bufmax  = 10000
+     buffer  = SPACE(bufmax) 
+
+     *  Сохранить в буфере часть изображения, находящуюся в координатах 
+     *  от (10,10) до (20,20) 
+     bufsize = pcxDB(buffer, bufmax, 10, 10, 20, 20, 0)
+     IF (bufsize > 0) 
+          * Теперь сохранить буфер в файле PCX
+          bufsize =  pcxBF(buffer, bufsize, "pcxTest.PCX")
+     ENDIF
+
+                * * * * * * * * * * * * * * * * * * 
+                         pcxBufferPrint
+                * * * * * * * * * * * * * * * * * * 
+
+
+     СВОДКА
+
+     Си
+
+     int far pcxBufferPrint(buffer, bufsize, x, y);
+     char *buffer;
+     int bufsize, x, y;
+
+     Паскаль
+
+     pcxBufferPrint(bufptr : pointer;  bufsize, x, y : integer) 
+          : integer;
+
+     Бейсик
+
+     pcxBufferPrint%(SEG buffer,  bufsize%, x%, y%) 
+
+     Фортран
+
+     INTEGER*2 pcxBufferPrint(buffer, bufsize, x, y)
+     CHARACTER buffer
+     INTEGER*2 bufsize, x, y
+
+     Клиппер
+
+     pcxBP(<expC>buffer,<expN>bufsize, x, y)
+
+     ОПИСАНИЕ
+
+    Функция pcxBufferPrint выводит буфер изображения на  текущее 
+устройство   печати.    Печатающее   устройство   должно    быть 
+предварительно установлено при помощи функции pcxSetPrinter. 
+
+     ЗАМЕЧАНИЕ
+
+    В силу того, что буферы PCX скомпрессированы, они могут быть 
+напечатаны  только на растровых принтерах,  таких как принтер HP 
+LaserJet.  Расширьте его в виртуальный  буфер,    или отобразите 
+изображение, если печатаете на  матричном принтере. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция  pcxBufferPrint  возвращает код успешного завершения 
+или код ошибки. 
+
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxFilePrint, pcxDisplayPrint
+
+     ПРИМЕРЫ
+     
+     Си
+
+     #define bufmax 10000
+     char buffer[bufmax];
+     int bufsize;
+
+     /* Загрузить файл в буфер */
+     bufsize = pcxFileBuffer( "pcxTest.PCX", buffer, bufmax);
+     if (bufsize > 0) {
+          /*  Теперь печатаем буфер, начиная с точки, 
+              координатами которой являются (100, 200) */
+          retcode = pcxBufferPrint(buffer, bufsize, 100, 200);
+     }
+
+     Паскаль
+
+     const
+          bufmax = 10000;
+     var
+          buffer : array[0..bufmax] of byte;
+          bufsize : integer;
+
+     { Загрузить файл в буфер }
+     bufsize := pcxFileBuffer( 'pcxTest.PCX', @buffer, bufmax);
+     if (bufsize > 0) then begin
+          { Теперь печатаем буфер, начиная с точки, 
+              координатами которой являются (100, 200) }
+          retcode := pcxBufferPrint(@buffer, bufsize, 100, 200);
+     end; {if}
+
+     Бейсик
+
+     CONST BUFMAX = 10000
+     DIM buffer%(BUFMAX/2) ' Определяется в байтах, а не в 
+                           '     словах
+
+     ' Загрузить файл в буфер 
+     bufsize% = pcxFileBuffer%( "pcxTest.PCX", buffer%(0), BUFMAX)
+     IF (bufsize > 0) THEN
+          ' Теперь печатаем буфер, начиная с точки, 
+          '    координатами которой являются (100, 200)
+          retcode% = pcxBufferPrint%(buffer%(0), bufsize%, 100, 200)
+     ENDIF
+
+     Фортран
+
+     CHARACTER buffer(10000)
+     INTEGER*2 bufsize
+
+     *  Загрузить файл в буфер
+     bufsize = pcxFileBuffer( 'pcxTest.PCX', buffer, 10000)
+     IF (bufsize.GT.0) THEN
+          *  Теперь печатаем буфер, начиная с точки, 
+          *    координатами которой являются (100, 200)
+          retcode = pcxBufferPrint(buffer, bufsize, 100, 200)
+     ENDIF
+
+
+     Клиппер
+
+     bufmax = 10000
+     buffer = SPACE(bufmax)
+
+     *  Загрузить файл в буфер
+     bufsize = pcxFB( "pcxTest.PCX", buffer, bufmax)
+     IF (bufsize > 0)
+          *  Теперь печатаем буфер, начиная с точки, 
+          *    координатами которой являются (100, 200)
+          retcode = pcxBP(buffer, bufsize, 100, 200)
+     ENDIF
+
+                * * * * * * * * * * * * * * * * * * 
+                          pcxBufferText
+                * * * * * * * * * * * * * * * * * * 
+
+     СВОДКА
+
+     Си
+
+     int far pcxBufferText(textbuf);
+     char *textbuf;
+
+     Паскаль
+
+     pcxBufferText(textbuf : pointer) : integer; 
+
+     Бейсик
+
+     pcxBufferText%(SEG textbuf% )
+
+     Фортран
+
+     INTEGER*2 pcxBufferText(textbuf)
+     CHARACTER textbuf
+
+     Клиппер
+
+     pcxBT(<expC>textbuf)
+
+     ОПИСАНИЕ
+
+    Функция  pcxBufferText восстанавливает на дисплее  текстовый 
+экран,    предварительно   сохраненный    при   помощи   функции 
+pcxTextBuffer.  Это полезно при восстановлении текстового экрана 
+после использования графического режима. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция  pcxBufferText  возвращает код успешного  завершения 
+или код ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxTextBuffer
+
+     ПРИМЕРЫ
+
+     Си
+
+     char textbuf[4096];
+
+     /* Восстановить сохраненный текстовый экран размером 80x25 */
+     retcode = pcxBufferText(textbuf);
+
+
+     Паскаль
+
+     var
+          textbuf : array[0..4096] of byte;
+
+          { Возвратить сохраненный текстовый экран размером 80x25}
+          retcode := pcxBufferText(@textbuf);
+
+     Бейсик
+
+     DIM textbuf%(4096/2) ' Привести к байтам
+
+     ' Восстановить сохраненный текстовый экран размером 80x25
+     retcode% = pcxBufferText%(textbuf%(0))
+
+     Фортран
+
+     CHARACTER textbuf(4096)
+     
+     * Восстановить сохраненный текстовый экран размером 80x25
+     retcode = pcxBufferText(textbuf)
+
+     Клиппер
+
+     textbuf = SPACE(4096);
+
+     *  Восстановить сохраненный текстовый экран размером 80x25
+     retcode = pcxBT(textbuf)
+
+                * * * * * * * * * * * * * * * * * * 
+                        pcxBufferVirtual
+                * * * * * * * * * * * * * * * * * * 
+                     
+     
+     СВОДКА
+
+     Си
+
+     int far pcxBufferVirtual(buffer, bufsize, vptr);
+     char *buffer;
+     int bufsize;
+     long vptr;
+
+     Паскаль
+
+     pcxBufferVirtual(bufptr : pointer;  bufsize : integer; 
+         vptr : longint ) : integer;
+
+     Бейсик
+
+     pcxBufferVirtual%(SEG buffer%,  bufsize%, vptr&) 
+
+     Фортран
+
+     INTEGER*2 pcxBufferVirtual(buffer, bufsize, vptr)
+     CHARACTER buffer
+     INTEGER*2 bufsize
+     INTEGER*4 vptr
+
+     Клиппер
+
+     pcxBV(<expC>buffer, <expN>bufsize, vptr)
+
+
+     ОПИСАНИЕ
+
+    Функция    pcxBufferVirtual   расширяет   некоторый    буфер 
+изображения  при помощи предварительно  созданного  виртуального 
+буфера. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция     pcxBufferVirtual   возвращает   код    успешного 
+завершения или код ошибки. 
+
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxFileVirtual, pcxVirtualDisplay
+
+     ПРИМЕРЫ
+
+     Си
+
+     char buffer[20000];
+     long vptr;
+     int bufsize;
+
+     /*  Создать виртуальный буфер в обычной памяти */
+     retcode = pcxCreateVirtual(pcxCMM, &vptr, pcxEGA_10 ,640, 350);
+     if (retcode == pcxSUCCESS) {
+          /* Расширить предварительно загруженный буфер в 
+             виртуальный буфер */
+          retcode = pcxBufferVirtual(buffer, bufsize, vptr);
+     }
+
+     Паскаль
+
+     var
+          buffer : array[0..20000] of byte;
+          vptr   : longint;
+          bufsize: integer;
+
+     { Создать виртуальный буфер в обычной памяти }
+     retcode := pcxCreateVirtual(pcxCMM, @vptr, pcxEGA_10, 640, 350);
+     if (retcode = pcxSUCCESS) then begin
+          { Расширить предварительно загруженный буфер в 
+             виртуальный буфер }
+          retcode := pcxBufferVirtual(@buffer, bufsize, vptr);
+     end; {if}
+
+     Бейсик
+
+     DIM buffer%(20000/2) ' Привести к байтам
+
+     '  Создать виртуальный буфер в обычной памяти
+     retcode%  = pcxCreateVirtual%(pcxCMM, vptr, pcxEGA_10, 640, 350)
+     IF (retcode%  = pcxSUCCESS) THEN
+          '  Расширить предварительно загруженный буфер в 
+          '   виртуальный буфер 
+          retcode% = pcxBufferVirtual%(buffer%(0), bufsize%, vptr)    
+     ENDIF
+
+     Фортран
+
+     buffer(20000)
+     INTEGER*4 vptr
+     INTEGER*2 bufsize
+
+     *  Создать виртуальный буфер в обычной памяти
+     retcode  = pcxCreateVirtual(pcxCMM, vptr, pcxEGA_10, 640, 350)
+     IF (retcode.EQ. pcxSUCCESS) THEN
+          *  Расширить предварительно загруженный буфер в 
+          *   виртуальный буфер 
+          retcode  = pcxBufferVirtual(buffer, bufsize, vptr)    
+     ENDIF
+
+     Клиппер
+
+     buffer = SPACE(20000)
+     vptr   = SPACE(4)
+
+     *  Создать виртуальный буфер в обычной памяти
+     retcode  = pcxCV(pcxCMM, vptr, pcxEGA_10, 640, 350)
+     IF (retcode =  pcxSUCCESS) 
+          *  Расширить предварительно загруженный буфер в 
+          *   виртуальный буфер 
+          retcode  = pcxBV(buffer, bufsize, vptr)    
+     ENDIF
+
+                * * * * * * * * * * * * * * * * * * 
+                        pcxCreateVirtual
+                * * * * * * * * * * * * * * * * * * 
+
+
+     СВОДКА
+
+     Си
+
+     int far pcxCreateVirtual(vtype, vptr, pcxtype, width, depth);
+     int vtype;
+     long *vptr;
+     int pcxtype, width, depth;
+
+     Паскаль
+
+     pcxCreateVirtual(vtype : integer; vptr : pointer;
+        pcxtype, width, depth : integer) : integer;
+
+     Бейсик
+
+     pcxCreateVirtual%(vtype%, SEG vptr&,  pcxtype%, width%, 
+        depth%)
+
+     Фортран
+
+     INTEGER*2 pcxCreateVirtual(vtype, vptr,  pcxtype, width, 
+        depth)
+     INTEGER*2 vtype
+     INTEGER*4 vptr
+     INTEGER*2 pcxtype, width, depth
+ 
+     Клиппер
+
+     pcxCV(<expN>vtype, vptr, pcxtype, width, depth)
+
+     ОПИСАНИЕ
+
+    Функция  pcxCreateVirtual  создает  виртуальный  буфер   для 
+данного типа изображения,  с  размером достаточным для него так, 
+что   width  это  ширина,  а  depth - высота  в  точках  растра. 
+Виртуальный  буфер может быть создан как в обычной (стандартной) 
+памяти  (vtype = pcxCMM),  так и в дополнительной  (расширенной) 
+(vtype = pcxEMM).  Указатель на этот буфер хранится в переменной 
+vptr. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция    pcxCreateVirtual    возвращает   код    успешного 
+завершения или код ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxDestroyVirtual
+
+     ПРИМЕРЫ
+
+     Си
+
+     char buffer[20000];
+     long vptr;
+     int bufsize;
+
+     /* Создать виртуальный буфер в обычной памяти */
+     retcode = pcxCreateVirtual(pcxCMM, &vptr, pcxEGA_10, 640, 350);
+     if (retcode == pcxSUCCESS) {
+          /*  Расширить предварительно загруженный буфер при 
+               помощи виртуального буфера  */
+          retcode = pcxBufferVirtual(buffer, bufsize, vptr);
+     }
+
+     Паскаль
+
+     var
+          buffer : array[0..20000] of byte;
+          vptr   : longint;
+          bufsize : integer;
+
+     {  Создать виртуальный буфер в обычной памяти  }
+     retcode := pcxCreateVirtual(pcxCMM, @vptr, pcxEGA_10, 640, 350);
+     if (retcode = pcxSUCCESS) then begin
+          {  Расширить предварительно загруженный буфер при 
+               помощи виртуального буфера  }
+          retcode := pcxBufferVirtual(@buffer, bufsize, vptr);
+     end; {if}
+     
+     Бейсик
+
+     DIM buffer%(20000/2) ' Привести к байтам
+
+     '   Создать виртуальный буфер в обычной памяти 
+     retcode%  = pcxCreateVirtual%(pcxCMM, vptr, pcxEGA_10, 640, 350)
+     IF (retcode = pcxSUCCESS) THEN
+          '  Расширить предварительно загруженный буфер при 
+          '     помощи виртуального буфера  
+          retcode% = pcxBufferVirtual%(buffer%(0), bufsize%, vptr);
+     ENDIF
+
+     Фортран
+
+     buffer(20000)
+     INTEGER*4 vptr
+     INTEGER*2 bufsize
+
+     *   Создать виртуальный буфер в обычной памяти 
+     retcode  = pcxCreateVirtual(pcxCMM, vptr, pcxEGA_10, 640, 350)
+     IF (retcode.EQ.pcxSUCCESS) THEN
+          *  Расширить предварительно загруженный буфер при 
+          *     помощи виртуального буфера  
+          retcode = pcxBufferVirtual(buffer, bufsize, vptr);
+     ENDIF
+
+     Клиппер
+
+     buffer = SPACE(20000)
+     vptr   = SPACE(4)
+
+     *   Создать виртуальный буфер в обычной памяти 
+     retcode  = pcxCV(pcxCMM, vptr, pcxEGA_10, 640, 350)
+     IF (retcode = pcxSUCCESS) 
+          *  Расширить предварительно загруженный буфер при 
+          *     помощи виртуального буфера  
+          retcode = pcxBV(buffer, bufsize, vptr);
+     ENDIF
+
+                * * * * * * * * * * * * * * * * * * 
+                        pcxDecodePalette
+                * * * * * * * * * * * * * * * * * * 
+
+
+     СВОДКА
+
+     Си
+
+     int far pcxDecodePalette(disptype, clrma, pal);
+     int disptype;
+     char *clrma, *pal;
+
+     Паскаль
+
+     pcxDecodePalette(disptype : integer; clrma, pal : pointer) 
+      : integer;
+
+     Бейсик
+
+     pcxDecodePalette%(disptype%, SEG clrma%, SEG pal%)
+
+     Фортран
+
+     INTEGER*2  pcxDecodePalette(disptype, clrma, pal)
+     INTEGER*2  disptype
+     CHARACTER  clrma, pal
+
+     Клиппер
+
+     pcxDP(<expN>disptype, <expC>clrma, pal)
+
+
+     ОПИСАНИЕ
+
+    Функция pcxDecodePalette преобразует свойственный пакету PCX  
+формат  палитры  в формат приемлемый для  БСВВ(BIOS).   Так  как 
+формат  PCX  представлен триплетами RGB,  то,  если  ипользуются 
+графические адаптеры CGA, EGA и VGA,  должны быть сформатированы 
+три   байта.   Тип  дисплея  необходим  для  определения  метода 
+преобразования.   Эта  функция не нужна для специфичного  режима 
+отображения адаптора Hercules. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция    pcxDecodePalette    возвращает   код    успешного 
+завершения или код ошибки. 
+
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxEncodePalette
+
+     ПРИМЕРЫ
+
+     Си
+
+     char pal[20];
+     PCXHEADER header;
+
+     /*  Получить заголовок файла  */
+     retcode = pcxGetFileHeader("pcxTest.PCX", &header);
+     if (retcode == pcxSUCCESS ) {
+          /*  Преобразовать палитру для адаптера EGA */
+          retcode = pcxDecodePalette(pcxEGA_10, header, clrma, pal);
+     }
+
+     Паскаль
+
+     pal : array[0..19] of byte;
+     header : PCXHEADER;
+
+     {  Получить заголовок файла   }
+     retcode := pcxGetFileHeader('pcxTest.PCX', @header);
+     if (retcode = pcxSUCCESS ) then begin
+          {   Преобразовать палитру для адаптера EGA  }
+          retcode := pcxDecodePalette(pcxEGA_10, header, clrma, @pal);
+     end; {if}
+
+     Бейсик
+
+     DIM pal%(10)
+     DIM header AS  PCXHEADER
+
+     '  Получить заголовок файла   
+     retcode%  = pcxGetFileHeader%("pcxTest.PCX", header)
+     IF (retcode = pcxSUCCESS ) THEN 
+          '   Преобразовать палитру для адаптера EGA  
+          retcode% = pcxDecodePalette%(pcxEGA_10, header, clrma, pal%(0))
+     ENDIF
+
+     Фортран
+
+     CHARACTER pal(20)
+
+     *  Получить заголовок файла, используя предопределенный 
+     *  общий блок    
+     retcode  = pcxGetFileHeader('pcxTest.PCX'C, manuf)
+     IF (retcode.EQ.pcxSUCCESS ) THEN 
+          *   Преобразовать палитру для адаптера EGA  
+          retcode  = pcxDecodePalette(pcxEGA_10, clrma, pal)
+     ENDIF
+
+     Клиппер
+
+     header = SPACE(128)
+     pal  = SPACE(20)
+
+     *  Получить заголовок файла 
+     retcode  = pcxGFH("pcxTest.PCX", header)
+     IF (retcode = pcxSUCCESS )  
+          *   Преобразовать палитру для адаптера EGA  
+          retcode  = pcxDP(pcxEGA_10, SUBSTR(header,17,48), pal)
+     ENDIF
+
+                * * * * * * * * * * * * * * * * * * 
+                        pcxDestroyVirtual
+                * * * * * * * * * * * * * * * * * * 
+
+
+     СВОДКА
+
+     Си
+
+     int far pcxDestroyVirtual(vptr);
+     long vptr;
+     
+     Паскаль
+
+     pcxDestroyVirtual(vptr : longint) : integer;
+
+     Бейсик
+
+     pcxDestroyVirtual%(vptr&) 
+
+     Фортран
+
+     INTEGER*2  pcxDestroyVirtual(vptr)
+     INTEGER*4  vptr
+
+     Клиппер
+
+     pcxDV(<expN> vptr)
+
+     ОПИСАНИЕ
+
+    Функция  pcxDestroyVirtual  уничтожает  виртуальный   буфер, 
+созданный ранее с помощью фукнции pcxCreateVirtual,   освобождая 
+память для других нужд. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция    pcxDestroyVirtual    возвращает   код   успешного 
+завершения или код ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxCreateVirtual
+
+     ПРИМЕРЫ
+
+     Си
+
+     long vptr;
+     
+     /*  Уничтожить виртуальный буфер, после того, как мы больше 
+         в нем не нуждаемся */
+     retcode = pcxDestroyVirtual(vptr);
+
+     Паскаль
+
+     vptr : longint;
+
+     {  Уничтожить виртуальный буфер, после того, как мы больше 
+         в нем не нуждаемся  }
+     retcode := pcxDestroyVirtual(vptr);
+
+     Бейсик
+
+     '  Уничтожить виртуальный буфер, после того, как мы больше 
+     '    в нем не нуждаемся 
+     retcode% = pcxDestroyVirtual%(vptr&)
+
+     Фортран
+
+     INTEGER*4 vptr
+
+     *  Уничтожить виртуальный буфер, после того, как мы больше 
+     *    в нем не нуждаемся 
+     retcode  = pcxDestroyVirtual(vptr)
+
+     Клиппер
+
+     vptr  = SPACE(4)
+
+     *  Уничтожить виртуальный буфер, после того, как мы больше 
+     *    в нем не нуждаемся 
+     retcode  = pcxDV(vptr)
+
+                * * * * * * * * * * * * * * * * * * 
+                        pcxDisplayBuffer
+                * * * * * * * * * * * * * * * * * * 
+
+
+     СВОДКА
+
+     Си
+
+     int far pcxDisplayBuffer(buffer, bufmax, x1, y1, x2, y2, page);
+     char *buffer;
+     int bufmax, x1, y1, x2, y2, page;
+
+     Паскаль
+
+     pcxDisplayBuffer(bufptr : pointer; bufmax, x1, y1, x2, y2, page 
+       : integer) : integer;
+
+     Бейсик
+
+     pcxDisplayBuffer%(SEG buffer%, bufmax%, x1%, y1%, x2%, y2%, page%)
+
+     Фортран
+
+     INTEGER*2 pcxDisplayBuffer( buffer, bufmax, x1, y1, x2, y2, page)
+     CHARACTER buffer
+     INTEGER*2 bufmax, x1, y1, x2, y2, page
+
+     Клиппер
+
+     pcxDB( <expC>buffer, <expN> x1, y1, x2, y2, page)
+
+
+     ОПИСАНИЕ
+
+    Функция  pcxDisplayBuffer сохраняет область экрана в  буфере 
+изображения.   Этот буфер может быть либо переотображен в  новое 
+место,   либо записан на диск.  Это может быть использовано  для 
+сохранения   области  используемой  для  изображения,    которое  
+выводиться на экран при отображении  окон или меню,  либо просто 
+для сохранения экрана. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция pcxDisplayBuffer возвращает число сохраненных байтов 
+либо  код  ошибки.  Положительное возвращаемое  значение  обычно 
+означает успешное завершение. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxBufferDisplay, pcxBufferFile
+
+     ПРИМЕРЫ
+
+     Си
+
+     #define bufmax 10000
+     char buffer[bufmax];
+     int bufsize;
+
+     /*  Сохранить область экрана от точки (10,10) до (20,20) */
+     bufsize = pcxDisplayBuffer(buffer, bufmax, 10, 10, 20, 20, 0);
+     if (BUFSIZE > 0) {
+          /*  И отобразить в новое место с координатами (50,100) */
+          retcode = pcxBufferDisplay(buffer, bufsize, 50, 100, 0);
+     }
+     Паскаль
+
+     const
+           bufmax = 10000;
+     var
+          buffer : array[0..bufmax] of byte;
+          bufsize: integer;
+
+     {  Сохранить область экрана от точки (10,10) до (20,20) }
+     bufsize := pcxDisplayBuffer(@buffer, bufmax, 10, 10, 20, 20, 0);
+     if (BUFSIZE > 0) then begin
+          {  И отобразить в новое место с координатами (50,100) }
+          retcode := pcxBufferDisplay(@buffer, bufsize, 50, 100, 0);
+     end; {if}
+
+     Бейсик
+
+     CONST      BUFMAX  = 10000
+     DIM           buffer%(BUFMAX/2)  ' Привести к байтам
+
+     '  Сохранить область экрана от точки (10,10) до (20,20) 
+     bufsize% = pcxDisplayBuffer%(buffer%(0), BUFMAX, 10, 10, 20, 20, 0)
+     IF (BUFSIZE > 0) THEN 
+          '  И отобразить в новое место с координатами (50,100)  
+          retcode% = pcxBufferDisplay%(buffer%(0), bufsize%, 50, 100, 0)
+     ENDIF
+
+     Фортран
+
+     PARAMETER      (BUFMAX  = 10000)
+     CHARACTER       buffer(BUFMAX) 
+
+     *  Загрузить файл в буфер 
+     bufsize  = pcxFileBuffer('pcxTest.PCX',buffer, BUFMAX)
+     IF (BUFSIZE.GT.0) THEN 
+          *  Теперь отобразить буфер в место с координатами 
+          *   (100,200)  на страницу 0
+          retcode = pcxBufferDisplay(buffer, bufsize, 100, 200, 0)
+     ENDIF
+
+
+     Клиппер
+
+     bufmax  = 10000
+     buffer  = SPACE(bufmax) 
+
+     *  Сохранить область экрана от точки (10,10) до (20,20) 
+     bufsize  = pcxDB(buffer, bufmax, 10, 10, 20, 20, 0)
+     IF (BUFSIZE > 0)
+          *    И отобразить в новое место с координатами (50,100)  
+          retcode = pcxBD(buffer, bufsize, 50, 100, 0)
+     ENDIF
+
+
+                * * * * * * * * * * * * * * * * * * 
+                         pcxDisplayFile
+                * * * * * * * * * * * * * * * * * * 
+
+
+     СВОДКА
+
+     Си
+
+     int far pcxDisplayFile(filename, x1, y1, x2, y2, page);
+     char *filename;
+     int x1, y1, x2, y2, page;
+     
+     Паскаль
+
+     pcxDisplayFile(filename : string; x1, y1, x2, y2, page : 
+      integer) : integer;
+
+     Бейсик
+
+     pcxDisplayFile%(SEG filename$, x1%, y1%, x2%, y2%, page%) 
+
+     Фортран
+
+     INTEGER*2 pcxDisplayFile(filename, x1, y1, x2, y2, page)
+     CHARACTER filename
+     INTEGER*2 x1, y1, x2, y2, page
+
+     Клиппер
+
+     pcxDF(<expC>filename, <expN> x1, y1, x2, y2, page)
+
+     ОПИСАНИЕ
+
+    Функция  pcxDisplayFile  сохраняет область  экрана  прямо  в 
+файле  изображения  пакета  PCX.   Это  очень  полезно,    когда 
+сохраняемые изображения больше, чем доступные буферы. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция  pcxDisplayFile  возвращает код успешного завершения 
+или код ошибки. 
+
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxFileDisplay, pcxDisplayBuffer
+
+     ПРИМЕРЫ
+
+     Си
+
+     /*  Сохранить область экрана в файле изображений PCX */
+     retcode = pcxDisplayFile("pcxTest.PCX", 0, 0, 200, 100, 0);
+     if (retcode == pcxSUCCESS) {
+          /*  Сохранение прошло успешно ....  */
+          .....
+     }
+
+     Паскаль
+
+     {  Сохранить область экрана в файле изображений PCX }
+     retcode := pcxDisplayFile('pcxTest.PCX', 0, 0, 200, 100, 0);
+     if (retcode = pcxSUCCESS) then begin
+          {  Сохранение прошло успешно ....  }
+          .....
+     end;  {if}
+
+     Бейсик
+
+     '  Сохранить область экрана в файле изображений PCX 
+     retcode% = pcxDisplayFile%("pcxTest.PCX", 0, 0, 200, 100, 0)
+     IF (retcode% = pcxSUCCESS) THEN
+          '  Сохранение прошло успешно ....  
+          .....
+     ENDIF
+
+     Фортран
+
+     *  Сохранить область экрана в файле изображений PCX 
+     retcode = pcxDisplayFile('pcxTest.PCX', 0, 0, 200, 100, 0)
+     IF (retcode.EQ.pcxSUCCESS) THEN
+          *  Сохранение прошло успешно ....  
+          .....
+     ENDIF
+
+     Клиппер
+
+     *  Сохранить область экрана в файле изображений PCX 
+     retcode = pcxDF("pcxTest.PCX", 0, 0, 200, 100, 0)
+     IF (retcode =  pcxSUCCESS) 
+          *  Сохранение прошло успешно ....  
+          .....
+     ENDIF
+
+     
+                * * * * * * * * * * * * * * * * * * 
+                         pcxDisplayPrint
+                * * * * * * * * * * * * * * * * * * 
+
+     СВОДКА
+
+     Си
+
+     int far pcxDisplayPrint( x, y );
+     int x, y;
+
+     Паскаль
+
+     pcxDisplayPrint( x, y : integer) : integer ;
+
+     Бейсик
+
+     pcxDisplayPrint%( x%, y% )
+
+     Фортран
+
+     INTEGER*2 pcxDisplayPrint( x, y )
+     INTEGER*2 x, y 
+
+     Клиппер
+
+     pcxYP(<expN> x, y )
+
+
+     ОПИСАНИЕ
+
+    Функция pcxDisplayPrint  выводит  в указанное (x,y) место на 
+принтере,   предварительно  установленного   с  помощью  функции 
+pcxSetPrinter, содержимое экрана дисплея. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция pcxDisplayPrint  возвращает код успешного завершения 
+или код ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxSetPrinter
+
+     ПРИМЕРЫ
+
+     Си
+
+     /*  Мы в черно-белом режиме и печатаем экран */
+     retcode = pcxDisplayPrint(0,0);
+
+     Паскаль
+
+     {   Мы в черно-белом режиме и печатаем экран  }
+     retcode := pcxDisplayPrint(0,0);
+
+     Бейсик
+
+     '   Мы в черно-белом режиме и печатаем экран  
+     retcode% = pcxDisplayPrint%(0,0)
+
+     Фортран
+
+     *   Мы в черно-белом режиме и печатаем экран  
+     retcode = pcxDisplayPrint(0,0)
+
+     Клиппер
+
+     *   Мы в черно-белом режиме и печатаем экран  
+     retcode = pcxYP(0,0)
+
+
+                * * * * * * * * * * * * * * * * * * 
+                         pcxEMInstalled
+                * * * * * * * * * * * * * * * * * * 
+
+
+     СВОДКА
+
+     Си
+     
+     int far pcxEMInstalled();
+
+     Паскаль
+
+     pcxEMInstalled : integer;
+
+     Бейсик
+
+     pcxEMInstalled%()
+
+     Фортран
+
+     INTEGER*2 pcxEMInstalled()
+
+     Клиппер
+
+     pcxEMI()
+
+     ОПИСАНИЕ
+
+    Функция  pcxEMInstalled проверяет,   установлена  ли в   ЭВМ 
+расширенная память,  и  пригодна ли она для использования.  Если 
+установлена,   то  память может быть использована  для  создания 
+виртуальных буферов. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция  pcxEMInstalled  возвращает код успешного завершения 
+или код ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxVirtualFree
+
+     ПРИМЕРЫ
+
+     Си
+
+     long vfree;
+
+     /* Проверить,  установлена ли расширенная память */
+     if (pcxEMInstalled()  == pcxSUCCESS ) {
+          /* Установлена. Теперь получить размер свободной 
+             расширенной памяти  */
+          vfree = pcxVirtualFree(pcxEMM);
+     }
+
+     Паскаль
+
+     vfree : longint;
+
+     {  Проверить,  установлена ли расширенная память }
+     if (pcxEMInstalled()  = pcxSUCCESS ) then begin
+          { Установлена. Теперь получить размер свободной 
+             расширенной памяти  }
+          vfree := pcxVirtualFree(pcxEMM);
+     end; {if}
+
+     Бейсик
+
+     '  Проверить,  установлена ли расширенная память 
+     IF (pcxEMInstalled%()  = pcxSUCCESS ) THEN 
+          '  Установлена. Теперь получить размер свободной 
+          '   расширенной памяти  
+          vfree = pcxVirtualFree%(pcxEMM)
+     ENDIF
+
+     Фортран
+
+     INTEGER*4 vfree
+ 
+     *  Проверить,  установлена ли расширенная память 
+     IF (pcxEMInstalled().EQ. pcxSUCCESS ) THEN 
+          *  Установлена. Теперь получить размер свободной 
+          *   расширенной памяти  
+          vfree = pcxVirtualFree(pcxEMM)
+     ENDIF
+
+     Клиппер
+
+     *  Проверить,  установлена ли расширенная память
+     retcode =  pcxEMI()
+     IF ( retcode = pcxSUCCESS )  
+          *  Установлена. Теперь получить размер свободной 
+          *   расширенной памяти  
+          vfree = pcxVE(pcxEMM)
+     ENDIF
+
+
+
+                * * * * * * * * * * * * * * * * * * 
+                        pcxEncodePalette
+                * * * * * * * * * * * * * * * * * * 
+
+     СВОДКА
+
+     Си
+
+     int far pcxEncodePalette(disptype, clrma, pal);
+     int disptype;
+     char *clrma, *pal;
+
+     Паскаль
+
+     pcxEncodePalette(disptype : integer; clrma, pal : pointer) 
+       : integer;
+
+     Бейсик
+
+     pcxEncodePalette%(disptype%, SEG clrma%, SEG pal%)
+
+     Фортран
+
+     INTEGER*2 pcxEncodePalette(disptype, clrma, pal)
+     INTEGER*2 disptype
+     CHARACTER clrma, pal
+
+     Клиппер
+
+     pcxEP(<expN> disptype,<expC>  clrma, pal)
+
+     ОПИСАНИЕ
+
+    Функция pcxEncodePalette кодирует буфер,  содержащий палитру 
+в формате БСВВ (BIOS),  в палитру формата пакета PCX.  Это очень 
+полезно  для  графических адаптеров CGA,  EGA и  VGA,   где  она 
+преобразует  каждый регистр палитры в формат PCX,   использующий 
+триплеты  RGB.   Тип  дисплея необходим для  определения  метода 
+преобразования.   Эта функция должна быть использована для того. 
+чтобы сохранить палитру в заголовке пакета PCX. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+     
+    Функция    pcxEncodePalette    возвращает   код    успешного 
+завершения или код ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxDecodePalette
+
+     ПРИМЕРЫ
+
+     Си
+
+     char pal[20];
+     PCXHEADER header;
+
+     /*  Если мы имеем палитру в формате БСВВ, закодируем ее в 
+         формат PCX и сохраним в заголовке изображения */
+     retcode = pcxEncodePalette(pcxEGA_10, header, clrma, pal);
+     if (retcode == pcxSUCCESS ) {
+          /*  Палитра была закодирована ... */
+          .....
+     }
+
+     Паскаль
+
+     pal : array[0..19] of byte;
+     header : PCXHEADER;
+
+     {  Если мы имеем палитру в формате БСВВ, закодируем ее в 
+         формат PCX и сохраним в заголовке изображения }
+     retcode := pcxEncodePalette(pcxEGA_10, header, clrma, @pal);
+     if (retcode = pcxSUCCESS ) then begin
+          {  Палитра была закодирована ... }
+          .....
+     end; {if}
+
+     Бейсик
+
+     DIM pal%(10)
+     DIM header AS PCXHEADER
+
+     '  Если мы имеем палитру в формате БСВВ, закодируем ее в 
+     '    формат PCX и сохраним в заголовке изображения 
+     retcode  = pcxEncodePalette%(pcxEGA_10, header, clrma, pal%(0))
+     IF (retcode = pcxSUCCESS ) THEN 
+          '  Палитра была закодирована ... 
+          .....
+     ENDIF
+
+     Фортран
+
+     CHARACTER pal(20)
+
+     *  Если мы имеем палитру в формате БСВВ, закодируем ее в 
+     *    формат PCX и сохраним в заголовке изображения 
+     retcode  = pcxEncodePalette(pcxEGA_10, clrma, pal)
+     IF (retcode.EQ.pcxSUCCESS ) THEN 
+          *  Палитра была закодирована ... 
+          .....
+     ENDIF
+
+     Клиппер
+
+     pal = SPACE(20)
+     clrma = SPACE(50)
+
+     *  Если мы имеем палитру в формате БСВВ, закодируем ее в 
+     *    формат PCX и сохраним в заголовке изображения 
+     retcode  = pcxEP(pcxEGA_10, clrma, pal)
+     IF (retcode = pcxSUCCESS )  
+          *  Палитра была закодирована ... 
+          .....
+     ENDIF
+
+     
+                * * * * * * * * * * * * * * * * * * 
+                        pcxEndPaletteGrab
+                * * * * * * * * * * * * * * * * * * 
+
+
+     СВОДКА
+
+     Си
+
+     int far pcxEndPaletteGrab();
+
+     Паскаль
+
+     pcxEndPaletteGrab : integer;
+
+     Бейсик
+
+     pcxEndPaletteGrab%()
+
+     Фортран
+
+     INTEGER*2 pcxEndPaletteGrab()
+
+     Клиппер
+
+     pcxEPG()
+
+     ОПИСАНИЕ
+
+    Функция pcxEndPaletteGrab завершает сопровождение   палитры, 
+инициированной функцией pcxBeginPaletteGrab.  Эта функция ДОЛЖНА 
+быть  вызвана  перед завершением программы,  если  сопровождение 
+палитры было начато, в противном случае система потерпит крах. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция   pcxEndPaletteGrab    возвращает   код    успешного 
+завершения или код ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxBeginPaletteGrab                  
+                
+
+     ПРИМЕРЫ
+
+     Си
+
+     char pal[256];
+     char clrma[20];
+
+     /*  Установить рабочую область  */
+     if ((retcode = pcxBeginPaletteGrab(pal)) == pcxSUCCESS) {
+          /*  Кодировать текущую палитру  */
+          retcode = pcxEncodePalette(pcxCGA_4, clrma, pal);
+          /* Теперь завершить сопровождение */
+          retcode = pcxEndPaletteGrab();
+     }
+
+     Паскаль
+
+     var 
+        pal : array[0..255] of byte;
+        clrma : array[0..19] of byte;
+
+          {       Установить рабочую область      }
+     retcode   :=  pcxBeginPaletteGrab(pal);
+     if (retcode= pcxSUCCESS)  then   begin
+          {   Кодировать текущую палитру  }
+          retcode :=  pcxEncodePalette(pcxCGA_4, clrma, pal);
+          /* Теперь завершить сопровождение */
+          retcode  :=  pcxEndPaletteGrab();
+     end; {if}
+
+     Бейсик
+
+     DIM pal%(128)
+     DIM clrma%(10)
+
+     '            Установить рабочую область      
+     retcode%   =  pcxBeginPaletteGrab%(pal%(0))
+     IF  (retcode% = pcxSUCCESS)  THEN         
+          '   Кодировать текущую палитру              
+          retcode%  =  pcxEncodePalette%(pcxCGA_4, clrma%(0), pal%(0))
+          ' Теперь завершить сопровождение    
+          retcode%   =  pcxEndPaletteGrab%()
+     ENDIF
+
+     Фортран
+
+     CHARACTER pal(256)
+     CHARACTER clrma(20)
+
+     *            Установить рабочую область      
+     retcode   =  pcxBeginPaletteGrab(pal)
+     IF  (retcode.EQ.pcxSUCCESS)  THEN         
+          *   Кодировать текущую палитру              
+          retcode   =  pcxEncodePalette(pcxCGA_4, clrma, pal)
+          * Теперь завершить сопровождение 
+          retcode    =  pcxEndPaletteGrab()
+     ENDIF
+
+
+     Клиппер
+
+     pal  =  SPACE(256)
+     clrma = SPACE(20)
+
+     *            Установить рабочую область      
+     retcode   =  pcxBPG(pal)
+     IF  (retcode =  pcxSUCCESS)           
+          *   Кодировать текущую палитру              
+          retcode   =  pcxEP(pcxCGA_4, clrma, pal)
+          * Теперь завершить сопровождение 
+          retcode    =  pcxEPG()
+     ENDIF
+
+
+                * * * * * * * * * * * * * * * * * * 
+                          pcxFileBuffer
+                * * * * * * * * * * * * * * * * * * 
+
+
+     СВОДКА
+
+     Си
+
+     int far pcxFileBuffer(filename, buffer, bufmax);
+     char *filename, *buffer;
+     int  bufmax;
+
+     Паскаль
+
+     pcxFileBuffer(filename : string ; bufptr  : pointer;
+        bufmax : integer) : integer;
+
+     Бейсик
+
+     pcxFileBuffer%( SEG filename$, SEG buffer%, bufmax%)
+
+     Фортран
+
+     INTEGER*2 pcxFileBuffer(filename, buffer, bufmax)
+     CHARACTER filename, buffer
+     INTEGER*2 bufmax     
+
+     Клиппер
+
+     pcxFB(<expC> filename, buffer, <expN> bufmax)
+
+     ОПИСАНИЕ
+
+    Функция  pcxFileBuffer  загружает  файл  изображения  PCX  в 
+некоторый  буфер  изображения.  Буфер должен быть большим,   для 
+того,  чтобы загрузить целиком весь файл.  Из буфера изображение 
+может быть выведено на дисплей, либо использовано в заголовке. 
+
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция pcxFileBuffer,   либо возвращает число загруженных в 
+буфер байтов, если все успешно, либо некоторый код ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxBufferFile, pcxBufferDisplay
+ 
+     ПРИМЕРЫ
+
+     Си
+
+     #defined bufmax 10000
+     char buffer[bufmax];
+     int bufsize;
+
+     /*  Загрузить файл в буфер  */
+     bufsize = pcxFileBuffer( "pcxTest.PCX", buffer, bufmax);
+     if (bufsize > 0) {
+          /*  Теперь отобразить буфер в область с координатами 
+              (100,200) на страницу 0 */
+          retcode = pcxBufferDisplay(buffer, bufsize, 100, 200, 0);
+     }
+
+     Паскаль
+
+     const
+          bufmax = 10000;
+     var
+          buffer : array[0..bufmax] of byte;
+          bufsize : integer;
+
+     {  Загрузить файл в буфер    }
+     bufsize := pcxFileBuffer( 'pcxTest.PCX', @buffer, bufmax);
+     if (bufsize > 0) then begin
+          {  Теперь отобразить буфер в область с координатами 
+              (100,200) на страницу 0 }
+          retcode  := pcxBufferDisplay(@buffer, bufsize, 100, 200, 0);
+     end; {if}
+
+     Бейсик
+
+     CONST BUFMAX = 10000
+     DIM buffer%(BUFMAX/2) ' Определен в байтах, а не словах
+
+     '  Загрузить файл в буфер    
+     bufsize%  = pcxFileBuffer%( "pcxTest.PCX", buffer%(0), BUFMAX )
+     IF  (bufsize%  > 0) THEN    
+          '  Теперь отобразить буфер в область с координатами 
+          '   (100,200) на страницу 0   
+          retcode%   = pcxBufferDisplay%(buffer%(0), bufsize%, 100, 200, 0)
+     ENDIF
+
+     Фортран
+
+     PARAMETER (BUFMAX = 10000)
+     CHARACTER  buffer(BUFMAX) 
+
+     *  Загрузить файл в буфер    
+     bufsize   = pcxFileBuffer( 'pcxTest.PCX'C, buffer, BUFMAX )
+     IF  (bufsize.GT. 0) THEN    
+          *  Теперь отобразить буфер в область с координатами 
+          *   (100,200) на страницу 0   
+          retcode    = pcxBufferDisplay(buffer, bufsize, 100, 200, 0)
+     ENDIF
+
+
+     Клиппер
+
+     bufmax  = 10000
+     buffer  = SPACE(bufmax) 
+
+     *  Загрузить файл в буфер    
+     bufsize   = pcxFB( "pcxTest.PCX", buffer, bufmax )
+     IF  (bufsize >  0)     
+          *  Теперь отобразить буфер в область с координатами 
+          *   (100,200) на страницу 0   
+          retcode    =  pcxBD(buffer, bufsize, 100, 200, 0)
+     ENDIF
+
+
+                * * * * * * * * * * * * * * * * * * 
+                         pcxFileDisplay
+                * * * * * * * * * * * * * * * * * * 
+
+
+     СВОДКА
+
+     Си
+
+     int far pcxFileDisplay(filename, x, y, page);
+     char *filename;
+     int x, y, page;
+
+     Паскаль
+
+     pcxFileDisplay(filename : string; x, y, page : integer ) : 
+         integer;
+
+     Бейсик
+
+     pcxFileDisplay%( SEG filename$,  x%, y%, page%)
+
+     Фортран
+
+     INTEGER*2 pcxFileDisplay(filename, x, y, page )
+     CHARACTER filename
+     INTEGER*2 x, y, page
+
+     Клиппер
+
+     pcxFD(<expC>filename, <expN> x, y, page)
+
+
+     ОПИСАНИЕ
+
+    Функция  pcxFileDisplay загружает файл изображения PCX прямо 
+на   дисплей.   Это  может  быть  использовано  для  любых  PCX-
+изображений,   но  это   особенно  полезно  для  загрузки  таких 
+изображений, которые больше доступных буферов.  Инструментальный 
+пакет  использует свои  собственные внутренние буферы для чтения 
+изображений. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция pcxFileDisplay  возвращает код успешного  завершения 
+или код ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxDisplayFile, pcxBufferDisplay, pcxSetBuffer
+
+     ПРИМЕРЫ
+
+     Си
+
+     /*  Отобразить файл изображений PCX в область экрана с 
+         координатами (200,100) */
+     retcode = pcxFileDisplay("pcxTest.PCX", 200, 100, 0);
+     if ( retcode == pcxSUCCESS ) {
+          /*  Отображение было успешным ... */
+          .......
+     }
+
+     Паскаль
+
+     {  Отобразить файл изображений PCX в область экрана с 
+         координатами (200,100)   }
+     retcode := pcxFileDisplay('pcxTest.PCX', 200, 100, 0);
+     if ( retcode = pcxSUCCESS ) then begin
+          {  Отображение было успешным ...  }
+          .......
+     end; {if}
+
+     Бейсик
+
+     '  Отобразить файл изображений PCX в область экрана с 
+     '    координатами (200,100)   
+     retcode%  = pcxFileDisplay%("pcxTest.PCX", 200, 100, 0)
+     IF ( retcode = pcxSUCCESS ) THEN
+          '  Отображение было успешным ...  
+          .......
+     ENDIF
+
+     Фортран
+
+     *  Отобразить файл изображений PCX в область экрана с 
+     *    координатами (200,100)   
+     retcode  = pcxFileDisplay('pcxTest.PCX'C, 200, 100, 0)
+     IF ( retcode.EQ.pcxSUCCESS ) THEN
+          *  Отображение было успешным ...  
+          .......
+     ENDIF
+
+     Клиппер
+
+     *  Отобразить файл изображений PCX в область экрана с 
+     *    координатами (200,100)   
+     retcode  = pcxFD("pcxTest.PCX", 200, 100, 0)
+     IF ( retcode = pcxSUCCESS ) 
+          *  Отображение было успешным ...  
+          .......
+     ENDIF
+
+
+                * * * * * * * * * * * * * * * * * * 
+                          pcxFilePrint
+                * * * * * * * * * * * * * * * * * * 
+
+
+     СВОДКА
+
+     Си
+
+     int far pcxFilePrint(filename, x, y );
+     char *filename;
+     int x, y;
+
+     Паскаль
+
+     pcxFilePrint(filename : pointer; x, y : integer ) : 
+          integer;
+
+     Бейсик
+
+     pcxFilePrint%(filename$,  x%, y% )
+
+     Фортран
+
+     INTEGER*2 pcxFilePrint(filename, x, y )
+     CHARACTER filename
+     INTEGER*2 x, y
+
+     Клиппер
+
+     pcxFP(<expC> filename, <expN> x, y )
+
+
+     ОПИСАНИЕ
+
+    Функция pcxFilePrint выводит в область с координатами (x,y), 
+на    предварительно   установленное,     при   помощи   функции 
+pcxSetPrinter, печатающее устройство, файл изображений PCX. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция  pcxFilePrint  возвращает код  успешного  завершения 
+или код ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxSetPrinter
+
+     ПРИМЕРЫ
+
+     Си
+
+     /*  Установить печатающее устройство  */
+     retcode = pcxSetPrinter(pcxLPT1, pcxLASER, pcxQUALITY, 
+        pcxSCALE100, pcxRESET, pcxEJECT );
+     /*  Теперь печатать черно-белое изображение  */
+     retcode = pcxFilePrint("pcxTest.PCX", 0, 0);
+
+     Паскаль
+
+     {  Установить печатающее устройство  }
+     retcode := pcxSetPrinter(pcxLPT1, pcxLASER, pcxQUALITY, 
+        pcxSCALE100, pcxRESET, pcxEJECT );
+     {  Теперь печатать черно-белое изображение  }
+     retcode :=  pcxFilePrint('pcxTest.PCX', 0, 0);
+
+
+     Бейсик
+
+     '  Установить печатающее устройство         
+     retcode%  = pcxSetPrinter%(pcxLPT1, pcxLASER, pcxQUALITY, 
+        pcxSCALE100, pcxRESET, pcxEJECT )
+     '  Теперь печатать черно-белое изображение  
+     retcode%  =  pcxFilePrint%("pcxTest.PCX", 0, 0)
+
+
+     Фортран
+
+     *  Установить печатающее устройство         
+     retcode  = pcxSetPrinter(pcxLPT1, pcxLASER, pcxQUALITY, 
+        pcxSCALE100, pcxRESET, pcxEJECT )
+     *  Теперь печатать черно-белое изображение  
+     retcode   =  pcxFilePrint('pcxTest.PCX', 0, 0)
+
+
+     Клиппер
+
+     *  Установить печатающее устройство         
+     retcode  = pcxSP(pcxLPT1, pcxLASER, pcxQUALITY, 
+        pcxSCALE100, pcxRESET, pcxEJECT )
+     *  Теперь печатать черно-белое изображение  
+     retcode   =  pcxFP("pcxTest.PCX", 0, 0)
+
+
+                * * * * * * * * * * * * * * * * * * 
+                         pcxFileVirtual
+                * * * * * * * * * * * * * * * * * * 
+
+
+     СВОДКА
+
+     Си
+
+     int far pcxFileVirtual(filename, vptr);
+     char *filename;
+     long vptr;
+
+     Паскаль
+
+     pcxFileVirtual(filename : string; vptr : longint) : 
+           integer;
+
+     Бейсик
+
+     pcxFileVirtual%(filename$, vptr& )
+
+     Фортран
+
+     INTEGER*2 pcxFileVirtual( filename, vptr)
+     CHARACTER filename     
+     INTEGER*4 vptr
+
+     Клиппер
+
+     pcxFV(<expC>filename,<expN>vptr) 
+
+     ОПИСАНИЕ
+
+    Функция  pcxFileVirtual  помещает  файл  изображений  PCX  в 
+виртуальный    буфер,    предварительно    созданный    функцией 
+pcxCreateVirtual. Этот виртуальный буфер может быть отображен на 
+экран,   при  помощи функции pcxVirtualDisplay , или выведен  на 
+принтер при помощи функции pcxVirtualPrint. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция pcxFileVirtual  возвращает код успешного  завершения 
+или код ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxCreateVirtual, pcxVirtualPrint, pcxVirtualDisplay
+
+     ПРИМЕРЫ
+
+     Си
+
+     long vptr;
+
+     /*  Создать виртуальный буфер в стандартной памяти  */
+     retcode = pcxCreateVirtual(pcxCMM, &vptr, pcxEGA_10, 640, 350);
+     if ( retcode == pcxSUCCESS)  {
+          /*  Поместить изображение в виртуальный буфер  */
+          retcode = pcxFileVirtual("pcxTest.PCX", vptr);
+     }
+
+     Паскаль
+
+     var
+         vptr : longint;
+
+     {  Создать виртуальный буфер в стандартной памяти  }
+     retcode := pcxCreateVirtual(pcxCMM, @vptr, pcxEGA_10, 640, 350);
+     if ( retcode = pcxSUCCESS)  then begin
+          {  Поместить изображение в виртуальный буфер  }
+          retcode := pcxFileVirtual('pcxTest.PCX', vptr);
+     end; {if}
+
+
+     Бейсик
+
+     '  Создать виртуальный буфер в стандартной памяти  
+     retcode%  = pcxCreateVirtual%(pcxCMM, vptr, pcxEGA_10, 640, 350)
+     IF ( retcode%  = pcxSUCCESS)  THEN
+          '  Поместить изображение в виртуальный буфер  
+          retcode%  = pcxFileVirtual%("pcxTest.PCX", vptr)
+     ENDIF
+
+     Фортран
+
+     INTEGER*4 vptr
+
+     *  Создать виртуальный буфер в стандартной памяти  
+     retcode  = pcxCreateVirtual(pcxCMM, vptr, pcxEGA_10, 640, 350)
+     IF ( retcode.EQ.pcxSUCCESS)  THEN
+          *  Поместить изображение в виртуальный буфер  
+          retcode  = pcxFileVirtual('pcxTest.PCX'C, vptr)
+     ENDIF
+
+     Клиппер
+
+     vptr  = SPACE(4)
+
+     *  Создать виртуальный буфер в стандартной памяти  
+     retcode  = pcxCV(pcxCMM, vptr, pcxEGA_10, 640, 350)
+     IF ( retcode  = pcxSUCCESS)  
+          *  Поместить изображение в виртуальный буфер  
+          retcode  = pcxFV("pcxTest.PCX", vptr)
+     ENDIF
+
+
+                * * * * * * * * * * * * * * * * * * 
+                       pcxGetBufferHeader
+                * * * * * * * * * * * * * * * * * * 
+
+
+     СВОДКА
+
+     Си
+
+     int far pcxGetBufferHeader(buffer, header);
+     char *buffer;
+     PCXHEADER *header;
+
+     Паскаль
+
+     pcxGetBufferHeader(buffer, header : pointer ) : integer;
+
+     Бейсик
+
+     pcxGetBufferHeader%(SEG buffer%, SEG header AS PCXHEADER)
+
+     Фортран
+
+     INTEGER*2 pcxGetBufferHeader(buffer, header)
+     CHARACTER buffer, header
+
+     Клиппер
+
+     pcxGBH(<expC>buffer, header)
+
+     ОПИСАНИЕ
+
+    Функция  pcxGetBufferHeader  выделяет  заголовок  из  буфера 
+изображений и сохраняет его в буфере заголовка для более легкого 
+доступа  к  его  переменным.  Они включают в себя  информацию  о 
+версии,  ширине изображения,  его глубине,  разрешении палитры и 
+т.д. 
+ 
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция   pcxGetBufferHeader    возвращает   код   успешного 
+завершения или код ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxSetBufferHeader
+
+     ПРИМЕРЫ
+
+     Си
+
+     #defined bufmax 10000
+     char buffer[bufmax];
+     PCXHEADER header;
+     int bufsize;
+
+     /*  Загрузить изображение из библиотеки изображений  */
+     bufsize = pcxLibBuffer("pcxLib.PCL", "pcxTest.PCX", buffer, bufmax);
+     if ( bufsize > 0) {
+          /*  Загрузить заголовок в структуру типа header */
+          retcode = pcxGetBufferHeader(buffer, &header);
+     }
+
+     Паскаль
+
+     const
+          bufmax = 10000;
+     var
+          buffer : array[0..bufmax] of byte;
+          header : PCXHEADER;
+          bufsize: integer;
+
+     {  Загрузить изображение из библиотеки изображений  }
+     bufsize := pcxLibBuffer('pcxLib.PCL', 'pcxTest.PCX', @buffer, bufmax);
+     if ( bufsize > 0) then begin
+          { Загрузить заголовок в структуру типа header }
+          retcode := pcxGetBufferHeader(@buffer, @header);
+     end; {if}
+
+     Бейсик
+
+     CONST     BUFMAX  = 10000
+     DIM          buffer%(BUFMAX/2) ' Привести к байтам
+     DIM       header AS PCXHEADER
+
+     '  Загрузить изображение из библиотеки изображений  
+     bufsize%  = pcxLibBuffer%("pcxLib.PCL", "pcxTest.PCX", 
+        buffer%(0), BUFMAX)
+     IF ( bufsize = 0) THEN 
+          ' Загрузить заголовок в структуру типа header 
+          retcode%  = pcxGetBufferHeader%(buffer%(0), header)
+     ENDIF
+
+
+     Фортран
+
+     PARAMETER  (BUFMAX = 10000)
+     CHARACTER  buffer(BUFMAX)
+
+     *  Загрузить изображение из библиотеки изображений  
+     bufsize  = pcxLibBuffer('pcxLib.PCL', 'pcxTest.PCX', 
+        buffer, BUFMAX)
+     IF ( bufsize.EQ.0) THEN 
+          * Загрузить заголовок в определнный ранее общий блок 
+          retcode  = pcxGetBufferHeader(buffer, manuf)
+     ENDIF
+
+     Клиппер
+
+     bufmax = 10000
+     buffer = SPACE(bufmax)
+     header = SPACE(128)
+
+     *  Загрузить изображение из библиотеки изображений  
+     bufsize  = pcxLB("pcxLib.PCL", "pcxTest.PCX", 
+        buffer, bufmax)
+     IF ( bufsize > 0)  
+          * Загрузить заголовок в буфер заголовка 
+          retcode  = pcxGBH(buffer, manuf)
+          IF (retcode = pcxSUCCESS)  
+            *  Сформировать индекс для извлечения  из заголовка поля 
+            *  HRES
+            ? "   hres: ",ASC(SUBSTR(header,13,1))
+                    +ASC(SUBSTR(header,14,1))*256
+          ENDIF
+     ENDIF
+
+
+                * * * * * * * * * * * * * * * * * * 
+                       pcxGetBufferPalette
+                * * * * * * * * * * * * * * * * * * 
+
+
+     СВОДКА
+
+     Си
+
+     int far pcxGetBufferPalette(disptype, buffer, bufsize, pal)
+     int disptype;
+     char *buffer;
+     int bufsize;
+     char *pal;
+
+     Паскаль
+
+     pcxGetBufferPalette(disptype : integer; buffer : pointer; bufsize 
+          : integer; pal : pointer) : integer;
+
+     Бейсик
+
+     pcxGetBufferPalette%(disptype%, SEG buffer%, bufsize%, SEG 
+           pal%)
+
+     Фортран
+
+     INTEGER*2 pcxGetBufferPalette(disptype, buffer, bufsize, pal)
+     INTEGER*2 disptype
+     CHARACTER buffer
+     INTEGER*2 bufsize
+     CHARACTER pal
+       
+     Клиппер
+
+     pcxGBP(<expN>disptype, <expC>buffer, <expN>bufsize, <expC>pal)
+
+     ОПИСАНИЕ
+
+    Функция  pcxGetBufferPalette непосредственно восстанавливает 
+палитру   буфера   изображения   и   автоматически   делает   ее 
+преобразование   (перекодировку).    Полученный  буфер   палитры 
+приемлем    для    вызовов   установки    палитры    БСВВ(BIOS). 
+Удостоверьтесь,  что буфер палитры имеет достаточный размер ( 17 
+байтов для 16-ти цветного режима адаптера EGA, 48 байтов для 16-
+ти  цветного  режима адаптера VGA,  и  768   байтов  для  256-ти 
+цветного режима). 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция   pcxGetBufferPalette    возвращает  код   успешного 
+завершения или код ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxSetBufferPalette, pcxDecodePalette
+
+     ПРИМЕРЫ
+
+     Си
+
+     #define bufmax 10000
+     char buffer[bufmax], pal[48];
+     int bufsize, disptype;
+
+     /*  Загрузить файл в буфер  */
+     bufsize = pcxFileBuffer("pcxTest.PCX", buffer, bufmax);
+     if (bufsize > 0) {
+          /* Получить палитру буфера */
+          retcode = pcxGetBufferPalette(disptype, buffer, 
+              bufsize, pal);     
+     }
+
+     Паскаль
+
+     const
+           bufmax =  10000;
+     var
+           buffer : array[0..bufmax] of byte;
+           pal    : array[0..48] of byte;
+           bufsize, disptype : integer;
+
+     {  Загрузить файл в буфер  }
+     bufsize := pcxFileBuffer('pcxTest.PCX', @buffer, bufmax);
+     if (bufsize > 0) then begin
+          { Получить палитру буфера }
+          retcode := pcxGetBufferPalette(disptype, @buffer, 
+              bufsize, @pal);     
+     end; {if}
+
+     Бейсик
+
+     CONST      BUFMAX  =  10000
+     DIM  buffer%(BUFMAX/2), pal%(24)  ' Привести к байтам
+
+     '  Загрузить файл в буфер  
+     bufsize%  = pcxFileBuffer%("pcxTest.PCX", buffer%(0),BUFMAX )
+     IF (bufsize%  > 0) THEN 
+          ' Получить палитру буфера 
+          retcode   = pcxGetBufferPalette%(disptype%, buffer%(0), 
+              bufsize, pal%(0))     
+     ENDIF
+
+
+     Фортран
+
+     PARAMETER      (BUFMAX  =  10000)
+     CHARACTER   buffer(BUFMAX), pal(48)  
+
+     *  Загрузить файл в буфер  
+     bufsize   = pcxFileBuffer('pcxTest.PCX'C, buffer, BUFMAX )
+     IF (bufsize.GT.0) THEN 
+          *  Получить палитру буфера 
+          retcode   = pcxGetBufferPalette(disptype, buffer, bufsize, pal)     
+     ENDIF
+
+     Клиппер
+
+     buffer = SPACE(10000)
+     pal    = SPACE(48)  
+
+     *  Загрузить файл в буфер  
+     bufsize   = pcxFB("pcxTest.PCX", buffer, 10000 )
+     IF (bufsize > 0)  
+          *  Получить палитру буфера 
+          retcode   = pcxGBP(disptype, buffer, bufsize, pal)     
+     ENDIF
+
+                * * * * * * * * * * * * * * * * * * 
+                        pcxGetBufferType
+                * * * * * * * * * * * * * * * * * * 
+
+
+     СВОДКА
+
+     Си
+
+     int far pcxGetBufferType(buffer);
+     char *buffer;
+
+     Паскаль
+
+     pcxGetBufferType(bufptr : pointer) : integer;
+
+     Бейсик
+
+     pcxGetBufferType%(SEG buffer%)
+
+     Фортран
+
+     INTEGER*2 pcxGetBufferType(buffer)
+     CHARACTER buffer
+
+     Клиппер
+
+     pcxGBT(<expC>buffer)
+
+     ОПИСАНИЕ
+
+    Функция  pcxGetBufferType  определяет  тип  дисплея   буфера 
+изображения. Это тот самый тип, который  был установлен в вызове 
+функции pcxSetDisplay. Иногда,  вследствие недостатка информации 
+в заголовке,  функция будет неспособна правильно определить  тип 
+дисплея. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция    pcxGetBufferType    возвращает   код    успешного  
+завершения или код ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxGetFileType, pcxGetLibType, pcxSetDisplay
+
+     ПРИМЕРЫ
+
+     Си
+
+     int disptype;
+
+     /*  Определить тип буфера  */
+     if ((disptype = pcxGetBufferType(buffer)) >= pcxMINDISP) {
+          /*  Если мы имеем только  CGA, удостовериться, что мы 
+              можем отобразить этот буфер  */
+          if (disptype <= pcxCGA_6) {
+               /* Можем ... */
+               ......
+          }
+     }
+
+     Паскаль
+
+     var
+       disptype : integer;
+
+     {  Определить тип буфера  }
+     disptype := pcxGetBufferType(@buffer);
+     if (disptype >= pcxMINDISP) then begin
+          {  Если мы имеем только  CGA, удостовериться, что мы 
+              можем отобразить этот буфер  }
+          if (disptype <= pcxCGA_6) then begin
+               { Можем ... }
+               ......
+          end; {if}
+     end; {if}
+
+     Бейсик
+
+     '  Определить тип буфера  
+     disptype%  = pcxGetBufferType%(buffer%(0))
+     IF  (disptype >= pcxMINDISP) THEN
+          '  Если мы имеем только  CGA, удостовериться, что мы 
+          '    можем отобразить этот буфер  
+          IF (disptype <= pcxCGA_6) THEN
+               ' Можем ... 
+               ......
+          ENDIF
+     ENDIF
+
+     Фортран
+
+     INTEGER*2 disptype
+
+     *  Определить тип буфера  
+     disptype  = pcxGetBufferType(buffer)
+     IF  (disptype.GE. pcxMINDISP) THEN
+          *  Если мы имеем только  CGA, удостовериться, что мы 
+          *    можем отобразить этот буфер  
+          IF (disptype.LE.pcxCGA_6) THEN
+               * Можем ... 
+               ......
+          ENDIF
+     ENDIF
+
+     Клиппер
+
+     *  Определить тип буфера  
+     disptype  = pcxGBT(buffer)
+     IF  (disptype >== pcxMINDISP) 
+          *  Если мы имеем только  CGA, удостовериться, что мы 
+          *    можем отобразить этот буфер  
+          IF (disptype <= pcxCGA_6) 
+               * Можем ... 
+               ......
+          ENDIF
+     ENDIF
+
+
+                * * * * * * * * * * * * * * * * * * 
+                           pcxGetDisplay
+                * * * * * * * * * * * * * * * * * * 
+
+
+     СВОДКА
+
+     Си
+
+     int far pcxGetDisplay();
+
+     Паскаль
+
+     pcxGetDisplay : integer;
+
+     Бейсик
+
+     pcxGetDisplay%()
+
+     Фортран
+
+     INTEGER*2 pcxGetDisplay()
+
+     Клиппер
+
+     pcxGD()
+
+     ОПИСАНИЕ
+
+    Функция      pcxGetDisplay     возвращает    текущий     тип   
+дисплея,    предварительно  установленный  при  помощи   функции 
+pcxSetDisplay. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция  pcxGetDisplay  возвращает либо тип дисплея,    либо   
+код ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxSetDisplay
+
+     ПРИМЕРЫ
+
+     Си
+
+     int disptype;
+
+     /*  Получить текущий установленный тип дисплея */
+     disptype = pcxGetDisplay();
+     /*  Обрабатывать согласно типу дисплея */
+     if (disptype == pcxVGA_13) {
+          /* 256 цветов ... */
+          ....
+     }
+
+     Паскаль
+
+     disptype : integer;
+
+     {  Получить текущий установленный тип дисплея }
+     disptype := pcxGetDisplay();
+     {  Обрабатывать согласно типу дисплея }
+     if (disptype = pcxVGA_13) then begin
+          { 256 цветов ... }
+          ....
+     end; {if}
+
+     Бейсик
+
+     disptype% = -1
+
+     '  Получить текущий установленный тип дисплея 
+     disptype% = pcxGetDisplay%()
+     '  Обрабатывать согласно типу дисплея 
+     IF (disptype%  = pcxVGA_13) THEN
+          ' 256 цветов ... 
+          ....
+     ENDIF
+
+     Фортран
+
+     INTEGER*2 disptype
+
+     *  Получить текущий установленный тип дисплея 
+     disptype = pcxGetDisplay()
+     *  Обрабатывать согласно типу дисплея 
+     IF (disptype.EQ.pcxVGA_13) THEN
+          * 256 цветов ... 
+          ....
+     ENDIF
+
+     Клиппер
+
+     disptype = -1
+
+     *  Получить текущий установленный тип дисплея 
+     disptype = pcxGD()
+     *  Обрабатывать согласно типу дисплея 
+     IF (disptype = pcxVGA_13) 
+          * 256 цветов ... 
+          ....
+     ENDIF
+
+
+                * * * * * * * * * * * * * * * * * * 
+                          pcxGetDisplayInfo
+                * * * * * * * * * * * * * * * * * * 
+
+
+     СВОДКА
+
+     Си
+     
+     int far pcxGetDisplayInfo(pcxtype, di);
+     int pcxtype;
+     PCXDINFO di;
+
+     Паскаль
+
+     pcxGetDisplayInfo(pcxtype : integer; di : pointer) : 
+             integer;
+
+     Бейсик
+
+     pcxGetDisplayInfo%(pcxtype%, SEG di AS PCXDIINFO )
+
+     Фортран
+
+     INTEGER*2 pcxGetDisplayInfo(pcxtype, di)
+     INTEGER*2 pcxtype
+     CHARACTER di
+
+     Клиппер
+
+     pcxGdi(<expN>pcxtype, <expC> di)
+
+     ОПИСАНИЕ
+
+    Функция   pcxGetDisplayInfo  возвращает информацию о  данном  
+типе  изображения PCX,  таком  как EGA_10.  Информация  содержит 
+значения разрешающей  способности,  количество битов на  элемент  
+растра,  число  плоскостей,    строку  описания,   и   др.   Это  
+может    быть  использовано  для  установки  диапазонов,     для 
+сравнения информации заголовка и т.д. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция    pcxGetDisplayInfo    возвращает   код   успешного  
+завершения или код ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxSetDisplay, pcxGetDisplay
+
+     ПРИМЕРЫ
+
+     Си
+
+     PCXDINFO  di;
+
+     /*  Получиить информацию о режиме 640x350x16 дисплея типа 
+                10H   */
+     retcode = pcxGetDisplayInfo(pcxEGA_10, &di);
+     /*  Если успешно, отобразить некоторую информацию  */
+     if (retcode == pcxSUCCESS ) {
+          printf("Разрешение по горизонтали : %d\n", di.hres);
+     }
+
+     Паскаль
+
+     di : PCXDINFO  ;
+
+     {  Получиить информацию о режиме 640x350x16 дисплея типа 
+                10H   }
+     retcode := pcxGetDisplayInfo(pcxEGA_10, @di);
+     {  Если успешно, отобразить некоторую информацию  }
+     if (retcode = pcxSUCCESS ) then begin
+          writeln('Разрешение по горизонтали :', di.hres);
+     end; {if}
+
+
+     Бейсик
+
+     DIM di AS  PCXDINFO  
+
+     '  Получиить информацию о режиме 640x350x16 дисплея типа 
+     '           10H   
+     retcode% = pcxGetDisplayInfo%(pcxEGA_10, di)
+     '  Если успешно, отобразить некоторую информацию  
+     IF (retcode = pcxSUCCESS ) THEN   
+          PRINT "Разрешение по горизонтали :"; di.hres
+     ENDIF
+
+
+     Фортран
+
+     *  Получиить информацию о режиме 640x350x16 дисплея типа 
+     *           10H   
+     retcode = pcxGetDisplayInfo(pcxEGA_10, di)
+     *  Если успешно, отобразить некоторую информацию  
+     IF (retcode.EQ. pcxSUCCESS ) THEN   
+          WRITE(*,'(A,13)') 'Разрешение по горизонтали :', di.hres
+     ENDIF
+
+
+     Клиппер
+
+     di = SPACE(50)
+
+     *  Получиить информацию о режиме 640x350x16 дисплея типа 
+     *           10H   
+     retcode = pcxGDI(pcxEGA_10, di)
+     *  Если успешно, отобразить некоторую информацию  
+     IF (retcode =  pcxSUCCESS ) 
+          *  Сформировать индекс для извлечения поля HRES
+          ?"   hres:", ASC(SUBSTR(header,25,1)) + 
+                       ASC(SUBSTR(header,26,1))*256
+     ENDIF
+
+
+                * * * * * * * * * * * * * * * * * * 
+                         pcxGetDisplayPalette
+                * * * * * * * * * * * * * * * * * * 
+
+
+     СВОДКА
+
+     Си
+
+     int far pcxGetDisplayPalette(pal);
+     char *pal;
+
+     Паскаль
+
+     pcxGetDisplayPalette(palptr : pointer) : integer;
+
+     Бейсик
+
+     pcxGetDisplayPalette%( SEG pal%)
+
+     Фортран
+
+     INTEGER*2 pcxGetDisplayPalette(pal)
+     CHARACTER pal
+
+     Клиппер
+
+     pcxGDP(<expC>pal)
+
+     ОПИСАНИЕ
+
+    Функциия    pcxGetDisplayPalette  восстанавливает    текущую  
+палитру   дисплея.      Заметьте,    что  это  не   работает   в 
+специфическом режиме адаптора EGA,  в  силу того,   что регистры 
+палитры  предназначены только    для    записи.      Используйте   
+вместо    нее    функцию  pcxBeginPaletteGrab.      Возвращаемая   
+палитра    имеет    формат,  соответствующий   формату   палитры 
+БСВВ(BIOS).   Для того,    чтобы узнать требуемый размер буфера, 
+см. функцию pcxGetBufferPalette. 
+ 
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция       pcxGetDisplayPalette       возвращает      код    
+успешного завершения или код ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxSetDisplayPalette, pcxBeginPaletteGrab
+
+     ПРИМЕРЫ
+
+     Си
+
+     char pal[48];
+
+     /*  Получить текущую палитру дисплея, если это не EGA */
+     if ((retcode = pcxGetDisplayPalette(pal)) == pcxSUCCESS) {
+          /* Сохранить  палитру в существующем файле изображений 
+               PCX  */
+          retcode = pcxSetFilePalette(disptype,"pcsTest.PCX",pal);
+     }
+
+     Паскаль
+
+     var
+        pal : array [0..47] of byte;
+
+
+     {  Получить текущую палитру дисплея, если это не EGA }
+     retcode := pcxGetDisplayPalette(@pal);
+     if (retcode = pcxSUCCESS) then begin
+          { Сохранить  палитру в существующем файле изображений 
+               PCX  }
+          retcode := pcxSetFilePalette(disptype,'pcsTest.PCX',@pal);
+     end; {if}
+
+     Бейсик
+
+     DIM    pal%(24)
+
+     '  Получить текущую палитру дисплея, если это не EGA 
+     retcode%  = pcxGetDisplayPalette%(pal%(0))
+     IF (retcode% = pcxSUCCESS) THEN 
+          ' Сохранить  палитру в существующем файле изображений 
+          '     PCX  
+          retcode%  = pcxSetFilePalette%(disptype%,"pcsTest.PCX",pal%(0))
+     ENDIF
+
+     Фортран
+
+     CHARACTER    pal(48)
+
+     *  Получить текущую палитру дисплея, если это не EGA 
+     retcode  = pcxGetDisplayPalette(pal)
+     IF (retcode.EQ.pcxSUCCESS) THEN 
+          * Сохранить  палитру в существующем файле изображений 
+          *     PCX  
+          retcode  = pcxSetFilePalette(disptype,'pcsTest.PCX'C,pal)
+     ENDIF
+
+
+     Клиппер
+
+     pal = SPACE(48)
+
+     *  Получить текущую палитру дисплея, если это не EGA 
+     retcode  = pcxGDP(pal)
+     IF (retcode = pcxSUCCESS)  
+          * Сохранить  палитру в существующем файле изображений 
+          *     PCX  
+          retcode  = pcxSFP(disptype,"pcsTest.PCX",pal)
+     ENDIF
+
+
+                * * * * * * * * * * * * * * * * * * 
+                             pcxGetFileHeader
+                * * * * * * * * * * * * * * * * * * 
+
+
+     СВОДКА
+
+     Си
+
+     int far pcxGetFileHeader(filename, header);
+     char *filename, pcxheader, *header;
+
+     Паскаль
+
+     pcxGetFileHeader(filename : string; headptr : pointer);
+
+     Бейсик
+
+     pcxGetFileHeader%(SEG filename$, SEG header AS PCXHEADER)
+
+     Фортран
+
+     INTEGER*2 pcxGetFileHeader(filename, header)
+     CHARACTER filename, header
+
+     Клиппер
+
+     pcxGFH(<expC>filename, header)
+
+     ОПИСАНИЕ
+
+    Функция     pcxGetFileHeader   выделяет   заголовок    файла  
+изображений PCX.    Параметры  заголовка легко доступны,    если  
+использовать определение   структуры  заголовка.   Они  содержат  
+разрешающую способность изображения, число цветов и т.д. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция    pcxGetFileHeader    возвращает   код    успешного  
+завершения или код ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxSetFileHeader
+
+     ПРИМЕРЫ
+
+     Си
+
+     PCXHEADER header;
+
+     /*  Загрузить заголовок в структуру типа заголовок */
+     retcode = pcxGetFileHeader("pcxTest.PCX", &header);
+     if (retcode == pcxSUCCESS ) {
+          /*  Параметры заголовка доступны */
+          printf("Разрешение по горизонтали :%d\n", header.hres);
+     }
+
+     Паскаль
+
+     var
+        header : PCXHEADER ;
+
+     {  Загрузить заголовок в структуру типа заголовок }
+     retcode := pcxGetFileHeader('pcxTest.PCX', @header);
+     if (retcode = pcxSUCCESS ) then begin 
+          {  Параметры заголовка доступны }
+          writeln('Разрешение по горизонтали :', header.hres);
+     end; {if}
+
+     Бейсик
+
+     DIM    header AS PCXHEADER 
+
+     '  Загрузить заголовок в структуру типа заголовок 
+     retcode%  = pcxGetFileHeader%("pcxTest.PCX", header)
+     IF (retcode% > 0  ) THEN 
+          '  Параметры заголовка доступны   
+          PRINT "Разрешение по горизонтали :"; header.hres
+     ENDIF
+
+     Фортран
+
+     *  Загрузить заголовок в структуру типа заголовок 
+     retcode  = pcxGetFileHeader('pcxTest.PCX'C, manuf)
+     IF (retcode.GT.0) THEN 
+          '  Параметры заголовка доступны   
+          WRITE(*,'(A,I3)') 'Разрешение по горизонтали :',hres
+     ENDIF
+
+     Клиппер
+
+     header = SPACE(128)
+
+     *  Загрузить заголовок в структуру типа заголовок 
+     retcode  = pcxGFH("pcxTest.PCX", header)
+     IF (retcode = pcxSUCCESS)  
+            *  Сформировать индекс для извлечения  из заголовка поля 
+            *  HRES
+          ? "   hres: ",ASC(SUBSTR(header,13,1))
+                    +ASC(SUBSTR(header,14,1))*256
+     ENDIF
+
+
+                * * * * * * * * * * * * * * * * * * 
+                             pcxGetFilePalette
+                * * * * * * * * * * * * * * * * * * 
+
+
+     СВОДКА
+
+     Си
+
+     int far pcxGetFilePalette(disptype, filename, pal);
+     int disptype;
+     char *filename, *pal;
+
+     Паскаль
+
+     pcxGetFilePalette(disptype : integer; filename : string; 
+        palptr : pointer) : integer;
+
+     Бейсик
+
+     pcxGetFilePalette%(disptype%, SEG filename$, SEG pal%
+
+     Фортран
+
+     INTEGER*2 pcxGetFilePalette(disptype, filename, pal)
+     INTEGER*2 disptype
+     CHARACTER filename, pal
+
+     Клиппер
+
+     pcxGFP(<expN>disptype,<expC>filename, pal)
+
+     ОПИСАНИЕ
+
+    Функция  pcxGetFilePalette  выделяет  палитру в формате  PCX  
+из   файла  изображений  PCX,   и    перекодирует  ее  в  формат 
+совместимый с форматом  БСВВ(BIOS).    Получаемый буфер  палитры  
+приемлем   для вызовов  установки  палитры  БСВВ.    Для   того,   
+чтобы    узнать  требования  к  размеру  буфера,   см.   функцию 
+pcxGetBufferPalette. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция    pcxGetFilePalette    возвращает   код   успешного  
+завершения или код ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxSetFilePalette, pcxGetBufferPalette
+
+     ПРИМЕРЫ
+
+     ЗАМЕЧАНИЕ
+
+    В следующих примерах предполагается, что переменная disptype 
+уже была установлена функцией pcxSetDisplay. 
+
+     Си
+
+     char pal[48];
+     int  disptype;
+
+     /*  Получить палитру файла */
+     retcode = pcxGetFilePalette(disptype, "pcxTest.PCX",pal);
+     if (retcode == pcxSUCCESS) {
+          /* Теперь установить палитру дисплея */
+          retcode = pcxSetDisplayPalette(pal);
+     }
+
+     Паскаль
+
+     var
+       pal : array[0..47] of byte;
+       disptype : integer;
+
+     {  Получить палитру файла }
+     retcode := pcxGetFilePalette(disptype, 'pcxTest.PCX',@pal);
+     if (retcode = pcxSUCCESS) then begin
+          { Теперь установить палитру дисплея }
+          retcode := pcxSetDisplayPalette(@pal);
+     end; {if}
+
+     Бейсик
+
+     DIM   pal%(24)
+
+     '  Получить палитру файла 
+     retcode%  = pcxGetFilePalette%(disptype%, "pcxTest.PCX",pal%(0))
+     IF (retcode = pcxSUCCESS) THEN 
+          ' Теперь установить палитру дисплея 
+          retcode% = pcxSetDisplayPalette%(pal%(0))
+     ENDIF
+
+     Фортран
+
+     CHARACTER pal(48)
+
+     *  Получить палитру файла 
+     retcode  = pcxGetFilePalette(disptype, 'pcxTest.PCX'C, pal)
+     IF (retcode.EQ.pcxSUCCESS) THEN 
+          * Теперь установить палитру дисплея 
+          retcode = pcxSetDisplayPalette(pal)
+     ENDIF
+
+     Клиппер
+
+     pal = SPACE(48)
+
+     *  Получить палитру файла 
+     retcode  = pcxGFP(disptype, "pcxTest.PCX", pal)
+     IF (retcode = pcxSUCCESS)  
+          * Теперь установить палитру дисплея 
+          retcode = pcxSDP(pal)
+     ENDIF
+
+                * * * * * * * * * * * * * * * * * * 
+                              pcxGetFileType
+                * * * * * * * * * * * * * * * * * * 
+
+
+     СВОДКА
+
+     Си
+
+     int far pcxGetFileType(filename);
+     char *filename;
+
+     Паскаль
+
+     pcxGetFileType(filename : string) : integer;
+
+     Бейсик
+
+     pcxGetFileType%(SEG filename$)
+
+     Фортран
+
+     INTEGER*2 pcxGetFileType(filename)
+     CHARACTER filename
+
+     Клиппер
+
+     pcxGFT<expC>filename)
+
+     ОПИСАНИЕ
+
+    Функция   pcxGetFileType   определяет  тип   дисплея   файла  
+изображения   PCX.     Это  тот  же  самый  тип,    который  был 
+использован  при вызове функции pcxSetDisplay.  Иногда,  в  силу 
+недостаточной  информации  в  заголовке,   функция  не  способна 
+правильно определить тип дисплея. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция  pcxGetFileType  возвращает  тип дисплея,   или  код 
+ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxGetBufferType, pcxGetLibType
+
+     ПРИМЕРЫ
+
+     Си
+
+     int disptype;
+
+     /* Определить тип файла */
+     if ((disptype = pcxGetFileType("pcxTest.PCX")) >= pcxMINDISP) {
+          /* Если мы имеем только CGA, убедимся, что мы сможем 
+             отобразить */
+          if (disptype <= pcxCGA_6) {
+               /* Сможем ... */
+               .....
+          }
+     }
+
+     Паскаль
+
+     var
+        disptype : integer;
+
+     { Определить тип файла }
+     disptype := pcxGetFileType('pcxTest.PCX');
+     if (disptype >= pcxMINDISP) then begin
+          { Если мы имеем только CGA, убедимся, что мы сможем 
+             отобразить }
+          if (disptype <= pcxCGA_6) then begin
+               { Сможем ... }
+               .....
+          end; {if}
+     end; {if}
+
+     Бейсик
+
+     disptype% = -1
+
+     '  Определить тип файла                   
+     disptype% = pcxGetFileType%("pcxTest.PCX")
+     IF (disptype >= pcxMINDISP)  THEN
+          ' Если мы имеем только CGA, убедимся, что мы сможем 
+          '   отобразить 
+          IF (disptype <= pcxCGA_6)  THEN
+               ' Сможем ... 
+               .....
+          ENDIF
+     ENDIF
+
+     Фортран
+
+     INTEGER*2 disptype 
+
+     *  Определить тип файла                   
+     disptype  = pcxGetFileType('pcxTest.PCX')
+     IF (disptype.GE.pcxMINDISP)  THEN
+          * Если мы имеем только CGA, убедимся, что мы сможем 
+          *   отобразить 
+          IF (disptype.LE.pcxCGA_6)  THEN
+               * Сможем ... 
+               .....
+          ENDIF
+     ENDIF
+
+     Клиппер
+
+     disptype = -1   
+
+     *  Определить тип файла                   
+     disptype  = pcxGetFileType("pcxTest.PCX")
+     IF (disptype >= pcxMINDISP)  
+          * Если мы имеем только CGA, убедимся, что мы сможем 
+          *   отобразить 
+          IF (disptype <= pcxCGA_6)  
+               * Сможем ... 
+               .....
+          ENDIF
+     ENDIF
+
+     
+                * * * * * * * * * * * * * * * * * * 
+                                pcxGetImage 
+                * * * * * * * * * * * * * * * * * * 
+
+
+     СВОДКА
+
+     Си
+
+     int far pcxGetImage(vptr, x1, y1, x2, y2, page);
+     long vptr;
+     int x1, y1, x2, y2, page; 
+
+     Паскаль
+
+     pcxGetImage(vptr : longint; x1, y1, x2, y2, page: integer) : 
+              integer;
+
+     Бейсик
+
+     pcxGetImage%(vptr$, x1%, y1%, x2%, y2%, page%)
+
+
+     Фортран
+
+     INTEGER*2 pcxGetImage(vptr, x1, y1, x2, y2, page)
+     INTEGER*4 vptr
+     INTEGER*2 x1, y1, x2, y2, page
+
+     Клиппер
+
+     pcxGI(<expN>vptr, x1, y1, x2, y2, page)
+
+     ОПИСАНИЕ
+
+    Функция   pcxGetImage  сохраняет  изображение   на   экране,   
+с  точностью  до  элемента  растра,   в    виртуальном   буфере.   
+Эта   подпрограмма    разработана   для    наиболее    маленьких  
+изображений   (меньше  чем  размер  экрана),    и    если  нужны 
+логические   операции.  Используйте функцию  pcxPutImage,    для 
+размещения изображения  в любом  месте экрана.   ЗАМЕЧАНИЕ:   Вы 
+можете  использовать   буферы  созданные   при   помощи  функции 
+pcxCreateVirtual,      либо   обычные  буферы  (если  их  размер 
+достаточен). 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция  pcxGetImage возвращает код успешного завершения или  
+код ошибки. 
+
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxPutImage
+
+     ПРИМЕРЫ
+
+     Си
+
+     long vptr;
+     
+     /*  Получить часть экрана в предварительно определенный 
+         виртуальный буфер изображений  */
+     retcode = pcxGetImage(vptr, 100, 100, 200, 200, 0);
+     /*  Если успешно, то вывести его в другое место экрана, 
+         выполнив исключающее ИЛИ (XOR) */
+     if (retcode ==  pcxSUCCESS ) {
+          retcode = pcxPutImage(vptr, pcxXOR, 300, 300, 0);
+     }
+
+
+     Паскаль
+
+      vptr : longint;
+     
+     {  Получить часть экрана в предварительно определенный 
+         виртуальный буфер изображений  }
+     retcode := pcxGetImage(vptr, 100, 100, 200, 200, 0);
+     {  Если успешно, то вывести его в другое место экрана, 
+         выполнив исключающее ИЛИ (XOR) }
+     if (retcode =  pcxSUCCESS ) then begin
+          retcode := pcxPutImage(vptr, pcxXOR, 300, 300, 0);
+     end; {if}
+
+     Бейсик
+
+     '  Получить часть экрана в предварительно определенный 
+     '    виртуальный буфер изображений  
+     retcode%  = pcxGetImage%(vptr, 100, 100, 200, 200, 0)
+     '  Если успешно, то вывести его в другое место экрана, 
+     '    выполнив исключающее ИЛИ (XOR) 
+     IF (retcode =  pcxSUCCESS ) THEN  
+          retcode%  = pcxPutImage%(vptr&, pcxXOR, 300, 300, 0)
+     ENDIF  
+
+     Фортран
+
+     INTEGER*4 vptr 
+
+     *  Получить часть экрана в предварительно определенный 
+     *    виртуальный буфер изображений  
+     retcode  = pcxGetImage(vptr, 100, 100, 200, 200, 0)
+     *    выполнив исключающее ИЛИ (XOR) 
+     IF (retcode.EQ.pcxSUCCESS ) THEN  
+          retcode  = pcxPutImage(vptr, pcxXOR, 300, 300, 0)
+     ENDIF  
+
+     Клиппер
+
+     vptr = SPACE(4)
+
+     *  Получить часть экрана в предварительно определенный 
+     *    виртуальный буфер изображений  
+     retcode  = pcxGI(vptr, 100, 100, 200, 200, 0)
+     *    выполнив исключающее ИЛИ (XOR) 
+     IF (retcode = pcxSUCCESS )   
+          retcode  = pcxPI(vptr, pcxXOR, 300, 300, 0)
+     ENDIF  
+
+
+                * * * * * * * * * * * * * * * * * * 
+                              pcxGetLibHeader
+                * * * * * * * * * * * * * * * * * * 
+
+     
+     СВОДКА
+
+     Си
+
+     int far pcxGetLibHeader(libname, filename, header);
+     char *libname, *filename;
+     PCXHEADER *header;
+
+     Паскаль
+
+     pcxGetLibHeader(libname, filename : string; headptr : 
+           pointer ) : integer;
+
+     Бейсик
+
+     pcxGetLibHeader%(SEG libname$, SEG filename$, SEG header AS 
+          PCXHEADER )
+
+     Фортран
+
+     INTEGER*2 pcxGetLibHeader(libname, filename, header)
+     CHARACTER libname, filename
+     CHARACTER header
+
+     Клиппер
+
+     pcxGLH(<expC>libname, filename, header)
+
+     ОПИСАНИЕ
+
+    Функция   pcxGetLibHeader  выделяет заголовок    изображений  
+PCX,  расположенных в библиотеке изображений, и  сохраняет его в 
+буфере  заголовка  для  легкого доступа к его переменным.    Они  
+включают сведения о разрешении изображения,  числе цветов и т.д. 
+Заголовок  также может быть записан обратно в другие буферы  или 
+файлы. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция pcxGetLibHeader возвращает код успешного  завершения  
+или код ошибки. 
+     
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxGetBufferHeader, pcxGetFileHeader
+
+     ПРИМЕРЫ
+
+     Си
+
+     PCXHEADER header;
+
+     /*  Поместить заголовок в структуру типа header */
+     retcode = pcxGetLibHeader("pcxLib.PCX","pcxTest.PCX", &header);
+     if (retcode == pcxSUCCESS) {
+          /* Параметры заголовка доступны */
+          printf("Разрешение по горизонтали:%d\h", header.hres);
+     }
+
+     Паскаль
+
+     var
+         header : PCXHEADER ;
+
+     {  Поместить заголовок в структуру типа header }
+     retcode := pcxGetLibHeader('pcxLib.PCX','pcxTest.PCX', @header);
+     if (retcode = pcxSUCCESS) then begin
+          { Параметры заголовка доступны }
+          writeln('Разрешение по горизонтали:' header.hres);
+     end; {if}
+          
+     Бейсик
+
+    DIM header AS  PCXHEADER 
+
+     '  Поместить заголовок в структуру типа header 
+     retcode% = pcxGetLibHeader%("pcxLib.PCX","pcxTest.PCX", header)
+     IF (retcode%  > 0 ) THEN 
+          ' Параметры заголовка доступны 
+          PRINT "Разрешение по горизонтали:"; header.hres
+     ENDIF
+
+     Фортран
+
+     CHARACTER pal(20)
+
+     *  Получить заголовок файла, используя предопределенный 
+     *  общий блок
+     retcode = pcxGetLibHeader('pcxLib.PCX'C,'pcxTest.PCX'C,manuf)
+     IF (retcode.EQ.pcxSUCCESS ) THEN 
+          * Параметры заголовка доступны 
+          WRITE(*,'(A,I3)') 'Разрешение по горизонтали:', hres
+     ENDIF
+
+     Клиппер
+
+     header = SPACE(128)
+
+     *  Поместить заголовок в буфер заголовка 
+     retcode = pcxGLH("pcxLib.PCX","pcxTest.PCX",header)
+     IF (retcode = pcxSUCCESS )  
+            *  Сформировать индекс для извлечения  из заголовка поля 
+            *  HRES
+            ? "   hres: ",ASC(SUBSTR(header,13,1))+
+                          ASC(SUBSTR(header,14,1))*256
+     ENDIF
+
+
+                * * * * * * * * * * * * * * * * * * 
+                             pcxGetLibPalette
+                * * * * * * * * * * * * * * * * * * 
+
+
+     СВОДКА
+
+     Си
+
+     int far pcxGetLibPalette(disptype, libname, filename, pal);
+     int disptype;
+     char *libname, *filename, *pal;
+
+     Паскаль
+
+     pcxGetLibPalette(disptype : integer; libname, filename : string; 
+        palptr : pointer) : integer;
+
+     Бейсик
+
+     pcxGetLibPalette%(disptype%, SEG libname$, SEG filename$,SEG pal%)
+
+     Фортран
+
+     INTEGER*2 pcxGetLibPalette(disptype, libname, filename, pal)
+     INTEGER*2 disptype
+     CHARACTER libname, filename, pal
+
+     Клиппер
+
+     pcxGLP(<expN>disptype, <expC>libname, filename, pal)
+
+     ОПИСАНИЕ
+
+    Функция   pcxGetLibPalette  выделяет формат палитры  PCX  из  
+файла  изображений   PCX,     и    перекодирует  ее  в    формат  
+совместимый   с  форматом   палитры  БСВВ.     Полученный  буфер 
+палитры  приемлем   для вызовов  установки  палитры  БСВВ(BIOS). 
+Удостоверьтесь,  что буфер палитры имеет достаточный размер,  от 
+минимума в   17   байтов до максимума  в 768   байтов для 256-ти 
+цветного  режима.    Для  того,  чтобы   узнать   требования   к  
+размеру  буфера,   см.    функцию pcxGetBufferPalette. 
+
+     ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ
+
+    Функция pcxGetLibPalette возвращает код успешного завершения 
+или код ошибки. 
+
+     СВЯЗАННЫЕ ФУНКЦИИ
+
+     pcxGetBufferPalette, pcxGetFilePalette
+
+     ПРИМЕРЫ
+
+     Си
+
+     char pal[48];
+     int  disptype;
+
+     /*  Получить палитру файла изображения из библиотеки */
+     retcode = pcxGetLibPalette(disptype,"pcxLib.PCL","pcxTest.PCX",pal);
+     if (retcode == pcxSUCCESS) {
+          /* Теперь установить палитру дисплея */
+          retcode = pcxSetDisplayPalette(pal);
+     }
+
+     Паскаль
+
+     var
+       pal : array [0..48] of byte;
+       disptype : integer;
+
+     {  Получить палитру файла изображения из библиотеки }
+     retcode := pcxGetLibPalette(disptype,'pcxLib.PCL','pcxTest.PCX',@pal);
+     if (retcode = pcxSUCCESS) then begin
+          { Теперь установить палитру дисплея }
+          retcode := pcxSetDisplayPalette(@pal);
+     end; {if}
+
+     Бейсик
+
+     DIM  pal%(24)
+
+     '  Получить палитру файла изображения из библиотеки 
+     retcode%  = pcxGetLibPalette%(disptype%,"pcxLib.PCL",
+                "pcxTest.PCX",pal%(0))
+     IF  (retcode% = pcxSUCCESS) THEN 
+          ' Теперь установить палитру дисплея 
+          retcode%  = pcxSetDisplayPalette%(pal%(0))
+     ENDIF
+
+     Фортран
+
+     CHARACTER  pal(48)
+
+     *  Получить палитру файла изображения из библиотеки 
+     retcode  = pcxGetLibPalette(disptype,'pcxLib.PCL'C,
+                'pcxTest.PCX'C,pal)
+     IF  (retcode.EQ.pcxSUCCESS) THEN 
+          * Теперь установить палитру дисплея 
+          retcode  = pcxSetDisplayPalette(pal)
+     ENDIF
+
+     Клиппер
+
+      pal = SPACE(48)
+
+     *  Получить палитру файла изображения из библиотеки 
+     retcode  = pcxGLP(disptype,"pcxLib.PCL","pcxTest.PCX",pal)
+     IF  (retcode = pcxSUCCESS)  
+          * Теперь установить палитру дисплея 
+          retcode  = pcxSDP(pal)
+     ENDIF
+

@@ -1,0 +1,80 @@
+#{\footnote id_ShowFred}
+${\footnote Fred de Jong}
+K{\footnote {Fred de Jong}}
+{\fs8\line{\fs14\{bml L2WHCRTF.BMP\}
+  This ain't {\i me}, {\cf4 U} no ...\line
+  So where am I  ?}\par
+}
+\pard\page
+
+#{\footnote id_Intro}
+${\footnote Introduction}
+K{\footnote {Introduction;Begin of List;About Interrupt List;
+Start sequence;First;Usage;Help}}
++{\footnote Seq}
+!{\footnote {DisableButton("btn_Group")}}
+\pard\par
+{\cf4\b\ul Introduction}
+\par\par{\b About}
+\par\par
+This is {\strike Ralf Brown}{\v id___CONTACT_INFO}'s
+ Interrupt List (Release 40 - Last Change 4/3/94),
+ a user-supported list of low level Application
+ Programming Interfaces for DOS-based PC-environments
+ (see: {\strike disclaimer}{\v id___DISCLAIMER}).
+\par\par
+This MS-Windows WINHELP 3.1+ file provides access to a functional
+ description of
+ 6000 and more API-functions with 10000+ hyperlinked
+ cross-references, 600+ productgroups, 150+ glossary terms and
+ about 15000 searchable key-items. It was compiled
+ out of {\strike Ralf's plain text}{\v id___FILELIST} files
+ by {\ul Fred de Jong}{\v id_ShowFred} (Heerlen/Netherlands, 
+ Internet: fjng@cbs.nl).
+ Rob Duff's (Vancouver/Canada) AWK.EXE and
+ Microsoft's Help Compiler (HC31.EXE)
+ were used to generate and compile source in Rich Text Format.
+\par\par{\b Usage}
+\par\par
+Create a new program item with a commandline like:\par 
+    WINHELP.EXE C:\\INTLIST\\INTERRUP.HLP. 
+\par The file INTERRUP.ICO
+ contains an icon to complete the item for the Program Manager.
+\par\par
+The WinHelp {\cf4\b Browse-buttons} support a sequential walk
+ through the entire list. On any interrupt-page
+ the custom {\cf4\b Group-button} presents an overview
+ of the API in the current context.
+\par\par 
+A glossary is presented in a secondary window with the {\cf4\b Whatis-button}. 
+\par\par 
+The {\cf4\b Formats-button} provides access to a list of named
+ Argument / Parameter / Control Blocks. Each entry is hyperlinked to 
+ the interrupt-page where the block's format is specified. 
+\par\par 
+Use the WinHelp {\cf4\b Search-button} to access specific
+ interrupt numbers, API-groups or topics:
+{\par\par}
+\tx240\li240\fi-240
+\tab{\i find interrupts} by there
+ number and function register with
+ search-keys like 'INT 21/AX=1234h' and
+ 'INT 14/AH=45h/BX=1234h';
+\line\par
+\tab{\i select API-groups}
+ with search-keys like 'GROUP: DOS' and 'GROUP: Intel PCI BIOS';
+\line\par
+\tab{\i get a list of pages} referring to specific topics
+ with search-keys like 'Novell' and 'LAN Manager'. 
+\par
+\pard\tx960\tx1920\tx2880\tx3840\tx4800
+\par
+Each interrupt-page starts with a line holding the number, 
+ optional {\strike flags}{\v id___FLAGS}. and a short description
+ of it's function.
+ Ralf's {\strike categories}{\v id___CATEGORIES} are not used.
+\par
+\par List contents, Copyright \'A9 1989,1990,1991,1992,1993,1994 Ralf Brown.
+\par L2WH* Free WinHelp RTF-generating scripts, Copyright \'A9 1994 Fred de Jong.
+\pard\trowd\par
+

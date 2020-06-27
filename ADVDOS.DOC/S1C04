@@ -1,0 +1,1087 @@
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+Chapter 4  MS-DOS Programming Tools
+
+  Preparing a new program to run under MS-DOS is an iterative process with
+  four basic steps:
+
+  ş  Use of a text editor to create or modify an ASCII source-code file
+
+  ş  Use of an assembler or high-level-language compiler (such as the
+     Microsoft Macro Assembler or the Microsoft C Optimizing Compiler) to
+     translate the source file into relocatable object code
+
+  ş  Use of a linker to transform the relocatable object code into an
+     executable MS-DOS load module
+
+  ş  Use of a debugger to methodically test and debug the program
+
+  Additional utilities the MS-DOS software developer may find necessary or
+  helpful include the following:
+
+  ş  LIB, which creates and maintains object-module libraries
+
+  ş  CREF, which generates a cross-reference listing
+
+  ş  EXE2BIN, which converts .EXE files to .COM files
+
+  ş  MAKE, which compares dates of files and carries out operations based on
+     the result of the comparison
+
+  This chapter gives an operational overview of the Microsoft programming
+  tools for MS-DOS, including the assembler, the C compiler, the linker, and
+  the librarian. In general, the information provided here also applies to
+  the IBM programming tools for MS-DOS, which are really the Microsoft
+  products with minor variations and different version numbers. Even if your
+  preferred programming language is not C or assembly language, you will
+  need at least a passing familiarity with these tools because all of the
+  examples in the IBM and Microsoft DOS reference manuals are written in one
+  of these languages.
+
+  The survey in this chapter, together with the example programs and
+  reference section elsewhere in the book, should provide the experienced
+  programmer with sufficient information to immediately begin writing useful
+  programs. Readers who do not have a background in C, assembly language, or
+  the Intel 80x86 microprocessor architecture should refer to the tutorial
+  and reference works listed at the end of this chapter.
+
+
+File Types
+
+  The MS-DOS programming tools can create and process many different file
+  types. The following extensions are used by convention for these files:
+
+
+  Extension  File type
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  .ASM       Assembly-language source file
+
+  .C         C source file
+
+  .COM       MS-DOS executable load module that does not require relocation
+             at runtime
+
+  .CRF       Cross-reference information file produced by the assembler for
+             processing by CREF.EXE
+
+  .DEF       Module-definition file describing a program's segment behavior
+             (MS OS/2 and Microsoft Windows programs only; not relevant to
+             normal MS-DOS applications)
+
+  .EXE       MS-DOS executable load module that requires relocation at
+             runtime
+
+  .H         C header file containing C source code for constants, macros,
+             and functions; merged into another C program with the #include
+             directive
+
+  .INC       Include file for assembly-language programs, typically
+             containing macros and/or equates for systemwide values such as
+             error codes
+
+  .LIB       Object-module library file made up of one or more .OBJ files;
+             indexed and manipulated by LIB.EXE
+
+  .LST       Program listing, produced by the assembler, that includes
+             memory locations, machine code, the original program text, and
+             error messages
+
+  .MAP       Listing of symbols and their locations within a load module;
+             produced by the linker
+
+  .OBJ       Relocatable-object-code file produced by an assembler or
+             compiler
+
+  .REF       Cross-reference listing produced by CREF.EXE from the
+             information in a .CRF file
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+
+The Microsoft Macro Assembler
+
+  The Microsoft Macro Assembler (MASM) is distributed as the file MASM.EXE.
+  When beginning a program translation, MASM needs the following
+  information:
+
+  ş  The name of the file containing the source program
+
+  ş  The filename for the object program to be created
+
+  ş  The destination of the program listing
+
+  ş  The filename for the information that is later processed by the
+     cross-reference utility (CREF.EXE)
+
+  You can invoke MASM in two ways. If you enter the name of the assembler
+  alone, it prompts you for the names of each of the various input and
+  output files. The assembler supplies reasonable defaults for all the
+  responses except the source filename, as shown in the following example:
+
+  C>MASM  <Enter>
+
+  Microsoft (R) Macro Assembler Version 5.10
+  Copyright (C) Microsoft Corp 1981, 1988. All rights reserved.
+
+  Source filename [.ASM]: HELLO  <Enter>
+  Object filename [HELLO.OBJ]:  <Enter>
+  Source listing  [NUL.LST]:  <Enter>
+  Cross-reference [NUL.CRF]:  <Enter>
+
+    49006 Bytes symbol space free
+
+        0 Warning Errors
+        0 Severe Errors
+
+  C>
+
+  You can use a logical device name (such as PRN or COM1) at any of the MASM
+  prompts to send that output of the assembler to a character device rather
+  than a file. Note that the default for the listing and cross-reference
+  files is the NUL deviceÄÄthat is, no file is created. If you end any
+  response with a semicolon, MASM assumes that the remaining responses are
+  all to be the default.
+
+  A more efficient way to use MASM is to supply all parameters in the
+  command line, as follows:
+
+    MASM [options] source,[object],[listing],[crossref]
+
+  For example, the following command lines are equivalent to the preceding
+  interactive session:
+
+  C>MASM HELLO,,NUL,NUL  <Enter>
+
+  or
+
+  C>MASM HELLO;  <Enter>
+
+  These commands use the file HELLO.ASM as the source, generate the
+  object-code file HELLO.OBJ, and send the listing and cross-reference files
+  to the bit bucket.
+
+  MASM accepts several optional switches in the command line, to control
+  code generation and output files. Figure 4-1 lists the switches accepted
+  by MASM version 5.1. As shown in the following example, you can put
+  frequently used options in a MASM environment variable, where they will be
+  found automatically by the assembler:
+
+  C>SET MASM=/T /Zi  <Enter>
+
+  The switches in the environment variable will be overridden by any that
+  you enter in the command line.
+
+  In other versions of the Microsoft Macro Assembler, additional or fewer
+  switches may be available. For exact instructions, see the manual for the
+  version of MASM that you are using.
+
+
+  Switch     Meaning
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  /A         Arrange segments in alphabetic order.
+  /Bn        Set size of source-file buffer (in KB).
+  /C         Force creation of a cross-reference (.CRF) file.
+  /D         Produce listing on both passes (to find phase errors).
+  /Dsymbol   Define symbol as a null text string (symbol can be referenced
+             by conditional assembly directives in file).
+  /E         Assemble for 80x87 numeric coprocessor emulator using IEEE
+             real-number format.
+  /Ipath     Set search path for include files.
+  /L         Force creation of a program-listing file.
+  /LA        Force listing of all generated code.
+  /ML        Preserve case sensitivity in all names (uppercase names
+             distinct from their lowercase equivalents).
+  /MX        Preserve lowercase in external names only (names defined with
+             PUBLIC or EXTRN directives).
+  /MU        Convert all lowercase names to uppercase.
+  /N         Suppress generation of tables of macros, structures, records,
+             segments, groups, and symbols at the end of the listing.
+  /P         Check for impure code in 80286/80386 protected mode.
+  /S         Arrange segments in order of occurrence (default).
+  /T         "Terse" mode; suppress all messages unless errors are
+             encountered during the assembly.
+  /V         "Verbose" mode; report number of lines and symbols at end of
+             assembly.
+  /Wn        Set error display (warning) level; n=0Ä2.
+  /X         Force listing of false conditionals.
+  /Z         Display source lines containing errors on the screen.
+  /Zd        Include line-number information in .OBJ file.
+  /Zi        Include line-number and symbol information in .OBJ file.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+  Figure 4-1.  Microsoft Macro Assembler version 5.1 switches.
+
+  MASM allows you to override the default extensions on any fileÄÄa feature
+  that can be rather dangerous. For example, if in the preceding example you
+  had responded to the Object filename prompt with HELLO.ASM, the assembler
+  would have accepted the entry without comment and destroyed your source
+  file. This is not too likely to happen in the interactive command mode,
+  but you must be very careful with file extensions when MASM is used in a
+  batch file.
+
+
+The Microsoft C Optimizing Compiler
+
+  The Microsoft C Optimizing Compiler consists of three executable filesÄÄ
+  C1.EXE, C2.EXE, and C3.EXEÄÄthat implement the C preprocessor, language
+  translator, code generator, and code optimizer. An additional control
+  program, CL.EXE, executes the three compiler files in order, passing each
+  the necessary information about filenames and compilation options.
+
+  Before using the C compiler and the linker, you need to set up four
+  environment variables:
+
+  Variable                 Action
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  PATH=path                Specifies the location of the three executable C
+                           compiler files (C1, C2, and C3) if they are not
+                           in the current directory; used by CL.EXE.
+
+  INCLUDE=path             Specifies the location of #include files (default
+                           extension .H) that are not found in the current
+                           directory.
+
+  LIB=path                 Specifies the location(s) for object-code
+                           libraries that are not found in the current
+                           directory.
+
+  TMP=path                 Specifies the location for temporary working
+                           files created by the C compiler and linker.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  CL.EXE does not support an interactive mode or response files. You always
+  invoke it with a command line of the following form:
+
+    CL [options] file [file ...]
+
+  You may list any number of filesÄÄif a file has a .C extension, it will be
+  compiled into a relocatable-object-module (.OBJ) file. Ordinarily, if the
+  compiler encounters no errors, it automatically passes all resulting .OBJ
+  files and any additional .OBJ files specified in the command line to the
+  linker, along with the names of the appropriate runtime libraries.
+
+  The C compiler has many optional switches controlling its memory models,
+  output files, code generation, and code optimization. These are summarized
+  in Figure 4-2. The C compiler's arcane switch syntax is derived largely
+  from UNIX/XENIX, so don't expect it to make any sense.
+
+
+  Switch                   Meaning
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  /Ax                      Select memory model:
+                           C = compact model
+                           H = huge model
+                           L = large model
+                           M = medium model
+                           S = small model (default)
+  /c                       Compile only; do not invoke linker.
+  /C                       Do not strip comments.
+  /D<name>[=text]          Define macro.
+  /E                       Send preprocessor output to standard output.
+  /EP                      Send preprocessor output to standard output
+                           without line numbers.
+  /F<n>                    Set stack size (in hexadecimal bytes).
+  /Fa [filename]           Generate assembly listing.
+  /Fc [filename]           Generate mixed source/object listing.
+  /Fe [filename]           Force executable filename.
+  /Fl [filename]           Generate object listing.
+  /Fm [filename]           Generate map file.
+  /Fo [filename]           Force object-module filename.
+  /FPx                     Select floating-point control:
+                           a = calls with alternate math library
+                           c = calls with emulator library
+                           c87 = calls with 8087 library
+                           i = in-line with emulator (default)
+                           i87 = in-line with 8087
+  /Fs [filename]           Generate source listing.
+  /Gx                      Select code generation:
+                           0 = 8086 instructions (default)
+                           1 = 186 instructions
+                           2 = 286 instructions
+                           c = Pascal style function calls
+                           s = no stack checking
+                           t[n] = data size threshold
+  /H<n>                    Specify external name length.
+  /I<path>                 Specify additional #include path.
+  /J                       Specify default char type as unsigned.
+  /link [options]          Pass switches and library names to linker.
+  /Ox                      Select optimization:
+                           a = ignore aliasing
+                           d = disable optimizations
+                           i = enable intrinsic functions
+                           l = enable loop optimizations
+                           n = disable "unsafe" optimizations
+                           p = enable precision optimizations
+                           r = disable in-line return
+                           s = optimize for space
+  /Ox                      t = optimize for speed (default)
+                           w = ignore aliasing except across function
+                           calls
+                           x = enable maximum optimization (equivalent to
+                           /Oailt /Gs)
+  /P                       Send preprocessor output to file.
+  /Sx                      Select source-listing control:
+                           l<columns> = set line width
+                           p<lines> = set page length
+                           s<string> = set subtitle string
+                           t<string> = set title string
+  /Tc<file>                Compile file without .C extension.
+  /u                       Remove all predefined macros.
+  /U<name>                 Remove specified predefined macro.
+  /V<string>               Set version string.
+  /W<n>                    Set warning level (0Ä3).
+  /X                       Ignore "standard places" for include files.
+  /Zx                      Select miscellaneous compilation control:
+                           a = disable extensions
+                           c = make Pascal functions case-insensitive
+                           d = include line-number information
+                           e = enable extensions (default)
+                           g = generate declarations
+                           i = include symbolic debugging information
+                           l = remove default library info
+                           p<n> = pack structures on n-byte boundary
+                           s = check syntax only
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+  Figure 4-2.  Microsoft C Optimizing Compiler version 5.1 switches.
+
+
+The Microsoft Object Linker
+
+  The object module produced by MASM from a source file is in a form that
+  contains relocation information and may also contain unresolved references
+  to external locations or subroutines. It is written in a common format
+  that is also produced by the various high-level compilers (such as FORTRAN
+  and C) that run under MS-DOS. The computer cannot execute object modules
+  without further processing.
+
+  The Microsoft Object Linker (LINK), distributed as the file LINK.EXE,
+  accepts one or more of these object modules, resolves external references,
+  includes any necessary routines from designated libraries, performs any
+  necessary offset relocations, and writes a file that can be loaded and
+  executed by MS-DOS. The output of LINK is always in .EXE load-module
+  format. (See Chapter 3.)
+
+  As with MASM, you can give LINK its parameters interactively or by
+  entering all the required information in a single command line. If you
+  enter the name of the linker alone, the following type of dialog ensues:
+
+  C>LINK  <Enter>
+
+  Microsoft (R) Overlay Linker  Version 3.61
+  Copyright (C) Microsoft Corp 1983-1987. All rights reserved.
+
+  Object Modules [.OBJ]: HELLO  <Enter>
+  Run File [HELLO.EXE]:  <Enter>
+  List File [NUL.MAP]: HELLO  <Enter>
+  Libraries [.LIB]:  <Enter>
+
+  C>
+
+  If you are using LINK version 4.0 or later, the linker also asks for the
+  name of a module-definition (.DEF) file. Simply press the Enter key in
+  response to such a prompt. Module-definition files are used when building
+  Microsoft Windows or MS OS/2 "new .EXE" executable files but are not
+  relevant in normal MS-DOS applicatio s.
+
+  The input file for this example was HELLO.OBJ; the output files were
+  HELLO.EXE (the executable program) and HELLO.MAP (the load map produced by
+  the linker after all references and addresses were resolved). Figure 4-3
+  shows the load map.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+   Start  Stop   Length Name                   Class
+   00000H 00017H 00018H _TEXT                  CODE
+   00018H 00027H 00010H _DATA                  DATA
+   00030H 000AFH 00080H STACK                  STACK
+   000B0H 000BBH 0000CH $$TYPES                DEBTYP
+   000C0H 000D6H 00017H $$SYMBOLS              DEBSYM
+
+    Address         Publics by Name
+
+    Address         Publics by Value
+
+  Program entry point at 0000:0000
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 4-3.  Map produced by the Microsoft Object Linker (LINK) during the
+  generation of the HELLO.EXE program from Chapter 3. The program contains
+  one CODE, one DATA, and one STACK segment. The first instruction to be
+  executed lies in the first byte of the CODE segment. The $$TYPES and
+  $$SYMBOLS segments contain information for the CodeView debugger and are
+  not part of the program; these segments are ignored by the normal MS-DOS
+  loader.
+
+  You can obtain the same result more quickly by entering all parameters in
+  the command line, in the following form:
+
+    LINK options objectfile, [exefile], [mapfile], [libraries]
+
+  Thus, the command-line equivalent to the preceding interactive session is
+
+  C>LINK HELLO,HELLO,HELLO,,  <Enter>
+
+  or
+
+  C>LINK HELLO,,HELLO;  <Enter>
+
+  If you enter a semicolon as the last character in the command line, LINK
+  assumes the default values for all further parameters.
+
+  A third method of commanding LINK is with a response file. A response file
+  contains lines of text that correspond to the responses you would give the
+  linker interactively. You specify the name of the response file in the
+  command line with a leading  character, as follows:
+
+    LINK filename
+
+  You can also enter the name of a response file at any prompt. If the
+  response file is not complete, LINK will prompt you for the missing
+  information.
+
+  When entering linker commands, you can specify multiple object files with
+  the + operator or with spaces, as in the following example:
+
+  C>LINK HELLO+VMODE+DOSINT,MYPROG,,GRAPHICS;  <Enter>
+
+  This command would link the files HELLO.OBJ, VMODE.OBJ, and DOSINT.OBJ,
+  searching the library file GRAPHICS.LIB to resolve any references to
+  symbols not defined in the specified object files, and would produce a
+  file named MYPROG.EXE. LINK uses the current drive and directory when they
+  are not explicitly included in a filename; it will not automatically use
+  the same drive and directory you specified for a previous file in the same
+  command line.
+
+  By using the + operator or space characters in the libraries field, you
+  can specify up to 32 library files to be searched. Each high-level-
+  language compiler provides default libraries that are searched
+  automatically during the linkage process if the linker can find them
+  (unless they are explicitly excluded with the /NOD switch). LINK looks for
+  libraries first in the current directory of the default disk drive, then
+  along any paths that were provided in the command line, and finally along
+  the path(s) specified by the LIB variable if it is present in the
+  environment.
+
+  LINK accepts several optional switches as part of the command line or at
+  the end of any interactive prompt. Figure 4-4 lists these switches. The
+  number of switches available and their actions vary among different
+  versions of LINK. See your Microsoft Object Linker instruction manual for
+  detailed information about your particular version.
+
+
+  Switch   Full form                   Meaning
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  /A:n     /ALIGNMENT:n                Set segment sector alignment factor.
+                                       N must be a power of 2 (default =
+                                       512). Not related to logical-segment
+                                       alignment (BYTE, WORD, PARA, PAGE,
+                                       and so forth). Relevant to segmented
+                                       executable files (Microsoft Windows
+                                       and MS OS/2) only.
+
+  /B       /BATCH                      Suppress linker prompt if a library
+                                       cannot be found in the current
+                                       directory or in the locations
+                                       specified by the LIB environment
+                                       variable.
+
+  /CO      /CODEVIEW                   Include symbolic debugging
+                                       information in the .EXE file for use
+                                       by CodeView.
+
+  /CP      /CPARMAXALLOC               Set the field in the .EXE file header
+                                       controlling the amount of memory
+                                       allocated to the program in addition
+                                       to the memory required for the
+                                       program's code, stack, and
+                                       initialized data.
+
+  /DO      /DOSSEG                     Use standard Microsoft segment naming
+                                       and ordering conventions.
+
+  /DS      /DSALLOCATE                 Load data at high end of the data
+                                       segment. Relevant to real-mode
+                                       programs only.
+
+  /E       /EXEPACK                    Pack executable file by removing
+                                       sequences of repeated bytes and
+                                       optimizing relocation table.
+
+  /F       /FARCALLTRANSLATION         Optimize far calls to labels within
+                                       the same physical segment for speed
+                                       by replacing them with near calls and
+                                       NOPs.
+
+  /HE      /HELP                       Display information about available
+                                       options.
+
+  /HI      /HIGH                       Load program as high in memory as
+                                       possible.
+
+  /I       /INFORMATION                Display information about progress of
+                                       linking, including pass numbers and
+                                       the names of object files being
+                                       linked.
+
+  /INC     /INCREMENTAL                Force production of .SYM and .ILK
+                                       files for subsequent use by ILINK
+                                       (incremental linker). May not be used
+                                       with /EXEPACK. Relevant to segmented
+                                       executable files (Microsoft Windows
+                                       and MS OS/2) only.
+
+  /LI      /LINENUMBERS                Write address of the first
+                                       instruction that corresponds to each
+                                       source-code line to the map file. Has
+                                       no effect if the compiler does not
+                                       include line-number information in
+                                       the object module. Force creation of
+                                       a map file.
+
+  /M[:n]   /MAP[:n]                    Force creation of a .MAP file listing
+                                       all public symbols, sorted by name
+                                       and by location. The optional value n
+                                       is the maximum number of symbols that
+                                       can be sorted (default = 2048); when
+                                       n is supplied, the alphabetically
+                                       sorted list is omitted.
+
+  /NOD     /NODEFAULTLIBRARYSEARCH     Skip search of any default compiler
+                                       libraries specified in the .OBJ file.
+
+  /NOE     /NOEXTENDEDDICTSEARCH       Ignore extended library dictionary
+                                       (if it is present). The extended
+                                       dictionary ordinarily provides the
+                                       linker with information about
+                                       inter-module dependencies, to speed
+                                       up linking.
+
+  /NOF     /NOFARCALLTRANSLATION       Disable optimization of far calls to
+                                       labels within the same segment.
+
+  /NOG     /NOGROUPASSOCIATION         Ignore group associations when
+                                       assigning addresses to data and code
+                                       items.
+
+  /NOI     /NOIGNORECASE               Do not ignore case in names during
+                                       linking.
+
+  /NON     /NONULLSDOSSEG              Arrange segments as for /DOSSEG but
+                                       do not insert 16 null bytes at start
+                                       of _TEXT segment.
+
+  /NOP     /NOPACKCODE                 Do not pack contiguous logical code
+                                       segments into a single physical
+                                       segment.
+
+  /O:n     /OVERLAYINTERRUPT:n         Use interrupt number n with the
+                                       overlay manager supplied with some
+                                       Microsoft high-level languages.
+
+  /PAC[:n] /PACKCODE[:n]               Pack contiguous logical code segments
+                                       into a single physical code segment.
+                                       The optional value n is the maximum
+                                       size for each packed physical code
+                                       segment (default = 65,536 bytes).
+                                       Segments in different groups are not
+                                       packed.
+
+  /PADC:n  /PADCODE:n                  Add n filler bytes to end of each
+                                       code module so that a larger module
+                                       can be inserted later with ILINK.
+                                       Relevant to segmented executable
+                                       files (Windows and MS OS/2) only.
+
+  /PADD:n  /PADDATA:n                  Add n filler bytes to end of each
+                                       data module so that a larger module
+                                       can be inserted later with ILINK.
+                                       Relevant to segmented executable
+                                       files (Microsoft Windows and MS OS/2)
+                                       only.
+
+  /PAU     /PAUSE                      Pause during linking, allowing a
+                                       change of disks before .EXE file is
+                                       written.
+
+  /SE:n    /SEGMENTS:n                 Set maximum number of segments in
+                                       linked program (default = 128).
+
+  /ST:n    /STACK:n                    Set stack size of program in bytes;
+                                       ignore stack segment size
+                                       declarations within object modules
+                                       and definition file.
+
+  /W       /WARNFIXUP                  Display warning messages for offsets
+                                       relative to a segment base that is
+                                       not the same as the group base.
+                                       Relevant to segmented executable
+                                       files (Microsoft Windows and MS OS/2)
+                                       only.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+  Figure 4-4.  Switches accepted by the Microsoft Object Linker (LINK)
+  version 5.0. Earlier versions use a subset of these switches. Note that
+  any abbreviation for a switch is acceptable as long as it is sufficient to
+  specify the switch uniquely.
+
+
+The EXE2BIN Utility
+
+  The EXE2BIN utility (EXE2BIN.EXE) transforms a .EXE file created by LINK
+  into an executable .COM file, if the program meets the following
+  prerequisites:
+
+  ş  It cannot contain more than one declared segment and cannot
+     define a stack.
+
+  ş  It must be less than 64 KB in length.
+
+  ş  It must have an origin at 0100H.
+
+  ş  The first location in the file must be specified as the entry point
+     in the source code's END directive.
+
+  Although .COM files are somewhat more compact than .EXE files, you should
+  avoid using them. Programs that use separate segments for code, data, and
+  stack are much easier to port to protected-mode environments such as MS
+  OS/2; in addition, .COM files do not support the symbolic debugging
+  information used by CodeView.
+
+  Another use for the EXE2BIN utility is to convert an installable device
+  driverÄÄafter it is assembled and linked into a .EXE fileÄÄinto a
+  memory-image .BIN or .SYS file with an origin of zero. This conversion is
+  required in MS-DOS version 2, which cannot load device drivers as .EXE
+  files. The process of writing an installable device driver is discussed in
+  more detail in Chapter 14.
+
+  Unlike most of the other programming utilities, EXE2BIN does not have an
+  interactive mode. It always takes its source and destination filenames,
+  separated by spaces, from the MS-DOS command line, as follows:
+
+    EXE2BIN sourcefile [destinationfile]
+
+  If you do not supply the source-file extension, it defaults to .EXE; the
+  destination-file extension defaults to .BIN. If you do not specify a name
+  for the destination file, EXE2BIN gives it the same name as the source
+  file, with a .BIN extension.
+
+  For example, to convert the file HELLO.EXE into HELLO.COM, you would use
+  the following command line:
+
+  C>EXE2BIN HELLO.EXE HELLO.COM  <Enter>
+
+  The EXE2BIN program also has other capabilities, such as pure binary
+  conversion with segment fixup for creating program images to be placed in
+  ROM; but because these features are rarely used during MS-DOS application
+  development, they will not be discussed here.
+
+
+The CREF Utility
+
+  The CREF cross-reference utility CREF.EXE processes a .CRF file produced
+  by MASM, creating an ASCII text file with the default extension .REF. The
+  file contains a cross-reference listing of all symbols declared in the
+  program and the line numbers in which they are referenced. (See Figure
+  4-5.) Such a listing is very useful when debugging large
+  assembly-language programs with many interdependent procedures and
+  variables.
+
+  CREF may be supplied with its parameters interactively or in a single
+  command line. If you enter the utility name alone, CREF prompts you for
+  the input and output filenames, as shown in the following example:
+
+  C>CREF  <Enter>
+
+  Microsoft (R) Cross-Reference Utility  Version 5.10
+  Copyright (C) Microsoft Corp 1981-1985, 1987. All rights reserved.
+
+  Cross-reference [.CRF]: HELLO  <Enter>
+  Listing [HELLO.REF]:
+
+  15 Symbols
+
+  C>
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  Microsoft Cross-Reference  Version 5.10       Thu May 26 11:09:34 1988
+  HELLO.EXE --- print Hello on terminal
+
+    Symbol Cross-Reference    (# definition, + modification)Cref-1
+
+  CPU . . . . . . . . . . . . . .   1#
+  VERSION . . . . . . . . . . . .   1#
+
+  CODE . . . . . . . . . . . . . .  21
+  CR . . . . . . . . . . . . . . .  17#    46     47
+
+  DATA . . . . . . . . . . . . . .  44
+
+  LF . . . . . . . . . . . . . . .  18#    46     47
+
+  MSG. . . . . . . . . . . . . . .  33     46#
+  MSG_LEN. . . . . . . . . . . . .  32     49#
+
+  PRINT. . . . . . . . . . . . . .  25#    39     60
+
+  STACK. . . . . . . . . . . . . .  23     54#    54     58
+  STDERR . . . . . . . . . . . . .  15#
+  STDIN. . . . . . . . . . . . . .  13#
+  STDOUT . . . . . . . . . . . . .  14#    31
+
+  _DATA. . . . . . . . . . . . . .  23     27     44#    51
+  _TEXT. . . . . . . . . . . . . .  21#    23     41
+
+   15 Symbols
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 4-5.  Cross-reference listing HELLO.REF produced by the CREF
+  utility from the file HELLO.CRF, for the HELLO.EXE program example from
+  Chapter 3. The symbols declared in the program are listed on the left in
+  alphabetic order. To the right of each symbol is a list of all the lines
+  where that symbol is referenced. The number with a # sign after it denotes
+  the line where the symbol is declared. Numbers followed by a + sign
+  indicate that the symbol is modified at the specified line. The line
+  numbers given in the cross-reference listing correspond to the line
+  numbers generated by the assembler in the program-listing (.LST) file, not
+  to any physical line count in the original source file.
+
+  The parameters may also be entered in the command line in the following
+  form:
+
+    CREF CRF_file, listing_file
+
+  For example, the command-line equivalent to the preceding interactive
+  session is:
+
+  C>CREF HELLO,HELLO  <Enter>
+
+  If CREF cannot find the specified .CRF file, it displays an error message.
+  Otherwise, it leaves the cross-reference listing in the specified file on
+  the disk. You can send the file to the printer with the COPY command, in
+  the following form:
+
+    COPY listing_file PRN:
+
+  You can also send the cross-reference listing directly to a character
+  device as it is generated by responding to the Listing prompt with the
+  name of the device.
+
+
+The Microsoft Library Manager
+
+  Although the object modules that are produced by MASM or by high-level-
+  language compilers can be linked directly into executable load modules,
+  they can also be collected into special files called object-module
+  libraries. The modules in a library are indexed by name and by the public
+  symbols they contain, so that they can be extracted by the linker to
+  satisfy external references in a program.
+
+  The Microsoft Library Manager (LIB) is distributed as the file LIB.EXE.
+  LIB creates and maintains program libraries, adding, updating, and
+  deleting object files as necessary. LIB can also check a library file for
+  internal consistency or print a table of its contents (Figure 4-6).
+
+  LIB follows the command conventions of most other Microsoft programming
+  tools. You must supply it with the name of a library file to work on, one
+  or more operations to perform, the name of a listing file or device, and
+  (optionally) the name of the output library. If you do not specify a name
+  for the output library, LIB gives it the same name as the input library
+  and changes the extension of the input library to .BAK.
+
+  The LIB operations are simply the names of object files, with a prefix
+  character that specifies the action to be taken:
+
+  Prefix     Meaning
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  -          Delete an object module from the library.
+  *          Extract a module and place it in a separate .OBJ file.
+  +          Add an object module or the entire contents of another library
+             to the library.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  You can combine command prefixes. For example, -+ replaces a module, and
+  *- extracts a module into a new file and then deletes it from the library.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  _abort............abort             _abs..............abs
+  _access...........access            _asctime..........asctime
+  _atof.............atof              _atoi.............atoi
+  _atol.............atol              _bdos.............bdos
+  _brk..............brk               _brkctl...........brkctl
+  _bsearch..........bsearch           _calloc...........calloc
+  _cgets............cgets             _chdir............dir
+  _chmod............chmod             _chsize...........chsize
+       .
+       .
+       .
+  _exit             Offset: 00000010H  Code and data size: 44H
+    __exit
+
+  _filbuf           Offset: 00000160H  Code and data size: BBH
+    __filbuf
+
+  _file             Offset: 00000300H  Code and data size: CAH
+    __iob             __iob2            __lastiob
+       .
+       .
+       .
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 4-6.  Extract from the table-of-contents listing produced by the
+  Microsoft Library Manager (LIB) for the Microsoft C library SLIBC.LIB. The
+  first part of the listing is an alphabetic list of all public names
+  declared in all of the modules in the library. Each name is associated
+  with the object module to which it belongs. The second part of the listing
+  is an alphabetic list of the object-module names in the library, each
+  followed by its offset within the library file and the actual size of the
+  module in bytes. The entry for each module is followed by a summary of the
+  public names that are declared within it.
+
+  When you invoke LIB with its name alone, it requests the other information
+  it needs interactively, as shown in the following example:
+
+  C>LIB  <Enter>
+
+  Microsoft (R) Library Manager  Version 3.08
+  Copyright (C) Microsoft Corp 1983-1987. All rights reserved.
+
+  Library name:  SLIBC  <Enter>
+  Operations: +VIDEO  <Enter>
+  List file:  SLIBC.LST  <Enter>
+  Output library:  SLIBC2  <Enter>
+
+  C>
+
+  In this example, LIB added the object module VIDEO.OBJ to the library
+  SLIBC.LIB, wrote a library table of contents into the file SLIBC.LST, and
+  named the resulting new library SLIBC2.LIB.
+
+  The Library Manager can also be run with a command line of the following
+  form:
+
+    LIB library [commands],[list],[newlibrary]
+
+  For example, the following command line is equivalent to the preceding
+  interactive session:
+
+  C>LIB SLIBC +VIDEO,SLIBC.LST,SLIBC2;  <Enter>
+
+  As with the other Microsoft utilities, a semicolon at the end of the
+  command line causes LIB to use the default responses for any parameters
+  that are omitted.
+
+  Like LINK, LIB can also accept its commands from a response file. The
+  contents of the file are lines of text that correspond exactly to the
+  responses you would give LIB interactively. You specify the name of the
+  response file in the command line with a leading  character, as follows:
+
+    LIB filename
+
+  LIB has only three switches: /I (/IGNORECASE), /N (/NOIGNORECASE), and
+  /PAGESIZE:number. The /IGNORECASE switch is the default. The /NOIGNORECASE
+  switch causes LIB to regard as distinct any symbols that differ only in
+  the case of their component letters. You should place the /PAGESIZE
+  switch, which defines the size of a unit of allocation space for a given
+  library, immediately after the library filename. The library page size is
+  in bytes and must be a power of 2 between 16 and 32,768 (16, 32, 64, and
+  so forth); the default is 16 bytes. Because the index to a library is
+  always a fixed number of pages, setting a larger page size allows you to
+  store more object modules in that library; on the other hand, it will
+  result in more wasted space within the file.
+
+
+The MAKE Utility
+
+  The MAKE utility (MAKE.EXE) compares dates of files and carries out
+  commands based on the result of that comparison. Because of this single,
+  rather basic capability, MAKE can be used to maintain complex programs
+  built from many modules. The dates of source, object, and executable files
+  are simply compared in a logical sequence; the assembler, compiler,
+  linker, and other programming tools are invoked as appropriate.
+
+  The MAKE utility processes a plain ASCII text file called, as you might
+  expect, a make file. You start the utility with a command-line entry in
+  the following form:
+
+    MAKE makefile [options]
+
+  By convention, a make file has the same name as the executable file that
+  is being maintained, but without an extension. The available MAKE switches
+  are listed in Figure 4-7.
+
+  A simple make file contains one or more dependency statements separated by
+  blank lines. Each dependency statement can be followed by a list of MS-DOS
+  commands, in the following form:
+
+    targetfile : sourcefile ...
+
+      command
+
+      command
+
+      .
+
+      .
+
+      .
+
+  If the date and time of any source file are later than those of the target
+  file, the accompanying list of commands is carried out. You may use
+  comment lines, which begin with a # character, freely in a make file. MAKE
+  can also process inference rules and macro definitions. For further
+  details on these advanced capabilities, see the Microsoft or IBM
+  documentation.
+
+  Switch     Meaning
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  /D         Display last modification date of each file as it is processed.
+  /I         Ignore exit (return) codes returned by commands and programs
+             executed as a result of dependency statements.
+  /N         Display commands that would be executed as a result of
+             dependency statements but do not execute those commands.
+  /S         Do not display commands as they are executed.
+  /X         Direct error messages from MAKE, or any program that MAKE runs,
+  <filename> to the specified file. If filename is a hyphen (-), direct
+             error messages to the standard output.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 4-7.  Switches for the MAKE utility.
+
+
+A Complete Example
+
+  Let's put together everything we've learned about using the MS-DOS
+  programming tools so far. Figure 4-8 shows a sketch of the overall
+  process of building an executable program.
+
+  Assume that we have the source code for the HELLO.EXE program from Chapter
+  3 in the file HELLO.ASM. To assemble the source program into the
+  relocatable object module HELLO.OBJ with symbolic debugging information
+  included, also producing a program listing in the file HELLO.LST and a
+  cross-reference data file HELLO.CRF, we would enter
+
+  C>MASM /C /L /Zi /T HELLO;  <Enter>
+
+  To convert the cross-reference raw-data file HELLO.CRF into a
+  cross-reference listing in the file HELLO.REF, we would enter
+
+  C>CREF HELLO,HELLO  <Enter>
+
+  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿             ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+  ³     MASM      ³             ³  C or other   ³
+  ³  source-code  ³             ³  HLL source-  ³
+  ³     file      ³             ³   code file   ³
+  ÀÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÙ             ÀÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÙ
+      ³       ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ  Compiler
+  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+  ³  Relocatable  ³
+  ³ object-module ÃÄÄÄÄ¿
+  ³  file (.OBJ)  ³    ³
+  ÀÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÙ    ³
+      ³ LIB            ³
+  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿    ³        ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+  ³ Object-module ³      LINK  ³  Executable   ³
+  ³   libraries   ÃÄÄÄÄÄÄÄÄÄÄÄÄÄ   program     ³
+  ³    (.LIB)     ³            ³    (.EXE)     ³
+  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ      ³      ÀÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÙ
+                         ³          ³ EXE2BIN
+  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿      ³      ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+  ³     HLL       ³      ³      ³   Executable  ³
+  ³   runtime     ÃÄÄÄÄÄÄÙ      ³    program    ³
+  ³  libraries    ³             ³     (.COM)    ³
+  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ             ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+  Figure 4-8.  Creation of an MS-DOS application program, from source code
+  to executable file.
+
+  To convert the relocatable object file HELLO.OBJ into the executable file
+  HELLO.EXE, creating a load map in the file HELLO.MAP and appending
+  symbolic debugging information to the executable file, we would enter
+
+  C>LINK /MAP /CODEVIEW HELLO;  <Enter>
+
+  We could also automate the entire process just described by creating a
+  make file named HELLO (with no extension) and including the following
+  instructions:
+
+  hello.obj : hello.asm
+   masm /C /L /Zi /T hello;
+   cref hello,hello
+
+  hello.exe : hello.obj
+   link /MAP /CODEVIEW hello;
+
+  Then, when we have made some change to HELLO.ASM and want to rebuild the
+  executable HELLO.EXE file, we need only enter
+
+  C>MAKE HELLO  <Enter>
+
+
+Programming Resources and References
+
+  The literature on IBM PCÄcompatible personal computers, the Intel 80x86
+  microprocessor family, and assembly-language and C programming is vast.
+  The list below contains a selection of those books that I have found to be
+  useful and reliable. The list should not be construed as an endorsement by
+  Microsoft Corporation.
+
+MASM Tutorials
+
+  Assembly Language Primer for the IBM PC and XT, by Robert Lafore. New
+  American Library, New York, NY, 1984. ISBN 0-452-25711-5.
+
+  8086/8088/80286 Assembly Language, by Leo Scanlon. Brady Books, Simon and
+  Schuster, New York, NY, 1988. ISBN 0-13-246919-7.
+
+C Tutorials
+
+  Microsoft C Programming for the IBM, by Robert Lafore. Howard K. Sams &
+  Co., Indianapolis, IN, 1987. ISBN 0-672-22515-8.
+
+  Proficient C, by Augie Hansen. Microsoft Press, Redmond, WA, 1987. ISBN
+  1-55615-007-5.
+
+Intel 80x86 Microprocessor References
+
+  iAPX 88 Book. Intel Corporation, Literature Department SV3-3, 3065 Bowers
+  Ave., Santa Clara, CA 95051. Order no. 210200.
+
+  iAPX 286 Programmer's Reference Manual. Intel Corporation, Literature
+  Department SV3-3, 3065 Bowers Ave., Santa Clara, CA 95051. Order no.
+  210498.
+
+  iAPX 386 Programmer's Reference Manual. Intel Corporation, Literature
+  Department SV3-3, 3065 Bowers Ave., Santa Clara, CA 95051. Order no.
+  230985.
+
+PC, PC/AT, and PS/2 Architecture
+
+  The IBM Personal Computer from the Inside Out (Revised Edition), by Murray
+  Sargent and Richard L. Shoemaker. Addison-Wesley Publishing Company,
+  Reading, MA, 1986. ISBN 0-201-06918-0.
+
+  Programmer's Guide to PC & PS/2 Video Systems, by Richard Wilton.
+  Microsoft Press, Redmond, WA, 1987. ISBN 1-55615-103-9.
+
+  Personal Computer Technical Reference. IBM Corporation, IBM Technical
+  Directory, P. O. Box 2009, Racine, WI 53404. Part no. 6322507.
+
+  Personal Computer AT Technical Reference. IBM Corporation, IBM Technical
+  Directory, P. O. Box 2009, Racine, WI 53404. Part no. 6280070.
+
+  Options and Adapters Technical Reference. IBM Corporation, IBM Technical
+  Directory, P. O. Box 2009, Racine, WI 53404. Part no. 6322509.
+
+  Personal System/2 Model 30 Technical Reference. IBM Corporation, IBM
+  Technical Directory, P. O. Box 2009, Racine, WI 53404. Part no. 68X2201.
+
+  Personal System/2 Model 50/60 Technical Reference. IBM Corporation, IBM
+  Technical Directory, P. O. Box 2009, Racine, WI 53404. Part no. 68X2224.
+
+  Personal System/2 Model 80 Technical Reference. IBM Corporation, IBM
+  Technical Directory, P. O. Box 2009, Racine, WI 53404. Part no. 68X2256.
+
+
+

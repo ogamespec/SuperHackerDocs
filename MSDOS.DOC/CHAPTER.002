@@ -1,0 +1,937 @@
+
+   **  Programmer's  Technical  Reference  for  MSDOS  and  the  IBM  PC **
+                        ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+                        ³ Shareware Version, 12/16/88 ³
+                        ³  Please Register Your Copy  ³
+                        ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+                       Copyright (c) 1988 Dave Williams
+
+
+                             C H A P T E R   T W O
+
+ CPU Port Assignments, System Memory Map, BIOS Data Area, Interrupts 00h to 09h
+
+
+
+ For consistency in this reference, all locations and offsets are in
+hexadecimal unless otherwise specified. All hex numbers are prefaced with a
+leading zero if they begin with an alphabetic character, and are terminated
+with a lowercase H (h). The formats vary according to common usage.
+
+
+SYSTEM MEMORY MAP - OVERALLÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+ The IBM PC handles its address space in 64k segments, divided into 16k
+fractions and then further as nescessary.
+
+ÚÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³start ³start end  ³                                                          ³
+³addr. ³addr. addr.³                          usage                           ³
+³(dec) ³   (hex)   ³                                                          ³
+ÃÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   *640k RAM Area*                                                           ³
+ÃÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 0k   ³           ³  start of RAM                                            ³
+³ 16k  ³00000-03FFF³  PC-0 system board RAM                                   ³
+³ 32k  ³04000-07FFF³                                                          ³
+³ 48k  ³08000-0BFFF³                                                          ³
+ÃÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 64k  ³10000-13FFF³  PC-1 system board RAM                                   ³
+³ 80k  ³14000-17FFF³                                                          ³
+³ 96k  ³18000-1BFFF³                                                          ³
+³ 112k ³1C000-1FFFF³                                                          ³
+ÃÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 128k ³20000-23FFF³                                                          ³
+³ 144k ³24000-27FFF³                                                          ³
+³ 160k ³28000-2BFFF³                                                          ³
+³ 176k ³2C000-2FFFF³                                                          ³
+ÃÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 192k ³30000-33FFF³                                                          ³
+³ 208k ³34000-37FFF³                                                          ³
+³ 224k ³38000-3BFFF³                                                          ³
+³ 240k ³3C000-3FFFF³                                                          ³
+ÃÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 256k ³40000-43FFF³  PC-2 system board RAM                                   ³
+³ 272k ³44000-47FFF³                                                          ³
+³ 288k ³48000-4BFFF³                                                          ³
+³ 304k ³4C000-4FFFF³                                                          ³
+ÃÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 320k ³50000-53FFF³                                                          ³
+³ 336k ³54000-57FFF³                                                          ³
+³ 352k ³58000-5BFFF³                                                          ³
+³ 368k ³5C000-5FFFF³                                                          ³
+ÃÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 384k ³60000-63FFF³                                                          ³
+³ 400k ³64000-67FFF³                                                          ³
+³ 416k ³68000-6BFFF³                                                          ³
+³ 432k ³6C000-6FFFF³                                                          ³
+ÃÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 448k ³70000-73FFF³                                                          ³
+³ 464k ³74000-77FFF³                                                          ³
+³ 480k ³78000-7BFFF³                                                          ³
+³ 496k ³7C000-7FFFF³                                                          ³
+ÃÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 512k ³80000-83FFF³                                                          ³
+³ 528k ³84000-87FFF³                                                          ³
+³ 544k ³88000-8BFFF³  the original IBM PC-1 BIOS limited memory to 544k       ³
+³ 560k ³8C000-8FFFF³                                                          ³
+ÃÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 576k ³90000-93FFF³                                                          ³
+³ 592k ³94000-97FFF³                                                          ³
+³ 609k ³98000-9BFFF³                                                          ³
+³ 624k ³9C000-9FFFF³  to 640k (top of RAM address space)                      ³
+ÃÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³A0000 ***** 64k ***** EGA address                                            ³
+ÃÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 640k ³A0000-A95B0³  MCGA 320x200 256 color video buffer                     ³
+³      ³     -AF8C0³  MCGA 640x480 2 color video buffer                       ³
+³      ³     -A3FFF³                                                          ³
+³ 656k ³A4000-A7FFF³                                                          ³
+³ 672k ³A8000-ABFFF³      this 64k segment may be used for contiguous DOS     ³
+³ 688k ³AC000-AFFFF³      RAM with appropriate hardware and software          ³
+ÃÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³B0000 ***** 64k ***** mono and CGA address                                   ³
+ÃÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 704k ³B0000-B3FFF³  mono uses only 4k        | The PCjr and early Tandy 1000³
+³ 720k ³B4000-B7FFF³                           | BIOS revector direct write to³
+³ 736k ³B8000-BBFFF³  CGA uses entire 16k      | the B8 area to the Video Gate³
+³ 756k ³BC000-BFFFF³                           | Array and reserved system RAM³
+ÃÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³C0000 ***** 64k *************** expansion ROM                                ³
+ÃÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 768k ³C0000-C3FFF³16k EGA BIOS C000:001E EGA BIOS signature (letters IBM)   ³
+³ 784k ³C4000-C5FFF³                                                          ³
+³      ³C6000-C63FF³256 bytes Professional Graphics Display communication area³
+³      ³C6400-C7FFF³                                                          ³
+³ 800k ³C8000-CBFFF³  16k hard disk controller BIOS, drive 0 default          ³
+³ 816k ³CC000-CDFFF³  8k  IBM PC Network NETBIOS                              ³
+³      ³CE000-CFFFF³                                                          ³
+ÃÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³D0000 ***** 64k ***** expansion ROM                                          ³
+ÃÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 832k ³D0000-D7FFF³  32k IBM Cluster Adapter  | PCjr first ROM cartridge     ³
+³      ³      DA000³  voice communications     | address area.                ³
+³ 848k ³D4000-D7FFF³                           | Common expanded memory board ³
+³ 864k ³D8000-DBFFF³                           | paging area.                 ³
+³ 880k ³DC000-DFFFF³                           |                              ³
+ÃÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³E0000 ***** 64k ***** expansion ROM                                          ³
+ÃÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 896k ³E0000-E3FFF³                           | PCjr second ROM cartidge     ³
+³ 912k ³E4000-E7FFF³                           | address area                 ³
+³ 928k ³E8000-EBFFF³                           |                              ³
+³ 944k ³EC000-EFFFF³                           |    spare ROM sockets on AT   ³
+ÃÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³F0000 ***** 64k ***** system                                                 ³
+ÃÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 960k ³F0000-F3FFF³  reserved by IBM          |    cartridge address         ³
+³ 976k ³F4000-     ³                           |    area (PCjr cartridge      ³
+³      ³F6000      ³  ROM BASIC Begins         |    BASIC)                    ³
+³ 992k ³F8000-FB000³                           |                              ³
+³ 1008k³FC000-FFFFF³  ROM BASIC and original   |                              ³
+³      ³           ³  BIOS (Compatibility BIOS |                              ³
+³      ³           ³  in PS/2)                 |                              ³
+³ 1024k³      FFFFF³  end of memory (1024k) for 8088 machines                 ³
+ÃÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÁÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 384k ³100000-15FFFF³ 80286/AT extended memory area, 1Mb motherboard         ³
+³ 15Mb ³100000-FFFFFF³ 80286/AT extended memory address space                 ³
+³ 15Mb ³160000-FDFFFF³ Micro Channel RAM expansion (15Mb extended memory)     ³
+³ 128k ³FE0000-FFFFFF³ system board ROM            (PS/2 Advanced BIOS)       ³
+ÀÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+Note that the ROM BIOS has a duplicated address space which causes it to
+"appear" both at the end of the 1 megabyte real mode space and at the end of
+the 16 megabyte protected mode space. The addresses from 0E0000 to 0FFFFF are
+equal to FE0000 to FFFFFF. This is necessary due to differences in the memory
+addressing between Real and Protected Modes.
+
+
+PC PORT ASSIGNMENT, Intel 8088, 80C88, 8086, 80286, 80386 CPUsÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+hex addr.                    Function
+
+0000-000F       8237 DMA controller
+0010-001F       8237 DMA controller  (AT, PS/2)
+0020-0027       8259A interrupt controller
+0020-003F       8259A interrupt controller  (AT)
+0040-005F       8253-5 programmable timers
+                (note: 0041 was memory refresh in PCs. Not used in PS/2)
+0060-0067       8255 peripheral interface
+0060-006F       8042 keyboard controller  (AT)
+0200-020F       game-control adapter
+0210-0217       expansion box (PC, XT)
+0278-027F       LPT3
+02F8-02FF       COM2
+0300-031F       prototype card
+0320-032F       hard disk controller 
+0378-037F       LPT2
+03BC-03BF       LPT1
+03D0-03DF       CGA, MCGA, VGA adapter control
+03F0-03F7       floppy disk controller
+03F8-03FF       COM1
+
+note:   These are functions common across the IBM range. The PCjr, PC 
+        Convertible and PS/2 (both buses) have enhancements. In some cases, the
+        AT and PS/2 series ignore, duplicate, or reassign ports arbitrarily. If
+        your code incorporates specific port addresses for video or system board
+        control it would be wise to have your application determine the machine
+        type and video adapter and address the ports as required.
+
+
+
+RESERVED MEMORY LOCATIONS IN THE IBM PCÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+³ 000-3FF  - 1k DOS interrupt vector table, 4 byte vectors for ints 00h-0FFh.
+³   30:00  - used as a stack area during POST and bootstrap routines. This
+³to 3F:FF    stack area may be revectored by an application program.
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+³ ** The BIOS Data Area ** addresses from 400h to 4FFh
+ÃÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+³addr.³ size  ³           description
+ÃÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+³40:00³  word ³ COM1 port address |   These addresses are zeroed out in the
+³40:02³  word ³ COM2 port address |   OS/2 DOS Compatibility Box if any of
+³40:04³  word ³ COM3 port address |   the OS/2 COM??.SYS drivers are loaded.
+³40:06³  word ³ COM4 port address |  
+³40:08³  word ³ LPT1 port address
+³40:0A³  word ³ LPT2 port address
+³40:0C³  word ³ LPT3 port address
+³40:0E³  word ³ LPT4 port address        (not valid in PS/2 machines)
+³40:0E³  word ³ PS/2 pointer to 1k extended BIOS Data Area at top of RAM
+³40:10³  word ³ equipment flag (see int 11h)
+ÀÄÄÄÄÄÁÄÄÄÄÄÄÄ´ bits:
+              ³ 0       1 if floppy drive present (see bits 6&7)  0 if not
+              ³ 1       1 if 80x87 installed  (not valid in PCjr)
+              ³ 2,3     system board RAM   (not used on AT or PS/2)
+              ³         0,0     16k             0,1     32k
+              ³         1,0     48k             1,1     64k
+              ³ 4,5     initial video mode
+              ³         0,0     no video adapter
+              ³         0,1     40 column color  (PCjr default)
+              ³         1,0     80 column color
+              ³         1,1     MDA
+              ³ 6,7     number of diskette drives
+              ³         0,0     1 drive         0,1     2 drives
+              ³         1,0     3 drives        1,1     4 drives
+              ³ 8       0       DMA present
+              ³         1       DMA not present (PCjr, Tandy 1400, Sanyo 55x)
+              ³ 9,A,B   number of RS232 serial ports
+              ³ C       game adapter  (joystick)
+              ³         0       no game adapter
+              ³         1       if game adapter
+              ³         D        serial printer (PCjr only)
+              ³         0       no printer
+              ³         1       serial printer present
+       ÚÄÄÄÄÄÄÙ E,F     number of parallel printers installed
+       ³note 1) The IBM PC and AT store the settings of the system board
+       ÀÄÄÄ¿    switches or CMOS RAM setup information (as obtained by the BIOS
+           ³    in the Power-On Self Test (POST)) at addresses 40:10h and
+           ³    40:13h. 00000001b indicates "on", 00000000b is "off".
+           ³ 2) CMOS RAM map, PC/AT:
+           ³    offset          contents
+           ³    00h         Seconds
+           ³    01h         Second Alarm
+           ³    02h         Minutes
+           ³    03h         Minute Alarm
+           ³    04h         Hours
+           ³    05h         Hour Alarm
+           ³    06h         Day of the Week
+           ³    07h         Day of the Month
+           ³    08h         Month
+           ³    09h         Year
+           ³    0Ah         Status Register A
+           ³    0Bh         Status Register B
+           ³    0Ch         Status Register C
+           ³    0Dh         Status Register D
+           ³    0Eh         Diagnostic Status Byte
+           ³    0Fh         Shutdown Status Byte
+           ³    10h         Disk Drive Type for Drives A: and B:
+           ³                The drive-type bytes use bits 0:3 for the first
+           ³                drive and 4:7 for the other
+           ³                Disk drive types:
+           ³                00h         no drive present
+           ³                01h         double sided 360k
+           ³                02h         high capacity (1.2 meg)
+           ³                03h-0Fh     reserved
+           ³    11h         (AT):Reserved    (PS/2):drive type for hard disk C:
+           ³    12h         (PS/2):drive type for hard disk D:
+           ³                (AT, XT/286):hard disk type for drives C: and D:
+           ³                Format of drive-type entry for AT, XT/286:
+           ³                0       number of cyls in drive (0-1023 allowed)
+           ³                2       number of heads per drive (0-15 allowed)
+           ³                3       starting reduced write compensation (not
+           ³                        used on AT)
+           ³                5       starting cylinder for write compensation
+           ³                7       max. ECC data burst length, XT only
+           ³                8       control byte
+           ³                        Bit
+           ³                        7    disable disk-access retries
+           ³                        6    disable ECC retries
+           ³                        5-4  reserved, set to zero
+           ³                        3    more than 8 heads
+           ³                        2-0  drive option on XT (not used by AT)
+           ³                9       timeout value for XT (not used by AT)
+           ³               12       landing zone cylinder number
+           ³               14       number of sectors per track (default 17,
+           ³                        0-17 allowed)
+           ³    13h         Reserved
+           ³    14h         Equipment Byte (corresponds to sw. 1 on PC and XT)
+           ³    15h-16h     Base Memory Size      (low,high)
+           ³    17h-18h     Expansion Memory Size (low,high)
+           ³    19h-20h     Reserved
+           ³                (PS/2) POS information Model 50 (60 and 80 use a 2k
+           ³                CMOS RAM that is not accessible through software)
+           ³    21h-2Dh     Reserved (not checksumed)
+           ³    2Eh-2Fh     Checksum of Bytes 10 Through 20  (low,high)
+           ³    30h-31h     Exp. Memory Size as Det. by POST (low,high)
+           ³    32h         Date Century Byte
+           ³    33h         Information Flags (set during power-on)
+           ³    34h-3Fh     Reserved
+           ³ 3) The alarm function is used to drive the BIOS WAIT function
+           ³    (int 15h function 90h).
+           ³ 4) To access the configuration RAM write the byte address (00-3Fh)
+           ³    you need to access to I/O port 70h, then access the data via
+           ³    I/O port 71h.
+           ³ 5) CMOS RAM chip is a Motorola 146818
+           ³ 6) The equipment byte is used to determine the configuration for
+           ³    the POST power-on diagnostics.
+           ³ 7) Bytes 00-0Dh are defined by the chip for timing functions,
+           ³    bytes 0Eh-3Fh  are defined by IBM.
+           ³ 8) Compaq 386 uses came CMOS chip as IBM AT. Extra functions:
+           ³    byte 45 (2Dh) store aditional info not maintained by AT
+           ³    bit 0 indicates is Compaq dual-mode monitor isntalled
+           ³        1 indicates whether keyclick is enabled
+           ³        2 not used
+ÚÄÄÄÄÄÂÄÄÄÄÁÄÄ¿     3 if non-Compaq graphics adapter installed
+³40:12³  byte ³ reserved (PC, AT)
+ÀÄÄÄÄÄÁÄÄÄÄÄÄÄ´ number of errors detected by infrared keyboard link (PCjr)
+ÚÄÄÄÄÄÂÄÄÄÄÄÄÄ´ POST status (Convertible)
+³40:13³  word ³ availible memory size in Kbytes (less display RAM in PCjr)
+ÃÄÄÄÄÄÅÄÄÄÄÄÄÄ´ this is the value returned by int 12h
+³40:15³  word ³ reserved
+³40:17³  byte ³ keyboard flag byte 0 (see int 9h)
+ÀÄÄÄÄÄÁÄÄÄÄÄÄÄ´ bit 7  insert mode on      3  alt pressed
+              ³     6  capslock on         2  ctrl pressed
+              ³     5  numlock on          1  left shift pressed
+ÚÄÄÄÄÄÂÄÄÄÄÄÄÄ´     4  scrollock on        0  right shift pressed
+³40:18³  byte ³ keyboard flag byte 1 (see int 9h)
+ÀÄÄÄÄÄÁÄÄÄÄÄÄÄ´ bit 7  insert pressed      3  ctrl-numlock (pause) toggled
+              ³     6  capslock pressed    2  PCjr keyboard click active
+              ³     5  numlock pressed     1  PCjr ctrl-alt-capslock held
+ÚÄÄÄÄÄÂÄÄÄÄÄÄÄ´     4  scrollock pressed   0
+³40:19³  byte ³ storage for alternate keypad entry (not normally used)
+³40:1A³  word ³ pointer to keyboard buffer head character
+³40:1C³  word ³ pointer to keyboard buffer tail character
+³40:1E³32bytes³ 16 2-byte entries for keyboard circular buffer, read by int 16h
+³40:3E³  byte ³ drive seek status - if bit=0, next seek will recalibrate by
+ÀÄÄÄÄÄÁÄÄÄÄÄÄÄ´ repositioning to Track 0.     
+              ³ bit 3  drive D          bit 2  drive C
+ÚÄÄÄÄÄÂÄÄÄÄÄÄÄ´     1  drive B              0  drive A
+³40:3F³  byte ³ diskette motor status (bit set to indicate condition)
+ÀÄÄÄÄÄÁÄÄÄÄÄÄÄ´ bit 7  write in progress    3  motor on (floppy 3)
+              ³     6                       2  motor on (floppy 2)
+              ³     5                       1  B: motor on (floppy 1)
+ÚÄÄÄÄÄÂÄÄÄÄÄÄÄ´     4                       0  A: motor on (floppy 0)
+³40:40³  byte ³ motor off counter
+³     ³       ³ starts at 37 and is decremented 1 by each system clock tick.
+³     ³       ³ motor is shut off when count = 0.
+³40:41³  byte ³ status of last diskette operation     where:
+ÀÄÄÄÄÄÁÄÄÄÄÄÄÄ´ bit 7 timeout failure                3 DMA overrun
+              ³     6 seek failure                   2 sector not found
+              ³     5 controller failure             1 address not found
+ÚÄÄÄÄÄÂÄÄÄÄÄÄÄ´     4 CRC failure                    0 bad command
+³40:42³7 bytes³ NEC status
+³40:49³  byte ³ current CRT mode (hex value)
+ÀÄÄÄÄÄÁÄÄÄÄÄÄÄ´    00h 40x25 BW      (CGA)          01h 40x25 color   (CGA)
+              ³    02h 80x25 BW      (CGA)          03h 80x25 color   (CGA)
+              ³    04h 320x200 color (CGA)          05h 320x200 BW    (CGA)
+              ³    06h 640x200 BW    (CGA)          07h monochrome    (MDA)  
+              ³extended video modes (EGA/MCGA/VGA or other)
+              ³    08h lores,16 color               09h med res,16 color
+              ³    0Ah hires,4 color                0Bh n/a
+              ³    0Ch med res,16 color             0Dh hires,16 color   
+ÚÄÄÄÄÄÂÄÄÄÄÄÄÄ´    0Eh hires,4 color                0Fh hires,64 color 
+³40:4A³  word ³ number of columns on screen, coded as hex number of columns
+ÀÄÄÄÄÄÁÄÄÄÄÄÄÄ´ 20 col = 14h  (video mode 8, low res 160x200 CGA graphics)
+              ³ 40 col = 28h
+ÚÄÄÄÄÄÂÄÄÄÄÄÄÄ´ 80 col = 46h
+³40:4C³  word ³ screen buffer length in bytes
+ÃÄÄÄÄÄÅÄÄÄÄÄÄÄ´(number of bytes used per screen page, varies with video mode)
+³40:4E³  word ³ current screen buffer starting offset (active page)
+³40:50³8 words³ cursor position pages 1-8
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄ´ the first byte of each word gives the column (0-19, 39, or 79)
+ÚÄÄÄÄÄÂÄÄÄÄÄÄÄ´ the second byte gives the row (0-24)
+³40:60³  byte ³ end line for cursor   (normally 1)
+³40:61³  byte ³ start line for cursor (normally 0)
+³40:62³  byte ³ current video page being displayed  (0-7)
+³40:63³  word ³ base port address of 6845 CRT controller or equivalent
+ÃÄÄÄÄÄÅÄÄÄÄÄÄÄ´ for active display           3B4h=mono, 3D4h=color
+³40:65³  byte ³ current setting of the CRT mode register
+³40:66³  byte ³ current palette mask setting  (CGA)
+³40:67³5 bytes³ temporary storage for SS:SP during shutdown (cassette interface)
+³40:6C³  word ³ timer counter low word
+³40:6E³  word ³ timer counter high word
+³40:69³  byte ³ HD_INSTALL (Columbia PCs) (not valid on most clone computers)
+ÀÄÄÄÄÄÁÄÄÄÄÄÄÄ´ bit  0 = 0  8 inch external floppy drives
+              ³          1  5-1/4 external floppy drives
+              ³      1,2 =  highest drive address which int 13 will accept
+              ³             (since the floppy drives are assigned 0-3, subtract
+              ³             3 to obtain the number of hard disks installed)
+              ³      4,5 =  # of hard disks connected to expansion controller
+              ³      6,7 =  # of hard disks on motherboard controller
+              ³             (if bit 6 or 7 = 1, no A: floppy is present and
+ÚÄÄÄÄÄÂÄÄÄÄÄÄÄ´             the maximum number of floppies from int 11 is 3)
+³40:70³  byte ³ 24 hour timer overflow 1 if timer went past midnight
+ÃÄÄÄÄÄÅÄÄÄÄÄÄÄ´ it is reset to 0 each time it is read by int 1Ah
+³40:71³  byte ³ BIOS break flag (bit 7 = 1 means break key hit)
+³40:72³  word ³ reset flag 
+ÀÄÄÄÄÄÁÄÄÄÄÄÄÄ´ PCjr keeps 1234h here for softboot when a cartridge is installed
+              ³ bits 1234h = soft reset, memory check will be bypassed
+              ³      4321h = preserve memory (PS/2 other only)
+              ³      5678h = system suspended (Convertible)
+              ³      9ABCh = manufacturing test mode (Convertible)
+ÚÄÄÄÄÄÂÄÄÄÄÄÄÄ´      ABCDh = system POST loop mode (Convertible)
+³40:74³  byte ³ status of last hard disk operation; PCjr special disk control
+³40:75³  byte ³ # of hard disks attached (0-2)    ; PCjr special disk control
+³40:76³  byte ³ HD control byte; temp holding area for 6th param table entry
+³40:77³  byte ³ port offset to current hd adapter ; PCjr special disk control
+³40:78³4 bytes³ timeout value for LPT1,LPT2,LPT3,LPT4
+³40:7C³4 bytes³ timeout value for COM1,COM2,COM3,COM4 (0-0FFh secs, default 1)
+³40:80³  word ³ pointer to start of circular keyboard buffer, default 03:1E
+³40:82³  word ³ pointer to end of circular keyboard buffer, default 03:3E
+³40:84³  byte ³ rows on the screen minus 1 (EGA only)
+³40:84³  byte ³ PCjr interrupt flag; timer channel 0  (used by POST)
+³40:85³  word ³ bytes per character (EGA only)
+³40:85³2 bytes³ (PCjr only) typamatic char to repeat
+³40:86³2 bytes³ (PCjr only) typamatic initial delay
+³40:87³  byte ³ mode options (EGA only)
+ÀÄÄÄÄÄÁÄÄÄÄÄÄÄ´ bit 1   0 = EGA is connected to a color display
+              ³         1 = EGA is monochrome.
+              ³ bit 3   0 = EGA is the active display,
+              ³         1 = "other" display is active.
+              ³ mode combinations:
+              ³ bit3  Bit1     Meaning
+              ³   0     0   EGA is active display and is color
+              ³   0     1   EGA is active display and is monochrome
+              ³   1     0   EGA is not active, a mono card is active
+ÚÄÄÄÄÄÂÄÄÄÄÄÄÄ´   1     1   EGA is not active, a CGA is active
+³40:87³  byte ³ (PCjr only) current Fn key code
+³40:88³  byte ³ feature bit switches (EGA only) 0=on, 1=off
+ÀÄÄÄÄÄÁÄÄÄÄÄÄÄ´ bit 3 = switch 4 
+              ³ bit 2 = switch 3
+              ³ bit 1 = switch 2
+ÚÄÄÄÄÄÂÄÄÄÄÄÄÄ´ bit 0 = switch 1
+³40:88³  byte ³ (PCjr only) special keyboard status byte
+ÀÄÄÄÄÄÁÄÄÄÄÄÄÄ´ bit 7 function flag      3 typamatic (0=enable,1=disable)
+              ³     6 Fn-B break         2 typamatic speed (0=slow,1=fast)
+              ³     5 Fn pressed         1 extra delay bef.typamatic (0=enable)
+ÚÄÄÄÄÄÂÄÄÄÄÄÄÄ´     4 Fn lock            0 write char, typamatic delay elapsed
+³40:89³  byte ³ PCjr, current value of 6845 reg 2 (horiz.synch) used by
+ÃÄÄÄÄÄÅÄÄÄÄÄÄÄ´ ctrl-alt-cursor screen positioning routine in ROM
+³40:8A³  byte ³ PCjr CRT/CPU Page Register Image, default 3Fh
+³40:8B³  byte ³ last diskette data rate selected
+³40:8C³  byte ³ hard disk status returned by controller
+³40:8D³  byte ³ hard disk error returned by controller
+³40:8E³  byte ³ hard disk interrupt (bit 7=working int)
+³40:90³4 bytes³ media state drive 0, 1, 2, 3
+³40:94³2 bytes³ track currently seeked to drive 0, 1
+³40:96³  byte ³ keyboard flag byte 3 (see int 9h)
+³40:97³  byte ³ keyboard flag byte 2 (see int 9h)
+³40:98³ dword ³ segment:offset pointer to users wait flag
+³40:9C³ dword ³ users timeout value in microseconds
+³40:A0³  byte ³ real time clock wait function in use
+ÀÄÄÄÄÄÁÄÄÄÄÄÄÄ´ bits 7    wait time elapsed and posted flag
+              ³      6-1  reserved
+ÚÄÄÄÄÄÂÄÄÄÄÄÄÄ´      0    int 15h, function 86h (WAIT) has occurred
+³40:A1³  byte ³ LAN A DMA channel flags
+³40:A2³2 bytes³ status LAN A 0,1
+³40:A4³ dword ³ saved hard disk interrupt vector
+³40:A8³ dword ³ EGA pointer to table of 7 parameters. Format of table:
+ÀÄÄÄÄÄÁÄÄÄÄÄÄÄ´ dword   pointer to 1472 byte table containing 64 video parms
+              ³ dword   reserved
+              ³ dword   reserved
+              ³ dword   reserved
+              ³ dword   reserved
+              ³ dword   reserved
+ÚÄÄÄÄÄÂÄÄÄÄÄÄÄ´ dword   reserved
+³40:B4³  byte ³ keyboard NMI control flags              (Convertible)
+³40:B5³ dword ³ keyboard break pending flags            (Convertible)
+³40:B9³  byte ³ port 60 single byte queue               (Convertible)
+³40:BA³  byte ³ scan code of last key                   (Convertible)
+³40:BB³  byte ³ pointer to NMI buffer head              (Convertible)
+³40:BC³  byte ³ pointer to NMI buffer tail              (Convertible)
+³40:BD³16bytes³ NMI scan code buffer                    (Convertible)
+³40:CE³  word ³ day counter                             (Convertible and after)
+³  to ³ -04:8F³               end of BIOS Data Area
+ÃÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+³ ** End of BIOS Data Area ** 
+ÃÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+³40:90³-40:EF ³ reserved by IBM
+
+04:F0 16 bytes Inter-Application Communications Area (for use by applications
+04:FF          to transfer data or parameters to each other)
+
+05:00  byte    DOS print screen status flag
+                        00h    not active or successful completion
+                        01h    print screen in progress
+                        0FFh   error during print screen operation
+05:01          Used by BASIC
+05:02-03       PCjr POST and diagnostics work area
+05:04  byte    Single drive mode status byte
+                        00     logical drive A
+                        01     logical drive B
+05:05-0E       PCjr POST and diagnostics work area
+05:0F          BASIC: SHELL flag (set to 02h if there is a current SHELL)
+05:10  word    BASIC: segment address storage (set with DEF SEG)
+05:12  4 bytes BASIC: int 1Ch clock interrupt vector segment:offset storage
+05:16  4 bytes BASIC: int 23h ctrl-break interrupt segment:offset storage
+05:1A  4 bytes BASIC: int 24h disk error interrupt vector segment:offset storage
+05:1B-1F       Used by BASIC for dynamic storage
+05:20-21       Used by DOS for dynamic storage
+05:22-2C       Used by DOS for diskette parameter table. See int 1Eh for values
+05:30-33       Used by MODE command
+05:34-FF       Unknown - Reserved for DOS
+
+
+AT ABSOLUTE ADDRESSESÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+0008:0047 IO.SYS or IBMBIO.COM IRET instruction. This is the dummy routine that
+          interrupts 01h, 03h, and 0Fh are initialized to during POST. 
+C000:001E EGA BIOS signature (the letters IBM)
+F000:FA6E table of characters 00h-7Fh used by int 10 video BIOS
+F000:FFF5 BIOS release date
+F000:FFFE PC model identification
+
+     ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+     ³ ROM BIOS    Ú model byte                                            ³
+     ³ copyright   ³     Ú submodel byte         machine                   ³
+     ³   date      ³     ³    Ú revision                                   ³
+     ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÅÄÄÄÄÅÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+     ³ 09/02/86 ³ FA ³ 00 ³ 00 ³ PS/2 Model 30                             ³
+     ³ 01/10/86 ³ FB ³ 00 ³ 01 ³ XT                                        ³
+     ³ 01/10/86 ³ FB ³ 01 ³ 00 ³ XT-2 (early)     (640k motherboard        ³
+     ³ 05/09/86 ³ FB ³    ³    ³ XT-2 (revised)   (640k motherboard)       ³
+     ³ 01/10/84 ³ FC ³ -- ³ -- ³ AT                                        ³
+     ³ 06/10/85 ³ FC ³ 00 ³ 01 ³ AT Model 239 6mHz (6.6 max governor)      ³
+     ³ 11/15/85 ³ FC ³ 01 ³ 00 ³ AT Model 319, 339 8mHz (8.6 max governor) ³
+     ³ 04/21/86 ³ FC ³ 02 ³ 00 ³ XT/286                                    ³
+     ³ 02/13/87 ³ FC ³ 04 ³ 00 ³ PS/2 Model 50                             ³
+     ³ 02/13/87 ³ FC ³ 05 ³ 00 ³ PS/2 Model 60                             ³
+     ³          ³ FC ³ 00 ³    ³ 7531/2 Industrial AT                      ³
+     ³          ³ FC ³ 06 ³    ³ 7552 "Gearbox"                            ³
+     ³ 06/01/83 ³ FD ³ -- ³ -- ³ PCjr                                      ³
+     ³ 11/08/82 ³ FE ³ -- ³ -- ³ XT, Portable PC, XT/370, 3270PC           ³
+     ³ 04/24/81 ³ FF ³ -- ³ -- ³ PC-0             (16k motherboard)        ³
+     ³ 10/19/81 ³ FF ³ -- ³ -- ³ PC-1             (64k motherboard)        ³
+     ³ 08/16/82 ³ FF ³ -- ³ -- ³ PC, XT, XT/370   (256k motherboard)       ³
+     ³ 10/27/82 ³ FF ³ -- ³ -- ³ PC, XT, XT/370   (256k motherboard)       ³
+     ³     1987 ³ F8 ³ 00 ³ 00 ³ PS/2 Model 80                             ³
+     ³ 09/13/85 ³ F9 ³ 00 ³ 00 ³ Convertible                               ³
+     ³          ³ 2D ³ -- ³ -- ³ Compaq PC (4.77)                          ³
+     ³          ³ 9A ³ -- ³ -- ³ Compaq Plus (XT)                          ³
+     ÀÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÁÄÄÄÄÁÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+
+
+
+THE IBM PC SYSTEM INTERRUPTS (Overview)ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+ The interrupt table is stored in the very lowest location in memory, starting 
+at 0000:0000h. The locations are offset from segment 0, ie location 0000h has
+the address for int 0, etc. The table is 1024 bytes in length and contains 256 
+four byte vectors from 00h to 0FFh. Each address' location in memory can be
+found by multiplying the interrupt number by 4. For example, int 7 could be
+found by (7x4=28) or 1Bh (0000:001Bh).
+ These interrupt vectors normally point to ROM tables or are taken over by DOS 
+when an application is run. Some applications revector these interrupts to 
+their own code to change the way the system responds to the user.
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³  Interrupt Address  ³                                                        ³
+ÃÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÙ                        Function                        ³
+³ Number³ (Hex) ³ type                                                         ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   0   ³ 00-03 ³ CPU ³  Divide by Zero                                        ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   1   ³ 04-07 ³ CPU ³  Single Step                                           ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   2   ³ 08-0B ³ CPU ³  Nonmaskable                                           ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   3   ³ 0C-0F ³ CPU ³  Breakpoint                                            ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   4   ³ 10-13 ³ CPU ³  Overflow                                              ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   5   ³ 14-17 ³ BIOS³  Print Screen                                          ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   6   ³ 18-1B ³ hdw ³  Reserved                                              ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   7   ³ 1C-1F ³ hdw ³  Reserved                                              ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   8   ³ 20-23 ³ hdw ³  Time of Day                                           ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   9   ³ 24-27 ³ hdw ³  Keyboard                                              ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   A   ³ 28-2B ³ hdw ³  Reserved                                              ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   B   ³ 2C-2F ³ hdw ³  Communications (8259)                                 ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   C   ³ 30-33 ³ hdw ³  Communications                                        ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   D   ³ 34-37 ³ hdw ³  Disk                                                  ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   E   ³ 38-3B ³ hdw ³  Diskette                                              ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   F   ³ 3C-3F ³ hdw ³  Printer                                               ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   10  ³ 40-43 ³ BIOS³  Video                                                 ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   11  ³ 44-47 ³ BIOS³  Equipment Check                                       ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   12  ³ 48-4B ³ BIOS³  Memory                                                ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   13  ³ 4C-4F ³ BIOS³  Diskette/Disk                                         ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   14  ³ 50-53 ³ BIOS³  Serial Communications                                 ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   15  ³ 54-57 ³ BIOS³  Cassette, System Services                             ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   16  ³ 58-5B ³ BIOS³  Keyboard                                              ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   17  ³ 5C-5F ³ BIOS³  Parallel Printer                                      ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   18  ³ 60-63 ³ BIOS³  ROM BASIC Loader                                      ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   19  ³ 64-67 ³ BIOS³  Bootstrap Loader                                      ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   1A  ³ 68-6B ³ BIOS³  Time of Day                                           ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   1B  ³ 6C-6F ³ BIOS³  Keyboard Break                                        ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   1C  ³ 70-73 ³ BIOS³  Timer Tick                                            ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   1D  ³ 74-77 ³ BIOS³  Video Initialization                                  ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   1E  ³ 78-7B ³ BIOS³  Diskette Parameters                                   ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   1F  ³ 7C-7F ³ BIOS³  Video Graphics Characters, second set                 ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   20  ³ 80-83 ³ DOS ³  General Program Termination                           ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   21  ³ 84-87 ³ DOS ³  DOS Services Function Request                         ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   22  ³ 88-8B ³ DOS ³  Called Program Termination Address                    ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   23  ³ 8C-8F ³ DOS ³  Control Break Termination Address                     ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   24  ³ 90-93 ³ DOS ³  Critical Error Handler                                ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   25  ³ 94-97 ³ DOS ³  Absolute Disk Read                                    ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   26  ³ 98-9B ³ DOS ³  Absolute Disk Write                                   ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   27  ³ 9C-9F ³ DOS ³  Terminate and Stay Resident                           ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 28-3F ³ A0-FF ³ DOS ³  Reserved for DOS                                      ³
+ÀÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+                      ³ *29h   Fast Screen Write                               ³
+                      ³ *2Ah   Microsoft Networks - Session Layer Interrupt    ³
+                      ³  2Fh   Multiplex Interrupt                             ³
+                      ³ *30h   Far jump instruction for CP/M-style calls       ³
+                      ³  33h   Used by Microsoft Mouse Driver                  ³
+ÚÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 40-43 ³100-115³ BIOS³  Reserved for BIOS                                     ³
+ÀÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+                      ³  40h   Hard Disk BIOS                                  ³
+                      ³  41h   Hard Disk Parameters  (except PC1)              ³
+                      ³  42h   Pointer to screen BIOS entry  (EGA, VGA, PS/2)  ³
+                      ³  43h   Pointer to EGA initialization parameter table   ³
+ÚÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   44  ³116-119³ BIOS³  First 128 Graphics Characters                         ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 45-47 ³120-131³ BIOS³  Reserved for BIOS                                     ³
+ÀÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+                      ³  45h   Reserved by IBM  (not initialized)              ³
+                      ³  46h   Pointer to hard disk 2 params (AT, PS/2)        ³
+                      ³  47h   Reserved by IBM  (not initialized)              ³
+ÚÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   48  ³132-135³ BIOS³  PCjr Cordless Keyboard Translation                    ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³   49  ³136-139³ BIOS³  PCjr Non-Keyboard Scancode Translation Table          ³
+ÀÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+                      ³  4Ah   Real-Time Clock Alarm (Convertible, PS/2)       ³
+ÚÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 50-5F ³140-17F³ BIOS³  Reserved for BIOS                                     ³
+ÀÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+                      ³  5Ah   Cluster Adapter BIOS entry address              ³
+                      ³ *5Bh   IBM  (cluster adapter?)                         ³
+                      ³  5Ch   NETBIOS interface entry port                    ³
+ÚÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 60-67 ³180-19F³  User Program Interrupts (availible for general use)         ³
+ÀÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+                      ³  60h   10-Net Network                                  ³
+                      ³  67h   Used by LIM & AQA EMS, EEMS                     ³
+ÚÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 68-7F ³1A0-1FF³  Reserved by IBM                                             ³
+ÀÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+                      ³  6Ch   System Resume Vector (Convertible)              ³
+                      ³  6Fh   some Novell and 10-Net API functions            ³
+                      ³  70h   IRQ 8, Real Time Clock Interrupt (AT, PS/2)     ³
+                      ³  71h   IRQ 9, LAN Adapter 1                            ³
+                      ³  72h   IRQ 10  (AT, XT/286, PS/2)  Reserved            ³
+                      ³  73h   IRQ 11  (AT, XT/286, PS/2)  Reserved            ³
+                      ³  74h   IRQ 12  Mouse Interrupt (PS/2)                  ³
+                      ³  75h   IRQ 13, Coprocessor Error                       ³
+                      ³  76h   IRQ 14, Hard Disk Controller (AT, PS/2)         ³
+                      ³  77h   IRQ 15 (AT, XT/286, PS/2)  Reserved             ³
+                      ³  7Ch   IBM REXX88PC command language                   ³
+ÚÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 80-85 ³200-217³  ROM BASIC                                                   ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ 86-F0 ³218-3C3³  Used by BASIC Interpreter When BASIC is running             ³
+ÃÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ F1-FF ³3C4-3FF³  Reserved by IBM                                             ³
+ÀÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+                       ³  0F1h-0FFh  Interprocess Communications Area          ³
+                       ³ *0F8h  Set Shell Interrupt (OEM)                      ³
+                       ³ *0F9h  OEM SHELL service codes                        ³
+                       ³  0FAh  USART ready (RS-232C)                          ³
+                       ³  0FBh  USART RS ready (keyboard)                      ³
+                       ³ *0FEh  used on '283 & '386                            ³
+                       ³ *0FFh  used on '283 & '386                            ³
+                       ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+
+
+
+THE IBM-PC SYSTEM INTERRUPTS (in detail)ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³Interrupt  00h Divide by Zero                                                ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+(0:0000h) (processor error). Automatically called at end of DIV or IDIV
+          operation that results in error. Normally set by DOS to display an
+          error message and abort the program.
+
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³Interrupt  01h Single step                                                   ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+(0:0004h) Taken after every instruction when CPU Trap Flag indicates
+          single-step mode (bit 8 of FLAGS is 1). This is what makes the T
+          command of DEBUG work for single stepping. Is not generated after MOV
+          to segment register or POP of segment register. (unless you have a
+          very early 8088 with the microcode bug).
+
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³Interrupt  02h Non-maskable interrupt                                        ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+(0:0008h)       Vector not disabled via CLI. Generated by NMI signal in
+                hardware. This signal has various uses:
+                  POST parity error
+                  Parity error: all except Jr and Convertible
+                  8087 Coprocessor interrupt: all except Jr and Convertible
+                  Keyboard interrupt: Jr, Convertible
+                  I/O channel check: Convertible, PS50+
+                  Disk-controller power-on request: Convertible
+                  System suspend: Convertible
+                  Real-time clock: Convertible 
+                  System watch-dog timer, time-out interrupt: PS50+
+                  DMA timer time-out interrupt: PS50+
+                  Infrared keyboard link: PCjr
+
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³Interrupt  03h Breakpoint                                                    ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+(0:000Ch)  Taken when CPU executes the 1-byte int 3 (0CCh). Similar to 8080's
+(internal) RST instruction. Generally used to set breakpoints for DEBUG.
+           Also used by Turbo Pascal versions 1,2,3 when {$U+} specified
+
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³Interrupt  04h Divide overflow                                               ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+(0:0010h) Generated by INTO instruction if OF flag is set. If flag is not set,
+(internal) INTO is effectively a NOP. Used to trap any arithmetic errors when
+          program is ready to handle them rather than immediately when they
+          occur.
+
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³Interrupt  05h Print Screen                                                  ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+(0:0014h) service dumps the screen to the printer. Invoked by int 9 for shifted
+          key 55 (PrtSc). Automatically called by keyboard scan when PrtSc key
+          is pressed. Normally executes a routine to print the screen, but may
+          call any routine that can safely be executed from inside the keyboard
+          scanner. Status and result byte are at address 0050:0000.
+(internal) BOUND check failed (80186/80286)
+           Generated by BOUND instruction when the value to be tested is less
+           than the indicated lower bound or greater than the indicated upper
+           bound.
+
+entry   AH      05h
+return  absolute address 50:0   
+        00h     print screen has not been called, or upon return from a call 
+                there were no errors.
+        01h     print screen is already in progress.
+        0FFh    error encountered during printing.
+note 1) Uses BIOS services to read the screen
+     2) Output is directed to LPT1
+     3) Revectored into GRAPHICS.COM if GRAPHICS.COM is loaded
+
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³Interrupt  06h Reserved by IBM                                               ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+(0:0018h)
+(internal) undefined opcode (80286)
+
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³Interrupt  07h Reserved by IBM                                               ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+(0:00C0h)
+(internal) no math unit available (80286)
+
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³Interrupt  08h Timer                                                         ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+(0:0020h) 55ms timer "tick" taken 18.2 times per second. Updates BIOS clock and
+(IRQ0)    turns off diskette drive motors after 2 seconds of inactivity. 
+
+entry   AH      08h
+return  absolute addresses:
+        40:6C   number of interrupts since power on (4 bytes)
+        40:70   number of days since power on (1 byte)
+        40:67   day counter on all products after AT
+        40:40   motor control count - gets decremented and shuts off diskette 
+                motor if zero
+note    Int 1Ch invoked by int 08h as a user interrupt.
+(internal) - DOUBLE FAULT (80286/80386 protected mode)
+        Called when multiple exceptions occur on one instruction, or an
+        exception occurs in an exception handler. If an exception occurs in the
+        double fault handler, the CPU goes into SHUTDOWN mode (which circuitry
+        in the PC/AT converts to a reset).
+
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³Interrupt  09h Keyboard                                                      ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+(0:0024h)  Taken whenever a key is pressed or released. This is normally a scan
+ (IRQ1)    code, but may also be an ACK or NAK of a command on AT-type
+           keyboards.
+           Stores characters/scan-codes in status at [0040:0017,18]
+(internal) math unit protection fault (80286 protected mode)
+entry   AH      09h
+return  at absolute memory addresses:
+        40:17   bit
+                0       right shift key depressed
+                1       left shift key depressed
+                2       control key depressed
+                3       alt key depressed
+                4       ScrollLock state has been toggled
+                5       NumLock state has been toggled
+                6       CapsLock state has been toggled
+                7       insert state is active
+        40:18   bit
+                0       left control key depressed
+                1       left alt key depressed
+                2       SysReq key depressed
+                3       Pause key has been toggled
+                4       ScrollLock key is depressed
+                5       NumLock key is depressed
+                6       CapsLock key is depressed
+                7       Insert key is depressed
+        40:96   bit
+                0       last code was the E1h hidden code
+                1       last code was the E0h hidden code
+                2       right control key down
+                3       right alt key down
+                4       101 key Enhanced keyboard installed
+                5       force NumLock if rd ID & kbx
+                6       last character was first ID character
+                7       doing a read ID (must be bit 0)
+        40:97   bit
+                0       ScrollLock indicator
+                1       NumLock indicator
+                2       CapsLock indicator
+                3       circus system indicator
+                4       ACK received
+                5       resend received flag
+                6       mode indicator update
+                7       keyboard transmit error flag
+        40:1E   keyboard buffer (20h bytes)
+        40:1C   buffer tail pointer
+        40:72   1234h if ctrl-alt-del pressed on keyboard
+     AL   scan code
+note 1) Int 05h invoked if PrtSc key pressed
+     2) Int 1Bh invoked if Ctrl-Break key sequence pressed
+     3) Int 15h, AH=85h invoked on AT and after if SysReq key is pressed
+     4) Int 15h, AH=4Fh invoked on machines after AT
+     5) Int 16h, BIOS keyboard functions, uses this interrupt.
+
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³Interrupt  0Ah  EGA Vertical Retrace                                         ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+(0:0028h)  (IRQ2)  used by EGA vertical retrace, hard disk
+note 1) On the Tandy 1000, this interrupt is used by the hard disk
+     2) The TOPS and PCnet adapters use this interrupt request line by default
+(internal) invalid task state segment (80286 protected-mode)
+
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³Interrupt  0Bh  Communications Controller (serial port) hdw. entry           ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+(0:002Ch)  (IRQ3)  Serial Port 2 (com2)
+note 1) IRQ 3 may be used by SDLC (synchronous data-link control) or 
+        bisynchronous communications cards instead of a serial port.
+     2) The TOPS and PCnet adapters use this interrupt request line as an
+        alternate
+(internal) not present (80286 protected-mode)
+        Generated when loading a segment register if the segment descriptor
+        indicates that the segment is not currently in memory. May be used to
+        implement virtual memory.
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³Interrupt  0Ch  Communications Controller (serial port) hdw. entry           ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+(0:0030h)  (IRQ4)  Serial Port 1 (com1) or modem in PCjr or Convertible
+note    IRQ 4 may be used by SDLC (synchronous data-link control) or 
+        bisynchronous communications cards instead of a serial port.
+(internal) stack fault (80286 protected-mode)
+        Generated on stack overflow/underflow. Note that the 80286 will shut
+        down in real mode if SP=1 before a push.
+
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³Interrupt  0Dh  Alternate Printer, AT 80287                                  ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+(0:0034h)  (IRQ5)  used by hard disk, 60 Hz RAM refresh, LPT2 on AT, XT/286,
+            and PS/2, dummy CRT vertical retrace on PCjr
+note    Tandy 1000 uses this line for the 60Hhz RAM refresh
+(internal) general protection violation (80286)
+        Called in real mode when an instruction attempts to access a word
+        operand located at offset 0FFFFh
+
+
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³Interrupt  0Eh  Diskette Interrupt                                           ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+(0:0038h)  Generated by floppy controller on completion of an operation
+ (IRQ6)  (sets bit 8 of 40:3E)
+(internal) page fault (80386 native mode)
+
+
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³Interrupt  0Fh  Reserved by IBM                                              ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+(0:003Ch)  (IRQ7)  IRQ7 used by PPI interrupt (LPT1, LPT2)
+note    Generated by the LPT1 printer adapter when printer becomes ready. Most
+        printer adapters do not reliably generate this interrupt.
+

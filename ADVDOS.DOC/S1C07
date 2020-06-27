@@ -1,0 +1,953 @@
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+Chapter 7  Printer and Serial Port
+
+  MS-DOS supports printers, plotters, modems, and other hard-copy output or
+  communication devices with device drivers for parallel ports and serial
+  ports. Parallel ports are so named because they transfer a byteÄÄ8 bitsÄÄ
+  in parallel to the destination device over eight separate physical paths
+  (plus additional status and handshaking signals). The serial port, on the
+  other hand, communicates with the CPU with bytes but sends data to or
+  receives data from its destination device seriallyÄÄa bit at a timeÄÄover
+  a single physical connection.
+
+  Parallel ports are typically used for high-speed output devices, such as
+  line printers, over relatively short distances (less than 50 feet). They
+  are rarely used for devices that require two-way communication with the
+  computer. Serial ports are used for lower-speed devices, such as modems
+  and terminals, that require two-way communication (although some printers
+  also have serial interfaces). A serial port can drive its device reliably
+  over much greater distances (up to 1000 feet) over as few as three wiresÄÄ
+  transmit, receive, and ground.
+
+  The most commonly used type of serial interface follows a standard called
+  RS-232. This standard specifies a 25-wire interface with certain
+  electrical characteristics, the use of various handshaking signals, and a
+  standard DB-25 connector. Other serial-interface standards existÄÄfor
+  example, the RS-422, which is capable of considerably higher speeds than
+  the RS-232ÄÄ but these are rarely used in personal computers (except for
+  the Apple Macintosh) at this time.
+
+  MS-DOS has built-in device drivers for three parallel adapters, and for
+  two serial adapters on the PC or PC/AT and three serial adapters on the
+  PS/2. The logical names for these devices are LPT1, LPT2, LPT3, COM1,
+  COM2, and COM3. The standard printer (PRN) and standard auxiliary (AUX)
+  devices are normally aliased to LPT1 and COM1, but you can redirect PRN to
+  one of the serial ports with the MS-DOS MODE command.
+
+  As with keyboard and video display I/O, you can manage printer and
+  serial-port I/O at several levels that offer different degrees of
+  flexibility and hardware independence:
+
+  ş  MS-DOS handle-oriented functions
+
+  ş  MS-DOS traditional character functions
+
+  ş  IBM ROM BIOS driver functions
+
+  In the case of the serial port, direct control of the hardware by
+  application programs is also common. I will discuss each of these I/O
+  methods briefly, with examples, in the following pages.
+
+
+Printer Output
+
+  The preferred method of printer output is to use the handle write function
+  (Int 21H Function 40H) with the predefined standard printer handle (4).
+  For example, you could write the string hello to the printer as follows:
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  msg     db      'hello'     ; message for printer
+  msg_len equ     $-msg       ; length of message
+          .
+          .
+          .
+          mov     ah,40h      ; function 40h = write file or device
+          mov     bx,4        ; BX = standard printer handle
+          mov     cx,msg_len  ; CX = length of string
+          mov     dx,seg msg  ; DS:DX = string address
+          mov     ds,dx
+          mov     dx,offset msg
+          int     21h         ; transfer to MS-DOS
+          jc      error       ; jump if error
+          .
+          .
+          .
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  If there is no error, the function returns the carry flag cleared and the
+  number of characters actually transferred to the list device in register
+  AX. Under normal circumstances, this number should always be the same as
+  the length requested and the carry flag indicating an error should never
+  be set. However, the output will terminate early if your data contains an
+  end-of-file mark (Ctrl-Z).
+
+  You can write independently to several list devices (for example, LPT1,
+  LPT2) by issuing a specific open request (Int 21H Function 3DH) for each
+  device and using the handles returned to access the printers individually
+  with Int 21H Function 40H. You have already seen this general approach in
+  Chapters 5 and 6.
+
+  An alternative method of printer output is to use the traditional Int 21H
+  Function 05H, which transfers the character in the DL register to the
+  printer. (This function is sensitive to Ctrl-C interrupts.) For example,
+  the assembly-language code sequence at the top of the following page would
+  write the the string hello to the line printer.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  msg     db      'hello'     ; message for printer
+  msg_len equ     $-msg       ; length of message
+          .
+          .
+          .
+          mov     bx,seg msg  ; DS:BX = string address
+          mov     ds,bx
+          mov     bx,offset msg
+          mov     cx,msg_len  ; CX = string length
+
+  next:   mov     dl,[bx]     ; get next character
+          mov     ah,5        ; function 05h = printer output
+          int     21h         ; transfer to MS-DOS
+          inc     bx          ; bump string pointer
+          loop    next        ; loop until string done
+          .
+          .
+          .
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Programs that run on IBM PCÄcompatible machines can obtain improved
+  printer throughput by bypassing MS-DOS and calling the ROM BIOS printer
+  driver directly by means of Int 17H. Section III of this book, "IBM ROM
+  BIOS and Mouse Functions Reference," documents the Int 17H functions in
+  detail. Use of the ROM BIOS functions also allows your program to test
+  whether the printer is off line or out of paper, a capability that MS-DOS
+  does not offer.
+
+  For example, the following sequence of instructions calls the ROM BIOS
+  printer driver to send the string hello to the line printer:
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  msg     db      'hello'     ; message for printer
+  msg_len equ     $-msg       ; length of message
+          .
+          .
+          .
+          mov     bx,seg msg  ; DS:BX = string address
+          mov     ds,bx
+          mov     bx,offset msg
+          mov     cx,msg_len  ; CX = string length
+          mov     dx,0        ; DX = printer number
+
+  next:   mov     al,[bx]     ; AL = character to print
+          mov     ah,0        ; function 00h = printer output
+          int     17h         ; transfer to ROM BIOS
+          inc     bx          ; bump string pointer
+          loop    next        ; loop until string done
+          .
+          .
+          .
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Note that the printer numbers used by the ROM BIOS are zero-based, whereas
+  the printer numbers in MS-DOS logical-device names are one-based. For
+  example, ROM BIOS printer 0 corresponds to LPT1.
+
+  Finally, the most hardware-dependent technique of printer output is to
+  access the printer controller directly. Considering the functionality
+  already provided in MS-DOS and the IBM ROM BIOS, as well as the speeds of
+  the devices involved, I cannot see any justification for using direct
+  hardware control in this case. The disadvantage of introducing such
+  extreme hardware dependence for such a low-speed device would far outweigh
+  any small performance gains that might be obtained.
+
+
+The Serial Port
+
+  MS-DOS support for serial ports (often referred to as the auxiliary device
+  in MS-DOS manuals) is weak compared with its keyboard, video-display, and
+  printer support. This is one area where the application programmer is
+  justified in making programs hardware dependent to extract adequate
+  performance.
+
+  Programs that restrict themselves to MS-DOS functions to ensure
+  portability can use the handle read and write functions (Int 21H Functions
+  3FH and 40H), with the predefined standard auxiliary handle (3) to
+  access the serial port. For example, the following code writes the string
+  hello to the serial port that is currently defined as the AUX device:
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  msg     db      'hello'     ; message for serial port
+  msg_len equ     $-msg       ; length of message
+          .
+          .
+          .
+          mov     ah,40h      ; function 40h = write file or device
+          mov     bx,3        ; BX = standard aux handle
+          mov     cx,msg_len  ; CX = string length
+          mov     dx,seg msg  ; DS:DX = string address
+          mov     ds,dx
+          mov     dx,offset msg
+          int     21h         ; transfer to MS-DOS
+          jc      error       ; jump if error
+          .
+          .
+          .
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  The standard auxiliary handle gives access to only the first serial port
+  (COM1). If you want to read or write COM2 and COM3 using the handle calls,
+  you must issue an open request (Int 21H Function 3DH) for the desired
+  serial port and use the handle returned by that function with Int 21H
+  Functions 3FH and 40H.
+
+  Some versions of MS-DOS have a bug in character-device handling that
+  manifests itself as follows: If you issue a read request with Int 21H
+  Function 3FH for the exact number of characters that are waiting in the
+  driver's buffer, the length returned in the AX register is the number of
+  characters transferred minus one. You can circumvent this problem by
+  always requesting more characters than you expect to receive or by placing
+  the device handle into binary mode using Int 21H Function 44H.
+
+  MS-DOS also supports two traditional functions for serial-port I/O. Int
+  21H Function 03H inputs a character from COM1 and returns it in the AL
+  register; Int 21H Function 04H transmits the character in the DL register
+  to COM1. Like the other traditional calls, these two are direct
+  descendants of the CP/M auxiliary-device functions.
+
+  For example, the following code sends the string hello to COM1 using the
+  traditional Int 21H Function 04H:
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  msg     db      'hello'     ; message for serial port
+  msg_len equ     $-msg       ; length of message
+          .
+          .
+          .
+          mov     bx,seg msg  ; DS:BX = string address
+          mov     ds,bx
+          mov     bx,offset msg
+          mov     cx,msg_len  ; CX = length of string
+    mov     dl,[bx]     ; get next character
+          mov     ah,4        ; function 04h = aux output
+          int     21h         ; transfer to MS-DOS
+          inc     bx          ; bump pointer to string
+          loop    next        ; loop until string done
+          .
+          .
+          .
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  MS-DOS translates the traditional auxiliary-device functions into calls on
+  the same device driver used by the handle calls. Therefore, it is
+  generally preferable to use the handle functions in the first place,
+  because they allow very long strings to be read or written in one
+  operation, they give access to serial ports other than COM1, and they are
+  symmetrical with the handle video-display, keyboard, printer, and file I/O
+  methods described elsewhere in this book.
+
+  Although the handle or traditional serial-port functions allow you to
+  write programs that are portable to any machine running MS-DOS, they have
+  a number of disadvantages:
+
+  ş  The built-in MS-DOS serial-port driver is slow and is not interrupt
+     driven.
+
+  ş  MS-DOS serial-port I/O is not buffered.
+
+  ş  Determining the status of the auxiliary device requires a separate call
+     to the IOCTL function (Int 21H Function 44H)ÄÄif you request input and
+     no characters are ready, your program will simply hang.
+
+  ş  MS-DOS offers no standardized function to configure the serial port
+     from within a program.
+
+  For programs that are going to run on the IBM PC or compatibles, a more
+  flexible technique for serial-port I/O is to call the IBM ROM BIOS
+  serial-port driver by means of Int 14H. You can use this driver to
+  initialize the serial port to a desired configuration and baud rate,
+  examine the status of the controller, and read or write characters.
+  Section III of this book, "IBM ROM BIOS and Mouse Functions Reference,"
+  documents the functions available from the ROM BIOS serial-port driver.
+
+  For example, the following sequence sends the character X to the first
+  serial port (COM1):
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+          .
+          .
+          .
+          mov     ah,1        ; function 01h = send character
+          mov     al,'X'      ; AL = character to transmit
+          mov     dx,0        ; DX = serial-port number
+          int     14h         ; transfer to ROM BIOS
+          and     ah,80h      ; did transmit fail?
+          jnz     error       ; jump if transmit error
+          .
+          .
+          .
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  As with the ROM BIOS printer driver, the serial-port numbers used by the
+  ROM BIOS are zero-based, whereas the serial-port numbers in MS-DOS
+  logical-device names are one-based. In this example, serial port 0
+  corresponds to COM1.
+
+  Unfortunately, like the MS-DOS auxiliary-device driver, the ROM BIOS
+  serial-port driver is not interrupt driven. Although it will support
+  higher transfer speeds than the MS-DOS functions, at rates greater than
+  2400 baud it may still lose characters. Consequently, most programmers
+  writing high-performance applications that use a serial port (such as
+  telecommunications programs) take complete control of the serial-port
+  controller and provide their own interrupt driver. The built-in functions
+  provided by MS-DOS, and by the ROM BIOS in the case of the IBM PC, are
+  simply not adequate.
+
+  Writing such programs requires a good understanding of the hardware. In
+  the case of the IBM PC, the chips to study are the INS8250 Asynchronous
+  Communications Controller and the Intel 8259A Programmable Interrupt
+  Controller. The IBM technical reference documentation for these chips is a
+  bit disorganized, but most of the necessary information is there if you
+  look for it.
+
+
+The TALK Program
+
+  The simple terminal-emulator program TALK.ASM (Figure 7-1) is an example
+  of a useful program that performs screen, keyboard, and serial-port I/O.
+  This program recapitulates all of the topics discussed in Chapters 5
+  through 7. TALK uses the IBM PC's ROM BIOS video driver to put characters
+  on the screen, to clear the display, and to position the cursor; it uses
+  the MS-DOS character-input calls to read the keyboard; and it contains its
+  own interrupt driver for the serial-port controller.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+          name      talk
+          page      55,132
+          .lfcond             ; List false conditionals too
+          title     TALK--Simple terminal emulator
+
+  ;
+  ; TALK.ASM--Simple IBM PC terminal emulator
+  ;
+  ; Copyright (c) 1988 Ray Duncan
+  ;
+  ; To assemble and link this program into TALK.EXE:
+  ;
+  ;       C>MASM TALK;
+  ;       C>LINK TALK;
+  ;
+
+  stdin   equ     0               ; standard input handle
+  stdout  equ     1               ; standard output handle
+  stderr  equ     2               ; standard error handle
+
+  cr      equ     0dh             ; ASCII carriage return
+  lf      equ     0ah             ; ASCII linefeed
+  bsp     equ     08h             ; ASCII backspace
+  escape  equ     1bh             ; ASCII escape code
+
+  dattr   equ     07h             ; display attribute to use
+                                  ; while in emulation mode
+
+  bufsiz  equ     4096            ; size of serial-port buffer
+
+  echo    equ     0               ; 0 = full-duplex, -1 = half-duplex
+     equ     -1
+  false   equ     0
+
+  com1    equ     true            ; use COM1 if nonzero
+  com2    equ     not com1        ; use COM2 if nonzero
+
+  pic_mask  equ   21h             ; 8259 interrupt mask port
+  pic_eoi   equ   20h             ; 8259 EOI port
+
+          if      com1
+  com_data equ    03f8h           ; port assignments for COM1
+  com_ier  equ    03f9h
+  com_mcr  equ    03fch
+  com_sts  equ    03fdh
+  com_int  equ    0ch             ; COM1 interrupt number
+  int_mask equ    10h             ; IRQ4 mask for 8259
+          endif
+
+          if      com2
+  com_data equ    02f8h           ; port assignments for COM2
+  com_ier  equ    02f9h
+  com_mcr  equ    02fch
+  com_sts  equ    02fdh
+  com_int  equ    0bh             ; COM2 interrupt number
+  int_mask equ    08h             ; IRQ3 mask for 8259
+          endif
+
+  _TEXT   segment word public 'CODE'
+
+          assume  cs:_TEXT,ds:_DATA,es:_DATA,ss:STACK
+
+  talk    proc    far             ; entry point from MS-DOS
+
+          mov     ax,_DATA        ; make data segment addressable
+          mov     ds,ax
+          mov     es,ax
+                                  ; initialize display for
+                                  ; terminal emulator mode...
+
+          mov     ah,15           ; get display width and
+          int     10h             ; current display mode
+          dec     ah              ; save display width for use
+          mov     columns,ah      ; by the screen-clear routine
+
+          cmp     al,7            ; enforce text display mode
+          je      talk2           ; mode 7 ok, proceed
+         cmp     al,3
+          jbe     talk2           ; modes 0-3 ok, proceed
+
+          mov     dx,offset msg1
+          mov     cx,msg1_len
+          jmp     talk6           ; print error message and exit
+
+  talk2:  mov     bh,dattr        ; clear screen and home cursor
+          call    cls
+
+          call    asc_enb         ; capture serial-port interrupt
+                                  ; vector and enable interrupts
+
+          mov     dx,offset msg2  ; display message
+          mov     cx,msg2_len     ; 'terminal emulator running'
+          mov     bx,stdout       ; BX = standard output handle
+          mov     ah,40h          ; function 40h = write file or device
+          int     21h             ; transfer to MS-DOS
+
+  talk3:  call    pc_stat         ; keyboard character waiting?
+          jz      talk4           ; nothing waiting, jump
+
+          call    pc_in           ; read keyboard character
+
+          cmp     al,0            ; is it a function key?
+          jne     talk32          ; not function key, jump
+
+          call    pc_in           ; function key, discard 2nd
+                                  ; character of sequence
+          jmp     talk5           ; then terminate program
+
+  talk32:                         ; keyboard character received
+          if      echo
+          push    ax              ; if half-duplex, echo
+          call    pc_out          ; character to PC display
+          pop     ax
+          endif
+
+          call    com_out         ; write char to serial port
+
+  talk4:  call    com_stat        ; serial-port character waiting?
+          jz      talk3           ; nothing waiting, jump
+
+          call    com_in          ; read serial-port character
+
+          cmp     al,20h          ; is it control code?
+          jae     talk45          ; jump if not
+          call    ctrl_code       ; control code, process it
+
+          jmp     talk3           ; check keyboard again
+
+  talk45:                         ; noncontrol char received,
+          call    pc_out          ; write it to PC display
+
+          jmp     talk4           ; see if any more waiting
+
+  talk5:                          ; function key detected,
+                                  ; prepare to terminate...
+
+          mov     bh,07h          ; clear screen and home cursor
+          call    cls
+
+          mov     dx,offset msg3  ; display farewell message
+          mov     cx,msg3_len
+
+  talk6:  push    dx              ; save message address
+          push    cx              ; and message length
+
+          call    asc_dsb         ; disable serial-port interrupts
+                                  ; and release interrupt vector
+
+          pop     cx              ; restore message length
+          pop     dx              ; and address
+
+          mov     bx,stdout       ; handle for standard output
+          mov     ah,40h          ; function 40h = write device
+          int     21h             ; transfer to MS-DOS
+
+          mov     ax,4c00h        ; terminate program with
+          int     21h             ; return code = 0
+
+  talk    endp
+
+  com_stat proc   near            ; check asynch status; returns
+                                  ; Z = false if character ready
+                                  ; Z = true if nothing waiting
+          push    ax
+          mov     ax,asc_in       ; compare ring buffer pointers
+          cmp     ax,asc_out
+          pop     ax
+          ret                     ; return to caller
+  stat endp
+
+  com_in  proc    near            ; get character from serial-
+                                  ; port buffer; returns
+                                  ; new character in AL
+
+          push    bx              ; save register BX
+
+  com_in1:                        ; if no char waiting, wait
+          mov     bx,asc_out      ; until one is received
+          cmp     bx,asc_in
+          je      com_in1         ; jump, nothing waiting
+
+          mov     al,[bx+asc_buf] ; character is ready,
+                                  ; extract it from buffer
+
+          inc     bx              ; update buffer pointer
+          cmp     bx,bufsiz
+          jne     com_in2
+          xor     bx,bx           ; reset pointer if wrapped
+  com_in2:
+          mov     asc_out,bx      ; store updated pointer
+          pop     bx              ; restore register BX
+          ret                     ; and return to caller
+
+  com_in  endp
+
+  com_out proc    near            ; write character in AL
+                                  ; to serial port
+
+          push    dx              ; save register DX
+          push    ax              ; save character to send
+          mov     dx,com_sts      ; DX = status port address
+
+  com_out1:                       ; check if transmit buffer
+          in      al,dx           ; is empty (TBE bit = set)
+          and     al,20h
+          jz      com_out1        ; no, must wait
+
+          pop     ax              ; get character to send
+          mov     dx,com_data     ; DX = data port address
+          out     dx,al           ; transmit the character
+          pop     dx              ; restore register DX
+          ret                     ; and return to caller
+
+  com_out endp
+  pc_stat proc    near            ; read keyboard status; returns
+                                  ; Z = false if character ready
+                                  ; Z = true if nothing waiting
+                                  ; register DX destroyed
+
+          mov     al,in_flag      ; if character already
+          or      al,al           ; waiting, return status
+          jnz     pc_stat1
+
+          mov     ah,6            ; otherwise call MS-DOS to
+          mov     dl,0ffh         ; determine keyboard status
+          int     21h
+
+          jz      pc_stat1        ; jump if no key ready
+
+          mov     in_char,al      ; got key, save it for
+          mov     in_flag,0ffh    ; "pc_in" routine
+
+  pc_stat1:                       ; return to caller with
+          ret                     ; Z flag set appropriately
+
+  pc_stat endp
+
+  pc_in   proc    near            ; read keyboard character,
+                                  ; return it in AL
+                                  ; DX may be destroyed
+
+          mov     al,in_flag      ; key already waiting?
+          or      al,al
+          jnz     pc_in1          ; yes, return it to caller
+
+          call    pc_stat         ; try to read a character
+          jmp     pc_in
+
+  pc_in1: mov     in_flag,0       ; clear char-waiting flag
+          mov     al,in_char      ; and return AL = character
+          ret
+
+  pc_in   endp
+
+  pc_out  proc    near            ; write character in AL
+                                  ; to the PC's display
+
+          mov     ah,0eh          ; ROM BIOS function 0eh =
+                                  ; "teletype output"
+          push    bx              ; save register BX
+          xor     bx,bx           ; assume page 0
+          int     10h             ; transfer to ROM BIOS
+          pop     bx              ; restore register BX
+          ret                     ; and return to caller
+
+  pc_out  endp
+
+
+  cls     proc    near            ; clear display using
+                                  ; char attribute in BH
+                                  ; registers AX, CX,
+                                  ; and DX destroyed
+
+          mov     dl,columns      ; set DL,DH = X,Y of
+          mov     dh,24           ; lower right corner
+          mov     cx,0            ; set CL,CH = X,Y of
+                                  ; upper left corner
+          mov     ax,600h         ; ROM BIOS function 06h =
+                                  ; "scroll or initialize
+                                  ; window"
+          int     10h             ; transfer to ROM BIOS
+          call    home            ; set cursor at (0,0)
+          ret                     ; and return to caller
+
+  cls     endp
+
+  clreol  proc    near            ; clear from cursor to end
+                                  ; of line using attribute
+                                  ; in BH, registers AX, CX,
+                                  ; and DX destroyed
+
+          call    getxy           ; get current cursor position
+          mov     cx,dx           ; current position = "upper
+                                  ; left corner" of window;
+          mov     dl,columns      ; "lower right corner" X is
+                                  ; max columns, Y is same
+                                  ; as upper left corner
+          mov     ax,600h         ; ROM BIOS function 06h =
+                                  ; "scroll or initialize
+                                  ; window"
+          int     10h             ; transfer to ROM BIOS
+          ret                     ; return to caller
+
+  clreol  endp
+  home    proc    near            ; put cursor at home position
+
+          mov     dx,0            ; set (X,Y) = (0,0)
+          call    gotoxy          ; position the cursor
+          ret                     ; return to caller
+
+  home    endp
+
+  gotoxy  proc    near            ; position the cursor
+                                  ; call with DL = X, DH = Y
+
+          push    bx              ; save registers
+          push    ax
+
+          mov     bh,0            ; assume page 0
+          mov     ah,2            ; ROM BIOS function 02h =
+                                  ; set cursor position
+          int     10h             ; transfer to ROM BIOS
+
+          pop     ax              ; restore registers
+          pop     bx
+          ret                     ; and return to caller
+
+  gotoxy  endp
+
+
+  getxy   proc    near            ; get cursor position,
+                                  ; returns DL = X, DH = Y
+
+          push    ax              ; save registers
+          push    bx
+          push    cx
+
+          mov     ah,3            ; ROM BIOS function 03h =
+                                  ; get cursor position
+          mov     bh,0            ; assume page 0
+          int     10h             ; transfer to ROM BIOS
+
+          pop     cx              ; restore registers
+          pop     bx
+          pop     ax
+          ret                     ; and return to caller
+
+  getxy   endp
+  ctrl_code proc  near            ; process control code
+                                  ; call with AL = char
+
+          cmp     al,cr           ; if carriage return
+          je      ctrl8           ; just send it
+
+          cmp     al,lf           ; if linefeed
+          je      ctrl8           ; just send it
+
+          cmp     al,bsp          ; if backspace
+          je      ctrl8           ; just send it
+
+          cmp     al,26           ; is it cls control code?
+          jne     ctrl7           ; no, jump
+
+          mov     bh,dattr        ; cls control code, clear
+          call    cls             ; screen and home cursor
+
+          jmp     ctrl9
+
+  ctrl7:
+          cmp     al,escape       ; is it Escape character?
+          jne     ctrl9           ; no, throw it away
+
+          call    esc_seq         ; yes, emulate CRT terminal
+          jmp     ctrl9
+
+  ctrl8:  call    pc_out          ; send CR, LF, or backspace
+                                  ; to the display
+
+  ctrl9:  ret                     ; return to caller
+
+  ctrl_code endp
+
+
+  esc_seq proc    near            ; decode Televideo 950 escape
+                                  ; sequence for screen control
+
+          call    com_in          ; get next character
+          cmp     al,84           ; is it clear to end of line?
+          jne     esc_seq1        ; no, jump
+
+          mov     bh,dattr        ; yes, clear to end of line
+          call    clreol
+          jmp     esc_seq2        ; then exit
+  esc_seq1:
+          cmp     al,61           ; is it cursor positioning?
+          jne     esc_seq2        ; no jump
+
+          call    com_in          ; yes, get Y parameter
+          sub     al,33           ; and remove offset
+          mov     dh,al
+
+          call    com_in          ; get X parameter
+          sub     al,33           ; and remove offset
+          mov     dl,al
+          call    gotoxy          ; position the cursor
+
+  esc_seq2:                       ; return to caller
+          ret
+
+  esc_seq endp
+
+
+  asc_enb proc    near            ; capture serial-port interrupt
+                                  ; vector and enable interrupt
+
+                                  ; save address of previous
+                                  ; interrupt handler...
+          mov     ax,3500h+com_int ; function 35h = get vector
+          int     21h             ; transfer to MS-DOS
+          mov     word ptr oldvec+2,es
+          mov     word ptr oldvec,bx
+
+                                  ; now install our handler...
+          push    ds              ; save our data segment
+          mov     ax,cs           ; set DS:DX = address
+          mov     ds,ax           ; of our interrupt handler
+          mov     dx,offset asc_int
+          mov     ax,2500h+com_int ; function 25h = set vector
+          int     21h             ; transfer to MS-DOS
+          pop     ds              ; restore data segment
+
+          mov     dx,com_mcr      ; set modem-control register
+          mov     al,0bh          ; DTR and OUT2 bits
+          out     dx,al
+
+          mov     dx,com_ier      ; set interrupt-enable
+          mov     al,1            ; register on serial-
+          out     dx,al           ; port controller
+          in      al,pic_mask     ; read current 8259 mask
+          and     al,not int_mask ; set mask for COM port
+          out     pic_mask,al     ; write new 8259 mask
+
+          ret                     ; back to caller
+
+  asc_enb endp
+
+
+  asc_dsb proc    near            ; disable interrupt and
+                                  ; release interrupt vector
+
+          in      al,pic_mask     ; read current 8259 mask
+          or      al,int_mask     ; reset mask for COM port
+          out     pic_mask,al     ; write new 8259 mask
+
+          push    ds              ; save our data segment
+          lds     dx,oldvec       ; load address of
+                                  ; previous interrupt handler
+          mov     ax,2500h+com_int ; function 25h = set vector
+          int     21h             ; transfer to MS-DOS
+          pop     ds              ; restore data segment
+
+          ret                     ; back to caller
+
+  asc_dsb endp
+
+
+  asc_int proc    far             ; interrupt service routine
+                                  ; for serial port
+
+          sti                     ; turn interrupts back on
+
+          push    ax              ; save registers
+          push    bx
+          push    dx
+          push    ds
+
+          mov     ax,_DATA        ; make our data segment
+          mov     ds,ax           ; addressable
+
+          cli                     ; clear interrupts for
+                                  ; pointer manipulation
+
+          mov     dx,com_data     ; DX = data port address
+          in      al,dx           ; read this character
+          mov     bx,asc_in       ; get buffer pointer
+          mov     [asc_buf+bx],al ; store this character
+          inc     bx              ; bump pointer
+          cmp     bx,bufsiz       ; time for wrap?
+          jne     asc_int1        ; no, jump
+          xor     bx,bx           ; yes, reset pointer
+
+  asc_int1:                       ; store updated pointer
+          mov     asc_in,bx
+
+          sti                     ; turn interrupts back on
+
+          mov     al,20h          ; send EOI to 8259
+          out     pic_eoi,al
+
+          pop     ds              ; restore all registers
+          pop     dx
+          pop     bx
+          pop     ax
+
+          iret                    ; return from interrupt
+
+  asc_int endp
+
+  _TEXT   ends
+
+
+  _DATA   segment word public 'DATA'
+
+  in_char db      0               ; PC keyboard input char
+  in_flag db      0               ; <>0 if char waiting
+
+  columns db      0               ; highest numbered column in
+                                  ; current display mode (39 or 79)
+
+  msg1    db      cr,lf
+          db      'Display must be text mode.'
+          db      cr,lf
+  msg1_len equ $-msg1
+
+  msg2    db      'Terminal emulator running...'
+          db      cr,lf
+  msg2_len equ $-msg2
+
+  msg3    db      'Exit from terminal emulator.'
+          db      cr,lf
+  msg3_len equ $-msg3
+  oldvec  dd      0               ; original contents of serial-
+                                  ; port interrupt vector
+
+  asc_in  dw      0               ; input pointer to ring buffer
+  asc_out dw      0               ; output pointer to ring buffer
+
+  asc_buf db      bufsiz dup (?)  ; communications buffer
+
+  _DATA   ends
+
+
+  STACK   segment para stack 'STACK'
+
+          db      128 dup (?)
+
+  STACK   ends
+
+          end     talk            ;  defines entry point
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 7-1.  TALK.ASM: A simple terminal-emulator program for IBM
+  PCÄcompatible computers. This program demonstrates use of the MS-DOS and
+  ROM BIOS video and keyboard functions and direct control of the
+  serial-communications adapter.
+
+  The TALK program illustrates the methods that an application should use to
+  take over and service interrupts from the serial port without running
+  afoul of MS-DOS conventions.
+
+  The program begins with some equates and conditional assembly statements
+  that configure the program for half- or full-duplex and for the desired
+  serial port (COM1 or COM2). At entry from MS-DOS, the main routine of the
+  programÄÄthe procedure named talkÄÄchecks the status of the serial port,
+  initializes the display, and calls the asc_enb routine to take over the
+  serial-port interrupt vector and enable interrupts. The talk procedure
+  then enters a loop that reads the keyboard and sends the characters out
+  the serial port and then reads the serial port and puts the characters on
+  the displayÄÄin other words, it causes the PC to emulate a simple CRT
+  terminal.
+
+  The TALK program intercepts and handles control codes (carriage return,
+  linefeed, and so forth) appropriately. It detects escape sequences and
+  handles them as a subset of the Televideo 950 terminal capabilities. (You
+  can easily modify the program to emulate any other cursor-addressable
+  terminal.) When one of the PC's special function keys is pressed, the
+  program disables serial-port interrupts, releases the serial-port
+  interrupt vector, and exits back to MS-DOS.
+
+  There are several TALK program procedures that are worth your attention
+  because they can easily be incorporated into other programs. These are
+  listed in the table on the following page.
+
+
+  Procedure          Action
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  asc_enb            Takes over the serial-port interrupt vector and enables
+                     interrupts by writing to the modem-control register of
+                     the INS8250 and the interrupt-mask register of the
+                     8259A.
+
+  asc_dsb            Restores the original state of the serial-port
+                     interrupt vector and disables interrupts by writing to
+                     the interrupt-mask register of the 8259A.
+
+  asc_int            Services serial-port interrupts, placing received
+                     characters into a ring buffer.
+
+  com_stat           Tests whether characters from the serial port are
+                     waiting in the ring buffer.
+
+  com_in             Removes characters from the interrupt handler's ring
+                     buffer and increments the buffer pointers
+                     appropriately.
+
+  com_out            Sends one character to the serial port.
+
+  cls                Calls the ROM BIOS video driver to clear the screen.
+
+  clreol             Calls the ROM BIOS video driver to clear from the
+                     current cursor position to the end of the line.
+
+  home               Places the cursor in the upper left corner of the
+                     screen.
+
+  gotoxy             Positions the cursor at the desired position on the
+                     display.
+
+  getxy              Obtains the current cursor position.
+
+  pc_out             Sends one character to the PC's display.
+
+  pc_stat            Gets status for the PC's keyboard.
+
+  pc_in              Returns a character from the PC's keyboard.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+
+
+

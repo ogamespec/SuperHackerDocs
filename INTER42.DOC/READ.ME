@@ -1,0 +1,35 @@
+Hi Ralph,
+
+Here you find the source code of the program translating your INT list
+to an input file for Object Professional Makehelp.
+
+The files are :
+  INTHELP.PAS       : the actual program
+  GLOBAL.PAS        : a unit containing a new object which is used throughout
+                      the program as a container for information about INT 
+                      items.
+  USERINTERFACE.PAS : a unit containing the routines which make up the
+                      user interface. The implementation part of this file
+                      implements the 'fancy' user interface.
+  USERINT2.PAS      : as the previous unit, this one contains the routines
+                      making up the user interface.  The unit implements 
+                      however the 'plain' user interface (and consequently
+                      will produce a much smaller executable file).
+
+It is quite easy to change the user interface : just write your own unit,
+providing the same interface part as the 'USERINTERFACE.PAS' and the
+'USERINT2.PAS' units and implement your own interpretation of the necessary
+procedures.  If you don't name your unit 'UserInterface', you have to
+change the 'USES' line in INTHELP.PAS.
+
+In 'USERINTERFACE.PAS' is explained when each procedure is
+called by the main program.
+
+
+By the way : I've corrected a shortcoming (I hate the word 'bug') of the `fancy'
+             user interface : when a user didn't select a file from the 
+             list that was offered to him, the program would get stuck in
+             the routine that asked for the filenames.
+
+
+                                                        Frank.

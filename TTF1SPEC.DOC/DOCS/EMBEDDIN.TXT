@@ -1,0 +1,156 @@
+
+
+  Technical Information for ISVs Implementing TrueType Font Embedding 
+           under Microsoft Windows 3.1 and Windows NT
+
+Any application written for Microsoft Windows 3.1 or Windows NT can 
+store, or embed, the appropriately licensed TrueType fonts used in that 
+application's document. The document can then be transported to another 
+machine to be displayed or printed. Since TrueType fonts work on any 
+display and print to any printer under Windows, the user can be assured 
+of WYSIWYG between different platforms.  Font embedding consists of 
+two parts: the inclusion of the fonts in the document on the current 
+machine and the installation of the fonts on the target machine. 
+Specific information on the format of the APIs can be found in the 
+Windows 3.1 SDK.
+
+
+Embedding the fonts
+===================
+
+Applications can use the GetFontData() function to save TrueType 
+scalable fonts with their documents. The application reads the 
+entire font file using this function with the DWORD table set to 
+zero. The application must check the font's license bit otmfstype 
+bits 1 and 2 to ensure that embedding is permitted. 
+
+To determine that a font can be embedded first call the 
+GetOutlineTextMetrics() function and check the otmfsType field, 
+bits 1 and 2. The values and their assigned meanings are:
+
+Bit #
+1	2	Meaning
+-----------------------
+0	0	Read-write and read-only embedding permitted
+0	1	Only read-only embedding permitted
+1	x	Embedding is not permitted
+
+Embedding any fonts for which embedding is not permitted (that is, 
+if bit 1 = 1) or not following the guidelines below may violate 
+the font vendor's proprietary rights and/or the end-user's licensing 
+agreement. 
+
+After you determine which fonts can be embedded, you can read in 
+the complete font using the GetFontData() function (set the dwTable 
+and dwOffset arguments to 0L to ensure that you read the entire 
+font file, starting at the beginning of the font). The font data 
+stream is stored with the document that uses the font; use the 
+format that best suits your application.  We suggest that you build 
+a font directory in the document, noting which fonts are bundled 
+(you should use at least the otmpStyleName, otmpFamilyName, 
+otmTextMetrics.tmWeight, otmTextMetrics.tmItalic, and otmfsType 
+fields that the GetOutlineTextMetrics() function returns) and which 
+are read-write or read-only embedded fonts.
+
+If the read-only embedding bit is set for a font (that is, if 
+otmfsType&6 is TRUE), you must apply a form of simple encryption to 
+the font data before storing it with the document. Although you can 
+do so any way that you prefer, XORing the font data with a specific 
+byte value that you choose and use consistently suffices (this 
+method is also fairly fast).  Since the actual embedding is
+completely under the control of the application, ISVs who are
+worried about file size can choose to do compression of the
+included TrueType font.
+
+When all fonts are bundled with the document, embedding is complete.
+
+
+Installation of fonts
+=====================
+
+When an application encounters a document that contains embedded 
+fonts, it must separate and install them for Windows to use them.
+Precisely how an application does this depends on how the fonts 
+were bundled, but in general the steps are as follows.
+
+1. Resolve name conflicts before installing the fonts. For example,
+   using each family name, call the EnumFontFamilies() function to 
+   see if any style names are duplicated; the application must avoid 
+   duplication. If duplicate fonts are installed, Windows typically,
+   though not necessarily, selects the first font installed. 
+
+   The directory containing family name, style name, weight, italic 
+   flag, and fsType information suffices for the pupose of checking 
+   for duplicates. 
+
+2. For all fonts to be installed, access the bundled font and write 
+   all the data to a file, decoding any fonts that are read-only 
+   embedded. Read-write embedded fonts should use the TTF file 
+   extension. Read-only embedded fonts cannot use TTF and should 
+   avoid FOT and FON; these fonts should have an entirely different 
+   file extenstion, for example, TTR.
+
+   You need not place the font files in any specific directory. We 
+   suggest, however, that you place read-write embedded fonts in a 
+   the Windows or appliction directory and that you place read-only 
+   embedded fonts in a temporary file directory.
+
+3. Use the CreateScalableFontResource function to create font resource 
+   files for each TrueType font unbundled. Use the extension FOT for 
+   read-write embedded fonts, and ensure that the first parameter is 0.
+   Use a different extension for read-only embedded fonts, for example,
+   FOR; the first parameter must be 1. Use the AddFontResource() 
+   function to install each font resource file. Place the FOT and 
+   FOR files in the same directory as the font itself.
+
+Because Windows resources are normally available to all Windows 
+processes, all fonts that are installed with the AddFontResource()
+function are typically available to all other applications that are 
+active at the time. To prevent a read-only embedded font from being 
+used in other documents, Windows suppresses the enumeration and 
+availability of these fonts. As noted above, this is controlled by 
+parameter #1 of CreateScalableFontResource(). If this parameter is 
+set to 0, the font is considered "normal." If it is set to 1, the 
+font is considered "read-only embedded" and will not be enumerated 
+under any circumstances. Further, the font can only be selected if 
+the CLIP_EMBEDDED flag is or'd into the lfClipPrecision field of the 
+LOGFONT. This should prevent other active applications from making 
+use of your application's read-only embedded fonts.
+
+Because users can use read-write embedded fonts on an ongoing basis,
+offer them the option of installing read-write embedded fonts 
+permanently. To install a font permanently, concatenate the family 
+and style names into one string, and insert this string with the FOT 
+file name in the WIN.INI [Fonts] section. (See the documentation on 
+WIN.INI for details on the format of the [Fonts] section.)
+
+You must never install read-only embedded fonts permanently. You 
+must remove them from the system and from the hard disk when the 
+document in which they are bundled is closed.
+
+The fonts are now ready to be used with the document in which they 
+were bundled. If a document contains one or more read-only embedded 
+fonts, however, the user must not be permitted to edit the document.
+The user can only view the document on the screen or print it. Before 
+any editing can occur, the application must strip away and delete 
+the read-only embedded fonts. To delete the fonts, the application must:
+
+   1. Call the DeleteFontResource function for each font to be deleted.
+   2. Delete the font resource file for each font.
+   3. Delete each TrueType font file for each font.
+
+Documents with read-only embedded fonts are themselves read-only and 
+print-only. The document cannot be edited until every read-only embedded 
+font has been removed. This option should be provided to the user.
+
+When the document is closed, read-write embedded fonts can be installed 
+on the user's machine. The user can delete the fonts through Control 
+Panel, however, if the above installation process was followed. 
+
+If, for some reason, you are unable to delete one or more FOR files, 
+don't worry; all you waste is disk space. If, however, you are unable 
+to delete one or more TTR files, the application should make every 
+effort to delete these files later (for example, when the application 
+itself exits, when the application starts up again, or after an 
+elapsed period of time). 
+

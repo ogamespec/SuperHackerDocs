@@ -1,0 +1,131 @@
+386.doc      80386 processor manual (Russian)
+386TECH.doc  Introduction in 80386 (Russian)
+8250.doc     Serial chip WD8250 description (Russian)
+8272.doc     FDD controller deccription (Russian)
+8514.doc     8514/A graphics adapter description (Russian)
+ADVDOS.doc   Advanced MS-DOS programming by Ray Duncan
+ASM&DOS1.doc 80386 CPU architecture & assembler (Russian)
+ASMNG.doc    Assembler Norton guide
+ASTF.doc     Astro Forth manuals
+BASIC.doc    Microsoft BASIC: New features (Russian)
+BAS_LIB.doc  BASIC library description (Russian)
+BOOK.doc     MS-DOS developer's guide (Russian)
+BP-TASM3.doc Turno Assembler V3.0 manual (Russian)
+BP-TDEB3.doc Turno Debugger V3.0 manual (Russian)
+BP70-LR.doc  Borland Pascal 7: Object programming  (Rus)
+BP70-OW.doc  Borland Pascal 7: Object Windows 1/2 (Rus)
+BP70-UG.doc  Borland Pascal 7: Object Windows 2/2 (Rus)
+BTREEDOC.doc B-Tree filer manual (Russian)
+C-ANSI.doc   ANSI C standart (Russian)
+C-BOOK.doc   C programming by Stievens (Russian)
+C-SCAPE.doc  C-Scape desription (Russian)
+C.doc        C for professional programmers (Russian)
+CABLES.doc   Guide to computer cables
+C1.doc       Turbo C manual (Russian)  1/3
+C2.doc       Turbo C manual (Russian)  2/3
+C3.doc       Turbo C manual (Russian)  3/3
+DNORTON.doc  Inside the IBM PC by P.Norton (Russian)
+DNS          Domain Name Service
+DOS-REF.doc  Electronic version of Int. list; 1990 year
+EGA.doc      EGA programming manual (Russian)
+FORTR.doc    Microsoft FORTRAN manual (Russian)
+GIF.doc      GIF and TIFF formats description
+GR_LIB1.doc  Graphics adapters progr. with examples (Rus)
+GVISION.DOC  Graphics Vision Manual
+H!UNPACK.doc H! files unpacker to ususl text format
+HADWARE.doc  DOS technical reference
+HELP.doc     C, Pascal & Assembler help in hypertext (Rus)
+HELPGEN.doc  H! files generator from text
+HELPPC2.doc  PC help hypertext
+HPFS.doc     OS2 HPSF partition format description
+I287.doc     80287 coprocessor manual
+I387.doc     80387 coprocessor manual
+I486.doc     486 processor manual (Russian)
+ICON.doc     ICON programming language manual
+INTEL386.doc INTEL 80386 manual (Russian)
+INTEL486.doc INTEL 80486 manual (Russian)
+INTER42.doc  Interrupt list 08/07/94
+INTER54.doc  Interrupt list 29/06/97
+INTER92.doc  PC interrupts (hypertext)
+IO.doc       IBM PC technical reference
+IPX.doc      IPX specification
+FIDO         FIDO Network
+K-R.doc      Kernigan & Ritchie: C language (Russian)
+LSPDOCR.doc  Auto LISP manual (Russian)
+LZHPAS.doc   LHA algorythm with PASCAL src
+LINUX.DOC    Full Linux Documentation & Copy of Linux WWW Server
+M296.doc     JPI Modula-2 manual (Russian)
+MASM.doc     MacroAssembler manual (Russian)
+MASM51.doc   MacroAssembler V5.1 manual
+MSC60.doc    Microsoft C V6.0 manual (Russian)
+MSCDEX21.doc MSCDEX V2.1 specification
+MSDOS.doc    MSDOS technical reference
+NEATCIP.doc  NEAT chipset description
+NETBIOS.doc  NetBIOS description (Russian)
+NETHFAQ      RU.NETHACK Frequently Asked Questions
+NICEGUI      How to write nice GUI
+NORT-DOS.doc Advanced DOS topics by P.Norton (Russian)
+OBJECTV.doc  ObjectVision manual (Russian)
+OBJMOD.doc   OBJ file fields description (Russian)
+OPTI486S.doc OPTI chipset description
+PAS-PG.doc   Turbo PASCAL for WINDOWS (Russian)
+PASCAL.doc   Turbo PASCAL V5.0: Users manual (Russian)
+PCX.doc      PCX library manual (Russian)
+PCXGIF.doc   PCX and GIF formats description
+PENTIUM.doc  PENTIUM processor introduction (Russian)
+PROLOG.doc   PROLOG Object extension manual (Russian)
+QC.doc       Quick C manual (Russian)
+REC_V120.doc V120 standard description
+REC_V42B.doc V42B standard description
+ST-DRVS.doc  SEAGATE HD's Norton guide
+STM.doc      STM music files format description
+STROUSTR.doc C language by Stroutstrup (Russian)
+SVGASPEC.doc Super VGA description for many adapters
+TASM-1.doc   TurboAssembler V2.0 manual 1/2 (Russian)
+TASM-2.doc   TurboAssembler V2.0 manual 2/2 (Russian)
+TB1.doc      TurboBasic manual (Russian)
+TBAS.doc     Basic language: introduction (Russion)
+TBASIC.doc   TurboBasic: Norton guide
+TC01.doc     Turbo C: user's guide 1/2 (Russian)
+TC02.doc     Turbo C: user's guide 2/2 (Russian)
+TC.doc       Turbo C users guide (Russian)
+TCPBOOK      Семейство протоколов TCP/IP
+TCPIP        TCP/IP
+TCPP.doc     Worf: C++ introduction (Russian)
+TCPP_PG.doc  Borland C++: programmers guide (Russian)
+TCPP_UG.doc  Borland C++: users guide (Russian)
+TD.doc       TurboDebugger manual (Russian)
+TDRFMT.doc   .TDR format description (ARVID) [Russian]
+TECHHELP.doc Technical references: hypertext
+TELEBIT.doc  Telebit modem manual in hypertext (Russian)
+TIFFMT.doc   TIFF format description
+TP6PROGG.doc Turbo PASCAL V6.0 programming (Russian)
+TP6USERG.doc Turbo PASCAL V6.0 users guide (Russian)
+TPROF.doc    TurboProfiler manual (Russian)
+TPWIN.doc    Turbo PASCAL for WINDOWS concepts (Russian)
+TTF1SPEC.doc TIF format description and examples
+TV.doc       Turbo Vision manual (Russian)
+UDP          UDP Protocol
+UNDOCWIN.doc Undocumented WINDOWS features (Russian)
+UNIX-PRT.doc UNIX OS manual (Russian)
+V32BIS.doc   V32 standart description
+VCPI.doc     VCPI specification
+VGA.doc      VGA graphics adapter manual (Russian)
+VID_PORT.doc Graphics video adapter ports (Russian)
+VIDEOSYS.doc Videoprogramming by Wilton (C & ASM included)
+WIN31.doc    WINDOWS 3.1 manuals (.WRI)
+XMS20.doc    XMS memory specification from Microsoft
+XX50UART.doc Serial chip's description
+XYZ.doc      X/Y/Z modem protocols manual
+ZCPP.doc     Zortech C/C++ manual (Russian)
+ZINC.doc     ZINC library manual (Russian)
+DBF.DOC      DBF Database format documentation
+Doc.ALL      Different Documentation
+Fox.Doc      FoxPro Function Documentation
+NOVELl.DOC   Novell Netware Documentation
+PAR3.DOC     PARADOX Personal Programmer Documentation
+SOFT.DOC     Different Program Documentation
+UNIX.DOC     Unix Documentation
+WIN_PRG.DOC  MS Windows Programming Manual
+WIN_REF.DOC  MS Windows 3.0 Programming Manual
+files.bbs    Description File

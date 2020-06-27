@@ -1,0 +1,491 @@
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+Chapter 9  Volumes and Directories
+
+  Each file in an MS-DOS system is uniquely identified by its name and its
+  location. The location, in turn, has two components: the logical drive
+  that contains the file and the directory on that drive where the filename
+  can be found.
+
+  Logical drives are specified by a single letter followed by a colon (for
+  example, A:). The number of logical drives in a system is not necessarily
+  the same as the number of physical drives; for example, it is common for
+  large fixed-disk drives to be divided into two or more logical drives. The
+  key aspect of a logical drive is that it contains a self-sufficient file
+  system; that is, it contains one or more directories, zero or more
+  complete files, and all the information needed to locate the files and
+  directories and to determine which disk space is free and which is already
+  in use.
+
+  Directories are simply lists or catalogs. Each entry in a directory
+  consists of the name, size, starting location, attributes, and last
+  modification date and time of a file or another directory that the disk
+  contains. The detailed information about the location of every block of
+  data assigned to a file or directory is in a separate control area on the
+  disk called the file allocation table (FAT). (See Chapter 10 for a
+  detailed discussion of the internal format of directories and the FAT.)
+
+  Every disk potentially has two distinct kinds of directories: the root
+  directory and all other directories. The root directory is always present
+  and has a maximum number of entries, determined when the disk is
+  formatted; this number cannot be changed. The subdirectories of the root
+  directory, which may or may not be present on a given disk, can be nested
+  to any level and can grow to any size (Figure 9-1). This is the
+  hierarchical, or tree, directory structure referred to in earlier
+  chapters. Every directory has a name, except for the root directory, which
+  is designated by a single backslash (\) character.
+
+  MS-DOS keeps track of a "current drive" for the system and uses this drive
+  when a file specification does not include an explicit drive code.
+  Similarly, MS-DOS maintains a "current directory" for each logical drive.
+  You can select any particular directory on a drive by naming in orderÄÄ
+  either from the root directory or relative to the current directoryÄÄthe
+  directories that lead to its location in the tree structure. Such a list
+  of directories, separated by backslash delimiters, is called a path. When
+  a complete path from the root directory is prefixed by a logical drive
+  code and followed by a filename and extension, the resulting string is a
+  fully qualified filename and unambiguously specifies a file.
+
+                           ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿
+                           ³   Drive    ³
+                           ³ identifier ³
+                           ÀÄÄÄÄÄÂÄÄÄÄÄÄÙ
+                                 ³
+                         ÚÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄ¿
+                         ³ Root directory ³
+                         ³ (volume label) ³
+                         ÀÄÂÄÄÂÄÄÂÄÄÄÂÄÄÂÄÙ
+       ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ  ³  ³   ³  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+       ³          ÚÄÄÄÄÄÄÄÄÄÄÄÙ  ³   ÀÄÄÄÄÄÄÄÄÄÄÄ¿          ³
+  ÚÄÄÄÄÁÄÄÄ¿ ÚÄÄÄÄÁÄÄÄÄÄÄ¿   ÚÄÄÄÁÄÄÄÄ¿   ÚÄÄÄÄÄÄÁÄÄÄÄ¿ ÚÄÄÄÁÄÄÄÄ¿
+  ³ File A ³ ³ Directory ³   ³ File B ³   ³ Directory ³ ³ File C ³
+  ÀÄÄÄÄÄÄÄÄÙ ÀÄÂÄÄÄÄÄÄÄÂÄÙ   ÀÄÄÄÄÄÄÄÄÙ   ÀÄÂÄÄÄÄÄÄÄÄÄÙ ÀÄÂÄÄÄÄÄÄÙ
+               ³       ³                    ³             ³
+               ³       ³                    ³             ³
+         ÚÄÄÄÄÄÙ       ³                    ³             ³
+         ³             ³                    ³             ³
+    ÚÄÄÄÄÁÄÄÄÄÄÄ¿   ÚÄÄÁÄÄÄÄÄ¿        ÚÄÄÄÄÄÁÄÄ¿      ÚÄÄÄÁÄÄÄÄ¿
+    ³ Directory ³   ³ File D ³        ³ File E ³      ³ File F ³
+    ÀÄÄÄÄÄÄÄÄÄÄÄÙ   ÀÄÄÄÄÄÄÄÄÙ        ÀÄÄÄÄÄÄÄÄÙ      ÀÄÄÄÄÄÄÄÄÙ
+
+  Figure 9-1.  An MS-DOS file-system structure.
+
+
+Drive and Directory Control
+
+  You can examine, select, create, and delete disk directories interactively
+  with the DIR, CHDIR (CD), MKDIR (MD), and RMDIR (RD) commands. You can
+  select a new current drive by entering the letter of the desired drive,
+  followed by a colon. MS-DOS provides the following Int 21H functions to
+  give application programs similar control over drives and directories:
+
+  Function                 Action
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  0EH                     Select current drive.
+  19H                     Get current drive.
+  39H                     Create directory.
+  3AH                     Remove directory.
+  3BH                     Select current directory.
+  47H                     Get current directory.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  The two functions that deal with disk drives accept or return a binary
+  drive codeÄÄ0 represents drive A, 1 represents drive B, and so on. This
+  differs from most other MS-DOS functions, which use 0 to indicate the
+  current drive, 1 for drive A, and so on.
+
+  The first three directory functions in the preceding list require an
+  ASCIIZ string that describes the path to the desired directory. As with
+  the handle-based file open and create functions, the address of the ASCIIZ
+  string is passed in the DS:DX registers. On return, the carry flag is
+  clear if the function succeeds or set if the function failed, with an
+  error code in the AX register. The directory functions can fail for a
+  variety of reasons, but the most common cause of an error is that some
+  element of the indicated path does not exist.
+
+  The last function in the preceding list, Int 21H Function 47H, allows you
+  to obtain an ASCIIZ path for the current directory on the specified or
+  default drive. MS-DOS supplies the path string without the drive
+  identifier or a leading backslash. Int 21H Function 47H is most commonly
+  used with Int 21H Function 19H to build fully qualified filenames. Such
+  filenames are desirable because they remain valid if the user changes the
+  current drive or directory.
+
+  Section 2 of this book, "MS-DOS Functions Reference," gives detailed
+  information on the drive and directory control functions.
+
+Searching Directories
+
+  When you request an open operation on a file, you are implicitly
+  performing a search of a directory. MS-DOS examines each entry of the
+  directory to find a match for the filename you have given as an argument;
+  if the file is found, MS-DOS copies certain information from the directory
+  into a data structure that it can use to control subsequent read or write
+  operations to the file. Thus, if you wish to test for the existence of a
+  specific file, you need only perform an open operation and observe whether
+  it is successful. (If it is, you should, of course, perform a subsequent
+  close operation to avoid needless expenditure of handles.)
+
+  Sometimes you may need to perform more elaborate searches of a disk
+  directory. Perhaps you wish to find all the files with a certain
+  extension, a file with a particular attribute, or the names of the
+  subdirectories of a certain directory. Although the locations of a disk's
+  directories and the specifics of the entries that are found in them are of
+  necessity hardware dependent (for example, interpretation of the field
+  describing the starting location of a file depends upon the physical disk
+  format), MS-DOS does provide functions that will allow examination of a
+  disk directory in a hardware-independent fashion.
+
+  In order to search a disk directory successfully, you must understand two
+  types of MS-DOS search services. The first type is the "search for first"
+  function, which accepts a file specificationÄÄpossibly including wildcard
+  charactersÄÄand looks for the first matching file in the directory of
+  interest. If it finds a match, the function fills a buffer owned by the
+  requesting program with information about the file; if it does not find a
+  match, it returns an error flag.
+
+  A program can call the second type of search service, called "search for
+  next," only after a successful "search for first." If the file
+  specification that was originally passed to "search for first" included
+  wildcard characters and at least one matching file was present, the
+  program can call "search for next" as many times as necessary to find all
+  additional matching files. Like "search for first," "search for next"
+  returns information about the matched files in a buffer designated by the
+  requesting program. When it can find no more matching files, "search for
+  next" returns an error flag.
+
+  As with nearly every other operation, MS-DOS provides two parallel sets of
+  directory-searching services:
+
+  Action             FCB function      Handle function
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  Search for first   11H               4EH
+  Search for next    12H               4FH
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  The FCB directory functions allow searches to match a filename and
+  extension, both possibly containing wildcard characters, within the
+  current directory for the specified or current drive. The handle directory
+  functions, on the other hand, allow a program to perform searches within
+  any directory on any drive, regardless of the current directory.
+
+  Searches that use normal FCBs find only normal files. Searches that use
+  extended FCBs, or the handle-type functions, can be qualified with file
+  attributes. The attribute bits relevant to searches are as follows:
+
+  Bit                      Significance
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  0                        Read-only file
+  1                        Hidden file
+  2                        System file
+  3                        Volume label
+  4                        Directory
+  5                        Archive needed (set when file modified)
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  The remaining bits of a search function's attribute parameter should be
+  zero. When any of the preceding attribute bits are set, the search
+  function returns all normal files plus any files with the specified
+  attributes, except in the case of the volume-label attribute bit, which
+  receives special treatment as described later in this chapter. Note that
+  by setting bit 4 you can include directories in a search, exactly as
+  though they were files.
+
+  Both the FCB and handle directory-searching functions require that the
+  disk transfer area address be set (with Int 21H Function 1AH), before the
+  call to "search for first," to point to a working buffer for use by
+  MS-DOS. The DTA address should not be changed between calls to "search for
+  first" and "search for next." When it finds a matching file, MS-DOS places
+  the information about the file in the buffer and then inspects the buffer
+  on the next "search for next" call, to determine where to resume the
+  search. The format of the data returned in the buffer is different for the
+  FCB and handle functions, so read the detailed descriptions in Section 2
+  of this book, "MS-DOS Functions Reference," before attempting to interpret
+  the buffer contents.
+
+  Figures 9-2 and 9-3 provide equivalent examples of searches for all
+  files in a given directory that have the .ASM extension, one example using
+  the FCB directory functions (Int 21H Functions 11H and 12H) and the
+  other using the handle functions (Int 21H Functions 4EH and 4FH). (Both
+  programs use the handle write function with the standard output handle to
+  display the matched filenames, to avoid introducing tangential differences
+  in the listings.)
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  start:                          ; set DTA address for buffer
+                                  ; used by search functions
+          mov     dx,seg buff     ; DS:DX = buffer address
+          mov     ds,dx
+          mov     dx,offset buff
+          mov     ah,1ah          ; function 1ah = search for first
+          int     21h             ; transfer to MS-DOS
+                                  ; search for first match...
+          mov     dx,offset fcb   ; DS:DX = FCB address
+          mov     ah,11h          ; function 11h = search for first
+          int     21h             ; transfer to MS-DOS
+          or      al,al           ; any matches at all?
+          jnz     exit            ; no, quit
+
+  disp:                           ; go to a new line...
+          mov     dx,offset crlf  ; DS:DX = CR-LF string
+          mov     cx,2            ; CX = string length
+          mov     bx,1            ; BX = standard output handle
+          mov     ah,40h          ; function 40h = write
+          int     21h             ; transfer to MS-DOS
+
+                                  ; display matching file
+          mov     dx,offset buff+1 ; DS:DX = filename
+          mov     cx,11           ; CX = length
+          mov     bx,1            ; BX = standard output handle
+          mov     ah,40h          ; function 40h = write
+          int     21h             ; transfer to MS-DOS
+
+                                  ; search for next match...
+          mov     dx,offset fcb   ; DS:DX = FCB address
+          mov     ah,12h          ; function 12h = search for next
+          int     21h             ; transfer to MS-DOS
+          or      al,al           ; any more matches?
+          jz      disp            ; yes, go show filename
+
+  exit:                           ; final exit point
+          mov     ax,4c00h        ; function 4ch = terminate,
+                                  ; return code = 0
+          int     21h             ; transfer to MS-DOS
+
+          .
+          .
+          .
+
+  crlf    db      0dh,0ah         ; ASCII carriage return-
+                                  ; linefeed string
+
+  fcb     db      0               ; drive = current
+          db      8 dup ('?')     ; filename = wildcard
+          db      'ASM'           ; extension = ASM
+          db      25 dup (0)      ; remainder of FCB = zero
+
+  buff    db      64 dup (0)      ; receives search results
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 9-2.  Example of an FCB-type directory search using Int 21H
+  Functions 11H and 12H. This routine displays the names of all files in
+  the current directory that have the .ASM extension.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  start:                          ; set DTA address for buffer
+                                  ; used by search functions
+          mov     dx,seg buff     ; DS:DX = buffer address
+          mov     ds,dx
+          mov     dx,offset buff
+          mov     ah,1ah          ; function 1ah = search for first
+          int     21h             ; transfer to MS-DOS
+
+                                  ; search for first match...
+          mov     dx,offset fname ; DS:DX = wildcard filename
+          mov     cx,0            ; CX = normal file attribute
+          mov     ah,4eh          ; function 4eh = search for first
+          int     21h             ; transfer to MS-DOS
+          jc      exit            ; quit if no matches at all
+
+  disp:                           ; go to a new line...
+          mov     dx,offset crlf  ; DS:DX = CR-LF string
+          mov     cx,2            ; CX = string length
+          mov     bx,1            ; BX = standard output handle
+          mov     ah,40h          ; function 40h = write
+          int     21h             ; transfer to MS-DOS
+                                  ; find length of filename...
+          mov     cx,0            ; CX will be char count
+                                  ; DS:SI = start of name
+          mov     si,offset buff+30
+
+  disp1:  lodsb                   ; get next character
+          or      al,al           ; is it null character?
+          jz      disp2           ; yes, found end of string
+          inc     cx              ; else count characters
+          jmp     disp1           ; and get another
+
+  disp2:                          ; display matching file...
+                                  ; CX already contains length
+                                  ; DS:DX = filename
+          mov     dx,offset buff+30
+          mov     bx,1            ; BX = standard output handle
+          mov     ah,40h          ; function 40h = write
+          int     21h             ; transfer to MS-DOS
+                                  ; find next matching file...
+          mov     ah,4fh          ; function 4fh = search for next
+          int     21h             ; transfer to MS-DOS
+          jnc     disp            ; jump if another match found
+
+  exit:                           ; final exit point
+          mov     ax,4c00h        ; function 4ch = terminate,
+                                  ; return code = 0
+          int     21h             ; transfer to MS-DOS
+
+          .
+          .
+          .
+
+  crlf    db      0dh,0ah         ; ASCII carriage return-
+                                  ; linefeed string
+
+  fname   db      '*.ASM',0       ; ASCIIZ filename to
+                                  ; be matched
+
+  buff    db      64 dup (0)      ; receives search results
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 9-3.  Example of a handle-type directory search using Int 21H
+  Functions 4EH and 4FH. This routine also displays the names of all files
+  in the current directory that have a .ASM extension.
+
+Moving Files
+
+  The rename file function that was added in MS-DOS version 2.0, Int 21H
+  Function 56H, has the little-advertised capability to move a file from
+  one directory to another. The function has two ASCIIZ parameters: the
+  "old" and "new" names for the file. If the old and new paths differ,
+  MS-DOS moves the file; if the filename or extension components differ,
+  MS-DOS renames the file. MS-DOS can carry out both of these actions in the
+  same function call.
+
+  Of course, the old and new directories must be on the same drive, because
+  the file's actual data is not moved at all; only the information that
+  describes the file is removed from one directory and placed in another
+  directory. Function 56H fails if the two ASCIIZ strings include different
+  logical-drive codes, if the file is read-only, or if a file with the same
+  name and location as the "new" filename already exists.
+
+  The FCB-based rename file service, Int 21H Function 17H, works only on
+  the current directory and cannot be used to move files.
+
+
+Volume Labels
+
+  Support for volume labels was first added to MS-DOS in version 2.0. A
+  volume label is an optional name of from 1 to 11 characters that the user
+  assigns to a disk during a FORMAT operation. You can display a volume
+  label with the DIR, TREE, CHKDSK, or VOL command. Beginning with MS-DOS
+  version 3.0, you can use the LABEL command to add, display, or alter the
+  label after formatting. In MS-DOS version 4, the FORMAT program also
+  assigns a semi-random 32-bit binary ID to each disk it formats; you can
+  display this value, but you cannot change it.
+
+  The distinction between volumes and drives is important. A volume label is
+  associated with a specific storage medium. A drive identifier (such as A)
+  is associated with a physical device that a storage medium can be mounted
+  on. In the case of fixed-disk drives, the medium associated with a drive
+  identifier does not change (hence the name). In the case of floppy disks
+  or other removable media, the disk accessed with a given drive identifier
+  might have any volume label or none at all.
+
+  Hence, volume labels do not take the place of the logical-drive identifier
+  and cannot be used as part of a pathname to identify a file. In fact, in
+  MS-DOS version 2, the system does not use volume labels internally at all.
+  In MS-DOS versions 3.0 and later, a disk driver can use volume labels to
+  detect whether the user has replaced a disk while a file is open; this use
+  is optional, however, and is not implemented in all systems.
+
+  MS-DOS volume labels are implemented as a special type of entry in a
+  disk's root directory. The entry contains a time-and-date stamp and has an
+  attribute value of 8 (i.e., bit 3 set). Except for the attribute, a volume
+  label is identical to the directory entry for a file that was created but
+  never had any data written into it, and you can manipulate volume labels
+  with Int 21H functions much as you manipulate files. However, a volume
+  label receives special handling at several levels:
+
+  ş  When you create a volume label after a disk is formatted, MS-DOS always
+     places it in the root directory, regardless of the current directory.
+
+  ş  A disk can contain only one volume label; attempts to create additional
+     volume labels (even with different names) will fail.
+
+  ş  MS-DOS always carries out searches for volume labels in the root
+     directory, regardless of the current directory, and does not also
+     return all normal files.
+
+  In MS-DOS version 2, support for volume labels is not completely
+  integrated into the handle file functions, and you must use extended FCBs
+  instead to manipulate volume labels. For example, the code in Figure 9-4
+  searches for the volume label in the root directory of the current drive.
+  You can also change volume labels with extended FCBs and the rename file
+  function (Int 21H Function 17H), but you should not attempt to remove an
+  existing volume label with Int 21H Function 13H under MS-DOS version 2,
+  because this operation can damage the disk's FAT in an unpredictable
+  manner.
+
+  In MS-DOS versions 3.0 and later, you can create a volume label in the
+  expected manner, using Int 21H Function 3CH and an attribute of 8, and
+  you can use the handle-type "search for first" function (4EH) to obtain
+  an existing volume label for a logical drive (Figure 9-5). However, you
+  still must use extended FCBs to change a volume label.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  buff    db      64 dup (?)   ; receives search results
+
+  xfcb    db      0ffh         ; flag signifying extended FCB
+          db      5 dup (0)    ; reserved
+          db      8            ; volume attribute byte
+          db      0            ; drive code (0 = current)
+          db      11 dup ('?') ; wildcard filename and extension
+          db      25 dup (0)   ; remainder of FCB (not used)
+          .
+          .
+          .
+                               ; set DTA address for buffer
+                               ; used by search functions
+          mov     dx,seg buff  ; DS:DX = buffer address
+          mov     ds,dx
+          mov     dx,offset buff
+          mov     ah,1ah       ; function 1ah = set DTA
+          int     21h          ; transfer to MS-DOS
+
+                               ; now search for label...
+                               ; DS:DX = extended FCB
+          mov     dx,offset xfcb
+          mov     ah,11h       ; function 11h = search for first
+          int     21h          ; transfer to MS-DOS
+          cmp     al,0ffh      ; search successful?
+          je      no_label     ; jump if no volume label
+          .
+          .
+          .
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 9-4.  A volume-label search under MS-DOS version 2, using an
+  extended file control block. If the search is successful, the volume label
+  is returned in buff, formatted in the filename and extension fields of an
+  extended FCB.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  buff    db      64 dup (?)   ; receives search results
+
+  wildcd  db      '*.*',0      ; wildcard ASCIIZ filename
+          .
+          .
+          .
+                               ; set DTA address for buffer
+                               ; used by search functions
+          mov     dx,seg buff  ; DS:DX = buffer address
+          mov     ds,dx
+          mov     dx,offset buff
+          mov     ah,1ah       ; function 1ah = set DTA
+          int     21h          ; transfer to MS-DOS
+
+                               ; now search for label...
+                               ; DS:DX = ASCIIZ string
+          mov     dx,offset wildcd
+          mov     cx,8         ; CX = volume attribute
+          mov     ah,4eh       ; function 4eh = search for first
+          int     21h          ; transfer to MS-DOS
+          jc      no_label     ; jump if no volume label
+          .
+          .
+          .
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 9-5.  A volume-label search under MS-DOS version 3, using the
+  handle-type file functions. If the search is successful (carry flag
+  returned clear), the volume name is placed at location buff+1EH in the
+  form of an ASCIIZ string.
+
+
+

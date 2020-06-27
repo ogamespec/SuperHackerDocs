@@ -1,0 +1,649 @@
+			    IBM AT-286 Slots
+			    ----------------
+
+			       62 pin slot
+
+ -------------------------------        --------------------------------
+ I  pin  I    signal    I  i/o  I       I  pin  I   signal    I   i/o   I
+ -------------------------------        --------------------------------
+ I-------I--------------I-------I       I-------I-------------I---------I
+ I  A1   I  -I/O CH CK  I   I   I       I  B1   I    GND      I    -    I
+ I  A2   I     SD7      I  I/O  I       I  B2   I  RESET DRV  I    O    I
+ I  A3   I     SD6      I  I/O  I       I  B3   I     +5V     I    -    I
+ I  A4   I     SD5      I  I/O  I       I  B4   I    IRQ9     I    I    I
+ I  A5   I     SD4      I  I/O  I       I  B5   I     -5V     I    -    I
+ I  A6   I     SD3      I  I/O  I       I  B6   I    IRQ2     I    I    I
+ I  A7   I     SD2      I  I/O  I       I  B7   I    -12V     I    -    I
+ I  A8   I     SD1      I  I/O  I       I  B8   I     OWS     I    I    I
+ I  A9   I     SD0      I  I/O  I       I  B9   I    +12V     I    -    I
+ I  A10  I  I/O CH RDY  I   I   I       I  B10  I     GND     I    -    I
+ I  A11  I     AEN      I   O   I       I  B11  I   -SMEMW    I    O    I
+ I  A12  I     SA19     I  I/O  I       I  B12  I   -SMEMR    I    O    I
+ I  A13  I     SA18     I  I/O  I       I  B13  I    -IOW     I   I/O   I
+ I  A14  I     SA17     I  I/O  I       I  B14  I    -IOR     I   I/O   I
+ I  A15  I     SA16     I  I/O  I       I  B15  I   -DACK3    I    O    I
+ I  A16  I     SA15     I  I/O  I       I  B16  I     DRQ3    I    I    I
+ I  A17  I     SA14     I  I/O  I       I  B17  I   -DACK1    I    O    I
+ I  A18  I     SA13     I  I/O  I       I  B18  I     DRQ1    I    I    I
+ I  A19  I     SA12     I  I/O  I       I  B19  I  -Refresh   I   I/O   I
+ I  A20  I     SA11     I  I/O  I       I  B20  I     CLK     I    O    I
+ I  A21  I     SA10     I  I/O  I       I  B21  I     IRQ7    I    I    I
+ I  A22  I     SA9      I  I/O  I       I  B22  I     IRQ6    I    I    I
+ I  A23  I     SA8      I  I/O  I       I  B23  I     IRQ5    I    I    I
+ I  A24  I     SA7      I  I/O  I       I  B24  I     IRQ4    I    I    I
+ I  A25  I     SA6      I  I/O  I       I  B25  I     IRQ3    I    I    I
+ I  A26  I     SA5      I  I/O  I       I  B26  I   -DACK2    I    O    I
+ I  A27  I     SA4      I  I/O  I       I  B27  I     T/C     I    O    I
+ I  A28  I     SA3      I  I/O  I       I  B28  I     BALE    I    O    I
+ I  A29  I     SA2      I  I/O  I       I  B29  I      +5V    I    -    I
+ I  A30  I     SA1      I  I/O  I       I  B30  I      OSC    I    O    I
+ I  A31  I     SA0      I  I/O  I       I  B31  I      GND    I    -    I
+ --------------------------------       ---------------------------------			    IBM AT-286 slots
+			    ----------------
+
+			      18-pins slot
+
+	     Side A                                Side B
+  -------------------------------       ---------------------------------
+  I  pin  I   signal   I  i/o   I       I  pin  I    signal    I   i/o  I
+  -------------------------------       ---------------------------------
+  I  C1   I    SBHE    I  i/o   I       I  D1   I  -MEM CS16   I   i    I
+  I  C2   I    LA23    I  i/o   I       I  D2   I  -I/O CS16   I   i    I
+  I  C3   I    LA22    I  i/o   I       I  D3   I     IRQ10    I   i    I
+  I  C4   I    LA21    I  i/o   I       I  D4   I     IRQ11    I   i    I
+  I  C5   I    LA20    I  i/o   I       I  D5   I     IRQ12    I   i    I
+  I  C6   I    LA19    I  i/o   I       I  D6   I     IRQ15    I   i    I
+  I  C7   I    LA18    I  i/o   I       I  D7   I     IRQ14    I   i    I
+  I  C8   I    LA17    I  i/o   I       I  D8   I    -DACK0    I   o    I
+  I  C9   I   -MEMR    I  i/o   I       I  D9   I      DRQ0    I   i    I
+  I  C10  I   -MEMW    I  i/o   I       I  D10  I    -DACK5    I   o    I
+  I  C11  I    SD08    I  i/o   I       I  D11  I      DRQ5    I   i    I
+  I  C12  I    SD09    I  i/o   I       I  D12  I    -DACK6    I   o    I
+  I  C13  I    SD10    I  i/o   I       I  D13  I      DRQ6    I   i    I
+  I  C14  I    SD11    I  i/o   I       I  D14  I    -DACK7    I   o    I
+  I  C15  I    SD12    I  i/o   I       I  D15  I      DRQ7    I   i    I
+  I  C16  I    SD13    I  i/o   I       I  D16  I      +5 V    I   -    I
+  I  C17  I    SD14    I  i/o   I       I  D17  I   -MASTER    I   i    I
+  I  C18  I    SD15    I  i/o   I       I  D18  I       GND    I   -    I
+  -------------------------------       ---------------------------------
+			    IBM AT-286 slots
+			    ----------------
+
+			       Memory slot
+
+ ---------------------------------        --------------------------------
+ I  PIN  I   signal    I   i/o   I        I  pin   I   signal    I  i/o  I
+ ---------------------------------        --------------------------------
+ I  A1   I    MD0      I         I        I  B1    I     GND     I       I
+ I  A2   I    MD1      I         I        I  B2    I   MDPIN1    I       I
+ I  A3   I    MD2      I         I        I  B3    I     +5V     I       I
+ I  A4   I    MD3      I         I        I  B4    I   MDPOUT1   I       I
+ I  A5   I    NC       I         I        I  B5    I      NC     I       I
+ I  A6   I    MD4      I         I        I  B6    I   MDPIN0    I       I
+ I  A7   I    MD5      I         I        I  B7    I      NC     I       I
+ I  A8   I    MD6      I         I        I  B8    I   MDPOUT0   I       I
+ I  A9   I    MD7      I         I        I  B9    I      NC     I       I
+ I  A10  I    NC       I         I        I  B10   I     GND     I       I
+ I  A11  I    MD8      I         I        I  B11   I      NC     I       I
+ I  A12  I    MD9      I         I        I  B12   I     -WR     I       I
+ I  A13  I    MD10     I         I        I  B13   I    -RAS0    I       I
+ I  A14  I    MD11     I         I        I  B14   I    -RAS1    I       I
+ I  A15  I    NC       I         I        I  B15   I    -RAS2    I       I
+ I  A16  I    MD12     I         I        I  B16   I    -RAS3    I       I
+ I  A17  I    MD13     I         I        I  B17   I      NC     I       I
+ I  A18  I    MD14     I         I        I  B18   I      NC     I       I
+ I  A19  I    MD15     I         I        I  B19   I      NC     I       I
+ I  A20  I    NC       I         I        I  B20   I   -CAS0L    I       I
+ I  A21  I    MA0      I         I        I  B21   I   -CAS0H    I       I
+ I  A22  I    MA1      I         I        I  B22   I   -CAS1L    I       I
+ I  A23  I    MA2      I         I        I  B23   I   -CAS1H    I       I
+ I  A24  I    MA3      I         I        I  B24   I   -CAS2L    I       I
+ I  A25  I    MA4      I         I        I  B25   I   -CAS2H    I       I
+ I  A26  I    NC       I         I        I  B26   I   -CAS3L    I       I
+ I  A27  I    MA5      I         I        I  B27   I   -CAS3H    I       I
+ I  A28  I    MA6      I         I        I  B28   I      NC     I       I
+ I  A29  I    MA7      I         I        I  B29   I     +5V     I       I
+ I  A30  I    MA8      I         I        I  B30   I      NC     I       I
+ I  A31  I    MA9      I         I        I  B31   I     GND     I       I
+ ---------------------------------        --------------------------------			   I/O signal descriptions
+			   -----------------------
+
+     The I/O channel signal description  is  given below. All signal lines
+  are TTL-compatible. I/O adapters  should  be designed with a maximum  of
+  two low-power Shottky (LS) loads per line.
+
+
+*   SA0 through SA19 (I/O):  These are the  addres bits 0 through 19  used
+  to addres memory and I/O devices. In  addition  to  these  addres  bits,
+  LA17 through LA23 allows acces up to 16 Mb of memory. SA0  through  SA19
+  are gated on system  bus  when 'BALE' is high are latched on the falling
+  edge of 'BALE'.
+
+*   LA17 through LA23:  These signals (unlatched) are used to addres memo-
+  ry and I/O devices within the system. They  provide  the system with  up
+  to 16 Mb of addressability. These signals are valid when 'BALE' is high.
+  They are not latched during  microprocessor cycle and  therefore  do  no
+  stay valid for the whole cycle. The purpose  of these  signals is to ge-
+  nerate memory decode for   1 wait  state memory  cycles.  These  decodes
+  should be latched by I/O.
+
+*   CLK (0):  This is the 6-Mhz system clock. The clock is  a  synchronous
+  microprocessor  cycle time of 167 nanoseconds. The clock  duty  cycle is
+  50%. It should be used for synchronization purpose only.
+
+*   RESET DRV (O): This signal is used to reset or initialise  system  lo-
+  gic at power-up time or during a low line-voltage outage. It  is a acti-
+  ve high signal.
+
+*   SD0 through SD15 (I/O):  These are the data bits for the  microproces-
+  sor, memory, and I/O devices. SD0 is the least-significant  bit and SD15
+  is the most-significant bit. All 8-bit devices on the I/O channal should
+  use SD0 - SD7 communications to the microprocessor. For  16-bit devices,
+  the SD0 - SD15 signals are used. To suppot 8-bit devices, the data SD8 -
+  SD15 will be gated to SD0 - SD7 during 8-bit transfers to these devices:
+  16-bit microprocessor  transfers to  8-bit devices  will be converted to
+  two 8-bit transfers.
+
+*   BALE (0)(buffered): The BALE (Buffered Addres Latch Enabled) is provi-
+  ded by the 82288 Bus Controler and is used to latch valid addresses  and
+  memory decodes from the microprocessor. When used with  AEN  signal,  it
+  provides an indicator of valid microprocessor or DMA addres. Microproce-
+  ssor addresses SA0 - SA19 are latched on the  falling  edge  of  'BALE'.
+  This signal is forsed high during DMA cycles.
+
+*   -I/O CH CK (I):  the '-I/O Channel Check' provides the system with pa-
+  rity(error) information about memory or devices on the I/O channel. When
+  it is active (low), it indicates an uncorrectable system error.
+
+*   I/O CH RDY (I):  The 'I/O Channel Ready'is used to lengthen I/O or me-
+  mory cycle. Any slow devices should drive  this signal  low  immediately
+  upon detecting its valid address and a Real number of clock cycles  (167
+  nsec.). This signal should be held low for no more than 2.5 microsec.
+
+*   IRQ3 - IRQ7, IRQ9 - IRQ12 and IRQ14, IRQ15 (I):   These interrupts si-
+  gnals are used to signal the microprocessor that an I/O needed attention.
+  The interrupt request are prioritized, with IRQ9 through IRQ12 and IRQ14
+  through IRQ15 having the  highest  priority  (IRQ9  is the highest)  and
+  IRQ3 through IRQ7 having the lowest priority  (IRQ7  is the lowest).  An
+  interrupt is activated when an  IRQ request line is raised from  low  to
+  high. It must remained  high until the  microprocessor  acknowledges the
+  interrupr request (interrupt service routine).
+
+*   -IOR (I/O):  The '-I/O Read' requests an I/O device to put  data  onto
+  the data bus. It is  an  active low signal and may be driven by a micro-
+  processor or DMA controller resident on the I/O channel.
+
+*   -IOW (I/O):  The '-I/O Write' requests an I/O device to read data from
+  the data bus. It is  an active low  signal and may be driven by a micro-
+  processor or DMA controller in the system.
+
+*   -SMEMR(O), -MEMR(I/O):  These signals requests the memory  devices  to
+  drive data onto the data bus. '-SMEMR'  is active  only  when the memory
+  decode is within the low 1 Mb of memory space and  '-MEMR'is  active  on
+  all memory read cycles. It may  be driven by any  microprocessor or  DMA
+  controller in a system.'-SMEMR' is derived from  '-MEMR' and the  decode
+  of the low 1Mb of memory. When a microprocessor on the I/O channel requ-
+  ests to drive '-MEMR', the address lines must first be valid on the  bus
+  for one clock period before driving '-MEMR' active. Both signals are ac-
+  tive low.
+
+*   -SMEMW(O), -MEMW(O):  These signals request the memory device to store
+  the data present on the data bus.  '-SMEMW' is activated  only when  the
+  memory decode is within the low 1Mb of memory space.'-MEMW' is activated
+  on all memory read cycles. When a microprocessor on the I/O channel  wi-
+  shes to drive '-MEMW', the address lines must  be valid on the  bus  for
+  one clock period before driving '-MEMW' active. Both signals are  active
+  low.
+
+*   DRQ0-DRQ3 and DRQ5-DRQ7 (I):  DMA Requests 0 through  3 and  5 through
+  7 are available for the peripheral devices and the I/O channel micropro-
+  cessor to gain DMA service ( or control of  the system ). These  signals
+  are prioritized ('DRQ0' has the highest priority and  'DRQ7' having  the
+  lowest). A request is generated by bringing a DRQ line to an active high
+  state. It must be held high until the corresponding 'DMA Request Acknow-
+  ledge'(DACK) line goes active. 'DRQ0' through 'DRQ3' perform  8-bit  DMA
+  transfers while the request lines 'DRQ5' through  'DRQ7' perform  16-bit
+  transfers.
+
+*   -DACK0 to -DACK3 and -DACK5 to -DACK7 (O):   They are used to  acknow-
+  ledge DMA requests (DRQ0 through DRQ7). They are active low signals.
+
+*   AEN (O):  'Address Enable'is provided to degate the microprocessor and
+  the other  devices from the  I/O  channel to allow DMA transfers to take
+  place. When this line is active high, the DMA controller has control  of
+  the address bus, the data bus read command lines (memory and  I/O),  and
+  the write command lines (memory and I/O).
+
+*   -REFRESH (I/O):  This signal is used to indicate  a refresh cycle  and
+  can be driven by a microprocessor on the I/O channel.
+
+*   T/C (O):  'Terminal Count' provides a pulse when theterminal count for
+  any DMA channel is reached.
+
+*   SBHE (I/O):  'Bus High Enable' indicates a transfer of data on the up-
+  per byte of the data bus, SD8 through SD15. It is used to condition data
+  bus buffers tied to SD8 through SD15 for 16-bit transfer.
+
+*  -MASTER (I):  This signal is used in condition with a DRQ line to  gain
+  control of the system. A processor or DMA controller on the  I/O channel
+  may issue a DRQ to a DMA channel in a cascade mode and receive a '-DACK'
+  An I/O microprocessor upon receiving the '-DACK', may then pull '-MASTER'
+  low. This will allow it to control the system address, data, and control
+  lines (a condition commonly known as tri-state). After '-MASTER' is low,
+  the I/O microprocessor must wait for one clock period before  issuing  a
+  Read or Write command. This signal should held low for more than 15 mic-
+  roseconds otherwise system memory may be lost due to lack of refresh.
+
+*   -MEM CS16 (I):   'MEM 16 Shp Select' indicates that the data  transfer
+  is a 16-bit 1-wait state, I/O cycle. It is derived from an address deco-
+  de. It is an active low signal and should be driven with an open collec-
+  tor or tri-state driver capable of sinking 20 mA.
+
+*   OSC (O):     'Oscillator' is a high speed clock with  a 70- nanosecond
+  period ( 14. 31818 MHz ). This signal is not synchronous with the system
+  clock. It has a duty cycle of 50%.
+
+*   OWS (I):   The 'Zero wait state' indicates to the microprocessor  that
+  it can complete the present bus cycle without inserting  any  additional
+  wait cycles. In order to run a memory cycle to a  16-bit device  without
+  wait cycles, this signal (OWS) is delivered from an address decode gated
+  with a Read or Write command. For an 8-bit device with a minimum  of two
+  wait states, 'OWS' should be driven  active one  system clock  after the
+  Read and Write command is active gated with the  address decode for  the
+  device. Memory Read and Write commands to an 8-bit device are active  on
+  the falling edge of the system clock. 'OWS' is active low and  should be
+  driven with an open collector or tri state driver capable of sinking  20
+  mA.
+
+
+
+                         System I/O Address Map
+			 ______________________
+                         ----------------------
+
+
+                 Port                           Address
+	        ----------------------------------------
+                DMA #1                            000
+		Interrupt Controller #1           020
+		Timer                             040
+		Keyboard                          060
+		Control Register                  061
+		Clock Calndar, NMI Enable         070
+		DMA Page Registers                080
+		Interrupt Controller #            0A0
+		DMA #2                            0C0
+		Clear 80287 Busy                  0F0
+		Reset 80287                       0F1
+		80287                             0F8
+		Parallel                          378
+
+
+
+                            MEMORY MAP
+			   ------------
+			   ____________
+
+
+                         640K+384K Memory Map
+
+           Address    Mode/Name        Function
+	   -------------------------------------------------
+	   000000     512K User       System  Board Memory
+	   07FFFF     RAM             Bank 0
+
+     	   080000     128K User       System Board Memory
+	   09FFFF     RAM             Bank 1
+
+	   0A0000     128K Video      Reserved for Graphics Display
+	   0BFFFF     RAM             Display Buffer
+
+           0C0000     128K I/O        Reserved for ROM On
+	   0DFFFF     Expansion ROM   I/O Adapters
+
+	   0E0000     96K Reserved    User ROM
+	   0E7FFF     On System Board
+
+	   0F8000     32K ROM On      System BIOS ROM
+	   0FFFFF     System Board
+
+	   100000     384K User       System Board Memory
+	   15FFFF     RAM             Bank 1
+
+	   160000     14848K User     I/O Channel Memory
+	   FDFFFF     RAM
+
+	   FE0000     64K Reserved    Duplicate Code Assigntment
+	   FEFFFF     System Board    at Address 0E0000
+
+	   FF0000     64K ROM On      Duplicate Code Assigntment
+	   FFFFFF     System Board    at Address 0F0000
+
+         -------------------------------------------------------
+         -------------------------------------------------------
+
+
+
+
+                       512K+512K Memory Map
+
+
+           Address    Mode/Name        Function
+	   -------------------------------------------------
+	   000000     512K User       System  Board Memory
+	   07FFFF     RAM             Bank 0
+
+     	   080000     128K User       I/O Channel
+	   09FFFF     RAM
+
+	   0A0000     128K Video      Reserved for Graphics Display
+	   0BFFFF     RAM             Display Buffer
+
+           0C0000     128K I/O        Reserved for ROM On
+	   0DFFFF     System Board    I/O Adapters
+
+	   0E0000     96K Reserved    User ROM
+	   0E7FFF     On System Board
+
+	   0F8000     32K ROM On      System BIOS ROM
+	   0FFFFF     System Board
+
+	   100000     512K User       System Board Memory
+	   17FFFF     RAM             Bank 1
+
+	   180000     14720K User     I/O Channel Memory
+	   FDFFFF     RAM
+
+	   FE0000     64K Reserved    Duplicate Code Assigntment
+	   FEFFFF     System Board    at Address 0E0000
+
+	   FF0000     64K ROM On      Duplicate Code Assigntment
+	   FFFFFF     System Board    at Address 0F0000
+
+
+        ---------------------------------------------------------
+	---------------------------------------------------------
+
+
+
+
+
+                             I/O ADDRESS MAP
+			     ---------------
+			     _______________
+
+
+
+
+            Address (hex)         Device
+	    ---------------------------------------------------------
+	    000 - 01F          DMA Controller 1, 8337A-5
+	    020 - 03F          Interrupt Controller 1, 8259A, Master
+	    040 - 05F          Timer, 8254
+	    060 - 06F          Keyboard Controller, 8042
+	    070 - 07F          Real time clock, NMI
+                               (non-maskable interrupt) mask
+            080 - 09F          DMA Page Registers 74LS612
+	    0A0 - 0BF          Interrupt Controller 2, 8250A
+	    0C0 - 0DF          DMA Controller 2, 8237A-5
+	    0F0                Clear Math Co-processor 80287 Busy
+	    0F1                Reset Math Co-processor 80287
+	    0F8 - 0FF          Math Co-processor 80287
+
+            1F0 - 1F8          Fixed Disk
+	    200 - 207          Game I/O
+	    278 - 27F          Parallel Printer Port 2
+	    2F8 - 2FF          Serial Port 2
+	    300 - 31F          Prototype Card
+	    360 - 36F          Reserved
+	    378 - 37F          Parallel Printer Port 1
+	    380 - 38F          SDLC, bisynchronous 2
+	    3A0 - 3AF          Bisynchronous 1
+	    3B0 - 3BF          Monochrome Display and Printer Adapter
+	    3C0 - 3CF          Reserved
+	    3D0 - 3DF          Color Graphics Monito Adapter
+	    3F0 - 3F7          Diskette Controller
+	    3F8 - 3FF          Serial Port 1
+
+          ---------------------------------------------------------
+	  =========================================================
+
+
+
+
+
+                              DMA Channels
+                              ============
+
+
+                  Channel            Function
+		 --------------------------------------------
+		     0              Spare (8-bit transfer)
+		     1              SDLC  (8-bit transfer)
+		     2              Floppy Disk (8-bit transfer)
+		     3              Spare (8-bit transfer)
+		     4              Cascade for DMA Controller 1
+		     5              Spare (16-bit transfer)
+		     6              Spare (16-bit transfer)
+		     7              Spare (16-bit transfer)
+
+             ========================================================
+
+
+
+                 Page Register            I/O Hex Address
+		 --------------------------------------------
+		 DMA Channel 0                  0087
+                 DMA Channel 1                  0083
+                 DMA Channel 2                  0081
+                 DMA Channel 3                  0082
+                 DMA Channel 4               (not shown)
+                 DMA Channel 5                  008B
+                 DMA Channel 6                  0089
+                 DMA Channel 7                  008A
+                 Refresh                        008F
+
+        ========================================================
+
+
+
+
+
+            Hex Address           Command Code
+         -----------------------------------------------------
+              0C0               CH0 base and current address
+	      0C2               CH0 base and current word count
+
+              0C4               CH1 base and current address
+	      0C6               CH1 base and current word count
+
+              0C8               CH2 base and current address
+	      0CA               CH2 base and current word count
+
+              0CC               CH3 base and current address
+	      0CE               CH3 base and current word count
+
+              0D0               Read status register
+                                Write command register
+              0D2               Write request register
+	      0D4               Write single mask register bit
+	      0D6               Write mode register
+	      0D8               Clear byte pointer flip-flop
+	      0DA               Read temporary register/
+				Write master clear
+	      0DC               Clear mask register
+	      0DE               Write all mask register bits
+
+        ============================================================
+
+        ============================================================
+
+
+
+                              Interrupts
+			      ----------
+
+                Level            Function
+		---------------------------------------------
+		   0           System Timer Output 0
+		   1           Keyboard Output Buffer Full
+		   2           Interrupt from Controller 2(levels 8-15)
+		   3           Serial Port 2
+		   4           Serial Port 1
+		   5           Parallel Port 2
+		   6           Diskette Controller
+		   7           Parallel Port 1
+		   8           Real Time Clock
+		   9           Software redirected to INT 0AH
+		   10          Reserved
+		   11          Reserved
+		   12          Reserved
+		   13          80287
+		   14          Hard disk Controller
+		   15          Reserved
+
+         =========================================================
+
+
+
+                          Timers.
+			  -------
+
+              Channel          Function
+	      ---------------------------------------
+		0             System Timer Output 0
+		1             Memory Refresh
+		2             Speaker Tone
+
+         ==========================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   Real Time Clock And CMOS RAM
+		   -----------------------------
+		   =============================
+
+     A CMOS RAM chip (Motorola MC146818 AP), which keeps configuration
+  information when the power is out, contains the real time clock and
+  64K of CMOS RAM. The internal clock circuirtry uses 14K for this RAM
+  and the rest is allocated to configuration information.
+
+                    CMOS RAM Address Map
+		    --------------------
+
+             Address           Description
+
+             00-0D            Real Time Clock Information
+	     0E               Diagnostic status byte
+	     0f               Shutdoun status byte
+	     10               Diskette drive type byte
+                              -drives A and B
+             11               Reserved
+	     12               Fixed disk type byte
+                              -drives C and D
+             13               Reserved
+	     14               Equipment byte
+	     15               Low base memory byte
+	     16               High base memory byte
+	     17               Low expansion memory byte
+	     18               High expansion memory byte
+	     19-2D            Reserved
+	     2E-2F            2-byte CMOS checksum
+	     30               *Low expansion memory byte
+	     31               *High expansion memory byte
+	     32               *Date century byte
+	     33               Information flags (set during power-on)
+	     34-3F            Reserved
+
+
+
+                      Real Time Clock Information
+		      ---------------------------
+
+              Byte           Function           Address
+
+               0          Seconds                 00
+	       1          Seconds alarm           01
+	       2          Minutes                 02
+	       3          Minute alarm            03
+	       4          Hours                   04
+	       5          Hour alarm              05
+	       6          Day of week             06
+	       7          Data of month           07
+	       8          Month                   08
+	       9          Year                    09
+	      10          Status Register A       0A
+	      11          Status Register B       0B
+	      12          Status Register C       0C
+	      13          Status Register D       0D
+
+
+			   Floppy signal interface
+			   =======================
+
+	   ----------------------------------------- Terminal -----
+	  I      Signal     I   Direction    I   Signals  I   0V   I
+	  I -------------------------------------------------------
+	  I  Spare          I     input      I     2      I   1    I
+	  I  In Use         I     input      I     4      I   3    I
+	  I  Drive select 3 I     input      I     6      I   5    I
+	  I  Index/Sector   I     output     I     8      I   7    I
+	  I  Drive select 0 I     input      I    10      I   9    I
+	  I  Drive select 1 I     input      I    12      I  11    I
+	  I  Drive select 2 I     input      I    14      I  13    I
+	  I  Motor On       I     input      I    16      I  15    I
+	  I Direction selectI    input       I    18      I  17    I
+	  I  Step           I     input      I    20      I  19    I
+	  I  Write data     I     input      I    22      I  21    I
+	  I  Write Gate     I     input      I    24      I  23    I
+	  I  Track 00       I     output     I    26      I  25    I
+	  I  Write Protect  I     output     I    28      I  27    I
+	  I  Read Data      I     output     I    30      I  29    I
+	  I  Side one selectI     input      I    32      I  31    I
+	  I  Ready          I     output     I    34      I  33    I
+	  I________________________________________________________I
+
+
+           Input signal
+                    LOW level (true)
+
+           Output signal 
+                    LOW level (true)
+
+    
+        
+                               Power connector
+                               ================
+                          
+                        
+              /------------\              1 -  DC +12 V
+              I *  *  *  * I              2 -  GND
+               -------------              3 -  GND 
+                4  3  2  1                4 -  DC +5 V
+ 
+               --------------------------------------------			     IBM AT-286
+			power supply connector
+			----------------------
+    --------------------------------------------------------------------
+
+    Pin   Description   Connector   I     Pin   Description   Connector
+				    I
+     1    Power good       PS1      I      1        GND          PS2
+     2    +5 V  DC         PS1      I      2        GND          PS2
+     3    +12V  DC         PS1      I      3      -5 V DC        PS2
+     4    -12V  DC         PS1      I      4      +5 V DC        PS2
+     5       GND           PS1      I      5      +5 V DC        PS2
+     6       GND           PS1      I      6      +5 V DC        PS2
+
+    --------------------------------------------------------------------

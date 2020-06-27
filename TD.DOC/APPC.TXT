@@ -1,0 +1,135 @@
+
+Приложение C
+Зарезервированные слова встроенного ассемблера
+-----------------------------------------------------------------
+
+
+     В этом   приложении    приведен    перечень    мнемонических
+обозначений  команд  и  специальных  обозначений,  которые  можно
+вставлять  в  программу   с   помощью   встроенного   ассемблера.
+Приведенные  ниже  зарезервированные  слова полностью совпадают с
+теми, которые используются в языках Turbo Assembler и MASM.
+
+Таблица C.1 Мнемонические обозначения команд процессоров
+            8086/80186/80286
+-----------------------------------------------------------------
+
+AAA                 INC                 LIDT**              REPNZ
+AAD                 INSB*               LLDT**              REPZ
+AAM                 INSW*               LMSW**              RET
+AAS                 INT                 LOCK                REFT
+ADC                 INTO                LODSB               RQL
+ADD                 IRET                LODSW               ROR
+AND                 JB                  LOOP                SAHF
+ARPL**              JBE                 LOOPNZ              SAR
+BOUND*              JCXZ                LOOPZ               SBB
+CALL                JE                  LSL**               SCASB
+CLC                 JL                  LTR**               SCASW
+CLD                 JLE                 MOV                 SGDT**
+CLI                 JMP                 MOVSB               SHL
+CLTS**              JNB                 MOVSW               SHR
+CMC                 JNBE                MUL                 SLDT**
+CMP                 JNE                 NEG                 SMSW**
+CMPSB               JNLE                NOP                 STC
+CMPSW               JNO                 NOT                 STD
+CWD                 JNP                 OR                  STI
+DAA                 JO                  OUT                 STOSB
+DAS                 JP                  OUTSB*              STOSW
+DEC                 JS                  OUTSW*              STR**
+DIV                 LAHF                POP                 SUB
+ENTER*              LAR**               POPA*               TEST
+ESC                 LDS                 POPF                WAIT
+HLT                 LEA                 PUSH                VERR**
+IDIV                LEAVE*              PUSHA*              VERW**
+IMUL                LES                 PUSHF               XCHG
+IN                  LGDT**              RCL                 XLAT
+                                                            XOR
+*  - доступны только при работе с процессорами 186 и 286
+** - доступны только при работе с процессором 286
+-----------------------------------------------------------------
+
+Таблица C.2 Мнемонические обозначения команд процессора 80386
+-----------------------------------------------------------------
+BSF                 LSS                 SETG                SETS
+BSR                 MOVSX               SETL                SHLD
+BT                  MOVZX               SETLE               SHRD
+BTC                 POPAD               SETNB               CMPSD
+BTR                 POPFD               SETNE               STOSD
+BTS                 PUSHAD              SETNL               LODSD
+CDQ                 PUSHFD              SETNO               MOVSD
+CWDE                SETA                SETNP               SCASD
+IRETD               SETB                SETNS               INSD
+LFS                 SETBE               SETO                OUTSD
+LGS                 SETE                SETP                JECXZ
+-----------------------------------------------------------------
+
+Таблица C.3 Мнемонические обозначения команд процессора 80486
+-----------------------------------------------------------------
+BSWAP               INVLPG
+CMPXCHG             WBPINVD
+INVD                XADD
+-----------------------------------------------------------------
+
+Таблица С.4 Регистры 80386
+-----------------------------------------------------------------
+EAX                 EDI
+EBX                 EBP
+ECX                 ESP
+EDX                 FS
+ESI                 GS
+-----------------------------------------------------------------
+
+Таблица C.5 Регистры центрального процессора
+-----------------------------------------------------------------
+Байтовые регистры            ah, al, bh, bl, ch, cl, dh, dl
+Регистры размером в слово    ax, bx, cx, dx, si, di, sp, bp
+Сегментные регистры          cs, ds, es, ss
+Регистры с плавающей         st, st(0), st(1), st(2), st(3), st(4),
+точкой                       st(5), st(6), st(7)
+-----------------------------------------------------------------
+
+Таблица С.6 Специальные зарезервированные слова
+-----------------------------------------------------------------
+                    WORD PTR            TBYTE PTR
+                    BYTE PTR            NEAR
+                    DWORD PTR           FAR
+                    QWORD PTR           SHORT
+-----------------------------------------------------------------
+
+
+Таблица O.1 Мнемонические обозначения команд числового
+            сопроцессора 8087/80287
+-----------------------------------------------------------------
+
+FABS                FIADD               FLDL2E              FST
+FADD                FICOM               FLDL2T              FSTCW
+FADDP               FICOMP              FLDPI               FSTENV
+FBLD                FIDIV               FLDZ                FSTP
+FBSTP               FIDIVR              FLD1                FSTSW*
+FCHS                FILD                FMUL                FSUB
+FCLEX               FIMUL               FMULP               FSUBP
+FCOM                FINCSTP             FNOP                FSUBR
+FCOMP               FINIT               FNSTS**             FSUBRP
+FDECSTP             FISTP               FPREM               FWAIT
+FDISI               FISUB               FPTAN               FXAM
+FDIV                FISUBR              FRNDINT             FXCH
+FDIVP               FLD                 FRSTOR              FXTRACT
+FDIVR               FLDCW               FSAVE               FYL2X
+FDIVRP              FLDENV              FSCALE              FYL2XP1
+FENI                FLDLG2              FSETPM*             F2XM1
+FFREE               FLDLN2              FSQRT
+
+*  - доступны только при работе с числовым сопроцессором 287
+** - при работе с сопроцессором 80287 в командах fstsw и fnstsw
+     кроме обычных операндов, расположенных в памяти, в качестве
+     операнда может использоваться регистр AX.
+-----------------------------------------------------------------
+
+Таблица O.2 Мнемонические обозначения команд сопроцессора 80387
+-----------------------------------------------------------------
+                    FCOS                FUCOM
+                    FSIN                FUCOMP
+                    FPREM1              FUCOMPP
+                    FSINCOS
+-----------------------------------------------------------------
+

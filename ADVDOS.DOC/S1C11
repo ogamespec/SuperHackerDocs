@@ -1,0 +1,982 @@
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+Chapter 11  Memory Management
+
+  Current versions of MS-DOS can manage as much as 1 megabyte of contiguous
+  random-access memory. On IBM PCs and compatibles, the memory occupied by
+  MS-DOS and other programs starts at address 0000H and may reach as high as
+  address 09FFFFH; this 640 KB area of RAM is sometimes referred to as
+  conventional memory. Memory above this address is reserved for ROM
+  hardware drivers, video refresh buffers, and the like. Computers that are
+  not IBM compatible may use other memory layouts.
+
+  The RAM area under the control of MS-DOS is divided into two major
+  sections:
+
+  ş  The operating-system area
+
+  ş  The transient-program area
+
+  The operating-system area starts at address 0000HÄÄthat is, it occupies
+  the lowest portion of RAM. It holds the interrupt vector table, the
+  operating system proper and its tables and buffers, any additional
+  installable drivers specified in the CONFIG.SYS file, and the resident
+  part of the COMMAND.COM command interpreter. The amount of memory occupied
+  by the operating-system area varies with the version of MS-DOS used, the
+  number of disk buffers, the size of installed device drivers, and so
+  forth.
+
+  The transient-program area (TPA), sometimes called the memory arena, is
+  the remainder of memory above the operating-system area. The memory arena
+  is dynamically allocated in blocks called arena entries. Each arena entry
+  has a special control structure called an arena header, and all of the
+  arena headers are chained together. Three MS-DOS Int 21H functions allow
+  programs to allocate, resize, and release blocks of memory from the TPA:
+
+  Function                 Action
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  48H                     Allocate memory block.
+  49H                     Release memory block.
+  4AH                     Resize memory block.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  MS-DOS itself uses these functions when loading a program from disk at the
+  request of COMMAND.COM or another program. The EXEC function, which is the
+  MS-DOS program loader, calls Int 21H Function 48H to allocate a memory
+  block for the loaded program's environment and another for the program
+  itself and its program segment prefix. It then reads the program from the
+  disk into the assigned memory area. When the program terminates, MS-DOS
+  calls Int 21H Function 49H to release all memory owned by the program.
+
+  Transient programs can also employ the MS-DOS memory-management functions
+  to dynamically manage the memory available in the TPA. Proper use of these
+  functions is one of the most important criteria of whether a program is
+  well behaved under MS-DOS. Well-behaved programs are most likely to be
+  portable to future versions of the operating system and least likely to
+  cause interference with other processes under multitasking user interfaces
+  such as Microsoft Windows.
+
+
+Using the Memory-Allocation Functions
+
+  The memory-allocation functions have two common uses:
+
+  ş  To shrink a program's initial memory allocation so that there is enough
+     room to load and execute another program under its control.
+
+  ş  To dynamically allocate additional memory required by the program and
+     to release the same memory when it is no longer needed.
+
+Shrinking the Initial Memory Allocation
+
+  Although many MS-DOS application programs simply assume they own all
+  memory, this assumption is a relic of MS-DOS version 1 (and CP/M), which
+  could support only one active process at a time. Well-behaved MS-DOS
+  programs take pains to modify only memory that they actually own and to
+  release any memory that they don't need.
+
+  Unfortunately, under current versions of MS-DOS, the amount of memory that
+  a program will own is not easily predicted in advance. It turns out that
+  the amount of memory allocated to a program when it is first loaded
+  depends upon two factors:
+
+  ş  The type of file the program is loaded from
+
+  ş  The amount of memory available in the TPA
+
+  MS-DOS always allocates all of the largest available memory block in the
+  TPA to programs loaded from .COM (memory-image) files. Because .COM
+  programs contain no file header that can pass segment and memory-use
+  information to MS-DOS, MS-DOS simply assumes the worst case and gives such
+  a program everything. MS-DOS will load the program as long as there is an
+  available memory block as large as the size of the file plus 256 bytes for
+  the PSP and 2 bytes for the stack. The .COM program, when it receives
+  control, must determine whether enough memory is available to carry out
+  its functions.
+
+  MS-DOS uses more complicated rules to allocate memory to programs loaded
+  from .EXE files. First, of course, a memory block large enough to hold the
+  declared code, data, and stack segments must be available in the TPA. In
+  addition, the linker sets two fields in a .EXE file's header to inform
+  MS-DOS about the program's memory requirements. The first field,
+  MIN_ALLOC, defines the minimum number of paragraphs required by the
+  program, in addition to those for the code, data, and stack segments. The
+  second, MAX_ALLOC, defines the maximum number of paragraphs of additional
+  memory the program would use if they were available.
+
+  When loading a .EXE file, MS-DOS first attempts to allocate the number of
+  paragraphs in MAX_ALLOC plus the number of paragraphs required by the
+  program itself. If that much memory is not available, MS-DOS assigns all
+  of the largest available block to the program, provided that this is at
+  least the amount specified by MIN_ALLOC plus the size of the program
+  image. If that condition is not satisfied, the program cannot be executed.
+
+  After a .COM or .EXE program is loaded and running, it can use Int 21H
+  Function 4AH (Resize Memory Block) to release all the memory it does not
+  immediately need. This is conveniently done right after the program
+  receives control from MS-DOS, by calling the resize function with the
+  segment of the program's PSP in the ES register and the number of
+  paragraphs that the program requires to run in the BX register (Figure
+  11-1).
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+          .
+          .
+          .
+          org     100h
+
+  main    proc    near            ; entry point from MS-DOS
+                                  ; DS, ES = PSP address
+
+          mov     sp,offset stk   ; COM program must move
+                                  ; stack to safe area
+
+                                  ; release extra memory...
+          mov     ah,4ah          ; function 4Ah =
+                                  ; resize memory block
+                                  ; BX = paragraphs to keep
+          mov     bx,(offset stk - offset main + 10FH) / 16
+          int     21h             ; transfer to MS-DOS
+          jc      error           ; jump if resize failed
+          .
+          .
+          .
+  main    endp
+
+          .
+          .
+          .
+
+          dw      64 dup (?)      ; new stack area
+  stk     equ     $               ; new base of stack
+
+          end     main            ; defines entry point
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 11-1.  An example of a .COM program releasing excess memory after
+  it receives control from MS-DOS. Int 21H Function 4AH is called with ES
+  pointing to the program's PSP and BX containing the number of paragraphs
+  that the program needs to execute. In this case, the new size for the
+  program's memory block is calculated as the program image size plus the
+  size of the PSP (256 bytes), rounded up to the next paragraph. .EXE
+  programs use similar code.
+
+Dynamic Allocation of Additional Memory
+
+  When a well-behaved program needs additional memory spaceÄÄfor an I/O
+  buffer or an array of intermediate results, for exampleÄÄit can call Int
+  21H Function 48H (Allocate Memory Block) with the desired number of
+  paragraphs. If a sufficiently large block of unallocated memory is
+  available, MS-DOS returns the segment address of the base of the assigned
+  area and clears the carry flag (0), indicating that the function was
+  successful.
+
+  If no unallocated block of sufficient size is available, MS-DOS sets the
+  carry flag (1), returns an error code in the AX register, and returns the
+  size (in paragraphs) of the largest block available in the BX register
+  (Figure 11-2). In this case, no memory has yet been allocated. The
+  program can use the value returned in the BX register to determine whether
+  it can continue in a "degraded" fashion, with less memory. If it can, it
+  must call Int 21H Function 48H again to allocate the smaller memory
+  block.
+
+  When the MS-DOS memory manager is searching the chain of arena headers to
+  satisfy a memory-allocation request, it can use one of the following
+  strategies:
+
+  ş  First fit: Use the arena entry at the lowest address that is large
+     enough to satisfy the request.
+
+  ş  Best fit: Use the smallest arena entry that will satisfy the request,
+     regardless of its location.
+
+  ş  Last fit: Use the arena entry at the highest address that is large
+     enough to satisfy the request.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+                .
+                .
+                .
+                mov   ah,48h                 ; function 48h = allocate mem block
+                mov   bx,0800h               ; 800h paragraphs = 32 KB
+                int   21h                    ; transfer to MS-DOS
+                jc    error                  ; jump if allocation failed
+                mov   buff_seg,ax            ; save segment of allocated block
+                .
+                .
+                .
+                mov   es,buff_seg            ; ES:DI = address of block
+                xor   di,di
+                mov   cx,08000h              ; store 32,768 bytes
+                mov   al,0ffh                ; fill buffer with -1s
+                cld
+                rep   stosb                  ; now perform fast fill
+                .
+                .
+                .
+                mov   cx,08000h              ; length to write, bytes
+                mov   bx,handle              ; handle for prev opened file
+                push  ds                     ; save our data segment
+                mov   ds,buff_seg            ; let DS:DX = buffer address
+                mov   dx,0
+                mov   ah,40h                 ; function 40h = write
+                int   21h                    ; transfer to MS-DOS
+                pop   ds                     ; restore our data segment
+                jc    error                  ; jump if write failed
+                .
+                .
+                .
+                mov   es,buff_seg            ; ES = seg of prev allocated block
+                mov   ah,49h                 ; function 49h = release mem block
+                int   21h                    ; transfer to MS-DOS
+                jc    error                  ; jump if release failed
+                .
+  error:        .
+                .
+  handle        dw    0                      ; file handle
+  buff_seg      dw    0                      ; segment of allocated block
+                .
+                .
+                .
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 11-2.  Example of dynamic memory allocation. The program requests a
+  32 KB memory block from MS-DOS, fills it with -1s, writes it to disk, and
+  then releases it.
+
+  If the arena entry selected is larger than the size requested, MS-DOS
+  divides it into two parts: one block of the size requested, which is
+  assigned to the program that called Int 21H Function 48H, and an unowned
+  block containing the remaining memory.
+
+  The default MS-DOS allocation strategy is first fit. However, under MS-DOS
+  versions 3.0 and later, an application program can change the strategy
+  with Int 21H Function 58H.
+
+  When a program is through with an allocated memory block, it should use
+  Int 21H Function 49H to release the block. If it does not, MS-DOS will
+  automatically release all memory allocations for the program when it
+  terminates.
+
+
+Arena Headers
+
+  Microsoft has not officially documented the internal structure of arena
+  headers for the outside world at present. This is probably to deter
+  programmers from trying to manipulate their memory allocations directly
+  instead of through the MS-DOS functions provided for that purpose.
+
+  Arena headers have identical structures in MS-DOS versions 2 and 3. They
+  are 16 bytes (one paragraph) and are located immediately before the memory
+  area that they control (Figure 11-3). An arena header contains the
+  following information:
+
+  ş  A byte signifying whether the header is a member or the last entry in
+     the entire chain of such headers
+
+  ş  A word indicating whether the area it controls is available or whether
+     it already belongs to a program (if the latter, the word points to the
+     program's PSP)
+
+  ş  A word indicating the size (in paragraphs) of the controlled memory
+     area (arena entry)
+
+  MS-DOS inspects the chain of arena headers whenever the program requests a
+  memory-block allocation, modification, or release function, or when a
+  program is EXEC'd or terminated. If any of the blocks appear to be
+  corrupted or if the chain is broken, MS-DOS displays the dreaded message
+
+  Memory allocation error
+
+  and halts the system.
+
+  In the example illustrated in Figure 11-3, COMMAND.COM originally loaded
+  PROGRAM1.COM into the TPA and, because it was a .COM file, COMMAND.COM
+  allocated it all of the TPA, controlled by arena header #1. PROGRAM1.COM
+  then used Int 21H Function 4AH (Resize Memory Block) to shrink its memory
+  allocation to the amount it actually needed to run and loaded and executed
+  PROGRAM2.EXE with the EXEC function (Int 21H Function 4BH). The EXEC
+  function obtained a suitable amount of memory, controlled by arena header
+  #2, and loaded PROGRAM2.EXE into it. PROGRAM2.EXE, in turn, needed some
+  additional memory to store some intermediate results, so it called Int 21H
+  Function 48H (Allocate Memory Block) to obtain the area controlled by
+  arena header #3. The highest arena header (#4) controls all of the
+  remaining TPA that has not been allocated to any program.
+
+  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿ Top of RAM
+  ³       Unowned RAM controlled by header #4       ³  controlled by MS-DOS
+  ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+  ³                 Arena header #4                 ³
+  ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+  ³ Memory area controlled by header #3; additional ³
+  ³  storage dynamically allocated by PROGRAM2.EXE  ³
+  ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+  ³                 Arena header #3                 ³
+  ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+  ³      Memory area controlled by header #2,       ³
+  ³             containing PROGRAM2.EXE             ³
+  ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+  ³                 Arena header #2                 ³
+  ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+  ³      Memory area controlled by header #1,       ³
+  ³             containing PROGRAM1.COM             ³
+  ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+  ³                 Arena header #1                 ³
+  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ Bottom of transient-
+                                                       program area
+
+  Figure 11-3.  An example diagram of MS-DOS arena headers and the
+  transient-program area. The environment blocks and their associated
+  headers have been omitted from this figure to increase its clarity.
+
+
+Lotus/Intel/Microsoft Expanded Memory
+
+  When the IBM Personal Computer and MS-DOS were first released, the 640 KB
+  limit that IBM placed on the amount of RAM that could be directly managed
+  by MS-DOS seemed almost unimaginably huge. But as MS-DOS has grown in both
+  size and capabilities and the popular applications have become more
+  powerful, that 640 KB has begun to seem a bit crowded. Although personal
+  computers based on the 80286 and 80386 have the potential to manage up to
+  16 megabytes of RAM under operating systems such as MS OS/2 and XENIX,
+  this is little comfort to the millions of users of 8086/8088-based
+  computers and MS-DOS.
+
+  At the spring COMDEX in 1985, Lotus Development Corporation and Intel
+  Corporation jointly announced the Expanded Memory Specification 3.0 (EMS),
+  which was designed to head off rapid obsolescence of the older PCs because
+  of limited memory. Shortly afterward, Microsoft announced that it would
+  support the EMS and would enhance Microsoft Windows to use the memory made
+  available by EMS hardware and software. EMS versions 3.2 and 4.0, released
+  in fall 1985 and summer 1987, expanded support for multitasking operating
+  systems.
+
+  The LIM EMS (as it is usually known) has been an enormous success. EMS
+  memory boards are available from scores of manufacturers, and "EMS-aware"
+  softwareÄÄespecially spreadsheets, disk caches, and terminate-and-stay-
+  resident utilitiesÄÄhas become the rule rather than the exception.
+
+What Is Expanded Memory?
+
+  The Lotus/Intel/Microsoft Expanded Memory Specification is a functional
+  definition of a bank-switched memory-expansion subsystem. It consists of
+  hardware expansion modules and a resident driver program specific to those
+  modules. In EMS versions 3.0 and 3.2, the expanded memory is made
+  available to application software as 16 KB pages mapped into a contiguous
+  64 KB area called the page frame, somewhere above the main memory area
+  used by MS-DOS/PC-DOS (0Ä640 KB). The exact location of the page frame is
+  user configurable, so it need not conflict with other hardware options. In
+  EMS version 4.0, the pages may be mapped anywhere in memory and can have
+  sizes other than 16 KB.
+
+  The EMS provides a uniform means for applications to access as much as 8
+  megabytes of memory (32 megabytes in EMS 4.0). The supporting software,
+  which is called the Expanded Memory Manager (EMM), provides a
+  hardware-independent interface between application software and the
+  expanded memory board(s). The EMM is supplied in the form of an
+  installable device driver that you link into the MS-DOS/PC-DOS system by
+  adding a line to the CONFIG.SYS file on the system boot disk.
+
+  Internally, the Expanded Memory Manager consists of two major portions,
+  which may be referred to as the driver and the manager. The driver portion
+  mimics some of the actions of a genuine installable device driver, in that
+  it includes initialization and output status functions and a valid device
+  header. The second, and major, portion of the EMM is the true interface
+  between application software and the expanded-memory hardware. Several
+  classes of services are provided:
+
+  ş  Verification of functionality of hardware and software modules
+
+  ş  Allocation of expanded-memory pages
+
+  ş  Mapping of logical pages into the physical page frame
+
+  ş  Deallocation of expanded-memory pages
+
+  ş  Support for multitasking operating systems
+
+  Application programs communicate with the EMM directly, by means of
+  software Int 67H. MS-DOS versions 3.3 and earlier take no part in (and in
+  fact are completely oblivious to) any expanded-memory manipulations that
+  may occur. MS-DOS version 4.0 and Microsoft Windows, on the other hand,
+  are "EMS-aware" and can use the EMS memory when it is available.
+
+  Expanded memory should not be confused with extended memory. Extended
+  memory is the term used by IBM to refer to the memory at physical
+  addresses above 1 megabyte that can be accessed by an 80286 or 80386 CPU
+  in protected mode. Current versions of MS-DOS run the 80286 and 80386 in
+  real mode (8086-emulation mode), 'nd extended memory is therefore not
+  directly accessible.
+
+Checking for Expanded Memory
+
+  An application program can use either of two methods to test for the
+  existence of the Expanded Memory Manager:
+
+  ş  Issue an open request (Int 21H Function 3DH) using the guaranteed
+     device name of the EMM driver: EMMXXXX0. If the open function succeeds,
+     either the driver is present or a file with the same name
+     coincidentally exists on the default disk drive. To rule out the
+     latter, the application can use IOCTL (Int 21H Function 44H)
+     subfunctions 00H and 07H to ensure that EMM is present. In either case,
+     the application should then use Int 21H Function 3EH to close the
+     handle that was obtained from the open function, so that the handle can
+     be reused for another file or device.
+
+  ş  Use the address that is found in the Int 67H vector to inspect the
+     device header of the presumed EMM. Interrupt handlers and device
+     drivers must use this method. If the EMM is present, the name field at
+     offset 0AH of the device header contains the string EMMXXXX0. This
+     approach is nearly foolproof and avoids the relatively high overhead of
+     an MS-DOS open function. However, it is somewhat less well behaved
+     because it involves inspection of memory that does not belong to the
+     application.
+
+  These two methods of testing for the existence of the Expanded Memory
+  Manager are illustrated in Figures 11-4 and 11-5.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+            .
+            .
+            .
+                                 ; attempt to "open" EMM...
+            mov  dx,seg emm_name ; DS:DX = address of name
+            mov  ds,dx           ; of Expanded Memory Manager
+            mov  dx,offset emm_name
+            mov  ax,3d00h        ; function 3dh, mode = 00h
+                                 ; = open, read only
+            int  21h             ; transfer to MS-DOS
+            jc   error           ; jump if open failed
+
+                                 ; open succeeded, be sure
+                                 ; it was not a file...
+            mov  bx,ax           ; BX = handle from open
+            mov  ax,4400h        ; function 44h subfunction 00h
+                                 ; = IOCTL get device information
+            int  21h             ; transfer to MS-DOS
+            jc   error           ; jump if IOCTL call failed
+            and  dx,80h          ; bit 7 = 1 if character device
+            jz   error           ; jump if it was a file
+
+                                 ; EMM is present, be sure
+                                 ; it is available...
+                                 ; (BX still contains handle)
+            mov  ax,4407h        ; function 44h subfunction 07h
+                                 ; = IOCTL get output status
+            int  21h             ; transfer to MS-DOS
+            jc   error           ; jump if IOCTL call failed
+            or   al,al           ; test device status
+            jz   error           ; if AL = 0 EMM is not available
+                                 ; now close handle ...
+                                 ; (BX still contains handle)
+            mov  ah,3eh          ; function 3eh = close
+            int  21h             ; transfer to MS-DOS
+            jc   error           ; jump if close failed
+            .
+            .
+            .
+  emm_name  db   'EMMXXXX0',0    ; guaranteed device name for
+                                 ; Expanded Memory Manager
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 11-4.  Testing for the Expanded Memory Manager by means of the
+  MS-DOS open and IOCTL functions.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  emm_int   equ  67h            ; Expanded Memory Manager
+                                ; software interrupt
+            .
+            .
+            .
+                                ; first fetch contents of
+                                ; EMM interrupt vector...
+            mov  al,emm_int     ; AL = EMM int number
+            mov  ah,35h         ; function 35h = get vector
+            int  21h            ; transfer to MS-DOS
+                                ; now ES:BX = handler address
+
+                                ; assume ES:0000 points
+                                ; to base of the EMM...
+            mov  di,10          ; ES:DI = address of name
+                                ; field in device header
+                                ; DS:SI = EMM driver name
+            mov  si,seg emm_name
+            mov  ds,si
+            mov  si,offset emm_name
+            mov  cx,8           ; length of name field
+            cld
+            repz cmpsb          ; compare names...
+            jnz  error          ; jump if driver absent
+            .
+            .
+            .
+
+
+  emm_name  db   'EMMXXXX0'     ; guaranteed device name for
+                                ; Expanded Memory Manager
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 11-5.  Testing for the Expanded Memory Manager by inspection of the
+  name field in the driver's device header.
+
+
+Using Expanded Memory
+
+  After establishing that the memory-manager software is present, the
+  application program communicates with it directly by means of the "user
+  interrupt" 67H, bypassing MS-DOS/PC-DOS. The calling sequence for the EMM
+  is as follows:
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+                    mov  ah,function            ; AH determines service type
+                    .                           ; load other registers with
+                    .                           ; values specific to the
+                    .                           ; requested service
+                    int  67h
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  In general, AH contains the EMM function number, AL holds the subfunction
+  number (if any), BX holds a number of pages (if applicable), and DX
+  contains an EMM handle. Registers DS:SI and ES:DI are used to pass the
+  addresses of arrays or buffers. Section 4 of this book,
+  "Lotus/Intel/Microsoft EMS Functions Reference," details each of the
+  expanded memory functions.
+
+  Upon return from an EMM function, the AH register contains zero if the
+  function was successful; otherwise, it contains an error code with the
+  most significant bit set (Figures 11-6 and 11-7). Other values are
+  typically returned in the AL and BX registers or in a user-specified
+  buffer.
+
+
+  Error code         Meaning
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  00H                Function successful.
+
+  80H                Internal error in Expanded Memory Manager software
+                     (could be caused by corrupted memory image of driver).
+
+  81H                Malfunction in expanded-memory hardware.
+
+  82H                Memory manager busy.
+
+  83H                Invalid handle.
+
+  84H                Function requested by application not defined.
+
+  85H                No more handles available.
+
+  86H                Error in save or restore of mapping context.
+
+  87H                Allocation request specified more logical pages than
+                     physically available in system; no pages allocated.
+
+  88H                Allocation request specified more logical pages than
+                     currently available in system (request does not exceed
+                     physical pages that exist, but some are already
+                     allocated to other handles); no pages allocated.
+
+                     Zero pages; cannot be allocated.
+
+  8AH                Logical page requested to be mapped located outside
+                     range of logical pages assigned to handle.
+
+  8BH                Illegal physical page number in mapping request (not in
+                     range
+
+                     0Ä3).
+
+  8CH                Page-mapping hardware-state save area full.
+
+  8DH                Save of mapping context failed; save area already
+                     contains context associated with requested handle.
+
+  8EH                Restore of mapping context failed; save area does not
+                     contain context for requested handle.
+
+  8FH                Subfunction parameter not defined.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+  Figure 11-6.  Expanded Memory Manager error codes common to EMS versions
+  3.0, 3.2, and 4.0. After a call to EMM, the AH register contains zero if
+  the function was successful or an error code in the range 80H through 8FH
+  if the function failed.
+
+
+  Error code         Meaning
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  90H                Attribute type not defined.
+
+  91H                Feature not supported.
+
+  92H                Source and destination memory regions have same handle
+                     and overlap; requested move was performed, but part of
+                     source region was overwritten.
+
+  93H                Specified length for source or destination memory
+                     region is longer than actual allocated length.
+
+  94H                Conventional-memory region and expanded-memory region
+                     overlap.
+
+  95H                Specified offset is outside logical page.
+
+  96H                Region length exceeds 1 MB.
+
+  97H                Source and destination memory regions have same handle
+                     and overlap; exchange cannot be performed.
+
+  98H                Memory source and destination types undefined.
+
+  99H                This error code currently unused.
+
+  9AH                Alternate map or DMA register sets supported, but the
+                     alternate register set specified is not supported.
+
+  9BH                Alternate map or DMA register sets supported, but all
+                     alternate register sets currently allocated.
+
+  9CH                Alternate map or DMA register sets not supported, and
+                     specified alternate register set not zero.
+
+  9DH                Alternate map or DMA register sets supported, but
+                     alternate register set specified is either not defined
+                     or not allocated.
+
+                     Dedicated DMA channels not supported.
+
+  9FH                Dedicated DMA channels supported, but specified DMA
+                     channel not supported.
+
+  A0H                No handle found for specified name.
+
+  A1H                Handle with this name already exists.
+
+  A2H                Memory address wrap; sum of the source or destination
+                     region base address and length exceeds 1 MB.
+
+  A3H                Invalid pointer passed to function, or contents of
+                     source array corrupted.
+
+  A4H                Access to function denied by operating system.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+  Figure 11-7.  Expanded Memory Manager error codes unique to EMS version
+  4.0. Most of these errors are related to the EMS functions for use by
+  operating systems and would not normally be encountered by application
+  programs.
+
+  An application program that uses expanded memory should regard that memory
+  as a system resource, like a file or a device, and employ only the
+  documented EMM services to allocate, access, and release expanded-memory
+  pages. Such a program can use the following general strategy:
+
+  1.  Establish the presence of the Expanded Memory Manager by one of the
+      two methods demonstrated in Figures 11-4 and 11-5.
+
+  2.  After the driver is known to be present, check its operational status
+      with EMS Function 40H.
+
+  3.  Check the version number of EMM with EMS Function 46H, to ensure that
+      all services the application will request are available.
+
+  4.  Obtain the segment of the page frame used by EMM with EMS Function
+      41H.
+
+  5.  Allocate the desired number of expanded-memory pages with EMS Function
+      43H. If the allocation is successful, EMM returns a handle that the
+      application can use to refer to the expanded-memory pages that it
+      owns. This step is exactly analogous to opening a file and using the
+      handle obtained from the open function for read/write operations on
+      the file.
+
+  6.  If the requested number of pages are not available, the application
+      can query EMM for the actual number of pages available (EMS Function
+      42H) and determine whether it can continue.
+
+  7.  After the application has successfully allocated the needed number of
+      expanded-memory pages, it uses EMS Function 44H to map logical pages
+      in and out of the physical page frame in order to store and retrieve
+      data in expanded memory.
+
+  8.  When the program finishes using its expanded-memory pages, it must
+      release them by calling EMS Function 45H. Otherwise, the pages will
+      be lost to use by other programs until the system is restarted.
+
+  Figure 11-8 shows a skeleton program that illustrates this general
+  approach.
+
+  An interrupt handler or device driver that uses EMS follows the same
+  general procedure outlined in steps 1 through 8, with a few minor
+  variations. It may need to acquire an EMS handle and allocate pages before
+  the operating system is fully functional; in particular, you cannot assume
+  that the MS-DOS Open File or Device, IOCTL, and Get Interrupt Vector
+  functions are available. Thus, such a handler or driver must use a
+  modified version of the "get interrupt vector" technique (Figure 11-5) to
+  test for the existence of EMM, fetching the contents of the Int 67H vector
+  directly.
+
+  A device driver or interrupt handler typically owns its expanded-memory
+  pages permanently (until the system is restarted) and never deallocates
+  them. Such a program must also take care to save and restore EMM's
+  page-mapping context (EMS Functions 47H and 48H) whenever it accesses
+  expanded memory, so that use of EMS by a foreground program will not
+  be disturbed.
+
+  The EMM relies on the good behavior of application software to avoid the
+  corruption of expanded memory. If several applications that use expanded
+  memory are running under a multitasking manager such as Microsoft Windows
+  and one or more of them does not abide strictly by EMM conventions, the
+  data of some or all of the applications may be destroyed.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+            .
+            .
+            .
+            mov  ah,40h         ; test EMM status
+            int  67h
+            or   ah,ah
+            jnz  error          ; jump if bad status from EMM
+
+            mov  ah,46h         ; check EMM version
+            int  67h
+            or   ah,ah
+            jnz  error          ; jump if couldn't get version
+
+            cmp  al,030h        ; make sure at least ver 3.0
+            jb   error          ; jump if wrong EMM version
+            mov  ah,41h         ; get page frame segment
+            int  67h
+            or   ah,ah
+            jnz  error          ; jump if failed to get frame
+            mov  page_frame,bx  ; save segment of page frame
+
+            mov  ah,42h         ; get number of available pages
+            int  67h
+            or   ah,ah
+            jnz  error          ; jump if get pages error
+            mov  total_pages,dx ; save total EMM pages
+            mov  avail_pages,bx ; save available EMM pages
+            or   bx,bx
+            jz   error          ; abort if no pages available
+
+            mov  ah,43h         ; try to allocate EMM pages
+            mov  bx,needed_pages
+            int  67h            ; if allocation is successful
+            or   ah,ah
+            jnz  error          ; jump if allocation failed
+
+            mov  emm_handle,dx  ; save handle for allocated pages
+
+            .
+            .                   ; now we are ready for other
+            .                   ; processing using EMM pages
+            .
+                                ; map in EMS memory page...
+            mov  bx,log_page    ; BX <- EMS logical page number
+            mov  al,phys_page   ; AL <- EMS physical page (0-3)
+            mov  dx,emm_handle  ; EMM handle for our pages
+            mov  ah,44h         ; function 44h = map EMS page
+            int  67h
+            or   ah,ah
+            jnz  error          ; jump if mapping error
+
+            .
+            .
+            .                   ; program ready to terminate,
+                                ; give up allocated EMM pages...
+            mov  dx,emm_handle  ; handle for our pages
+            mov  ah,45h         ; EMS function 45h = release pages
+            int  67h
+            or   ah,ah
+            jnz  error          ; jump if release failed
+            .
+            .
+            .
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 11-8.  A program illustrating the general strategy for using
+  expanded memory.
+
+
+Extended Memory
+
+  Extended memory is RAM storage at addresses above 1 megabyte (100000H)
+  that can be accessed by an 80286 or 80386 processor running in protected
+  mode. IBM PC/ATÄ and PS/2Äcompatible machines can (theoretically) have as
+  much as 15 MB of extended memory installed, in addition to the usual 1 MB
+  of conventional memory.
+
+  Protected-mode operating systems such as Microsoft XENIX or MS OS/2 can
+  use extended memory for execution of programs. MS-DOS, on the other hand,
+  runs in real mode on an 80286 or 80386, and programs running under its
+  control cannot ordinarily execute from extended memory or even address
+  that memory for storage of data. However, the ROM BIOS contains two
+  routines that allow real-mode programs restricted access to extended
+  memory:
+
+  ROM BIOS function                    Action
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  Int 15H Function 87H                Move extended-memory block.
+  Int 15H Function 88H                Get extended-memory size.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  These routines can be used by electronic disks (RAMdisks) and by other
+  programs that want to use extended memory for fast storage and retrieval
+  of information that would otherwise have to be written to a slower
+  physical disk drive. Section 3 of this book, "IBM ROM BIOS and Mouse
+  Functions Reference," documents both of these functions.
+
+  You should use these ROM BIOS routines with caution. Data stored in
+  extended memory is, of course, volatile; it is lost if the machine is
+  turned off. The transfer of data to or from extended memory involves a
+  switch from real mode to protected mode and back, which is a relatively
+  slow process on 80286-based machines; in some cases it is only marginally
+  faster than actually reading the data from a fixed disk. In addition,
+  programs that use the ROM BIOS extended-memory functions are not
+  compatible with the MS-DOS compatibility mode of MS OS/2.
+
+  Finally, a major deficit in these ROM BIOS functions is that they do not
+  make any attempt to arbitrate between two or more programs or drivers that
+  are using extended memory for temporary storage. For example, if an
+  application program and an installed RAMdisk driver attempt to put data in
+  the same area of extended memory, no error will be returned to either
+  program, but the data of one or both may be destroyed.
+
+  Figure 11-9 shows an example of the code necessary to transfer data to
+  and from extended memory.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  bmdt    db      30h dup (0)     ; block move descriptor table
+
+  buff1   db      80h dup ('?')   ; source buffer
+  buff2   db      80h dup (0)     ; destination buffer
+
+          .
+          .
+          .
+
+                                  ; copy 'buff1' to extended-
+                                  ; memory address 100000h
+          mov     dx,10h          ; DX:AX = destination
+          mov     ax,0            ; extended-memory address
+          mov     bx,seg buff1    ; DS:BX = source conventional-
+          mov     ds,bx           ; memory address
+          mov     bx,offset buff1
+          mov     cx,80h          ; CX = bytes to move
+          mov     si,seg bmdt     ; ES:SI = block move
+          mov     es,si           ; descriptor table
+          mov     si,offset bmdt
+          call    putblk          ; request transfer
+
+
+                                  ; fill buff2 from extended-
+                                  ; memory address 100000h
+          mov     dx,10h          ; DX:AX = source extended-
+          mov     ax,0            ; memory address
+          mov     bx,seg buff2    ; DS:BX = destination
+          mov     ds,bx           ; conventional-memory address
+          mov     bx,offset buff2
+          mov     cx,80h          ; CX = bytes to move
+          mov     si,seg bmdt     ; ES:SI = block move
+          mov     es,si           ; descriptor table
+          mov     si,offset bmdt
+          call    getblk          ; request transfer
+
+          .
+          .
+          .
+  getblk  proc    near            ; transfer block from extended
+                                  ; memory to real memory
+                                  ; call with
+                                  ; DX:AX = source linear 32-bit
+                                  ;         extended-memory address
+                                  ; DS:BX = segment and offset
+                                  ;         destination address
+                                  ; CX    = length in bytes
+                                  ; ES:SI = block move descriptor
+                                  ;         table
+                                  ; returns
+                                  ; AH    = 0 if transfer OK
+
+          mov     es:[si+10h],cx  ; store length into descriptors
+          mov     es:[si+18h],cx
+
+                                  ; store access rights bytes
+          mov     byte ptr es:[si+15h],93h
+          mov     byte ptr es:[si+1dh],93h
+
+          mov     es:[si+12h],ax  ; source extended-memory address
+          mov     es:[si+14h],dl
+
+                                  ; convert destination segment
+                                  ; and offset to linear address
+          mov     ax,ds           ; segment * 16
+          mov     dx,16
+          mul     dx
+          add     ax,bx           ; + offset -> linear address
+          adc     dx,0
+
+          mov     es:[si+1ah],ax  ; store destination address
+          mov     es:[si+1ch],dl
+
+          shr     cx,1            ; convert length to words
+          mov     ah,87h          ; int 15h function 87h = block move
+          int     15h             ; transfer to ROM BIOS
+
+          ret                     ; back to caller
+
+  getblk  endp
+  putblk  proc    near            ; transfer block from real
+                                  ; memory to extended memory
+                                  ; call with
+                                  ; DX:AX = dest linear 32-bit
+                                  ;         extended-memory address
+                                  ; DS:BX = segment and offset
+                                  ;         source address
+                                  ; CX    = length in bytes
+                                  ; ES:SI = block move descriptor
+                                  ;         table
+                                  ; returns
+                                  ; AH    = 0 if transfer OK
+
+          mov     es:[si+10h],cx  ; store length into descriptors
+          mov     es:[si+18h],cx
+
+                                  ; store access rights bytes
+          mov     byte ptr es:[si+15h],93h
+          mov     byte ptr es:[si+1dh],93h
+
+          mov     es:[si+1ah],ax  ; store destination extended-
+          mov     es:[si+1ch],dl  ; memory address
+
+                                  ; convert source segment and
+                                  ; offset to linear address
+          mov     ax,ds           ; segment * 16
+          mov     dx,16
+          mul     dx
+          add     ax,bx           ; + offset -> linear address
+          adc     dx,0
+          mov     es:[si+12h],ax  ; store source address
+          mov     es:[si+14h],dl
+
+          shr     cx,1            ; convert length to words
+          mov     ah,87h          ; int 15h function 87h = block move
+          int     15h             ; transfer to ROM BIOS
+
+          ret                     ; back to caller
+
+  putblk  endp
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 11-9.  Moving blocks of data between conventional memory and
+  extended memory, using the ROM BIOS extended-memory functions. For
+  additional information on the format of the block move descriptor table,
+  see the entry for Int 15H Function 87H in Section 3 of this book, "IBM
+  ROM BIOS and Mouse Functions Reference." Note that you must specify the
+  extended-memory address as a 32-bit linear address rather than as a
+  segment and offset.
+
+
+

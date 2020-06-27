@@ -1,0 +1,267 @@
+Advanced MS-DOS Programming
+
+
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+
+
+Advanced MS-DOS Programming
+
+The Microsoft(R) Guide for Assembly Language and C Programmers
+
+By Ray Duncan
+
+
+ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+
+
+  PUBLISHED BY
+  Microsoft Press
+  A Division of Microsoft Corporation
+  16011 NE 36th Way, Box 97017, Redmond, Washington 98073-9717
+  Copyright (C) 1986, 1988 by Ray Duncan
+  Published 1986. Second edition 1988.
+  All rights reserved. No part of the contents of this book may be
+  reproduced or transmitted in any form or by any means without the written
+  permission of the publisher.
+  Library of Congress Cataloging in Publication Data
+
+  Duncan, Ray, 1952-
+  Advanced MS-DOS programming.
+  Rev. ed. of: Advanced MS-DOS. (C)1986.
+  Includes index.
+  1. MS-DOS (Computer operating system)  2. Assembler language
+  (Computer program language)  3. C (Computer program language)
+  I. Duncan, Ray, 1952-    Advanced MS-DOS.    II. Title.
+  QA76.76.063D858      1988      005.4'46      88-1251
+  ISBN 1-55615-157-8
+  Printed and bound in the United States of America.
+
+  1 2 3 4 5 6 7 8 9    FGFG    3 2 1 0 9 8
+
+  Distributed to the book trade in the United States by Harper & Row.
+
+  Distributed to the book trade in Canada by General Publishing Company,
+  Ltd.
+
+  Penguin Books Ltd., Harmondworth, Middlesex, England
+  Penguin Books Australia Ltd., Ringwood, Victoria, Australia
+  Penguin Books N.Z. Ltd., 182-190 Wairu Road, Auckland 10, New Zealand
+
+  British Cataloging in Publication Data available
+
+  IBM(R), PC/AT(R), and PS/2(R) are registered trademarks of International
+  Business Machines Corporation. CodeView(R), Microsoft(R), MS-DOS(R), and
+  XENIX(R) are registered trademarks and InPort TM is a trademark of
+  Microsoft Corporation.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+      Technical Editor: Mike Halvorson  Production Editor: Mary Ann Jones
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+
+                                  Dedication
+
+                                  For Carolyn
+
+
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+Contents
+
+  Road Map to Figures and Tables
+
+  Acknowledgments
+
+  Introduction
+
+  SECTION 1   PROGRAMMING FOR MS-DOS
+
+  Chapter 1   Genealogy of MS-DOS
+
+  Chapter 2   MS-DOS in Operation
+
+  Chapter 3   Structure of MS-DOS Application Programs
+
+  Chapter 4   MS-DOS Programming Tools
+
+  Chapter 5   Keyboard and Mouse Input
+
+  Chapter 6   Video Display
+
+  Chapter 7   Printer and Serial Port
+
+  Chapter 8   File Management
+
+  Chapter 9   Volumes and Directories
+
+  Chapter 10  Disk Internals
+
+  Chapter 11  Memory Management
+
+  Chapter 12  The EXEC Function
+
+  Chapter 13  Interrupt Handlers
+
+  Chapter 14  Installable Device Drivers
+
+  Chapter 15  Filters
+
+  Chapter 16  Compatibility and Portability
+
+  SECTION 2   MS-DOS FUNCTIONS REFERENCE
+
+  SECTION 3   IBM ROM BIOS AND MOUSE FUNCTIONS REFERENCE
+
+  SECTION 4   LOTUS/INTEL/MICROSOFT EMS FUNCTIONS REFERENCE
+
+  Index
+
+
+
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+Road Map to Figures and Tables
+
+  MS-DOS versions and release dates
+
+  MS-DOS memory map
+
+  Structure of program segment prefix (PSP)
+
+  Structure of .EXE load module
+
+  Register conditions at program entry
+
+  Segments, groups, and classes
+
+  Macro Assembler switches
+
+  C Compiler switches
+
+  Linker switches
+
+  MAKE switches
+
+  ANSI escape sequences
+
+  Video attributes
+
+  Structure of normal file control block (FCB)
+
+  Structure of extended file control block
+
+  MS-DOS error codes
+
+  Structure of boot sector
+
+  Structure of directory entry
+
+  Structure of fixed-disk master block
+
+  LIM EMS error codes
+
+  Intel 80x86 internal interrupts (faults)
+
+  Intel 80x86, MS-DOS, and ROM BIOS interrupts
+
+  Device-driver attribute word
+
+  Device-driver command codes
+
+  Structure of BIOS parameter block (BPB)
+
+  Media descriptor byte
+
+
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+Acknowledgments
+
+  My renewed thanks to the outstanding editors and production staff at
+  Microsoft Press, who make beautiful books happen, and to the talented
+  Microsoft developers, who create great programs to write books about.
+  Special thanks to Mike Halvorson, Jeff Hinsch, Mary Ann Jones, Claudette
+  Moore, Dori Shattuck, and Mark Zbikowski; if this book has anything unique
+  to offer, these people deserve most of the credit.
+
+
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+Introduction
+
+  Advanced MS-DOS Programming is written for the experienced C or
+  assembly-language programmer. It provides all the information you need to
+  write robust, high-performance applications under the MS-DOS operating
+  system. Because I believe that working, well-documented programs are
+  unbeatable learning tools, I have included detailed programming examples
+  throughoutÄÄincluding complete utility programs that you can adapt to your
+  own needs.
+
+  This book is both a tutorial and a reference and is divided into four
+  sections, so that you can find information more easily. Section 1
+  discusses MS-DOS capabilities and services by functional group in the
+  context of common programming issues, such as user input, control of the
+  display, memory management, and file handling. Special classes of
+  programs, such as interrupt handlers, device drivers, and filters, have
+  their own chapters.
+
+  Section 2 provides a complete reference guide to MS-DOS function calls,
+  organized so that you can see the calling sequence, results, and version
+  dependencies of each function at a glance. I have also included notes,
+  where relevant, about quirks and special uses of functions as well as
+  cross-references to related functions. An assembly-language example is
+  included for each entry in Section 2.
+
+  Sections 3 and 4 are references to IBM ROM BIOS, Microsoft Mouse driver,
+  and Lotus/Intel/Microsoft Expanded Memory Specification functions. The
+  entries in these two sections have the same form as in Section 2, except
+  that individual programming examples have been omitted.
+
+  The programs in this book were written with the marvelous Brief editor
+  from Solution Systems and assembled or compiled with Microsoft Macro
+  Assembler version 5.1 and Microsoft C Compiler version 5.1. They have been
+  tested under MS-DOS versions 2.1, 3.1, 3.3, and 4.0 on an 8088-based IBM
+  PC, an 80286-based IBM PC/AT, and an 80386-based IBM PS/2 Model 80. As far
+  as I am aware, they do not contain any software or hardware dependencies
+  that will prevent them from running properly on any IBM PCÄcompatible
+  machine running MS-DOS version 2.0 or later.
+
+Changes from the First Edition
+
+  Readers who are familiar with the first edition will find many changes in
+  the second edition, but the general structure of the book remains the
+  same. Most of the material comparing MS-DOS to CP/M and UNIX/XENIX has
+  been removed; although these comparisons were helpful a few years ago,
+  MS-DOS has become its own universe and deserves to be considered on its
+  own terms.
+
+  The previously monolithic chapter on character devices has been broken
+  into three more manageable chapters focusing on the keyboard and mouse,
+  the display, and the serial port and printer. Hardware-dependent video
+  techniques have been de-emphasized; although this topic is more important
+  than ever, it has grown so complex that it requires a book of its own. A
+  new chapter discusses compatibility and portability of MS-DOS applications
+  and also contains a brief introduction to Microsoft OS/2, the new
+  multitasking, protected-mode operating system.
+
+  A road map to vital figures and tables has been added, following the Table
+  of Contents, to help you quickly locate the layouts of the program segment
+  prefix, file control block, and the like.
+
+  The reference sections at the back of the book have been extensively
+  updated and enlarged and are now complete through MS-DOS version 4.0, the
+  IBM PS/2 Model 80 ROM BIOS and the VGA video adapter, the Microsoft Mouse
+  driver version 6.0, and the Lotus/Intel/Microsoft Expanded Memory
+  Specification version 4.0.
+
+  In the two years since Advanced MS-DOS Programming was first published,
+  hundreds of readers have been kind enough to send me their comments, and I
+  have tried to incorporate many of their suggestions in this new edition.
+  As before, please feel free to contact me via MCI Mail (user name LMI),
+  CompuServe (user ID 72406,1577), or BIX (user name rduncan).
+
+  Ray Duncan  Los Angeles, California  September 1988
+
+
+

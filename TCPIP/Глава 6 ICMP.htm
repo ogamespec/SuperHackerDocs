@@ -1,0 +1,3103 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1251">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 9">
+<meta name=Originator content="Microsoft Word 9">
+<link rel=File-List href="./Глава%206%20ICMP.files/filelist.xml">
+<link rel=Edit-Time-Data href="./Глава%206%20ICMP.files/editdata.mso">
+<!--[if !mso]>
+<style>
+v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style>
+<![endif]-->
+<title>Глава 6 ICMP: протокол управления сообщениями Internet</title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>Misha</o:Author>
+  <o:LastAuthor>Misha</o:LastAuthor>
+  <o:Revision>1</o:Revision>
+  <o:TotalTime>1</o:TotalTime>
+  <o:Created>2001-04-30T08:08:00Z</o:Created>
+  <o:LastSaved>2001-04-30T08:09:00Z</o:LastSaved>
+  <o:Pages>13</o:Pages>
+  <o:Words>5490</o:Words>
+  <o:Characters>31295</o:Characters>
+  <o:Company>MGAI (TU)</o:Company>
+  <o:Lines>260</o:Lines>
+  <o:Paragraphs>62</o:Paragraphs>
+  <o:CharactersWithSpaces>38432</o:CharactersWithSpaces>
+  <o:Version>9.4402</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:DisplayHorizontalDrawingGridEvery>0</w:DisplayHorizontalDrawingGridEvery>
+  <w:DisplayVerticalDrawingGridEvery>0</w:DisplayVerticalDrawingGridEvery>
+  <w:UseMarginsForDrawingGridOrigin/>
+  <w:Compatibility>
+   <w:FootnoteLayoutLikeWW8/>
+   <w:ShapeLayoutLikeWW8/>
+   <w:AlignTablesRowByRow/>
+   <w:ForgetLastTabAlignment/>
+   <w:LayoutRawTableWidth/>
+   <w:LayoutTableRowsApart/>
+  </w:Compatibility>
+ </w:WordDocument>
+</xml><![endif]-->
+<style>
+<!--
+ /* Font Definitions */
+@font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;
+	mso-font-charset:2;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:0 268435456 0 0 -2147483648 0;}
+ /* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;
+	text-underline:single;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;
+	text-underline:single;}
+p
+	{margin-right:0cm;
+	mso-margin-top-alt:auto;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:72.0pt 90.0pt 72.0pt 90.0pt;
+	mso-header-margin:36.0pt;
+	mso-footer-margin:36.0pt;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+ /* List Definitions */
+@list l0
+	{mso-list-id:21440382;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-1568396556 1479577016 1387454858 228886654 -609431250 -1940745520 -531473434 -150277312 2032449030 -1777549334;}
+@list l1
+	{mso-list-id:370032535;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-2112961868 318306942 -2145629046 -1380385954 -320423100 -1442125674 1668212966 1037721872 133615710 908115736;}
+@list l2
+	{mso-list-id:499276123;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-1725266972 1254397830 -1846767252 1044952284 202386460 -1112260568 -970806892 1101931784 -431038098 -1216191050;}
+@list l3
+	{mso-list-id:521361423;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-616033750 1094901060 85899298 -1891094510 -1772309666 -1883311106 508731682 584881504 436490988 -1836825428;}
+@list l3:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l4
+	{mso-list-id:598101176;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-932946982 1280995736 1205620962 2018287420 1662661914 2100211228 360342502 -295959578 -680100184 1709761196;}
+@list l5
+	{mso-list-id:920336079;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-1510959948 1585493088 1995999418 -713792490 971271834 -2089276322 -1916616956 -1290495020 -1132064330 -816313918;}
+@list l6
+	{mso-list-id:1130779776;
+	mso-list-type:hybrid;
+	mso-list-template-ids:22847238 1303425562 -43737354 -983676304 264272886 -247181054 763812736 1946973950 1849072470 -1726972916;}
+@list l7
+	{mso-list-id:1220020706;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-1568925988 1691895392 1035632714 1057370656 2008334562 539407818 -1278692096 1043734196 1379449902 -1151035644;}
+@list l8
+	{mso-list-id:1249265262;
+	mso-list-type:hybrid;
+	mso-list-template-ids:952534344 -1723046702 1478805536 833502070 -2073251146 -1910740774 -97332194 166757732 -324651244 1961148428;}
+@list l9
+	{mso-list-id:1322461745;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-1505331560 945448788 -2069625366 1401966390 1046256114 -2047725680 416302866 -188441572 1940187948 -1154584468;}
+@list l10
+	{mso-list-id:1339499444;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-1168607844 -2131601348 1726794396 1392253210 1776681840 1470948742 -717432118 410445316 -1385164272 1441038834;}
+@list l11
+	{mso-list-id:1348024082;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-301294970 -1260737856 -133547670 412664178 -305857876 1190045902 -2070401180 -2054663428 661978850 -1100711306;}
+@list l11:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l12
+	{mso-list-id:1558511623;
+	mso-list-type:hybrid;
+	mso-list-template-ids:2053425108 -1229824382 651732034 -306394868 1516813704 -1232296174 199531018 495769458 -721505882 -1031093954;}
+@list l13
+	{mso-list-id:1892375055;
+	mso-list-type:hybrid;
+	mso-list-template-ids:2015811870 -101945644 1307446252 -1631158786 356709458 -1607561928 88912648 -762141982 591978732 2065457422;}
+@list l14
+	{mso-list-id:1956057954;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-1584128530 -1776770634 1855234410 -688752270 -1742687962 -1328894080 792333094 408212546 -1956461756 -1861421600;}
+@list l14:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+ol
+	{margin-bottom:0cm;}
+ul
+	{margin-bottom:0cm;}
+-->
+</style>
+</head>
+
+<body lang=RU link=blue vlink=purple style='tab-interval:36.0pt'>
+
+<div class=Section1>
+
+<p><span style='font-size:13.5pt;font-family:Arial'>Глава 6 ICMP: протокол
+управления сообщениями Internet<o:p></o:p></span></p>
+
+<p><b><u><span style='font-family:Arial'>Введение<o:p></o:p></span></u></b></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Обычно считается, что ICMP
+это часть IP уровня. С его помощью передаются сообщения об ошибках и сообщения
+о возникновении условий и ситуаций, которые требуют к себе особого внимания.
+ICMP сообщения обрабатываются IP уровнем или более высокими уровнями (TCP или
+UDP). При появлении некоторых ICMP сообщений генерируются сообщения об ошибках,
+которые передаются пользовательским процессам. </span><span style='font-family:
+Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>ICMP сообщения передаются
+внутри IP датаграмм, как показано на рисунке 6.1.</span><span style='font-family:
+Arial'><o:p></o:p></span></p>
+
+<p align=center style='text-align:center'><span style='font-size:10.0pt'><!--[if gte vml 1]><v:shapetype
+ id="_x0000_t75" coordsize="21600,21600" o:spt="75" o:preferrelative="t"
+ path="m@4@5l@4@11@9@11@9@5xe" filled="f" stroked="f">
+ <v:stroke joinstyle="miter"/>
+ <v:formulas>
+  <v:f eqn="if lineDrawn pixelLineWidth 0"/>
+  <v:f eqn="sum @0 1 0"/>
+  <v:f eqn="sum 0 0 @1"/>
+  <v:f eqn="prod @2 1 2"/>
+  <v:f eqn="prod @3 21600 pixelWidth"/>
+  <v:f eqn="prod @3 21600 pixelHeight"/>
+  <v:f eqn="sum @0 0 1"/>
+  <v:f eqn="prod @6 1 2"/>
+  <v:f eqn="prod @7 21600 pixelWidth"/>
+  <v:f eqn="sum @8 21600 0"/>
+  <v:f eqn="prod @7 21600 pixelHeight"/>
+  <v:f eqn="sum @10 21600 0"/>
+ </v:formulas>
+ <v:path o:extrusionok="f" gradientshapeok="t" o:connecttype="rect"/>
+ <o:lock v:ext="edit" aspectratio="t"/>
+</v:shapetype><v:shape id="_x0000_i1025" type="#_x0000_t75" alt="" style='width:235.5pt;
+ height:56.25pt'>
+ <v:imagedata src="./Глава%206%20ICMP.files/image001.jpg" o:href="http://www.xspider.net.ru/tcpip/t6_1.jpg"/>
+</v:shape><![endif]--><![if !vml]><img width=314 height=75
+src="./Глава%206%20ICMP.files/image001.jpg"
+tppabs="http://www.te.ru/CD1/tcp_ip/t6_1.jpg" v:shapes="_x0000_i1025"><![endif]></span><o:p></o:p></p>
+
+<p align=center style='text-align:center'><span style='font-size:10.0pt;
+font-family:Arial'>Рисунок 6.1 Инкапсуляция ICMP сообщений в IP датаграммы.</span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Официальная спецификация
+ICMP находится в RFC 792 [Postel 1981b]. </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>На рисунке 6.2 показан
+формат ICMP сообщения. Первые 4 байта одинаковы для всех сообщений, однако
+остальные отличаются в зависимости от типа сообщения. Мы будем показывать
+точный формат каждого сообщения, по мере того как будем их описывать. </span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Существует 15 различных
+значений для поля типа (type), которые указывают на конкретныей тип ICMP
+сообщения. Для некоторых ICMP сообщений используются различные значения в поле
+кода (code), подобным образом осуществляется дальнейшее подразделение ICMP
+сообщений. </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Поле контрольной суммы
+(checksum) охватывает ICMP сообщения целиком. Алгоритм, используемый при этом,
+такой же как тот, что был описан в разделе <a
+href="http://www.xspider.net.ru/tcpip/tcp03.html#t032000"
+tppabs="http://www.te.ru/CD1/tcp_ip/tcp03.html#t032000">&quot;IP
+заголовок&quot;</a> главы 3 при расчете контрольной суммы IP заголовка.
+Контрольная сумма ICMP присутствует всегда.</span><span style='font-family:
+Arial'><o:p></o:p></span></p>
+
+<p align=center style='text-align:center'><span style='font-size:10.0pt'><!--[if gte vml 1]><v:shape
+ id="_x0000_i1026" type="#_x0000_t75" alt="" style='width:5in;height:111pt'>
+ <v:imagedata src="./Глава%206%20ICMP.files/image002.jpg" o:href="http://www.xspider.net.ru/tcpip/t6_2.jpg"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=480 height=148
+src="./Глава%206%20ICMP.files/image002.jpg"
+tppabs="http://www.te.ru/CD1/tcp_ip/t6_2.jpg" v:shapes="_x0000_i1026"><![endif]></span><o:p></o:p></p>
+
+<p align=center style='text-align:center'><span style='font-size:10.0pt;
+font-family:Arial'>Рисунок 6.2 ICMP сообщение.</span><span style='font-family:
+Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>В этой главе мы рассмотрим
+ICMP сообщения в целом, некоторые из них подробно: запрос и отклик маски
+адреса, запрос и отклик временной марки и сообщение о недоступности порта. В <a
+href="http://www.xspider.net.ru/tcpip/tcp07.html"
+tppabs="http://www.te.ru/CD1/tcp_ip/tcp07.html">главе 7</a> мы обсудим, с
+использованием программы Ping, эхо запрос и эхо отклик, а в <a
+href="http://www.xspider.net.ru/tcpip/tcp09.html"
+tppabs="http://www.te.ru/CD1/tcp_ip/tcp09.html">главе 9</a> рассмотрим ICMP
+сообщения, связанные с IP маршрутизацией.</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><b><u><span style='font-family:Arial'>Типы сообщений ICMP<o:p></o:p></span></u></b></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>На рисунке 6.3 приведены
+возможные типы ICMP сообщений, как они определяются полями типа (type) и кода
+(code). </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Последние две колонки на
+рисунке указывают, является ли ICMP сообщение запросом (query) или сообщением
+об ошибке (error). Подобное разделение необходимо, потому что сообщения об
+ошибках ICMP иногда обрабатываются специальным образом. Например, ICMP
+сообщение об ошибке никогда не генерируется в ответ на ICMP сообщение об
+ошибке. (Если не придерживаться этого правила, то ошибка будет генерироваться
+на ошибку до бесконечности.) </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Когда посылается ICMP
+сообщение об ошибке, оно всегда содержит IP заголовок и первые 8 байт IP
+датаграммы, которая вызвала генерацию ICMP ошибки. Это позволяет принимающему
+ICMP модулю установить соответствие между полученным сообщением, одним из
+конкретных протоколов (TCP или UDP из поля протоколов в IP заголовке) и с одним
+из конкретных пользовательских процессов (с помощью номера порта TCP или UDP,
+который содержится в TCP или UDP заголовке в первых 8 байтах IP датаграммы). В
+разделе <a href="http://www.xspider.net.ru/tcpip/#t065000">&quot;ICMP ошибка
+недоступности порта (ICMP Port Unreachable Error)&quot;</a> главы 6 мы
+рассмотрим это более подробно. </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Сообщение об ошибке ICMP
+никогда не генерируется в ответ на:</span><span style='font-family:Arial'> <o:p></o:p></span></p>
+
+<ol start=1 type=1>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l13 level1 lfo13;tab-stops:list 36.0pt'><span style='font-family:
+     Arial'>ICMP сообщение об ошибке. (ICMP сообщение об ошибке, однако, может
+     быть сгенерировано в ответ на ICMP запрос.) <o:p></o:p></span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l13 level1 lfo13;tab-stops:list 36.0pt'><span style='font-family:
+     Arial'>Датаграмму, направляющуюся на широковещательный IP адрес (рисунок
+     3.9) или групповой адрес IP (адрес класса D, рисунок 1.5). <o:p></o:p></span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l13 level1 lfo13;tab-stops:list 36.0pt'><span style='font-family:
+     Arial'>Датаграмму, которая посылается широковещательным запросом на
+     канальном уровне. <o:p></o:p></span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l13 level1 lfo13;tab-stops:list 36.0pt'><span style='font-family:
+     Arial'>Фрагмент, который не является первым. (Мы опишем фрагментацию в
+     разделе <a href="http://www.xspider.net.ru/tcpip/tcp11.html#t115000"
+     tppabs="http://www.te.ru/CD1/tcp_ip/tcp11.html#t115000">&quot;Фрагментация
+     IP&quot;</a> главы 11.) <o:p></o:p></span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l13 level1 lfo13;tab-stops:list 36.0pt'><span style='font-family:
+     Arial'>Датаграмму, адрес источника которой не указывает на конкретный
+     хост. Это означает, что адрес источника не может быть нулевым, loopback
+     адресом, широковещательным или групповым адресом. <o:p></o:p></span></li>
+</ol>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<table border=1 cellspacing=1 cellpadding=0 width=732 style='width:549.0pt;
+ mso-cellspacing:.7pt;border:outset black .75pt;mso-padding-alt:3.75pt 3.75pt 3.75pt 3.75pt'>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  background:white;padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>тип</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  background:white;padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>код</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  background:white;padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>Описание</span><o:p></o:p></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  background:white;padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>запрос</span><o:p></o:p></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  background:white;padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>ошибка</span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>эхо-отклик (отклик-Ping, <a
+  href="http://www.xspider.net.ru/tcpip/tcp07.html"
+  tppabs="http://www.te.ru/CD1/tcp_ip/tcp07.html">глава 7</a>)</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>3</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>назначение недоступно:</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>сеть недоступна - network
+  unreachable (раздел <a
+  href="http://www.xspider.net.ru/tcpip/tcp09.html#t093000"
+  tppabs="http://www.te.ru/CD1/tcp_ip/tcp09.html#t093000">&quot;ICMP ошибки о
+  недоступности хоста и сети&quot;</a> главы 9)</span><span style='font-size:
+  12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>1</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>хост недоступен - host
+  unreachable (раздел <a
+  href="http://www.xspider.net.ru/tcpip/tcp09.html#t093000"
+  tppabs="http://www.te.ru/CD1/tcp_ip/tcp09.html#t093000">&quot;ICMP ошибки о
+  недоступности хоста и сети&quot;</a> главы 9)</span><span style='font-size:
+  12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>2</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>протокол недоступен -
+  protocol unreachable</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>3</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>порт недоступен - port
+  unreachable (раздел <a href="http://www.xspider.net.ru/tcpip/#t065000">&quot;ICMP
+  ошибка недоступности порта (ICMP Port Unreachable Error)&quot;</a> главы 6)</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>4</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>необходима фрагментация,
+  однако установлен бит “не фрагментировать”- fragmentation needed but don’t-fragment
+  bit set (раздел <a href="http://www.xspider.net.ru/tcpip/tcp11.html#t116000"
+  tppabs="http://www.te.ru/CD1/tcp_ip/tcp11.html#t116000">&quot;ICMP ошибки о
+  недоступности&quot;</a> главы 11)</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>5</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>не работает маршрутизация
+  от источника - source route failed (глава 8, раздел <a
+  href="http://www.xspider.net.ru/tcpip/tcp08.html#t085000"
+  tppabs="http://www.te.ru/CD1/tcp_ip/tcp08.html#t085000">&quot;Опция IP
+  маршрутизации от источника&quot;</a>)</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>6</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>неизвестна сеть назначения
+  - destination network unknown</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>7</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>неизвестен хост назначения
+  - destination host unknown</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>8</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>хост источник изолирован -
+  source host isolated</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>9</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>сеть назначения закрыта
+  администратором - destination network administrativrly prohibited</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>10</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>хост назначения закрыт администратором
+  - destination host administrativrly prohibited</span><span style='font-size:
+  12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>11</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>сеть недоступна для TOS -
+  network unreachable for TOS (глава 9, раздел <a
+  href="http://www.xspider.net.ru/tcpip/tcp09.html#t093000"
+  tppabs="http://www.te.ru/CD1/tcp_ip/tcp09.html#t093000">&quot;ICMP ошибки о недоступности
+  хоста и сети&quot;</a>)</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>12</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>хост недоступен для TOS -
+  host unreachable for TOS (глава 9, раздел <a
+  href="http://www.xspider.net.ru/tcpip/tcp09.html#t093000"
+  tppabs="http://www.te.ru/CD1/tcp_ip/tcp09.html#t093000">&quot;ICMP ошибки о
+  недоступности хоста и сети&quot;</a>)</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>13</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>связь административно
+  закрыта путем фильтрации - communication administratively prohibited by
+  filtering </span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>14</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>нарушено старшинство для
+  хоста - host precedence violation </span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>15</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>старшинство разъединено - precedence
+  cutoff in effect </span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>4</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>подавление источника
+  (элементарное управление потоком данных) - source quench (глава 11, раздел <a
+  href="http://www.xspider.net.ru/tcpip/tcp11.html#t11B000"
+  tppabs="http://www.te.ru/CD1/tcp_ip/tcp11.html#t11B000">&quot;ICMP ошибка
+  подавления источника&quot;</a>)</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>5</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>перенаправление - redirect
+  (глава 11, раздел <a href="http://www.xspider.net.ru/tcpip/tcp11.html#t11B000"
+  tppabs="http://www.te.ru/CD1/tcp_ip/tcp11.html#t11B000">&quot;ICMP ошибка
+  подавления источника&quot;</a>): </span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>перенаправление в сеть -
+  redirect for network </span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>1</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>перенаправление в хост -
+  redirect for host</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>2</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>перенаправление для типа
+  сервиса и сети - redirect for type-of-service and network</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>3</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>перенаправление для типа
+  сервиса и хоста - redirect for type-of-service and host</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>8</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>эхо запрос - echo request
+  (Ping запрос, <a href="http://www.xspider.net.ru/tcpip/tcp07.html"
+  tppabs="http://www.te.ru/CD1/tcp_ip/tcp07.html">глава 7</a>)</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>9</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>объявление маршрутизатора
+  - router advertisement (глава 9, раздел <a
+  href="http://www.xspider.net.ru/tcpip/tcp09.html#t096000"
+  tppabs="http://www.te.ru/CD1/tcp_ip/tcp09.html#t096000">&quot;ICMP сообщения
+  поиска маршрутизатора&quot;</a>)</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>10</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>запрос к маршрутизатору -
+  router solicitation (глава 9, раздел <a
+  href="http://www.xspider.net.ru/tcpip/tcp09.html#t096000"
+  tppabs="http://www.te.ru/CD1/tcp_ip/tcp09.html#t096000">&quot;ICMP сообщения
+  поиска маршрутизатора&quot;</a>)</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>11</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>время истекло - time
+  exceeded:</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>время жизни стало равным 0
+  в процессе передачи - time-to-live equals 0 during transit (Traceroute, <a
+  href="http://www.xspider.net.ru/tcpip/tcp08.html"
+  tppabs="http://www.te.ru/CD1/tcp_ip/tcp08.html">глава 8</a>)</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>1</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>время жизни стало равным 0
+  в процессе повторной сборки - time-to-live equals 0 during reassembly (глава
+  11, раздел <a href="http://www.xspider.net.ru/tcpip/tcp11.html#t115000"
+  tppabs="http://www.te.ru/CD1/tcp_ip/tcp11.html#t115000">&quot;Фрагментация
+  IP&quot;</a>)</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>12</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>проблемы с параметрами -
+  parameter problem:</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>неверный IP заголовок - IP
+  header bad</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>1</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>отсутствует необходимая
+  опция - required option missing</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>13</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>запрос временной марки -
+  timestamp request (глава 6, раздел <a
+  href="http://www.xspider.net.ru/tcpip/#t064000">&quot;ICMP запрос и отклик
+  временной марки&quot;</a>)</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>14</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>отклик с временной маркой
+  - timestamp reply (глава 6, раздел <a
+  href="http://www.xspider.net.ru/tcpip/#t064000">&quot;ICMP запрос и отклик
+  временной марки&quot;</a>)</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>15</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>информационный запрос -
+  information request </span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>16</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>информационный отклик -
+  information reply </span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>17</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>запрос маски адреса -
+  address mask request (глава 6, раздел <a
+  href="http://www.xspider.net.ru/tcpip/#t063000">&quot;ICMP запрос и отклик
+  маски адреса&quot;</a>)</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>18</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="64%" valign=top style='width:64.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>отклик с маской адреса -
+  address mask reply (глава 6, раздел <a
+  href="http://www.xspider.net.ru/tcpip/#t063000">&quot;ICMP запрос и отклик
+  маски адреса&quot;</a>)</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Symbol'>·</span><span style='font-size:10.0pt;font-family:Arial'>
+  </span><o:p></o:p></p>
+  </td>
+  <td width="11%" valign=top style='width:11.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+</table>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Рисунок 6.3 Типы сообщений
+ICMP.</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Эти правила введены для
+того, чтобы предотвратить лавинообразный рост количества широковещательных
+сообщений, который может произойти, если ICMP сообщения об ошибках будут
+отправляться в ответ на широковещательные пакеты.</span><span style='font-family:
+Arial'><o:p></o:p></span></p>
+
+<p><b><u><span style='font-family:Arial'>ICMP запрос и отклик маски адреса<o:p></o:p></span></u></b></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>ICMP запрос маски адреса
+используется бездисковыми системами, чтобы получить маску подсети (глава 3,
+раздел <a href="http://www.xspider.net.ru/tcpip/tcp03.html#t035000"
+tppabs="http://www.te.ru/CD1/tcp_ip/tcp03.html#t035000">&quot;Маска
+подсети&quot;</a>) во время загрузки. Система посылает широковещательный ICMP
+запрос. (Это напоминает то, как бездисковые системы с использованием RARP
+получают свои IP адреса во время загрузки.) Альтернативный метод для
+бездисковых систем получить маски своих подсетей - протокол BOOTP, о котором
+рассказано в <a href="http://www.xspider.net.ru/tcpip/tcp16.html"
+tppabs="http://www.te.ru/CD1/tcp_ip/tcp16.html">главе 16</a>. На рисунке 6.4
+показан формат ICMP запроса и отклика маски адреса.</span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p align=center style='text-align:center'><span style='font-size:10.0pt'><!--[if gte vml 1]><v:shape
+ id="_x0000_i1027" type="#_x0000_t75" alt="" style='width:388.5pt;height:96pt'>
+ <v:imagedata src="./Глава%206%20ICMP.files/image003.jpg" o:href="http://www.xspider.net.ru/tcpip/t6_4.jpg"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=518 height=128
+src="./Глава%206%20ICMP.files/image003.jpg"
+tppabs="http://www.te.ru/CD1/tcp_ip/t6_4.jpg" v:shapes="_x0000_i1027"><![endif]></span><o:p></o:p></p>
+
+<p align=center style='text-align:center'><span style='font-size:10.0pt;
+font-family:Arial'>Рисунок 6.4 ICMP запрос и отклик маски адреса.</span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Поля идентификатора и
+номера последовательности в ICMP сообщении могут быть установлены по выбору
+отправителя, эти же значения будут возвращены в отклике. Именно таким образом
+отправитель идентифицирует отклик на свой запрос. </span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Мы можем написать простую
+программу (которая называется icmpaddrmask), которая выдает ICMP запрос маски
+адреса и печатает все отклики. Обычно, запрос отправляется на широковещательный
+адрес, мы поступим точно так же. Адрес назначения (140.252.13.63) это
+широковещательный адрес для подсети 140.252.13.32 (см. рисунок 3.12).</span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:"Courier New"'>sun % <b>icmpaddrmask
+140.252.13.63</b><br>
+received mask = ffffffe0, from 140.252.13.33
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; от самого себя<br>
+received mask = ffffffe0, from 140.252.13.35
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; от bsdi<br>
+received mask = ffff0000, from 140.252.13.34
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; от svr4<o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Первое, на что стоит
+обратить внимание в выводе программы, это то, что значение, возвращенное от
+svr4, неверно. Это произошло из-за того, что SVR4 возвращает общую маску
+подсети класса В, подразумевающую, что деление на подсети не осуществлено, даже
+несмотря на то что интерфейс svr4 сконфигурирован с правильной маской подсети:</span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:"Courier New"'>svr4 % <b>ifconfig
+emd0</b><br>
+emd0: flags=23&lt;UP, BROADCAST, NOTRAILERS.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; inet 140.252.13.34 netmask ffffffe0 broadcast
+140.252.13.63<o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Это одна из известных
+ошибок SVR4 возникающая при обработке ICMP запросов маски адреса. </span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Мы рассмотрим обмен
+пакетами для хоста bsdi, используя tcpdump. Вывод показан на рисунке 6.5. Была
+использована опция -e, которая позволяет посмотреть аппаратные адреса.</span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:"Courier New"'>1 0.0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8:0:20:3:f6:42 ff:ff:ff:ff:ff:ff ip 60: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+sun &gt; 140.252.13.63: icmp: address mask request<br>
+2 0.00 (0.00)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0:0:c0:6f:2d:40 ff:ff:ff:ff:ff:ff
+ip 46: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+bsdi &gt; sun: icmp: address mask is 0xffffffe0<br>
+3 0.01 (0.01)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0:0:c0:6f:2d:40 8:0:20:3:f6:42 ip
+60: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+svr4 &gt; sun: icmp: address mask is 0xffff0000<o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Рисунок 6.5 ICMP запрос
+маски адреса, отправленный на широковещательный адрес.</span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Обратите внимание на то,
+что посылающий хост, sun, принимает ICMP отклик (строка вывода с комментарием
+&quot;от самого себя&quot;, которая была показана ранее), даже если &quot;в
+кабеле&quot; ничего не было. Это основная характеристика широковещательных
+запросов: посылающий хост принимает копию широковещательного пакета через
+внутренний механизм loopback. Так как по определению термин &quot;широковещательный
+запрос&quot; означает все хосты в локальной сети, сюда же включается и
+посылающий хост. (Если обратиться к рисунку 2.4, можно увидить, что драйвер
+Ethernet, определив, что адрес назначения является широковещательным, посылает
+пакет в сеть и копирует его в интерфейс loopback.) </span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Затем bsdi отправляет
+широковещательным запросом отклик, тогда как svr4 посылает отклик только тому,
+кто отправил запрос. Обычно отклик должен быть персональным, если только IP
+адрес источника в запросе не установлен в 0.0.0.0, отправка откликов на
+широковещательный адрес это ошибка, допущенная в BSD/386.</span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial;color:#0000A0'>Требования к
+хостам Host Requirements RFC гласят, что система не должна отправлять отклик о
+маске адреса, если она не является полномочным агентом для рассылки масок
+адресов. (Чтобы являтьься полномочным агентом и рассылать подобные отклики,
+система должна быть специально сконфигурирована. (См. <a
+href="http://www.xspider.net.ru/tcpip/tcp_E.html"
+tppabs="http://www.te.ru/CD1/tcp_ip/tcp_E.html">приложение Е</a>.) Однако, как
+мы видим из этого примера, большинство реализаций посылают отклик в ответ на
+полученный запрос. Иногда хосты даже посылают неверные отклики!</span><span
+style='font-size:10.0pt;font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Обратимся к следующему
+примеру. Мы посылаем запрос о маске адреса на свой собственный IP адрес и на
+loopback адрес:</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:"Courier New"'>sun % <b>icmpaddrmask
+sun<br>
+</b>received mask = ff000000, from 140.252.13.33<br>
+<br>
+sun % <b>icmpaddrmask localhost<br>
+</b>received mask = ff000000, from 127.0.0.1</span><span style='font-family:
+Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>В обоих случаях
+возвращенная маска адреса соответствует адресу loopback, адресу 127.0.0.1 сети
+класса А. Снова обратившись к рисунку 2.4 мы увидим, что IP датаграммы,
+посланные на собственный IP адрес хоста (140.252.13.33 в данном примере), в
+действительности посылаются на loopback интерфейс. ICMP отклик о маске адреса
+должен соответствовать маске подсети интерфейса, на которой был принят запрос
+(при этом хост с несколькими интерфейсами может иметь различные маски подсети
+для каждого интерфейса), а в нашем случае оба запроса получены с интерфейса
+loopback.</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><b><u><span style='font-family:Arial'>ICMP запрос и отклик временной марки<o:p></o:p></span></u></b></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>ICMP запрос временной марки
+позволяет системе запросить другую систему о текущем времени. Рекомендуемое
+значение, которое должно быть возвращено, это количество миллисекунд, которые
+прошли с полуночи в формате UTC, (Универсальное согласованное время -
+Coordinated Universal Time). (В старых руководствах UTC называется Среднее
+время по Гринвичу - Greenwich Mean Time.) Одна из основных особенностей ICMP
+сообщения заключается в том, что оно предоставляет время в с точностью до
+миллисекунд, тогда как другие методы используемые для получения времени от
+удаленных систем (например, команда rdate, существующая в некоторых UNIX
+системах) предоставляют время с точностью до секунд. Недостаток заключается в
+том, что сообщается только время, прошедшее с полуночи, - запрашивающая система
+должена знать текущую дату. На рисунке 6.6 показан формат ICMP запроса и формат
+ICMP отклика временной марки.</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p align=center style='text-align:center'><span style='font-size:10.0pt'><!--[if gte vml 1]><v:shape
+ id="_x0000_i1028" type="#_x0000_t75" alt="" style='width:387pt;height:155.25pt'>
+ <v:imagedata src="./Глава%206%20ICMP.files/image004.jpg" o:href="http://www.xspider.net.ru/tcpip/t6_6.jpg"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=516 height=207
+src="./Глава%206%20ICMP.files/image004.jpg"
+tppabs="http://www.te.ru/CD1/tcp_ip/t6_6.jpg" v:shapes="_x0000_i1028"><![endif]></span><o:p></o:p></p>
+
+<p align=center style='text-align:center'><span style='font-size:10.0pt;
+font-family:Arial'>Рисунок 6.6 ICMP запрос и отклик временной марки.</span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Запрашивающий заполняет
+исходную временную марку и отправляет запрос. Отвечающая система заполняет
+временную марку приема, когда получает запрос, и временную марку передачи,
+когда отправляет отклик. Большинство реализаций устанавливают в два последних
+поля одно и то же значение. (Причина, по которой существуют три поля,
+заключается в том, что отправителю необходимо вычислить время, которое
+потребовалось на отправку запроса, и отдельно рассчитать время, которое
+потребуется на отправку отклика.)</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><b><i><span style='font-family:Arial'>Примеры<o:p></o:p></span></i></b></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Воспользуемся простой
+программой (которая называется icmptime), которая посылает ICMP запрос
+временной марки и печатает полученный отклик. Запустим эту программу в нашей
+маленькой сети:</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:"Courier New"'>sun %<b> icmptime
+bsdi<br>
+</b>orig = 83573336, recv = 83573330, xmit = 83573330, rtt = 2 ms<br>
+difference = -6 ms<br>
+<br>
+sun % <b>icmptime bsdi<br>
+</b>orig = 83577987, recv = 83577980, xmit = 83577980, rtt = 2 ms<br>
+difference = -7 ms</span><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Программа выдала три
+временные марки из ICMP сообщения: исходную (orig), приема (recv) и передачи
+(xmit). Из этого и следующих примеров видно, что все хосты установили временные
+марки приема и передачи в одно и то же значение. </span><span style='font-family:
+Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Также мы рассчитали время
+возврата (rtt) , которое рассчитывается как время, когда был принят отклик,
+минус время, когда был отправлен запрос. difference - это временная марка
+приема минус исходная временная марка. На рисунке 6.7 показана взаимосвязь
+между этими значениями.</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p align=center style='text-align:center'><span style='font-size:10.0pt'><!--[if gte vml 1]><v:shape
+ id="_x0000_i1029" type="#_x0000_t75" alt="" style='width:330.75pt;height:56.25pt'>
+ <v:imagedata src="./Глава%206%20ICMP.files/image005.jpg" o:href="http://www.xspider.net.ru/tcpip/t6_7.jpg"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=441 height=75
+src="./Глава%206%20ICMP.files/image005.jpg"
+tppabs="http://www.te.ru/CD1/tcp_ip/t6_7.jpg" v:shapes="_x0000_i1029"><![endif]></span><o:p></o:p></p>
+
+<p align=center style='text-align:center'><span style='font-size:10.0pt;
+font-family:Arial'>Рисунок 6.7 Взаимосвязь между значениями, напечатанными
+программой icmptime.</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Если принять за истину то,
+что одна половина RTT отводится под запрос, а другая половина под отклик, тогда
+часы отправителя должны быть настроены как difference минус половина RTT, чтобы
+иметь то же самое время, как у хоста к которому отправляется запрос. В
+предыдущем примере часы bsdi</span><span style='font-size:10.0pt'> </span><span
+style='font-size:10.0pt;font-family:Arial'>отставали на 7 и 8 миллисекунд от
+часов sun. </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Так как временная марка
+является количеством миллисекунд после полуночи, UTC должны быть всегда меньше
+чем 86400000 (24х60х60х1000). Эти примеры были исполнены сразу после 16:00 во
+временной зоне имеющей отставание на 7 часов от UTC, таким образом, приемлемыми
+являются значения больше чем 82800000 (2300 часов). </span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Если мы запустим эту
+программу несколько раз на хост bsdi, то увидим, что последние цифры во
+временной марке передачи и приема всегда равны нулю. Это происходит из-за того,
+что программный релиз (Version 0.9.4) имеет часы с точностью 10 миллисекунд.
+(Мы опишем это в <a href="http://www.xspider.net.ru/tcpip/tcp_B.html"
+tppabs="http://www.te.ru/CD1/tcp_ip/tcp_B.html">приложении В</a>.) </span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Если мы запустим программу
+дважды на хост svr4, то увидим что уже три младшие цифры во временной марке
+SVR4 равны нулю:</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:"Courier New"'>sun % <b>icmptime
+svr4<br>
+</b>orig = 83588210, recv = 83588000, xmit = 83588000, rtt = 4 ms<br>
+difference = -210 ms<br>
+<br>
+sun % <b>icmptime svr4<br>
+</b>orig = 83591547, recv = 83591000, xmit = 83591000, rtt = 4 ms<br>
+difference = -547 ms</span><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>По каким-то причинам SVR4
+не предоставляет разрешение времени с точностью до миллисекунд при
+использовании временной марки ICMP. Подобная неточность делает расчет разницы
+во времени бесполезным, если разговор идет о миллисекундах. </span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Если мы обратимся к двум
+другим хостам в подсети 140.252.1, то увидим, что установка одних часов
+отличается от установки часов sun на 3,7 секунды, а других на 75 секунд:</span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:"Courier New"'>sun %<b> icmptime
+gemini<br>
+</b>orig = 83601883, recv = 83598140, xmit = 83598140, rtt = 247 ms<br>
+difference = -3743 ms<br>
+<br>
+sun % <b>icmptime aix<br>
+</b>orig = 83606768, recv = 83532183, xmit = 83532183, rtt = 253 ms<br>
+difference = -74585 ms</span><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Другой интересный пример
+может быть получен при обращении к маршрутизатору gateway (маршрутизатор
+Cisco). Из примера видно, что если система возвращает нестандартное значение
+временной марки (отличающееся от количества миллисекунд после полуночи, UTC),
+старшие биты в 32-битной временной марке устанавливаются в единицу. Наша
+программа определяет это и печатает временные марки приема и передачи в
+треугольных скобках (после установки старших битов в ноль). Мы можем рассчитать
+разницу между исходной временной маркой и временной маркой приема.</span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:"Courier New"'>sun %<b> icmptime
+gateway<br>
+</b>orig = 83620811, recv = &lt;4871036&gt;, xmit = &lt;4871036&gt;, rtt = 220
+ms<br>
+<br>
+sun % <b>icmptime gateway<br>
+</b>orig = 83641007, recv = &lt;4891232&gt;, xmit = &lt;4891232&gt;, rtt = 213
+ms</span><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Если запустить нашу
+программу на этот хост несколько раз, то можно заметить, что полученные
+значения имеют точность до миллисекунд и содержит количество миллисекунд с
+какой-то начальной точки, однако начальная точка не полночь, UTC. (Это может
+быть, например, счетчик, который увеличивается на единицу каждую миллисекунду с
+момента загрузки маршрутизатора.) </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>И в качестве последнего
+примера сравним часы sun с часами системы, которые считаются абсолютно точными
+- сервер NTP. (Мы расскажем о протоколе сетевого времени NTP - Network Time
+Protocol, ниже.)</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:"Courier New"'>sun % <b>icmptime
+clock.llnl.gov<br>
+</b>orig = 83662791, recv = 83662919, xmit = 83662919, rtt = 359 ms<br>
+difference = 128 ms<br>
+<br>
+sun %<b> icmptime clock.llnl.gov<br>
+</b>orig = 83670425, recv = 83670559, xmit = 83670559, rtt = 345 ms<br>
+difference = 134 ms</span><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Если вычесть из разницы
+(difference) половину RTT, то можно будет сказать, что часы sun торопятся на
+величину в диапазоне 51,5 - 38,5 миллисекунды.</span><span style='font-family:
+Arial'><o:p></o:p></span></p>
+
+<p><b><i><span style='font-family:Arial'>Другие возможные варианты<o:p></o:p></span></i></b></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Существуют другие способы
+получить время и дату. </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<ol start=1 type=1>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l12 level1 lfo14;tab-stops:list 36.0pt'><span style='font-family:
+     Arial'>Мы описали сервис дневного времени и сервис времени в разделе <a
+     href="http://www.xspider.net.ru/tcpip/tcp01.html#t01C000"
+     tppabs="http://www.te.ru/CD1/tcp_ip/tcp01.html#t01C000">&quot;Стандартные
+     простые сервисы&quot;</a> главы 1. Первый возвращает текущую дату и время
+     в формате, понятном для человека - в виде строк ACSII символов. Мы можем
+     проверить работу этого сервиса с использованием команды telnet:</span><span
+     style='font-family:"Courier New"'> <o:p></o:p></span></li>
+</ol>
+
+<p style='margin-left:36.0pt'><span style='font-size:10.0pt;font-family:"Courier New"'>sun
+%<b> telnet bsdi daytime</b><br>
+Trying 140.252.13.35 ...<br>
+Connected to bsdi.<br>
+Escape character is '^]'.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+первые три строки - вывод Telnet клиента<br>
+Wed Feb 3 16:38:33 1993
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+это вывод сервиса дневного времени<br>
+Connection closed by foreign host.&nbsp;&nbsp;&nbsp;&nbsp; это опять вывод
+Telnet клиента<o:p></o:p></span></p>
+
+<p style='margin-left:36.0pt'><span style='font-size:10.0pt;font-family:Arial'>Сервер
+времени возвращает 32-битное двоичное значение, содержащее количество секунд
+после полуночи 1 января 1900 года, UTC. (Команда rdate, которую мы упоминали
+ранее, использует сервис времени TCP.)</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<ol start=2 type=1>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l12 level1 lfo14;tab-stops:list 36.0pt'><span style='font-family:
+     Arial'>Для получения более точного времени используется протокол сетевого
+     времени (NTP - Network Time Protocol), который описан в RFC 1305 [Mills
+     1992]. Этот протокол использует определенную технику поддержания точности
+     часов для группы систем в локальной или глобальной сети с точностью до
+     миллисекунды. Для более подробного изучения функционирования этого
+     протокола, необходимо обратиться к RFC. <o:p></o:p></span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l12 level1 lfo14;tab-stops:list 36.0pt'><span style='font-family:
+     Arial'>Open Software Foundation (OSF) Distributed Computing Environment
+     (DCE) определяет сервис распределенного времени (DTS - Distributed Time
+     Service), который также осуществляет синхронизацию часов между хостами.
+     [Rosenberg, Kenney, and Fisher 1992] более подробно описывает этот сервис.
+     <o:p></o:p></span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l12 level1 lfo14;tab-stops:list 36.0pt'><span style='font-family:
+     Arial'>В Unix системах Berkeley существует демон timed(8) , который
+     используется для синхронизации часов систем, находящихся в локальной сети.
+     В отличие от NTP и DTS, timed не работает в глобальных сетях. <o:p></o:p></span></li>
+</ol>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><b><u><span style='font-family:Arial'>ICMP ошибка недоступности порта (ICMP
+Port Unreachable Error) <o:p></o:p></span></u></b></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>В двух последних разделах
+описаны запросы ICMP - маски адреса, и запросы и отклики временной марки.
+Сейчас мы рассмотрим ICMP сообщения об ошибках, а именно: сообщение о
+недоступности порта, подкод сообщения ICMP о недоступности пункта назначения.
+Также рассмотрим дополнительную информацию, которая возвращается в ICMP сообщении
+об ошибке. Для этого воспользуемся UDP (<a
+href="http://www.xspider.net.ru/tcpip/tcp11.html"
+tppabs="http://www.te.ru/CD1/tcp_ip/tcp11.html">глава 11</a>). </span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Если UDP принимает
+датаграмму, порт назначения которой не соответствует порту, который
+обслуживается каким-либо процессом, UDP выдает ICMP сообщение о недоступности
+порта. Попробуем получить ошибку недоступности порта с использованием TFTP
+клиента. (TFTP подробно описан в <a
+href="http://www.xspider.net.ru/tcpip/tcp15.html"
+tppabs="http://www.te.ru/CD1/tcp_ip/tcp15.html">главе 15</a>.) </span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>TFTP сервер использует
+заранее-известный UDP порт 69. Однако большинство программ TFTP клиента
+позволяют указать другой порт с помощью команды connect. В данном случае мы
+указали порт 8888: </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:"Courier New"'>bsdi % <b>tftp</b><br>
+tftp&gt; <b>connect svr4 8888 </b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+указываем имя сервера и номер порта<br>
+tftp&gt; <b>get temp.foo </b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+пробуем получить файл<br>
+Transfer timed out.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+25 секунд спустя истекает время таймера<br>
+tftp&gt; <b>quit</b><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Команда connect сохраняет
+имя хоста, с которым необходимо установить соединение, и номер порта на этом
+хосте для дальнейшего использования командой get. После того как введена
+команда get, UDP датаграмма посылается на порт 8888 хоста svr4. На рисунке 6.8
+показан вывод команды tcpdump, иллюстрирующий обмен пакетами. </span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Перед тем как послать UDP
+датаграмму на svr4, отправляется ARP запрос, для того чтобы определить
+аппаратный адрес (строка 1). Возвращается ARP отклик (строка 2), после чего
+отправляются UDP датаграммы (строка 3). (Мы оставили ARP запрос-отклик в выводе
+команды tcpdump, чтобы напомнить Вам, что этот обмен необходим перед отправкой
+первой IP датаграммы с одного хоста на другой. В следующих примерах мы не будем
+приводить ARP обмен.) </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:"Courier New"'>1&nbsp;&nbsp; 0.0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+arp who-has svr4 tell bsdi<br>
+2&nbsp;&nbsp; 0.002050 (0.0020)&nbsp;&nbsp;&nbsp;&nbsp; arp reply svr4 is-at
+0:0:c0:c2:9b:26<br>
+<br>
+3&nbsp;&nbsp; 0.002723 (0.0007)&nbsp;&nbsp;&nbsp;&nbsp; bsdi.2924 &gt;
+svr4.8888: udp 20<br>
+4&nbsp;&nbsp; 0.006399 (0.0037)&nbsp;&nbsp;&nbsp;&nbsp; svr4 &gt; bsdi: icmp:
+svr4 udp port 8888 unreachable<br>
+<br>
+5&nbsp;&nbsp; 5.000776 (4.9944)&nbsp;&nbsp;&nbsp;&nbsp; bsdi.2924 &gt;
+svr4.8888: udp 20<br>
+6&nbsp;&nbsp; 5.004304 (0.0035)&nbsp;&nbsp;&nbsp;&nbsp; svr4 &gt; bsdi: icmp:
+svr4 udp port 8888 unreachable<br>
+<br>
+7&nbsp; 10.000887 (4.9966)&nbsp;&nbsp;&nbsp;&nbsp; bsdi.2924 &gt; svr4.8888:
+udp 20<br>
+8&nbsp; 10.004416 (0.0035)&nbsp;&nbsp;&nbsp;&nbsp; svr4 &gt; bsdi: icmp: svr4
+udp port 8888 unreachable<br>
+<br>
+9&nbsp; 15.001014 (4.9966)&nbsp;&nbsp;&nbsp;&nbsp; bsdi.2924 &gt; svr4.8888:
+udp 20<br>
+10&nbsp; 15.004574 (0.0036)&nbsp;&nbsp;&nbsp;&nbsp; svr4 &gt; bsdi: icmp: svr4
+udp port 8888 unreachable<br>
+<br>
+11&nbsp; 20.001177 (4.9966)&nbsp;&nbsp;&nbsp;&nbsp; bsdi.2924 &gt; svr4.8888:
+udp 20<br>
+12&nbsp; 20.004759 (0.0036)&nbsp;&nbsp;&nbsp;&nbsp; svr4 &gt; bsdi: icmp: svr4
+udp port 8888 unreachable<o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Рисунок 6.8 Генерация ICMP
+ошибки о недоступности порта в ответ на TFTP запрос.</span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>ICMP ошибка о недоступности
+порта возвращается немедленно (строка 4). Однако TFTP клиент игнорирует ICMP
+сообщение и посылает следующую UDP датаграмму примерно через 5 секунд (строка
+5). Это повторяется трижды, перед тем как клиент прекращает свои попытки. </span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Обратите внимание на то,
+что ICMP сообщения передаются между хостами без номера порта назначения, тогда
+как каждая 20-байтовая UDP датаграмма выходит из указанного порта (2924) в
+указанный порт (8888). </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Число 20 в конце каждой UDP
+строки это длина данных в UDP датаграмме. В данном примере 20 - это сумма
+двухбайтного кода операции (opcode) TFTP, 9-байтного имени (temp.foo) и
+9-байтной строки netascii. (На рисунке 15.1 подробно описано содержимое пакета
+TFTP.) </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Если мы запустим тот же пример
+с опцией -e команды tcpdump, то увидим точную длину каждого ICMP сообщения о
+недоступности порта, которое возвращается отправителю. Длина составляет 70
+байт. (см. рисунок 6.9).</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p align=center style='text-align:center'><span style='font-size:10.0pt'><!--[if gte vml 1]><v:shape
+ id="_x0000_i1030" type="#_x0000_t75" alt="" style='width:384pt;height:99pt'>
+ <v:imagedata src="./Глава%206%20ICMP.files/image006.jpg" o:href="http://www.xspider.net.ru/tcpip/t6_9.jpg"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=512 height=132
+src="./Глава%206%20ICMP.files/image006.jpg"
+tppabs="http://www.te.ru/CD1/tcp_ip/t6_9.jpg" v:shapes="_x0000_i1030"><![endif]></span><o:p></o:p></p>
+
+<p align=center style='text-align:center'><span style='font-size:10.0pt;
+font-family:Arial'>Рисунок 6.9 ICMP сообщение, вернувшееся в нашем примере
+&quot;порт UDP недоступен&quot;.</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Одно из правил, которому
+подчиняется ICMP, заключается в том, что ICMP сообщение об ошибке (см.
+последнюю колонку на рисунке 6.3) должно включать IP заголовок (включая все
+опции) датаграммы, на которую сгенерирована ошибка. Также ICMP сообщение об
+ошибке содержит, по крайней мере, первые 8 байт из IP датаграммы, которые
+следуют за IP заголовком. В нашем примере первые 8 байт, следующие за IP
+заголовком, содержат UDP заголовок (рисунок 11.2). </span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Очень важный факт
+заключается в том, что UDP заголовок содержит номера портов источника и
+назначения. В данном случае это порт назначения (8888), из-за которого было
+сгенерировано ICMP сообщение о недоступности порта. Номер порта источника
+(2924) может быть использован системой, получившей ICMP сообщение об ошибке,
+чтобы установить соответствие между принятой ошибкой и конкретным
+пользовательским процессом (в данном случае TFTP клиент). </span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Одна из причин, по которой
+IP заголовок датаграммы, которая вызвала сообщение об ошибке, посылается
+обратно, заключается в том, что этот IP заголовок содержит поле протокола,
+которое позволяет ICMP модулю понять, как необходимо интерпретировать следующие
+8 байт (в данном примере - UDP заголовок). Если обратиться к TCP заголовку (см.
+рисунок 17.2), то мы увидим, что номера портов источника и назначения
+содержатся в первых 8 байтах TCP заголовка. Общий формат ICMP сообщений о
+недоступности показан на рисунке 6.10. </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p align=center style='text-align:center'><span style='font-size:10.0pt'><!--[if gte vml 1]><v:shape
+ id="_x0000_i1031" type="#_x0000_t75" alt="" style='width:384.75pt;height:126pt'>
+ <v:imagedata src="./Глава%206%20ICMP.files/image007.jpg" o:href="http://www.xspider.net.ru/tcpip/t6_10.jpg"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=513 height=168
+src="./Глава%206%20ICMP.files/image007.jpg"
+tppabs="http://www.te.ru/CD1/tcp_ip/t6_10.jpg" v:shapes="_x0000_i1031"><![endif]></span><o:p></o:p></p>
+
+<p align=center style='text-align:center'><span style='font-size:10.0pt;
+font-family:Arial'>Рисунок 6.10 Сообщение о недоступности ICMP.</span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>На рисунке 6.3 мы видели,
+что существует 16 различных ICMP сообщений о недоступности с кодами от 0 до 15.
+ICMP сообщение о недоступности порта имеет код 3. На рисунке 6.10 показано, что
+второе 32-битное слово в ICMP сообщении должно быть установлено в 0. Механизм
+определения транспортного MTU (глава 2, раздел <a
+href="http://www.xspider.net.ru/tcpip/tcp02.html#t029000"
+tppabs="http://www.te.ru/CD1/tcp_ip/tcp02.html#t029000">&quot;Транспортный
+MTU&quot;</a>) позволяет маршрутизатору поместить MTU исходящего интерфейса в
+младшие 16 бит этого 32-битного значения, когда код равен 4 (&quot;необходима
+фрагментация, однако установлен бит не фрагментировать &quot;). Мы покажем
+пример подобной ошибки в разделе <a
+href="http://www.xspider.net.ru/tcpip/tcp11.html#t116000"
+tppabs="http://www.te.ru/CD1/tcp_ip/tcp11.html#t116000">&quot;ICMP ошибки о
+недоступности (требуется фрагментация)&quot;</a> главы 11. </span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial;color:#0000A0'>Правила, по
+которым действует ICMP, позволяют системе вернуть больше чем первые 8 байт
+раздела данных IP датаграммы, которая вызвала ICMP ошибку, однако большинство
+Berkeley реализаций возвращают ровно 8 байт. В Solaris 2.2, с использованием
+опции ip_icmp_return_data_bytes, может быть указано, сколько байт необходимо
+возвращать, однако по умолчанию возвращаются первые 64 байта данных (приложение
+E, раздел <a href="http://www.xspider.net.ru/tcpip/tcp_E.html#t354000"
+tppabs="http://www.te.ru/CD1/tcp_ip/tcp_E.html#t354000">&quot;Solaris 2.2&quot;</a>).</span><span
+style='font-size:10.0pt;font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><b><i><span style='font-family:Arial'>Временная диаграмма работы команды
+tcpdump<o:p></o:p></span></i></b></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Здесь мы приводим временную
+диаграмму, соответствующую выводу команды tcpdump, приведенному на рисунке 6.11.</span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p align=center style='text-align:center'><span style='font-size:10.0pt'><!--[if gte vml 1]><v:shape
+ id="_x0000_i1032" type="#_x0000_t75" alt="" style='width:358.5pt;height:399.75pt'>
+ <v:imagedata src="./Глава%206%20ICMP.files/image008.jpg" o:href="http://www.xspider.net.ru/tcpip/t6_11.jpg"/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=478 height=533
+src="./Глава%206%20ICMP.files/image008.jpg"
+tppabs="http://www.te.ru/CD1/tcp_ip/t6_11.jpg" v:shapes="_x0000_i1032"><![endif]></span><o:p></o:p></p>
+
+<p align=center style='text-align:center'><span style='font-size:10.0pt;
+font-family:Arial'>Рисунок 6.11 Временная диаграмма запроса TFTP на неверный
+порт.</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Время на рисунке
+увеличивается по направлению вниз, а метки, стоящие крайними слева на рисунке,
+соответствуют величинам времени в выводе команды tcpdump, приведенном на
+рисунке 6.8. Метки вверху - это имена хостов и номера портов каждой конечной
+системы. Однако, вертикальное представление времени на рисунке не точно соответствует
+реальному времени. При передаче данных UDP или TCP мы показываем пакет с
+помощью жирной линии. </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Почему TFTP клиент
+осуществляет повторную передачу своего запроса после прихода сообщения ICMP?
+Особенность сетевого программирования, присутствующая в системах BSD,
+заключается в том, что пользовательский процесс, использующий UDP, не
+предупреждается о приеме ICMP сообщения на этот сокет, если только процесс не
+установил соединение (connect) к этому сокету. Стандартный TFTP клиент системы
+BSD не выдает connect, поэтому он никогда не получит уведомления о приходе ICMP
+ошибки. </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Также необходимо обратить
+внимание на то, что при работе TFTP клиента используется алгоритм тайм-аутов и
+повторных передач. TFTP клиент просто осуществляет повторную передачу каждые 5
+секунд, всего в течение 25 секунд. Позже мы увидим, что подобный алгоритм
+протокола TCP значительно лучше.</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial;color:#0000A0'>Устаревший
+алгоритм тайм-аутов и повторных передач, используемый TFTP клиентом, в
+настоящее время запрещен Host Requirements RFC. Тем не менее, все три системы в
+описываемой подсети и Solaris 2.2 до сих пор его используют. AIX 3.2.2
+использует экспотенциальный рост тайм-аута, посылая пакеты с интервалом 0, 5,
+15 и 35 секунд. В настоящее время рекомендуется именно такой способ расчета
+тайм-аутов. Более подробно мы обсудим тайм-ауты в <a
+href="http://www.xspider.net.ru/tcpip/tcp21.html"
+tppabs="http://www.te.ru/CD1/tcp_ip/tcp21.html">главе 21</a>.</span><span
+style='font-size:10.0pt;font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>И в заключение, обратите
+внимание на то, что ICMP сообщения вернулись примерно через 3,5 миллисекунды
+после отправки UDP датаграммы. В <a
+href="http://www.xspider.net.ru/tcpip/tcp07.html"
+tppabs="http://www.te.ru/CD1/tcp_ip/tcp07.html">главе 7</a> мы увидим, что это
+примерно соответствует времени возврата для отклика Ping.</span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><b><u><span style='font-family:Arial'>Обработка ICMP сообщений в 4.4BSD<o:p></o:p></span></u></b></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Так как ICMP охватывает
+очень широкий диапазон различных условий, начиная от фатальных ошибок и
+заканчивая информационными сообщениями, каждое ICMP сообщение обрабатывается
+по-своему даже в рамках одной реализации. Рисунок&nbsp;6.12 это повтор рисунка
+6.3, который показывает обработку возможных ICMP сообщений системой 4.4BSD. </span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Если в последней колонке
+указано &quot;ядро&quot;, ICMP сообщение обрабатывается ядром, если -
+&quot;пользовательский процесс&quot;, это означает, что сообщение передается
+всем пользовательским процессам, которые зарегистрированы в ядре так, что могут
+читать принятые ICMP сообщения. Если подобных пользовательских процессов нет,
+сообщение молча удаляется. (Эти пользовательские процессы также получают копии
+всех других ICMP сообщений, даже если те обрабатываются ядром, однако только
+после того, как ядро обработало сообщение.) Некоторые сообщения полностью
+игнорируются. И в заключение, если в последней колонке находится строка в
+кавычках, то эта строка является сообщением об ошибке Unix, соответствующее
+создавшемуся условию. Некоторые из ошибок мы рассмотрим в следующих главах.</span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<table border=1 cellspacing=1 cellpadding=0 width=690 style='width:517.5pt;
+ mso-cellspacing:.7pt;border:outset black .75pt;mso-padding-alt:3.75pt 3.75pt 3.75pt 3.75pt'>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  background:white;padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>тип</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  background:white;padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>код</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  background:white;padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>Описание</span><o:p></o:p></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  background:white;padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>Кем обрабатывается</span><o:p></o:p></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>эхо отклик</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>пользовательский процесс</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>3</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>назначение недоступно -
+  destination unreachable:</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>сеть недоступна - network
+  unreachable</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>&quot;No route to
+  host&quot;</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>1</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>хост недоступен - host unreachable</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>&quot;No route to
+  host&quot;</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>2</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>протокол недоступен -
+  protocol unreachable</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>&quot;Connection
+  refused&quot;</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>3</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>порт недоступен - port
+  unreachable</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>&quot;Connection
+  refused&quot;</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>4</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>необходима фрагментация,
+  но установлен бит DF - fragmentation needed but DF bit set </span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>&quot;Message too
+  long&quot;</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>5</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>сбой маршрутизация от
+  источника - source route failed</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>&quot;No route to
+  host&quot;</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>6</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>сеть назначения неизвестна
+  - destination network unknown</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>&quot;No route to
+  host&quot;</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>7</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>хост назначения неизвестен
+  - destination host unknown</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>&quot;No route to
+  host&quot;</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>8</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>хост назначения изолирован
+  - source host isolated (obsolete)</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>&quot;No route to
+  host&quot;</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>9</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>сеть назначения административно
+  закрыта - destination network administratively prohibited</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>&quot;No route to
+  host&quot;</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>10</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>хост назначения
+  административно закрыт - destination host administratively prohibited</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>&quot;No route to
+  host&quot;</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>11</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>сеть недоступна для TOS - network
+  unreachable for TOS</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>&quot;No route to
+  host&quot;</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>12</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>хост недоступен для TOS -
+  host unreachable for TOS</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>&quot;No route to
+  host&quot;</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>13</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>связь административно
+  закрыта - communication administratively prohibited</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>(игнорируется)</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>14</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>нарушено старшинство для
+  хоста - host precedence violation </span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>(игнорируется)</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>15</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>старшинство разъединено -
+  precedence cutoff in effect</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>(игнорируется)</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>4</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>подавление источника -
+  source quench</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>ядром TCP, игнорируется
+  UDP</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>5</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>перенаправление -
+  redirect:</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>перенаправление в сеть -
+  redirect for network </span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>ядро обновляет таблицу
+  маршрутизации</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>1</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>перенаправление в хост -
+  redirect for host</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>ядро обновляет таблицу
+  маршрутизации</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>2</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>перенаправление для типа
+  сервиса и сети - redirect for type-of-service and network</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>ядро обновляет таблицу
+  маршрутизации</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>3</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>перенаправление для типа
+  сервиса и хоста - redirect for type-of-service and host</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>ядро обновляет таблицу
+  маршрутизации</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>8</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>эхо запрос - echo request</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>ядро генерирует отклик</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>9</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>объявление маршрутизатора
+  - router advertisement</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>пользовательский процесс</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>10</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>запрос к маршрутизатору -
+  router solicitation</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>пользовательский процесс</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>11</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>время истекло - time
+  exceeded: </span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>время жизни стало равным 0
+  в процессе передачи - time-to-live equals 0 during transit</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>пользовательский процесс</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>1</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>время жизни стало равным 0
+  в процессе повторной сборки - time-to-live equals 0 during reassembly</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>пользовательский процесс</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>12</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>проблемы с параметрами -
+  parameter problem:</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>неверный IP заголовок - IP
+  header bad</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>&quot;Protocol not
+  available&quot;</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal>&nbsp;<span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>1</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>отсутствует необходимая
+  опция - required option missing</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>&quot;Protocol not
+  available&quot;</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>13</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>запрос временной марки -
+  timestamp request</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>ядро генерирует отклик</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>14</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>отклик с временной маркой
+  - timestamp reply</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>пользовательский процесс</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>15</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>информационный запрос -
+  information request </span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>(игнорируется)</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>16</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>информационный отклик -
+  information reply </span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>пользовательский процесс</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>17</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>запрос маски адреса -
+  address mask request</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>ядро генерирует отклик</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>18</span><o:p></o:p></p>
+  </td>
+  <td width="7%" valign=top style='width:7.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p align=center style='text-align:center'><span style='font-size:10.0pt;
+  font-family:Arial'>0</span><o:p></o:p></p>
+  </td>
+  <td width="50%" valign=top style='width:50.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>отклик с маской адреса -
+  address mask reply</span><span style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+  <td width="36%" valign=top style='width:36.0%;border:inset black .75pt;
+  padding:3.75pt 3.75pt 3.75pt 3.75pt'>
+  <p class=MsoNormal><span style='font-family:Arial'>пользовательский процесс</span><span
+  style='font-size:12.0pt'><o:p></o:p></span></p>
+  </td>
+ </tr>
+</table>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Рисунок 6.12 Обработка ICMP
+сообщений в 4.4BSD.</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><b><u><span style='font-family:Arial'>Краткие выводы<o:p></o:p></span></u></b></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>В этой главе рассмотрен
+протокол управления сообщениями Internet (Internet Control Message Protocol),
+который является неотъемлемой частью каждой реализации. На рисунке 6.3
+приведены все типы ICMP сообщений, большинство из которых мы обсудили или
+обсудим в тексте. </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Мы рассмотрели ICMP запрос
+маски адреса и соответствующий отклик, а также запрос и отклик временной марки.
+Эти типы ICMP сообщений мы рассмотрели более или менее подробно. Они являются
+типичными сообщениями в форме запрос-отклик. Оба имеют идентификатор и номер
+последовательности в ICMP сообщении. Посылающее приложение сохраняет уникальное
+значение в поле идентификатора, чтобы провести различие между откликами для
+него самого (направляемые ему) и откликами для других процессов. Поле номера
+последовательности позволяет клиенту сопоставить запрос с полученным откликом. </span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Также мы рассмотрели ICMP
+ошибку недоступности порта, которая является наиболее общей ошибкой ICMP. Это
+позволило нам более подробно рассмотреть информацию, которая возвращается в
+ICMP ошибке: IP заголовок и следующие 8 байт из IP датаграммы, которая вызвала
+генерацию ошибки. Эта информация необходима ICMP модулю, принимающему ошибку,
+для того чтобы узнать больше о том, чем была вызвана ошибка. И TCP, и UDP
+сохраняют номера портов источника и назначения в первых 8 байтах своих
+заголовков именно по этой причине. </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>В заключение, мы показали
+строки вывода tcpdump, эту команду мы будем довольно часто использовать в
+следующих главах.</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><b><i><span style='font-family:Arial'>Упражнения</span></i></b><span
+style='font-size:7.5pt;font-family:Arial'> <o:p></o:p></span></p>
+
+<ol start=1 type=1>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l0 level1 lfo15;tab-stops:list 36.0pt'><span style='font-family:
+     Arial'>В конце раздела <a href="http://www.xspider.net.ru/tcpip/#t062000">&quot;Типы
+     сообщений ICMP&quot;</a> мы привели 5 специальных условий, при которых
+     сообщение об ошибке ICMP не посылается. Что произойдет, если эти 5 условий
+     не соблюдены, а мы послали широковещательную UDP датаграмму на
+     несоответствующий порт в локальном кабеле? <o:p></o:p></span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l0 level1 lfo15;tab-stops:list 36.0pt'><span style='font-family:
+     Arial'>Прочитайте Host Requirements RFC [Braden 1989a], чтобы посмотреть,
+     попадает ли генерация ICMP ошибки о недоступности порта под разделы
+     &quot;должен&quot;, &quot;следует&quot; или &quot;может&quot;. В каком
+     разделе и на какой странице это можно найти? <o:p></o:p></span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l0 level1 lfo15;tab-stops:list 36.0pt'><span style='font-family:
+     Arial'>Прочитайте RFC 1349 [Almquist 1992], чтобы посмотреть, как поле
+     типа сервиса IP (см. рисунок 3.2) должно быть установлено для ICMP. <o:p></o:p></span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l0 level1 lfo15;tab-stops:list 36.0pt'><span style='font-family:
+     Arial'>Если Ваша система имеет команду netstat, используйте ее, чтобы
+     посмотреть, какой тип ICMP сообщений принимается и посылается.</span><span
+     style='font-size:7.5pt;font-family:Arial'> <o:p></o:p></span></li>
+</ol>
+
+<p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+
+</div>
+
+</body>
+
+</html>

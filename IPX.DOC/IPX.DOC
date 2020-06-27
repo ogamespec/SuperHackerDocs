@@ -1,0 +1,1189 @@
+Advanced Netware v2.0 
+Internetwork Packed Exchange Protocol
+(IPX)
+with
+Asynchronous Event Sheduler
+(AES)
+Specifications as of March 19,1986
+Copyright (c) 1986 by Novell,Inc. All Rights Reserved
+
+NOTICE: The specifications contained in this document are 
+intended to be complete and accurate. However, Novell reserved 
+the right to change,augment, or diminish any or all of these 
+specifications without notice.
+
+The scope of this document................................... 1
+IPX overview................................................. 1
+AES overview................................................. 1
+
+IPX Internetwork packets......................................2
+	General Structure of IPX Packets .....................2
+	Structure of IPX Packet Headers ......................2
+	Description of Header Contents .......................3
+		Checksum .....................................3
+		Length .......................................3
+		Transport control ............................3
+		Packet type ..................................3
+		Destination Network ..........................4
+		Destination Node .............................4
+		Destination Socket ...........................4
+		Source Network ...............................5
+		Source Node ..................................5
+		Source Socket ................................6
+
+	Events and Event control blocks ......................7
+		General Structure ............................8
+		Description of Field Contents ................8
+			Link .................................8
+			ERS Address ..........................8
+			In use ...............................9
+			Completion Code ......................9
+			Socket Number .......................10
+			IPX Workspace .......................10
+			Driver Workspace ....................10
+			Immediate Address ...................10
+			Fragment Count ......................11
+			Fragment Description List ...........11
+
+	Event control blocks for special - purpose events ...12
+		General Structure ...........................12
+		Description of Field contents ...............12
+			Link.................................12
+			ERS address .........................12
+			In Use ..............................12
+			AES Workspace .......................12
+
+- 1 -
+
+The scope of this document
+
+This document describes the IPX and AES programming interfaces as 
+they have been implemented for 8088/8086-based workstations using 
+MS/PC-DOS 2.x or 3.x and the corrasponding Advanced Netware v2.0 
+Workstations Shells.
+
+IPX Overview.
+
+The Advanced Netware Internetwork Packet Exchange (IPX) Protocol 
+is an implementations of Xerox's Internetwork PacketProtocol. The 
+purpose of IPX is to allow applicatios running on a Netware 
+workstation to take advantage of the Netware network drives to 
+communicate with other workstations, servers, or devices on the 
+internetwork.
+IPX is a service that provides to applications theability to send 
+and receive individual packets on the internetwork. Internetwork 
+packets are structured as defined by Xerox Network Standard 
+(XNS). In the Advanced NetWare internetwork environment ( a 
+network comprised of one or more LANs using Advanced NetWare), 
+each node (a device attached to the network) has a unique 
+internetwork address. Using IPX, a NetWare workstations may send 
+or receive packets to or from any node on the internetwork. The 
+routing of packets between nodes which reside on physically 
+different LANs is largely automatic and transparent. This 
+transparency is accomplished by the IPX facility in conjunction 
+wich the services of Advanced NetWare bridges.
+The network drives make a "best effort" to physically deliver the 
+packets but do not quarantee delivery. The implementation of 
+reliable delivery, sequenced protocols, data stream, and other 
+higher - level interconnection protocol may be buil upon the IPX 
+packet protocol as needed by specific applications.
+The IPX protocol is intended to be used as a foundation upon 
+which a variety of sophisticaated applicatons may be built, 
+including communicaton servers, PC-to-mainframe concentrators, or 
+direct interworkstations message systems.
+IPx is fully supported on all LAN topologies which are supported 
+by Advanced NetWare v2.0. The IPX protocol provides full 
+transparency and consistency across any Advanced NetWare 
+internetworks.
+
+AES Overview
+
+The Asynchronous Event Sheduler (AES) is an auxilary service 
+which provides a means of measuring elapsed time and/or 
+triggering events at the conclusion of measured time intervals.
+Events are: the completion of an IPX send request, the reception 
+of a packet in fulfillment of an IPPX listen request, or the 
+expiration of an applicaton-defined time intervals. A service 
+routine may be provided for each event; it will be called when 
+the event occurs. If necessary, an event service routine may 
+reshedule itself for delayed execution after a given time 
+interval has elapsed.
+
+- 2 -
+
+IPX internetwork Packets
+
+The packet structure of IPX packets is precisely the structure of 
+Xerox's XNS packets. The packet structure will be brifly outlined 
+below; interessed users are referred to the Xerox document 
+"Internetwork Transport Protocol" (Xerox Corporation, Xerox 
+System Integration Standard;Stamford;Connecticut;December 
+1981;XSIS-028112) for a more detailed discussion of the XNS 
+packet protocol.
+
+General  Structure of IPX Packets
+An IPX packet consist of 30  bytes of header followd by 0  to 546
+bytes of data. Thus, the  minimum packet length is 30  bytes, and
+the maximum length is 576 bytes.
+
+Contents and structure of the data portion of packet are entirely
+the responsibility of the  application(s) using IPX and  may take
+format required.
+
+Structure of IPX Packet Headers
+
+The IPX header  (first 30 bytes  of all packets)  must conform to
+the following format:
+
+Offset	Field			Size	  Data Type
+------------------------------------------------------------------- 
+0	Checksum		2 bytes	  h-l i's comlement integer
+2	Length			2 bytes   high-low unsigned integer
+4	Transport Control	1 byte	  unsigned integer
+5	Packet Type		1 byte	  unsigned integer
+
+6	Destination Network	4 bytes	  high-low unsigned integer
+10	Destination Node	6 bytes	  high-low unsigned integer
+16	Destination Socket	2 bytes   high-low unsigned integer
+
+18	Source Network		4 bytes	  high-low unsigned integer
+22	Source Node		6 bytes	  high-low unsigned integer
+28	Source Socket		2 bytes	  high-low unsigned integer
+---------------------------------------------------------------------
+Note that numeric fields composed of more than 1 byte can be in two 
+opposite formats: high-low(h-l) and low-high. High-low numbers contain 
+the most significant byte in the first byte of the field, the 
+next-most significant byte in the second byte, and so on, with the 
+least significant byte appearing last. Low-high numbers are stored in 
+exactly the opposite order.
+
+- 3 -
+
+Description of Header Contents
+
+Following is a basic descriptions of the meaning and use of each 
+field in an IPX packed header.
+
+Checksum.
+
+This field is a one's complement add and left cycle checksum of 
+the 16-bit words in the packed header. This fiels will contain a 
+-zero (FFFFh) if no checksum is desired. If a calculated checksum 
+comes to -zero then it should be reset to +zero (0000h).
+
+Note that field is a checksumof the 30-byte header only. If 
+applications wish to checksumtheir own data then they should 
+provide their own checksumin some agreed-upon portion of data 
+area.
+A given NetWareshell implementation may not verify this checksum 
+when receiving a packed. If header checksum verification is 
+required, then it should be performad by the application to whom 
+the packed is delivered.
+
+Lenght.
+This field contain the length of the complete network packed, 
+which is the length of the header plus the length of the data 
+section. Therefore, the minimum length of a packed is 30-bytes, 
+and the maximum length of a packet is 576 bytes.
+
+Transport Control
+This field is used by Advanced Netware Internetwork Bridges and 
+always set to zero before a packed is sent.
+
+Packed Type.
+This field indicates the "type" of service offered or required by 
+the packet; Xerox has defined the following values:
+0	Unknown packed type
+1	Routing Information Packet
+2	Echo packet
+3	Error packet
+4	Packet Exchange Packet
+5	Sequenced Packet Protocol Packet
+16-31	Experimental Protocol
+
+Users are strongly encouraged to use either packet type 0 or 
+packet type 4 in all their packets.
+
+
+- 4 - 
+Destination Network
+This field contain a network number of the destination network where the
+node can be found to whom the packet is addressed.
+Under Advanced NetWare, networks connected on an internetwork are 
+assigned 4-byte networks number by a network administrator. Each 
+network on a connected internetwork is required to have a unique 
+number.
+If this field is set to 0, the destination node is assumed to 
+reside on the same physical network to which the source node is 
+connected; the packet will be sent without involving an Advanced 
+NetWare Internetwork Bridge.
+
+Destination Node
+This field contain a 6-byte number which identifis the physical 
+address (on the destination network) of the node to which the 
+packet is destined.
+Note that not all physical LAN topologies use same size address 
+fields. A node on an EtherNet network would require all 6 bytes  
+to specify its address, while a node on an OmniNet network would 
+require only 1 byte.
+If a physical network needs less than 6 bytes to specify node 
+addresses, then the portion of the address needed should occupy 
+the least significant (last) portion of this field and the first 
+bytes of the field should be set to zeroes.
+Setting all six bytes to FFh indicates that the packet should be 
+broadcast to all nodes on the specified network. Broadcast to all 
+nodes on a network may or may not be supported, depending on the 
+physical characteristics (i.e. broadcast support) of the 
+underlying physical network to which the packet is destined.
+
+Destination Socket
+This fiels contains the socket address of the software routine to 
+which the packet is destined.
+Socket numbers are used to route packets to different software 
+ruotines within a given node. Xerox has reserved certain sockets 
+for special use. Pre-defined sockets are as follows:
+1	Routing Information packet
+2	Echo protocol packet
+3	Error handler packet
+32-63	Experimental
+
+- 5 -
+Sockets with numbers below 3.000 (decimal) are considered 
+"well-known" sockets with statically assigned meanings, while 
+sockets with numbers above 3.000 are dynamically assignable 
+sockets.
+Applications developers that wish to produce a unique well-known 
+socket may request that Xerox assign them one. A small fee and 
+some amount of processing time may be required by Xerox.
+Novell has obtained from Xerox a set of sockets for various uses 
+in the Advanced NetWare environment. For example, NetWare File 
+Servers accept requests addressed to socket 0451h.
+Because it is unlickely that NetWare systems will frequently find 
+themselves co-existing with bona fide Xerox networking software, 
+Novell has decided to offer an alternative scheme for addressing 
+socket numbers. Novell will administrate a list of sockets that 
+will be well-known in all NetWare environments. Software 
+developers writing value-added packetges for NetWare should find 
+it simpler to obtain socket assigments from Novell. Numbers 
+assigned by Novell begin at 8000h (32.768 decimal). Dynamic 
+socket numbers begin at 4000h.
+
+Source Network.
+This field contains the network number of the LAN to which the 
+node that originated the packet is connected.
+this field may contain a value of zero, indicating an "unknown" 
+number for the network to which the source node is physically 
+connected.
+Incidentally, all packets with a zero in this field which pass 
+through an Advanced NetWare Internetwork Bridge will have this 
+field set with the real source network number. Thus, when a 
+packet is received from a node on a different network, the Source 
+Network field will always be set properly; packets originated by 
+a node on the same network as the receiving node are the only 
+packets which may still contain a value of zero in this field.
+
+Source Node
+This field contain the physicall address of the node from which 
+the packet originated.
+How many bytes of this address are actually used to address the 
+given node is a function of the physicall network to which the 
+node is connected. See the related discussion in the preceding 
+definition of the Destination Node field.
+
+- 6 -
+Source socket
+This field contain the socket address being used by the software 
+routine that originated the packet.
+Although it is not required by the IPX protocol, it is usual for 
+all stations communicating about a particular task in a 
+peer-to-peer fashion to send and receive using the same socket 
+number. In a client/server situation, the node which is acting as 
+a server (perhaps a communicating gateway) would lickely be 
+listening on a specific socket for frequest to service. In such 
+cases, the source socket is not necessary the same or even 
+significant; all that matters is that the server reply to the 
+given source socket.
+For example, all Advanced NetWare file servers have the same 
+socket address, but request to them may be originated by clients 
+using any socket number.
+If software developers wish to have a uniquely assigned static 
+socket to communicate on then they should contact Xerox or Novell 
+to have a socket number assigned to him. (See the discussion of 
+socket number allocation in the previous description of the 
+Destination Socket field.)
+
+- 7 -
+Events and Event control blocks.
+An Event Control Block (ECB) is a data structure that contains 
+information required to coordinate the sheduling and/or 
+activation of certain desired operations. Nearly all IPX or AES 
+function act upon ECBs and/or the information they represent. 
+There are two different kinds of events that may occur, events 
+related to an IPX send or receive operation, and special-purpose 
+events sheduled by an application. All events have an associated 
+Event Control Block.
+For example, when an application desired to transmit an IPX 
+packet, it must first prepare an ECB which describes where to 
+obtain the packet data. The completed sending of a packet 
+constitutes an "IPX send event".
+Linkwise, when an application desires to receive packets, it must 
+make one or more ECBs available to IPX to describe where to store 
+incoming packet data. The reception of a packet will cause an 
+"IPX receive event".
+Additionally, an application may define and shedule a 
+special-purpose event. An Event Control Block must be supplied to 
+the AES along with a time interval. The AES will count-down the 
+remaining time in the given interval. When the count-down timer 
+reaches zero, the scheduled event occurs.
+There are two metods by which an event may be detected and acted 
+upon by the application: polling an "in use" status flag or 
+providing a service routine which can be invoked in an 
+interrupt-like fashion.
+Every Event Control Block has an "in-use" status flag. This flag 
+is automatically set to a non-zero value whenever an ECB is 
+passed to an IPX or AES function to request an event. While this 
+flag is non-zero, the application must not alter the contents of 
+the Event Control Block.
+When IPX or the AES has finished performing the request function 
+involving the specified ECB, the "in-use" flag will automatically 
+be set to zero. At this point, the application has total freedom 
+to manipulate the ECB and any of its associated data.
+An application may find, in some cases, that it is sufficient to 
+periodically pool the status of all outstanding ECBs to determine 
+when the awaited events have occured.
+Alternatively, every Event Control Block provides a way to 
+specify the address of an Event Source Routine (ESR) which will 
+be called in an interrupt-like fashion when the expected event 
+has occured, use of an ESR more readily allows for real-time, 
+asynchronous background operations to occur while the main body 
+of the application performs some other activity.
+Event Control Blocks for IPX events have a different structure 
+than ECBs intended for special events; honewer, congruent 
+structuring of the first few fields in each type of ECB allow 
+either kind of ECB to be used with the AES. Thus, an Event 
+Service Routine invoked by an IPX event may use its associated 
+ECB to re-shedule itself to "occur" at a later time.
+
+- 8 -
+Event Control Blocks for IPX events
+IPX function require a long form of Event Control Block ( an 
+"IPX-ECB"). The format of an IPX-ECB and the meaning of each 
+field will be described in this section.
+
+General Structure
+Offset	Field		     Size	Data Type
+------ 	-----		     -----	----------
+0	Link		      4 bytes	8086 long address 
+                                        (offset,segment) 
+4	ESR Address	      4 bytes 	8086 long address 
+                                        (offset, 
+8	In Use		      1 byte	Unsigned integer 
+9	Completion Code       1 byte	Unsigned integer 
+10	Socket Number	      2 bytes	High-low uns. integer 
+12	IPX Workspace	      4 bytes	N/A 
+16	Driver Workspace     12 bytes	N/A
+28	Immediate Address     6 bytes	High-low uns. integer
+34	Fragment Count	      2 bytes	Low-high uns. integer
+36	Fragment Descriptor 1 6 bytes	Structure:
+	Address		      4 bytes	8086 long address (off,seg)
+	Size		      2 bytes	Low-high uns. integer
+30+n*6	Fragment Descriptor n 6 bytes	Structure
+
+As can be seen in the above structure, an IPX Event Control Block 
+consist of two parts.
+The first, fixed portion (36 bytes long) contains 
+status/information fields as well as a workspace for use by IPX 
+and the network hardware drivers.
+The second, variable portion is a list of one or more buffer 
+fragment addresses and lengths. This Fragment Descriptor List 
+defines the places in memory from which a packet will be gathered 
+for sending of to which a packet will be scattered upon 
+reception.
+
+Description of Field Contents
+
+Link
+This field is maintained by IPX when the ECB is in use. When the 
+ECB is not in use, the application may use this field, if 
+desired. Most commonly, it would be used as a link field for 
+keeping the ECB in free/ready lists or queues.
+
+ESR Address
+This field contains the address of an application - defined Event 
+Service Routine (ESR) that IPX will call when the expected event 
+(a packet send or receive operation) has been completed.
+
+- 9 -
+Because IPX maintains the In Use and Completion Code fields, it 
+is possible for a programm to simply poll the status of its 
+outstanding IPX request at appropriable intervals and not use a 
+service routine at all. If no Event Service Routine is desired, 
+then the ESR Address should be set to null (four bytes of zero).
+For a  complete discussion of Event Service Ruotine usage, 
+implementation and restriction quidelines, see the section 
+entitled Event Service Routine Implementation.
+
+In Use
+This field contains a non-zero  value whenever the ECB is  in use
+by the IPX  or AES. Following  is a list  of possible values  and
+their meanings:
+
+FFh	The ECB is in use for transmitting
+FEh	The ECB is "listening" on a certain socket for incoming 
+	packets
+FDh	The ECB has been schedulled with the AES and is awaiting 
+	the expiration of its time interval.
+FBh	A send or receive event has occured, but yhe ECB is in a 
+	temporary holding queue, waiting to be officially 
+	processed
+
+IPX will reset this field to zero when the request action has 
+been completed.
+
+Completion Code
+This field is set by the IPX routines to indicate the final 
+status of the request represented by the Event Control Block. 
+This field can not be considered valid until after IPX has reset 
+the In Use field to zero.
+When an ECB has been given to IPx for the purpose of sending a 
+packet, any of the following completion codes may be reported:
+
+00h	The send was completed successfully. This does not 
+	guarantee that the packet was received successfully. The 
+	packet may have been lost somewhere along the way, or 
+	even if it made it all the way to the target node there 
+	may have been no available receive buffers.
+FFh	Physically unable to send the packet (Hardware or network 
+	failure.)
+FEh	Packet Undeliverable (destination detected not to exist, 
+	no Internetwork Bridge available, or possible hardware 
+	failure).
+FDh	Malformed packet (total length is less than 30 bytes of 
+	too large, first fragment is too small for IPX header, or 
+	Fragment Count is zero)
+FCh	The send request was cancelled.
+
+- 10 -
+When an ECB has been given to IPX for the purpose of listening 
+for incoming packets, any of the following completion codes may 
+be reported:
+
+00h	The packet was received successfully
+FFh	Socket Closed. The socket that ECB was supported to 
+	listen on was not open.
+FDh	Packet overflow. A packet waas received, but the Fragment 
+	Count in the ECB was zero, or the available space 
+	described by the Fragment Descriptor was not large enough 
+	to contain the entire packet.
+FCh	The liste request for this packet was canceled.
+
+Socket Number
+This field contains the number of the socket with which this ECB 
+is associated. When an ECB is used for sending, this field 
+contains the socket that the packet was sent from; when 
+receiving, this field contains the socket that the packet was 
+received on.
+
+IPX Workspace
+This four-byte fild is reserved for use by the IPX Routines. It 
+does not need to be initialized to any values, and it must not be 
+changed while the control block is being used by the IPX 
+routines. When the ECB is not in use by the IPX, this area may be 
+used in any fashion desired.
+
+Driver Workspace
+This twelve-byte field is reserved for use by the physical 
+network drivers. It does not need to be initialized to any 
+values, and it must not be changed while the control block is 
+being used by the IPX routines. When the ECB is not in use by the 
+IPX, this ares\a may be used in any fashions desired.
+
+Immediate Address
+This six-byte field contains the address of the node to which the 
+packet was just sent or from which it just arrived. (this will be 
+the address of an Internetwork Bridge on the local network if the 
+packet was not to/from a node on the local network.)
+
+- 11 -
+
+This field contains a count of the number of buffer fragments 
+from which packet shiuld be built for sending, or the number of 
+buffers into which a received packet should be split.
+The value in this field must be greater than zero. A value of 1 
+(one) merely indicates that the packet is to be sent/received 
+from/to a contuguous portion of memory. In other words, the first 
+fragment contains the entire packet.
+
+Fragment Descriptor List
+A Fragment Descriptor precisely identifies where to find a piece 
+of a packet to be sent, or where to place a piece of received 
+packet. A fragment Descriptor has two component fields:
+
+Address
+	An address of a bufferfrom which packet data should be 
+	gathered for a packet send or which packet data should be 
+	copied upon a packet receive.
+Size
+	The size of the buffer fragment pointed to by the 
+	preceding Address.
+
+Any IPX Event Control Block must have at least one Fragment 
+Descriptor, and an arbitraly number of additional descriptors, as 
+necesssary. These descriptors constitute the Fragment Descriptor 
+List.
+Allowing packet headers and data to be "gathered" from several 
+places or "scattered" to several locations, the IPX functions 
+remove the need for applications to repeatedly copy data to and 
+from multiple locations.
+Note that sending and receiving complete packets from or into 
+contiguous memory may be accomplished by setting the Fragment 
+Count field to 1 (one) and providing only a single Fragment 
+Descripror.
+
+Important
+When sending a packet, IPX will "gather" the packet contents from 
+an arbitrary number of fragments; honewer, the buffer fragment 
+identified by the first entry in the Fragment Descriptor List 
+must be at least 30 bytes long and must contain the complete IPX 
+packet header. The total packet size (thw sum of all the 
+individual fragment sizes) must not exceed 576 bytes.
+
+- 12 -
+Event control blocks for special-purpose Events
+Special-purpose events sheduled by an applicaton are included to 
+occur after the expiration of specified time interval.
+These events are represented by a short from Event Control Block 
+(an "AES-ECB") and are sheduled directly through the Asynchronous 
+Event Sheduler.
+
+General Structure
+Offset Field		Size		Data type
+0	Link 		4 bytes 	8086 long address 
+					(offset,segment) 
+4	ESR Address 	4 bytes 	8086 long address 
+8	In Use		1 byte		Unsigned integer
+9	AES Workspace	5 bytes		N/A
+
+Description of Field Contents
+
+Link
+This field is used by the AES when the ECB is in use. When the 
+ECB is not in use, the application may use this field, if 
+desired. Most commonly, it would be used as a link field for 
+keeping the ECB in a free list or queue.
+
+ERS Address
+This field contains the address of an application-defined Event 
+Service Routine (ESR) that the AES will call when the specified 
+time interval has expired.
+Because the AES maintains the IN Use field, it is possible for a 
+programm to simply pool the status of a sheduled event at 
+appropriate intervals and not use a service routine at all. If no 
+Event Service Routine is desired, then ESR Address should be set 
+to null (four bytes of zero).
+
+In Use
+This field contains a value of ECB while the Event Control Block 
+is being used by the AES to shedule a special event.
+The AES will reset this field to zero when the given time 
+interval has expired.
+
+AES Workspace
+This field is reserved for use by the AES routines. It does not 
+need to be initialized to any values, but it must not be changed 
+while control block is in use.
+
+- 13 -
+
+Invoking IPX and AES function
+
+The  remainder  of  this  document  will  detail  the IPX and AES
+programming   interface   that    has   been   implemented    for
+8086/8088-based personal computers using MS/PC-DOS 2.x or 3.x and
+the  Advanced   NetWare  Workstation   Shell  v2.0   or  greater.
+this section will describe general implementation features of IPX
+and  AES  function;  how  to  request  their services, and how to
+monotor the status of those requests.
+
+Access Method
+
+The  IPX  and  AES  function  are  accessed  through the Advanced
+Netware  shell  by  loading  register  Bx  with  the  appropriate
+function  number  and  issuing  a  software  interrupt  7Ah  with
+registers and other informations prepared as documented for  each
+function.
+
+Register Preservation
+
+IPX and AES functions preserve only register DS,SS,SP and 
+processor flags.
+
+Interrupt States & Re-entrancy
+
+All IPX functions execute entirely in the interrupt-disabled 
+state except for the Send Packet, Get Local Target, and 
+Relinguish Control functions. If you are calling either of these 
+functions from inside code that is running with interrupts 
+disabled, you must be sure your code can survive if interrupts 
+are enabled temporary by IPX.
+All IPX functions are re-entrant, and may even be called from 
+Event Service Routines, with two exceptions: function Close 
+Socket and Disconnect From Target can not be called from an ESR.
+All AES function execute with interrupts disabled and are 
+therefore inherently re-entrant and cause no re-entrancy concerns 
+at the application level. They may be called at any time, from 
+any code.
+
+Use of Differency-sized ECBs
+
+IPX  functions  will  operate  only  with  IPX style (long) Event
+Control Blocks.
+AES functions will  operate with IPX  style (long) Event  Control
+Blocks  or  AES  style  (short,  special-purpose)  Event  Control
+Blocks.
+
+Monitoring the Status of a Request
+
+Whenever an Event  Control Block is  supplied for use  in a send,
+listen, sheduling request (IPX-ECB), or special-purpose sheduling
+request (AES-ECB),  the ECB's  In Use  field will  be set to FFh,
+FEh, FDh, or FCh respectively.
+At  other  times  the  ECB's  request  cycle, there are two other
+temporary states that may be indicated by the ECB's In Use field.
+When the Driver concludes a  send or receive, the associated  ECB
+is  placed  in  a  holding  queue,  pending final release and the
+calling of its ESR,  if any. During this  time, the In Use  field
+will contain  a value  of FBh.  When the  Driver is  transferring
+packet data to or from the fragment buffers described by the ECB,
+the In Use field will contain a value of FAh.
+While an ECB's In Use field contains a non-zero value, no 
+modifications can be made to either the ECB or any its associated 
+buffers. Naturally, the ECB may not be used concurrently for 
+another IPX or AES request.
+An ECB that is in use will remain so until the expected event 
+occurs or the outstanding request is canceled. Note, however, 
+that ECB may shuttle from the care of IPX directly to the care of 
+the AES if the ECB's ESR decides to re-shedule itself. The value 
+in the In Use field will reflect this change. (During the 
+translation of ownership, the In Use field will contain a zero, 
+but this will never be seen by the monitoring applicatondue to 
+the interrupt-service nature of the ESR).
+An application may check the value of the In Use field at any 
+time to determine when the request is no longer outstanding. An 
+ECB is no longer in use when after the ECB's In Use field has 
+been reset to zero.
+An other information in an Event Control Block can not be assumed 
+valid until after the ECB's In Use field has been reset to zero.
+
+Numeric Field Format Conventions
+
+With regard to byte-ordering of numeric fields, the following 
+rules apply:
+
+1) Socket numbers are always in high-low order. Thus, when 
+contained in an 8086 register, xL will contain the high byte and 
+xH will contain the low byte.
+2) Numeric fields in the IPX packet header are always in high-low 
+order.
+3) Values passed/returned in registers or numeric fields in ECBs 
+are always in low-high order, with the exception of socket 
+numbers, as noted in Rule I above.
+
+Prerequisite Conditions
+
+The documentation for each IPX or AES function will detail a set 
+of conditions that are assumed to exit when the functions is 
+invoked. These conditions include the setting of parameters in 
+certain registers or the initialization of various ECB or IPX 
+header fields.
+
+- 15 -
+Only the conditions that are expicitly mentioned in the function 
+documentation's Assumes section need to be met by the programmer 
+before invoking the function.
+
+Field Value Preservation
+
+For any particular IPX or AES function, the values of all the 
+fields that are required to be initialised by the application 
+will not be altered during the execution of the function, with 
+one exception: when an IPX send broadcast request is canceled, 
+the ESR Address field of the associated ECB will not be valid.
+Thus, an application may initialize certain ECBs buffer areas 
+containing IPX headers once, are re-use those ECBs and buffers, 
+changing only the data portion of the packets as needed.
+
+System Clock Ticks
+
+System clock ticks, as referred to this document, refer to the 
+system clock ticks of an IBM PC. Those clock ticks occur 
+approximataly 18.21 times a second.
+On other machines, clock ticks may only be available some other 
+number of times per second. For example, suppose actual clock 
+ticks were available only twice a second. In such a case, IPX 
+will still handle all timing functions in terms of IBM PC clock 
+tick values. A 36 tick delay will still indicate a delay of 
+approximately two seconds. However, that timing will only be 
+accurate to within plus or minus half a second.
+
+- 16 -
+IPX and AES function definition
+
+Open Socket
+
+Assumes
+-------
+Bx has	0h
+Al has	Socket Longevity Flag
+	00h = Stay open until closed of program terminates
+	FFh = Stay open until closed
+
+Dx has	Requested Socket Number
+	0000h 	= Let IPX dynamically assign a socket number
+	non-zero= Open on this socket
+
+Returns
+-------
+Al has 	Function Completion Code
+	00h = socket was successfully opened
+	FFh = socket is already open.
+	FEh = socket table is full. (IPX capacity is at maximum)
+
+Dx has 	Assign Socket Number
+
+Description
+
+This function opens a particular socket for use by the application.
+This function must be called before being able to send packets from or 
+receive packets on a particular socket. If desired, IPX will 
+dynamically assign you a socket number that is not already open on the 
+workstation.
+The Requested Socket Number contained in DX is assumed to be in 
+high-low order, that is, DL contains the HIGH half of the socket 
+number, and DH contains the LOW half of the socket number that is to 
+be opened.
+If this function is called with a Request Socket Number of zero, 
+a socket number will be dynamically assigned by IPX.
+If the open request is successful, DX will contain the Assigned 
+Socket Number when the function returns. This is the socket that 
+was actually opened, as determined by the Requested Socket Number 
+value.
+The Socket Longevity Flag indicates whether or not the socket is 
+intended to remain open after the application terminates. A value 
+of FFh will cause the socket to remain open until it is 
+exclicitly closed. This feature is useful for terminate-and-stay 
+resident applicatons that intaract with IPX.
+- 17 -
+As a precautionary measure when programming transient 
+applications, programmers should always set the Socket Longevity 
+Flag to zero, so that an unexpected termination of their code (by 
+a control-break or control-C, for example) will cause the socket 
+to be closed automatically when the application terminates and 
+forces an end-of-job condition.
+All applications (except terminate-and-stay-resident 
+applications) should close all of their open sockets before 
+terminating.
+NOTE: If there are already as many open sockets open as IPX has 
+internal table space to keep track of, the Function Completion 
+Code returned in Al will be FEh. At the time of this 
+specification's, IPX will support up to 50 open soockets on any 
+workstation.
+
+- 18 -
+Close Socket 
+
+Assumes 
+
+Bx has	1h 
+Dx has	Number of socket to be closed 
+
+Returns 
+Nothing
+
+Description 
+
+This function closes the specified socket.  
+This functions cancels any IPX-ECBs associated with the indicated 
+socket which are in use by IPX or AES for sending, listening, or 
+sheduling purposes.
+Whenever an outstanding IPX request is canceled (by this function 
+or by the Cancel Event function), the In Use field of any 
+affected ECB is reset to zero and the Completion Code field is 
+set to FCh, indicating that the request was canceled.
+
+NOTE: The Event Service Routine of a cancelled ECB is not called. 
+Note that packets which arrive for a socket which is closed or 
+has no outstanding listen requests will simply be ignored.
+Attempting to close a socket that was not open has no effect.
+
+WARNING
+
+Transient: applications must close all of their open sockets 
+before terminating. Thus, only terminate-and-stay-resident 
+applications should ever leave sockets open, and those sockets 
+should be opened as "long-lived" sockets (see the description of 
+Open Socket).
+If sockets are not closed before programm termination, a small 
+but finite window exests where a packet may arruve and the 
+service routine be called even though the program has issued an 
+EXIT command to DOS. In such a case, corrupted pointers could 
+conceivably cause the workstaton to "hang" with interrupts 
+disabled.
+
+WARNING
+
+This function can not be called from an Event Service Routine, 
+regardless of whether the ESR was called as the result of an IPX 
+and AES event.
+
+- 19 -
+Get local Target 
+
+Assumes 
+
+Bx has	2h 
+ES:SI has a pointer to a twelve-byte buffer 
+ES:DI has a pointer to a six-byte buffer 
+
+Returns 
+Al has	Function complete code 
+	00h if a local target node was indentified 
+	FAh if there is no known path to the desired 
+	    destination node Cx has one-way transport time to 
+	    target node (only if al is 00h) 
+
+Description 
+This function determines the value which should be placed in 
+an ECB's immediate Address fiels prior to passing the ECB 
+to function Send Packet.  
+Registers ES:SI point to a twelve-byte buffer which contains the 
+full internetwork address of a node to which the application 
+would like to send a packet.
+If there has been no prior communication with the destination 
+node, then this function should be called once to determine what 
+value should be placed in the Immediate Address field of each ECB 
+that will be used in sending packets to the destination. The 
+immediate address value will be placed in the six-byte buffer 
+pointed to by ES:DI.
+If the ultimate destination node resides on the same local 
+network, then local target address will be same as the node 
+address portion of the full twelve-byte target address. If, 
+however, the destination node resides on another network of the 
+internetwork, the local target address returned will be the 
+address of an Advanced NetWare Internetwork Bridge which will 
+route the packet toward its final destination.
+Furthermore, once communicaton has been established with another 
+node it is recommended that the Immediate Address field of send 
+ECBs be set to the value contained the Immediate Address field of 
+the ECB which was most recently used to receive a packet from the 
+other node.
+Therefore, application which never initiate communication with 
+other nodes but merely respond to incoming request will never 
+need to call this function they may simply send reply packets to 
+the same immediate address from which the request packets 
+arrived. (Whenever a packet is received, the Immediate Address 
+field of the receive ECB will be set by IPX to indicate the 
+address from which the packet came.)
+
+- 20 -
+The Function Complete Code returned in Al will be FAh if this 
+function could not find a path to the desired destination 
+network.
+Note that the successful completion (Al returns with a 00h) of 
+this function does not guarantee that the destination node 
+exists; it only indicates the local address to which packet 
+should be sent to start them on their journey.
+If this function was successful, a time calue will be returned in 
+register Cx. This value indicates the amount of time (in system 
+clock ticks) for a 576-byte packet to be sent to the target node. 
+This time is a best-case time; a packet may take longer if 
+network traffic is heavy. However, short packets may take less 
+time because they have fewer bytes to be transmitted.
+Whun sending broadcasts, this function should still be called to 
+determine the value to place in the send ECB's Immediate Address 
+field.
+
+- 21 -
+Send Packet
+Assumes
+Bx has	3h
+ES:DI has a pointer to an Event Control Block
+
+In the ECB, the ESR Address,Socket Number, Immediate Address, Fragment 
+Count, and Fragment Descriptor List fields are initialised.
+The first buffer fragment described by the Fragment Descriptor List is 
+a least 30 bytes long and contains the packet's IPX header.
+In the IPX packet header, the Packet Type, Destination Network, 
+Destination Node, and Destinaton Socket fields are initialised.
+
+Returns
+Nothing
+
+Description
+This function prepares the ECB and the IPX header of the associated 
+packet and passes the ECB to network communication drivers to 
+initialise the send operation. Having done so, this function returns 
+immediality to the calling applicaton.
+This function will complete the packet's IPX header by filling in the 
+Checksum, Length, Transport Control, Source Network, Source Node, 
+and Source Socket fields. The latter calue is taken from the 
+Socket Number field of the supplied ECB.
+IPX is designed to allow applications to function in fully 
+asynchronous fashion with respect to the sending of internetwork 
+packets; therefore, the send event can not be assumed concluded 
+when this function returns.
+Using the information provided in the ECB, the network drivers 
+will attempt to transmit the packet as soon as the network 
+hardware is available and any other pending send requests have 
+been serviced. The packet will be sent to the node on the 
+immediately connected network that is indicated by the ECB's 
+Immediate Address field. To understand how to determine the 
+proper value for the Immediate Address field, see the 
+documentation of function Get Local Target.
+While the packet is waiting to be transmitted, the In Use field 
+in its ECB will contain a value of FFh.
+
+- 22 -
+When the drivers have finished their attempt to tramsmot the
+packet, the In Use field will be reset to zero. At this point, 
+the Completion Code field in the ECB will contain the final 
+status of the send request and the Event Service Routine pointed 
+to by the ESR Address field will be called. If no ESR is desired, 
+then the ESR Address field should be set to null (zeroes).
+If the request is cancelled by a Cancel Event or Close Socket 
+function, the In Use field will be reset to zero and the 
+Completion Code will be set to FCh. The ECB's Event Service 
+Routine will not be called.
+
+Valid Completion Code values are:
+00h	The send was completed successfully.
+FFh	Physical unable to send the packet (Hardware or network 
+	failure).
+FEh	Packet Undeliverable.
+FDh	Malformed packet (less that 30 or greater that 576 bytes, 
+	or list fragment too small for header, or Fragment Count 
+	was zero).
+FCh	The send request was canceled by a Close Socket or Cancel 
+	Send/Listen function call.
+
+Some additional words of exlanation are necessary.
+The 00h completion code indicates that the packet was 
+successfully transmitted does not guarantee that it was 
+successfully received by the destination node. There conditions 
+may exist to prevent successful reception of a packet:
+1) The packet may be lost or garbled by the transmission media at 
+any stage of its jouney; 
+2) The given destination node does not exist (some media 
+protocols are unable to detect this condition when transmitting 
+to a node that is aliegedly on the same physical network, and 
+they can never detect this case if the packet must pass though an 
+Internetwork Bridge);
+3) There are no outstanding socket listen request in the 
+destination node when the packet is received.
+
+The Packet Undeliverable code, FEh, can be generated in tree 
+ways:
+1) The packet was destined for a far network and no Advanced 
+NetWare Internetwork Bridge with a path to the destination 
+network could be found;
+
+- 23 -
+2) The packet is destined for a node on the local network and the 
+local network hardware detects that the target address is 
+nonexistent or inactive (this is hardware-dependent); some 
+drivers may have no way to distinguish between a hardware failure 
+and a non-existent destination node and may indicate this error 
+instead of an FFh;
+3) The packet was destined for another socket on same machine 
+that the packet was sent from, and that socket is not open or has 
+pending listen request.
+
+IPX allow packets to be sent between a source and destination 
+that reside in the same physical node ("Intranode routing"); even 
+the source and destination sockets may be the same. This ability 
+appers both to explicitly addressed packets as well as broadcast 
+packets. Thus, an application that uses the same socket address 
+for sending and receiving would always receive broadcasts it had 
+sent to nodes on the same network as it was physically connected 
+to.
+
+When an intranode packet is "sent", all related processing 
+(including ESR execution) is performad in the same fashion as a 
+normal transmission. Only then, if there is a listening ECB, will 
+the packet be "received" and appropriately processed. The order 
+of thus processing is guaranteed.
+
+- 24 -
+Listen for Packet 
+Assumes
+Bx has 4h
+ES:DI has a pointer to an Event Control Block
+In the ECB, the ESR Address, Socket Number, Fragment Count, and 
+Fragment Descriptor List fields are initialised.
+
+Returns
+Nothing
+
+Description
+
+This function delivers an ECB  and the buffer space it  describes
+to IPX the  purpose of receiving  an internetwork packet.  Having
+done  so, it returns immediately to calling the application.
+
+IPX is  designed to  allow applications  to function  in a  fully
+asynchronous   fashion   with   respect   to   the  receiving  of
+internetwork packets; therefore, this function only dedicates the
+given  Event  Control  Block  for  use  in receiving packets; the
+function does not wait for an actual packet to be received.
+
+The ECBwill only be used to receive packets that are destined  to
+the socket  given in  the ECB's  Socket Number  field. The socket
+must be  open before  any listen  requests may  be made  for that
+socket.  (Incidentally,  if  a  socket  is not open, any incoming
+packets destined for that socket will be ignored.)
+
+When an ECB is  donated to IPX for  the purpose of listening  for
+internetwork packets, the In Use field is set by IPX to FEh. This
+field will remain set until  a receive event occurs, the  request
+is canceled, or IPX judges the ECB to be unusable.
+
+After  IPx  has  reset  the  In  Use  field  to  zero, one of the
+following values will be recorded  in the Completion Code   field
+of the ECB:
+
+00h	Packet was received successfully.
+FFh	The socket upon which the ECB was to listen was not 
+	opened.
+FDh	Packet overflow. A packet was received, but the ECB's 
+	Fragment Count was zero, or the available space defined 
+	by the 's Fragment Descriptor List was not large enough 
+	to contain the entire packet.
+FCh	The send request was canceled by a Close Socket or Cancel 
+	Send/Listen function call.
+
+- 25 -
+If the request was cancelled by a Cancel Event or Close Socket 
+function, the 	In Use field will be reset to zero and the 
+Completion Code will be set to FCh, as listed above. The ECB's 
+Event Service Routine will not be called.
+Otherwise, the Event Service Routine pointed to by the ECB's ESR 
+Address field will be called. If no ESR is desired, then the ESR 
+Address field should be set to null (zeroes).
+If the Completion Code field contains a value of 00h or FDh, then 
+the Immediate Address field of the ECB will contain the address 
+of node on the local natwork from which the packet was received.  
+IPX imposes no limit on the number of ECBs that may be used 
+concurrently for listening on a given socket. Many applications 
+may enormosly by having several ECBs listening on the same 
+socket. Note, however, that there is no guarantee that listening 
+ECBs will be utilized by IPX in the same order they were offered.  
+When a packet is received, IPX checks to see if there are any 
+available ECBs listening on the appropriate socket. If there are 
+no available ECBs, then the packet will simply be discarded. If 
+there is only one ECB available, it will be used to disburse the 
+packet data.
+If multiple Event Control Blocks are availablr, then IPX will 
+coose one of them for use in disbusring the packet data. 
+Listening ECBs are not chosen for use in receiving a packet on 
+the basis of what order they were originally made available.
+When a packet arrives and an available ECB is chosen by IPX, the 
+address of the node on the local network from which the packet 
+came will be recorded in the Immediate Address field of the ECB. 
+An application that desires to make a reply to the packet can 
+copy this calue to the Immediate Address field of the ECB which 
+will be used to send the reply. Replies made in this fashion can 
+even be made from inside Event Service Routines.
+/*******@@@@@@@@
+
+Shedule IPX Event
+Assumes
+Bx has 5h
+Ax has desired delay time
+ES:DI has a pointer to an IPX Event Control Block
+In the ECB, the ESR adress and Socket Number fields are initialised
+Return nothing
+Description
+This functionis used to shedule or re-shedule an IPX event to occur
+when the specified time interval expired. The interval may be less 
+than an 18th of a second or over an hour in length.
+/**************************************************************************/
+
+Cancel Event
+Assumes
+Bx has 6h
+ES:DI has a pointer to an ECB that is in use by IPX or the AES
+Returns
+Al has 	Function complete code
+	00h	if the event was canceled
+	FFh	if the given ECB was not in use by IPX or the AES
+	F9h	if the given ECB was in use and unable to be canceled
+Description
+This function cancels the event....
+/***********************/
+
+Shedule special event
+Bx has 7h
+Ax has desired delay time
+ES:DI has a pointer to an special-purpose ECB (AES-ECB)
+In the ECB, the ESR Adress field is initialised
+Return: nothing
+Description
+This function is used to shedule a special-purpose...
+/***************************/
+
+Get Interval Marker
+Assumes
+Bx has 8h
+Returns
+Ax has the interval marker (16-bit Unsigned integer)
+Description
+This function returns a timing marker.
+This marker reflect the time at which this function was called. The 
+value is given in units equal to the length of time between any two 
+system clock ticks ( approximately 1/18.21 of a second)
+This value has no relation to any real-word absolute time.. However, 
+when it is compared with a time marker obtained at different time, the 
+difference will yield elapsed time.
+...........
+/***********************************************/
+
+Get internetwork Address
+Assumes
+Bx has 9h
+ES:DI has a pointer to a ten-byte buffer area
+Returns
+Four-byte Network Number and six-byte Node Address in the indicated 
+buffer
+Description
+This function allow a programm to determine the internetwork adress of 
+the node on which it is executing.
+This programm-supplied buffer is filled with four-byte Network Number 
+followed by the six-byte Node Address. Both fields in high-low order.
+This function is especialy useful for any application that must other 
+nodes of its address on the internetwork.
+Note that this function does not return a socket number. When programm 
+form complete tweive-byte adresses, they should append socket numbers 
+appropriate to their application.
+
+Rellnquish Control
+Assumes
+Bx has Ah
+Returns
+Nothing
+Description
+This function should be invoked whenever the applications will 
+"idling", waiting for external events to provide it with serious 
+processing to perform.
+............
+
+Disconect from target
+Assumes
+BX has Bh
+ES:DI point to a 12-byte buffer containing an internetwork adress
+Returns
+Nothing
+Description
+This function exists as courtesy to those network communications 
+drivers which may operate strictly on point-to-point basis at physical 
+transport level.
+.................

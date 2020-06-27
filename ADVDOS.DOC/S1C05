@@ -1,0 +1,837 @@
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+Chapter 5  Keyboard and Mouse Input
+
+  The fundamental means of user input under MS-DOS is the keyboard. This
+  follows naturally from the MS-DOS command-line interface, whose lineage
+  can be traced directly to minicomputer operating systems with Teletype
+  consoles. During the first few years of MS-DOS's existence, when
+  8088/8086-based machines were the norm, nearly every popular application
+  program used key-driven menus and text-mode displays.
+
+  However, as high-resolution graphics adapters (and 80286/80386-based
+  machines with enough power to drive them) have become less expensive,
+  programs that support windows and a graphical user interface have steadily
+  grown more popular. Such programs typically rely on a pointing device such
+  as a mouse, stylus, joystick, or light pen to let the user navigate in a
+  "point-and-shoot" manner, reducing keyboard entry to a minimum. As a
+  result, support for pointing devices has become an important consideration
+  for all software developers.
+
+
+Keyboard Input Methods
+
+  Applications running under MS-DOS on IBM PCÄcompatible machines can use
+  several methods to obtain keyboard input:
+
+  ş  MS-DOS handle-oriented functions
+
+  ş  MS-DOS traditional character functions
+
+  ş  IBM ROM BIOS keyboard-driver functions
+
+  These methods offer different degrees of flexibility, portability, and
+  hardware independence.
+
+  The handle, or stream-oriented, functions are philosophically derived from
+  UNIX/XENIX and were first introduced in MS-DOS version 2.0. A program uses
+  these functions by supplying a handle, or token, for the desired device,
+  plus the address and length of a buffer.
+
+  When a program begins executing, MS-DOS supplies it with predefined
+  handles for certain commonly used character devices, including the
+  keyboard:
+
+  Handle             Device name                          Opened to
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  0                  Standard input (stdin)               CON
+  1                  Standard output (stdout)             CON
+  2                  Standard error (stderr)              CON
+  3                  Standard auxiliary (stdaux)          AUX
+  4                  Standard printer (stdprn)            PRN
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  These handles can be used for read and write operations without further
+  preliminaries. A program can also obtain a handle for a character device
+  by explicitly opening the device for input or output using its logical
+  name (as though it were a file). The handle functions support I/O
+  redirection, allowing a program to take its input from another device or
+  file instead of the keyboard, for example. Redirection is discussed in
+  detail in Chapter 15.
+
+  The traditional character-input functions are a superset of the character
+  I/O functions that were present in CP/M. Originally included in MS-DOS
+  simply to facilitate the porting of existing applications from CP/M, they
+  are still widely used. In MS-DOS versions 2.0 and later, most of the
+  traditional functions also support I/O redirection (although not as well
+  as the handle functions do).
+
+  Use of the IBM ROM BIOS keyboard functions presupposes that the program is
+  running on an IBM PCÄcompatible machine. The ROM BIOS keyboard driver
+  operates at a much more primitive level than the MS-DOS functions and
+  allows a program to circumvent I/O redirection or MS-DOS's special
+  handling of certain control characters. Programs that use the ROM BIOS
+  keyboard driver are inherently less portable than those that use the
+  MS-DOS functions and may interfere with the proper operation of other
+  programs; many of the popular terminate-and-stay-resident (TSR) utilities
+  fall into this category.
+
+Keyboard Input with Handles
+
+  The principal MS-DOS function for keyboard input using handles is Int 21H
+  Function 3FH (Read File or Device). The parameters for this function are
+  a handle, the segment and offset of a buffer, and the length of the
+  buffer. (For a more detailed explanation of this function, see Section
+  II of this book, "MS-DOS Functions Reference.")
+
+  As an example, let's use the predefined standard input handle (0) and Int
+  21H Function 3FH to read a line from the keyboard:
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  buffer  db   80 dup (?)     ; keyboard input buffer
+          .
+          .
+          .
+          mov  ah,3fh         ; function 3fh = read file or device
+          mov  bx,0           ; handle for standard input
+          mov  cx,80          ; maximum bytes to read
+          mov  dx,seg buffer  ; DS:DX = buffer address
+          mov  ds,dx
+          mov  dx,offset buffer
+          int  21h            ; transfer to MS-DOS
+          jc   error          ; jump if error detected
+          .
+          .
+          .
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  When control returns from Int 21H Function 3FH, the carry flag is clear if
+  the function was successful, and AX contains the number of characters
+  read. If there was an error, the carry flag is set and AX contains an
+  error code; however, this should never occur when reading the keyboard.
+
+  The standard input is redirectable, so the code just shown is not a
+  foolproof way of obtaining input from the keyboard. Depending upon whether
+  a redirection parameter was included in the command line by the user,
+  program input might be coming from the keyboard, a file, another character
+  device, or even the bit bucket (NUL device). To bypass redirection and be
+  absolutely certain where your input is coming from, you can ignore the
+  predefined standard input handle and open the console as though it were a
+  file, using the handle obtained from that open operation to perform your
+  keyboard input, as in the following example:
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  buffer  db     80 dup (?)   ; keyboard input buffer
+  fname   db     'CON',0      ; keyboard device name
+  handle  dw     0            ; keyboard device handle
+          .
+          .
+          .
+          mov    ah,3dh       ; function 3dh = open
+          mov    al,0         ; mode = read
+          mov    dx,seg fname ; DS:DX = device name
+          mov    ds,dx
+          mov    dx,offset fname
+          int    21h          ; transfer to MS-DOS
+          jc     error        ; jump if open failed
+          mov    handle,ax    ; save handle for CON
+          .
+          .
+          .
+          mov    ah,3fh       ; function 3fh = read file or device
+          mov    bx,handle    ; BX = handle for CON
+          mov    cx,80        ; maximum bytes to read
+          mov    dx,offset buffer ; DS:DX = buffer address
+          int    21h          ; transfer to MS-DOS
+          jc     error        ; jump if error detected
+          .
+          .
+          .
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  When a programmer uses Int 21H Function 3FH to read from the keyboard, the
+  exact result depends on whether MS-DOS regards the handle to be in ASCII
+  mode or binary mode (sometimes known as cooked mode and raw mode). ASCII
+  mode is the default, although binary mode can be selected with Int 21H
+  Function 44H (IOCTL) when necessary.
+
+  In ASCII mode, MS-DOS initially places characters obtained from the
+  keyboard in a 128-byte internal buffer, and the user can edit the input
+  with the Backspace key and the special function keys. MS-DOS automatically
+  echoes the characters to the standard output, expanding tab characters to
+  spaces (although they are left as the ASCII code 09H in the buffer). The
+  Ctrl-C, Ctrl-S, and Ctrl-P key combinations receive special handling, and
+  the Enter key is translated to a carriage returnÄlinefeed pair. When the
+  user presses Enter or Ctrl-Z, MS-DOS copies the requested number of
+  characters (or the actual number of characters entered, if less than the
+  number requested) out of the internal buffer into the calling program's
+  buffer.
+
+  In binary mode, MS-DOS never echoes input characters. It passes the
+  Ctrl-C, Ctrl-S, Ctrl-P, and Ctrl-Z key combinations and the Enter key
+  through to the application unchanged, and Int 21H Function 3FH does not
+  return control to the application until the exact number of characters
+  requested has been received.
+
+  Ctrl-C checking is discussed in more detail at the end of this chapter.
+  For now, simply note that the application programmer can substitute a
+  custom handler for the default MS-DOS Ctrl-C handler and thereby avoid
+  having the application program lose control of the machine when the user
+  enters a Ctrl-C or Ctrl-Break.
+
+Keyboard Input with Traditional Calls
+
+  The MS-DOS traditional keyboard functions offer a variety of character and
+  line-oriented services with or without echo and Ctrl-C detection. These
+  functions are summarized on the following page.
+
+  Int 21H Function   Action                               Ctrl-C checking
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  01H               Keyboard input with echo             Yes
+  06H               Direct console I/O                   No
+  07H               Keyboard input without echo          No
+  08H               Keyboard input without echo          Yes
+  0AH               Buffered keyboard input              Yes
+  0BH               Input-status check                   Yes
+  0CH               Input-buffer reset and input         Varies
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  In MS-DOS versions 2.0 and later, redirection of the standard input
+  affects all these functions. In other words, they act as though they were
+  special cases of an Int 21H Function 3FH call using the predefined
+  standard input handle (0).
+
+  The character-input functions (01H, 06H, 07H, and 08H) all return a
+  character in the AL register. For example, the following sequence waits
+  until a key is pressed and then returns it in AL:
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+          mov     ah,1        ; function 01h = read keyboard
+          int     21h         ; transfer to MS-DOS
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  The character-input functions differ in whether the input is echoed to the
+  screen and whether they are sensitive to Ctrl-C interrupts. Although
+  MS-DOS provides no pure keyboard-status function that is immune to Ctrl-C,
+  a program can read keyboard status (somewhat circuitously) without
+  interference by using Int 21H Function 06H. Extended keys, such as the
+  IBM PC keyboard's special function keys, require two calls to a
+  character-input function.
+
+  As an alternative to single-character input, a program can use
+  buffered-line input (Int 21H Function 0AH) to obtain an entire line from
+  the keyboard in one operation. MS-DOS builds up buffered lines in an
+  internal buffer and does not pass them to the calling program until the
+  user presses the Enter key. While the line is being entered, all the usual
+  editing keys are active and are handled by the MS-DOS keyboard driver. You
+  use Int 21H Function 0AH as follows:
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  buff    db      81          ; maximum length of input
+          db      0           ; actual length (from MS-DOS)
+          db      81 dup (0)  ; receives keyboard input
+          .
+          .
+          .
+          mov     ah,0ah      ; function 0ah = read buffered line
+          mov     dx,seg buff ; DS:DX = buffer address
+          mov     ds,dx
+          mov     dx,offset buff
+          int     21h         ; transfer to MS-DOS
+          .
+          .
+          .
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Int 21H Function 0AH differs from Int 21H Function 3FH in several
+  important ways. First, the maximum length is passed in the first byte of
+  the buffer, rather than in the CX register. Second, the actual length is
+  returned in the second byte of the structure, rather than in the AX
+  register. Finally, when the user has entered one less than the specified
+  maximum number of characters, MS-DOS ignores all subsequent characters and
+  sounds a warning beep until the Enter key is pressed.
+
+  For detailed information about each of the traditional keyboard-input
+  functions, see Section II of this book, "MS-DOS Functions Reference."
+
+Keyboard Input with ROM BIOS Functions
+
+  Programmers writing applications for IBM PC compatibles can bypass the
+  MS-DOS keyboard functions and choose from two hardware-dependent
+  techniques for keyboard input.
+
+  The first method is to call the ROM BIOS keyboard driver using Int 16H.
+  For example, the following sequence reads a single character from the
+  keyboard input buffer and returns it in the AL register:
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+          mov    ah,0         ; function 0=read keyboard
+          int    16h          ; transfer to ROM BIOS
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Int 16H Function 00H also returns the keyboard scan code in the AH
+  register, allowing the program to detect key codes that are not ordinarily
+  returned by MS-DOS. Other Int 16H services return the keyboard status
+  (that is, whether a character is waiting) or the keyboard shift state
+  (from the ROM BIOS data area 0000:0417H). For a more detailed explanation
+  of ROM BIOS keyboard functions, see Section III of this book, "IBM ROM
+  BIOS and Mouse Functions Reference."
+
+  You should consider carefully before building ROM BIOS dependence into an
+  application. Although this technique allows you to bypass any I/O
+  redirection that may be in effect, ways exist to do this without
+  introducing dependence on the ROM BIOS. And there are real disadvantages
+  to calling the ROM BIOS keyboard driver:
+
+  ş  It always bypasses I/O redirection, which sometimes may not be
+     desirable.
+
+  ş  It is dependent on IBM PC compatibility and does not work correctly,
+     unchanged, on some older machines such as the Hewlett-Packard
+     TouchScreen or the Wang Professional Computer.
+
+  ş  It may introduce complicated interactions with TSR utilities.
+
+  The other and more hardware-dependent method of keyboard input on an IBM
+  PC is to write a new handler for ROM BIOS Int 09H and service the keyboard
+  controller's interrupts directly. This involves translation of scan codes
+  to ASCII characters and maintenance of the type-ahead buffer. In ordinary
+  PC applications, there is no reason to take over keyboard I/O at this
+  level; therefore, I will not discuss this method further here. If you are
+  curious about the techniques that would be required, the best reference is
+  the listing for the ROM BIOS Int 09H handler in the IBM PC or PC/AT
+  technical reference manual.
+
+
+Ctrl-C and Ctrl-Break Handlers
+
+  In the discussion of keyboard input with the MS-DOS handle and traditional
+  functions, I made some passing references to the fact that Ctrl-C entries
+  can interfere with the expected behavior of those functions. Let's look at
+  this subject in more detail now.
+
+  During most character I/O operations, MS-DOS checks for a Ctrl-C (ASCII
+  code 03H) waiting at the keyboard and executes an Int 23H if one is
+  detected. If the system break flag is on, MS-DOS also checks for a Ctrl-C
+  entry during certain other operations (such as file reads and writes).
+  Ordinarily, the Int 23H vector points to a routine that simply terminates
+  the currently active process and returns control to the parent processÄÄ
+  usually the MS-DOS command interpreter.
+
+  In other words, if your program is executing and you enter a Ctrl-C,
+  accidentally or intentionally, MS-DOS simply aborts the program. Any files
+  the program has opened using file control blocks will not be closed
+  properly, any interrupt vectors it has altered may not be restored
+  correctly, and if it is performing any direct I/O operations (for example,
+  if it contains an interrupt driver for the serial port), all kinds of
+  unexpected events may occur.
+
+  Although you can use a number of partially effective methods to defeat
+  Ctrl-C checking, such as performing keyboard input with Int 21H Functions
+  06H and 07H, placing all character devices into binary mode, or turning
+  off the system break flag with Int 21H Function 33H, none of these is
+  completely foolproof. The simplest and most elegant way to defeat Ctrl-C
+  checking is simply to substitute your own Int 23H handler, which can take
+  some action appropriate to your program. When the program terminates,
+  MS-DOS automatically restores the previous contents of the Int 23H vector
+  from information saved in the program segment prefix. The following
+  example shows how to install your own Ctrl-C handler (which in this case
+  does nothing at all):
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+          push    ds          ; save data segment
+                              ; set int 23h vector...
+          mov     ax,2523h    ; function 25h = set interrupt
+                              ; int 23h = vector for
+                              ; Ctrl-C handler
+          mov     dx,seg handler ; DS:DX = handler address
+          mov     ds,dx
+          mov     dx,offset handler
+          int     21h         ; transfer to MS-DOS
+
+          pop     ds          ; restore data segment
+          .
+          .
+          .
+  handler:                    ; a Ctrl-C handler
+          iret                ; that does nothing
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  The first part of the code (which alters the contents of the Int 23H
+  vector) would be executed in the initialization part of the application.
+  The handler receives control whenever MS-DOS detects a Ctrl-C at the
+  keyboard. (Because this handler consists only of an interrupt return, the
+  Ctrl-C will remain in the keyboard input stream and will be passed to the
+  application when it requests a character from the keyboard, appearing on
+  the screen as ^C.)
+
+  When an Int 23H handler is called, MS-DOS is in a stable state. Thus, the
+  handler can call any MS-DOS function. It can also reset the segment
+  registers and the stack pointer and transfer control to some other point
+  in the application without ever returning control to MS-DOS with an IRET.
+
+  On IBM PC compatibles, an additional interrupt handler must be taken into
+  consideration. Whenever the ROM BIOS keyboard driver detects the key
+  combination Ctrl-Break, it calls a handler whose address is stored in the
+  vector for Int 1BH. The default ROM BIOS Int 1BH handler does nothing.
+  MS-DOS alters the Int 1BH vector to point to its own handler, which sets a
+  flag and returns; the net effect is to remap the Ctrl-Break into a Ctrl-C
+  that is forced ahead of any other characters waiting in the keyboard
+  buffer.
+
+  Taking over the Int 1BH vector in an application is somewhat tricky but
+  extremely useful. Because the keyboard is interrupt driven, a press of
+  Ctrl-Break lets the application regain control under almost any
+  circumstanceÄÄoften, even if the program has crashed or is in an endless
+  loop.
+
+  You cannot, in general, use the same handler for Int 1BH that you use for
+  Int 23H. The Int 1BH handler is more limited in what it can do, because it
+  has been called as a result of a hardware interrupt and MS-DOS may have
+  been executing a critical section of code at the time the interrupt was
+  serviced. Thus, all registers except CS:IP are in an unknown state; they
+  may have to be saved and then modified before your interrupt handler can
+  execute. Similarly, the depth of the stack in use when the Int 1BH handler
+  is called is unknown, and if the handler is to perform stack-intensive
+  operations, it may have to save the stack segment and the stack pointer
+  and switch to a new stack that is known to have sufficient depth.
+
+  In normal application programs, you should probably avoid retaining
+  control in an Int 1BH handler, rather than performing an IRET. Because of
+  subtle differences among non-IBM ROM BIOSes, it is difficult to predict
+  the state of the keyboard controller and the 8259 Programmable Interrupt
+  Controller (PIC) when the Int 1BH handler begins executing. Also, MS-DOS
+  itself may not be in a stable state at the point of interrupt, a situation
+  that can manifest itself in unexpected critical errors during subsequent
+  I/O operations. Finally, MS-DOS versions 3.2 and later allocate a stack
+  from an internal pool for use by the Int 09H handler. If the Int 1BH
+  handler never returns, the Int 09H handler never returns either, and
+  repeated entries of Ctrl-Break will eventually exhaust the stack pool,
+  halting the system.
+
+  Because Int 1BH is a ROM BIOS interrupt and not an MS-DOS interrupt,
+  MS-DOS does not restore the previous contents of the Int 1BH vector when a
+  program exits. If your program modifies this vector, it must save the
+  original value and restore it before terminating. Otherwise, the vector
+  will be left pointing to some random area in the next program that runs,
+  and the next time the user presses Ctrl-Break a system crash is the best
+  you can hope for.
+
+Ctrl-C and Ctrl-Break Handlers and High-Level Languages
+
+  Capturing the Ctrl-C and Ctrl-Break interrupts is straightforward when you
+  are programming in assembly language. The process is only slightly more
+  difficult with high-level languages, as long as you have enough
+  information about the language's calling conventions that you can link in
+  a small assembly-language routine as part of the program.
+
+  The BREAK.ASM listing in Figure 5-1 contains source code for a Ctrl-Break
+  handler that can be linked with small-model Microsoft C programs running
+  on an IBM PC compatible. The short C program in Figure 5-2 demonstrates
+  use of the handler. (This code should be readily portable to other C
+  compilers.)
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+          page    5s,132
+          title   Ctrl-C & Ctrl-Break Handlers
+          name    break
+
+  ;
+  ; Ctrl-C and Ctrl-Break handler for Microsoft C
+  ; programs running on IBM PC compatibles
+  ;
+  ; by Ray Duncan
+  ;
+  ; Assemble with:  C>MASM /Mx BREAK;
+  ;
+  ; This module allows C programs to retain control
+  ; when the user enters a Ctrl-Break or Ctrl-C.
+  ; It uses Microsoft C parameter-passing conventions
+  ; and assumes the C small memory model.
+  ;
+  ; The procedure _capture is called to install
+  ; a new handler for the Ctrl-C and Ctrl-Break
+  ; interrupts (1bh and 23h).  _capture is passed
+  ; the address of a static variable, which will be
+  ; set to true by the handler whenever a Ctrl-C
+  ; or Ctrl-Break is detected.  The C syntax is:
+  ;
+  ;               static int flag;
+  ;               capture(&flag);
+  ;
+  ; The procedure _release is called by the C program
+  ; to restore the original Ctrl-Break and Ctrl-C
+  ; handler. The C syntax is:
+  ;               release();
+  ;
+  ; The procedure ctrlbrk is the actual interrupt
+  ; handler.  It receives control when a software
+  ; int 1bh is executed by the ROM BIOS or int 23h
+  ; is executed by MS-DOS.  It simply sets the C
+  ; program's variable to true (1) and returns.
+  ;
+
+  args    equ     4               ; stack offset of arguments,
+                                  ; C small memory model
+
+  cr      equ     0dh             ; ASCII carriage return
+  lf      equ     0ah             ; ASCII linefeed
+
+  _TEXT   segment word public 'CODE'
+
+          assume cs:_TEXT
+
+
+          public  _capture
+  _capture proc   near            ; take over Ctrl-Break
+                                  ; and Ctrl-C interrupt vectors
+
+          push    bp              ; set up stack frame
+          mov     bp,sp
+
+          push    ds              ; save registers
+          push    di
+          push    si
+
+                                  ; save address of
+                                  ; calling program's "flag"
+          mov     ax,word ptr [bp+args]
+          mov     word ptr cs:flag,ax
+          mov     word ptr cs:flag+2,ds
+
+                                  ; save address of original
+          mov     ax,3523h        ; int 23h handler
+          int     21h
+          mov     word ptr cs:int23,bx
+          mov     word ptr cs:int23+2,es
+          mov     ax,351bh        ; save address of original
+          int     21h             ; int 1bh handler
+          mov     word ptr cs:int1b,bx
+          mov     word ptr cs:int1b+2,es
+          push    cs              ; set DS:DX = address
+          pop     ds              ; of new handler
+          mov     dx,offset _TEXT:ctrlbrk
+
+          mov     ax,02523h       ; set int 23h vector
+          int     21h
+
+          mov     ax,0251bh       ; set int 1bh vector
+          int     21h
+
+          pop     si              ; restore registers
+          pop     di
+          pop     ds
+
+          pop     bp              ; discard stack frame
+          ret                     ; and return to caller
+
+  _capture endp
+
+
+          public  _release
+  _release proc   near            ; restore original Ctrl-C
+                                  ; and Ctrl-Break handlers
+
+          push    bp              ; save registers
+          push    ds
+          push    di
+          push    si
+
+          lds     dx,cs:int1b     ; get address of previous
+                                  ; int 1bh handler
+
+          mov     ax,251bh        ; set int 1bh vector
+          int     21h
+
+          lds     dx,cs:int23     ; get address of previous
+                                  ; int 23h handler
+
+          mov     ax,2523h        ; set int 23h vector
+          int     21h
+
+          pop     si              ; restore registers
+          pop     di              ; and return to caller
+          pop     ds
+          pop     bp
+          ret
+  release endp
+
+  ctrlbrk proc    far             ; Ctrl-C and Ctrl-Break
+                                  ; interrupt handler
+
+          push    bx              ; save registers
+          push    ds
+
+          lds     bx,cs:flag      ; get address of C program's
+                                  ; "flag variable"
+
+                                  ; and set the flag "true"
+          mov     word ptr ds:[bx],1
+
+          pop     ds              ; restore registers
+          pop     bx
+
+          iret                    ; return from handler
+
+  ctrlbrk endp
+
+  flag    dd      0               ; far pointer to caller's
+                                  ; Ctrl-Break or Ctrl-C flag
+
+  int23   dd      0               ; address of original
+                                  ; Ctrl-C handler
+
+  int1b   dd      0               ; address of original
+                                  ; Ctrl-Break handler
+
+  _TEXT   ends
+
+          end
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 5-1.  BREAK.ASM: A Ctrl-C and Ctrl-Break interrupt handler that can
+  be linked with Microsoft C programs.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  /*
+      TRYBREAK.C
+
+      Demo of BREAK.ASM Ctrl-Break and Ctrl-C
+      interrupt handler, by Ray Duncan
+
+      To create the executable file TRYBREAK.EXE, enter:
+
+      MASM /Mx BREAK;
+      CL TRYBREAK.C BREAK.OBJ
+  */
+
+  #include <stdio.h>
+
+  main(int argc, char *argv[])
+  {
+      int hit = 0;                     /* flag for key press      */
+      int c = 0;                       /* character from keyboard */
+      static int flag = 0;             /* true if Ctrl-Break
+                                          or Ctrl-C detected      */
+
+      puts("\n*** TRYBREAK.C running ***\n");
+      puts("Press Ctrl-C or Ctrl-Break to test handler,");
+      puts("Press the Esc key to exit TRYBREAK.\n");
+
+      capture(&flag);                  /* install new Ctrl-C and
+                                          Ctrl-Break handler and
+                                          pass address of flag    */
+
+      puts("TRYBREAK has captured interrupt vectors.\n");
+
+      while(1)
+      {
+          hit = kbhit();               /* check for key press     */
+                                       /* (MS-DOS sees Ctrl-C
+                                           when keyboard polled)  */
+
+          if(flag != 0)                /* if flag is true, an     */
+          {                            /* interrupt has occurred  */
+              puts("\nControl-Break detected.\n");
+              flag = 0;                /* reset interrupt flag    */
+          }
+          if(hit != 0)                 /* if any key waiting      */
+          {
+              c = getch();             /* read key, exit if Esc   */
+              if( (c & 0x7f) == 0x1b) break;
+              putch(c);                /* otherwise display it    */
+          }
+      }
+      release();                       /* restore original Ctrl-C
+                                          and Ctrl-Break handlers */
+
+      puts("\n\nTRYBREAK has released interrupt vectors.");
+  }
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 5-2.  TRYBREAK.C: A simple Microsoft C program that demonstrates
+  use of the interrupt handler BREAK.ASM from Figure 5-1.
+
+  In the example handler, the procedure named capture is called with the
+  address of an integer variable within the C program. It saves the address
+  of the variable, points the Int 1BH and Int 23H vectors to its own
+  interrupt handler, and then returns.
+
+  When MS-DOS detects a Ctrl-C or Ctrl-Break, the interrupt handler sets the
+  integer variable within the C program to true (1) and returns. The C
+  program can then poll this variable at its leisure. Of course, to detect
+  more than one Ctrl-C, the program must reset the variable to zero again.
+
+  The procedure named release simply restores the Int 1BH and Int 23H
+  vectors to their original values, thereby disabling the interrupt handler.
+  Although it is not strictly necessary for release to do anything about Int
+  23H, this action does give the C program the option of restoring the
+  default handler for Int 23H without terminating.
+
+
+Pointing Devices
+
+  Device drivers for pointing devices are supplied by the hardware
+  manufacturer and are loaded with a DEVICE statement in the CONFIG.SYS
+  file. Although the hardware characteristics of the available pointing
+  devices differ greatly, nearly all of their drivers present the same
+  software interface to application programs: the Int 33H protocol used by
+  the Microsoft Mouse driver. Version 6 of the Microsoft Mouse driver (which
+  was current as this was written) offers the following functions:
+
+
+  Function           Meaning
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  00H               Reset mouse and get status.
+  01H               Show mouse pointer.
+  02H               Hide mouse pointer.
+  03H               Get button status and pointer position.
+  04H               Set pointer position.
+  05H               Get button-press information.
+  06H               Get button-release information.
+  07H               Set horizontal limits for pointer.
+  08H               Set vertical limits for pointer.
+  09H               Set graphics pointer type.
+  0AH               Set text pointer type.
+  0BH               Read mouse-motion counters.
+  0CH               Install interrupt handler for mouse events.
+  0DH               Turn on light pen emulation.
+  0EH               Turn off light pen emulation.
+  0FH               Set mickeys to pixel ratio.
+  10H               Set pointer exclusion area.
+  13H               Set double-speed threshold.
+  14H               Swap mouse-event interrupt routines.
+  15H               Get buffer size for mouse-driver state.
+  16H               Save mouse-driver state.
+  17H               Restore mouse-driver state.
+  18H               Install alternate handler for mouse events.
+  19H               Get address of alternate handler.
+  1AH               Set mouse sensitivity.
+  1BH               Get mouse sensitivity.
+  1CH               Set mouse interrupt rate.
+  1DH               Select display page for pointer.
+  1EH               Get display page for pointer.
+  1FH               Disable mouse driver.
+  20H               Enable mouse driver.
+  21H               Reset mouse driver.
+  22H               Set language for mouse-driver messages.
+  23H               Get language number.
+  24H               Get driver version, mouse type, and IRQ number.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+  Although this list of mouse functions may appear intimidating, the average
+  application will only need a few of them.
+
+  A program first calls Int 33H Function 00H to initialize the mouse driver
+  for the current display mode and to check its status. At this point, the
+  mouse is "alive" and the application can obtain its state and position;
+  however, the pointer does not become visible until the process calls Int
+  33H Function 01H.
+
+  The program can then call Int 33H Functions 03H, 05H, and 06H to
+  monitor the mouse position and the status of the mouse buttons.
+  Alternatively, the program can register an interrupt handler for mouse
+  events, using Int 33H Function 0CH. This latter technique eliminates the
+  need to poll the mouse driver; the driver will notify the program by
+  calling the interrupt handler whenever the mouse is moved or a button is
+  pressed or released.
+
+  When the application is finished with the mouse, it can call Int 33H
+  Function 02H to hide the mouse pointer. If the program has registered an
+  interrupt handler for mouse events, it should disable further calls to the
+  handler by resetting the mouse driver again with Int 33H Function 00H.
+
+  For a complete description of the mouse-driver functions, see Section
+  III of this book, "IBM ROM BIOS and Mouse Functions Reference." Figure
+  5-3 shows a small demonstration program that polls the mouse continually,
+  to display its position and status.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  /*
+      Simple Demo of Int 33H Mouse Driver
+      (C) 1988 Ray Duncan
+
+      Compile with: CL MOUDEMO.C
+  */
+
+  #include <stdio.h>
+  #include <dos.h>
+
+  union REGS regs;
+
+  void cls(void);                     /* function prototypes       */
+  void gotoxy(int, int);
+
+  main(int argc, char *argv[])
+  {
+      int x,y,buttons;                /* some scratch variables    */
+                                      /* for the mouse state       */
+
+      regs.x.ax = 0;                  /* reset mouse driver        */
+      int86(0x33, &regs, &regs);      /* and check status          */
+
+      if(regs.x.ax == 0)              /* exit if no mouse          */
+      {   printf("\nMouse not available\n");
+          exit(1);
+      }
+
+      cls();                          /* clear the screen          */
+      gotoxy(45,0);                   /* and show help info        */
+      puts("Press Both Mouse Buttons To Exit");
+
+      regs.x.ax = 1;                  /* display mouse cursor      */
+      int86(0x33, &regs, &regs);
+
+      do {
+          regs.x.ax = 3;              /* get mouse position        */
+          int86(0x33, &regs, &regs);  /* and button status         */
+          buttons = regs.x.bx & 3;
+          x = regs.x.cx;
+          y = regs.x.dx;
+          gotoxy(0,0);                 /* display mouse position    */
+          printf("X = %3d  Y = %3d", x, y);
+
+      } while(buttons != 3);           /* exit if both buttons down */
+
+      regs.x.ax = 2;                   /* hide mouse cursor         */
+      int86(0x33, &regs, &regs);
+
+      cls();                           /* display message and exit  */
+      gotoxy(0,0);
+      puts("Have a Mice Day!");
+  }
+
+  /*
+      Clear the screen
+  */
+  void cls(void)
+  {
+      regs.x.ax = 0x0600;              /* ROM BIOS video driver     */
+      regs.h.bh = 7;                   /* int 10h function 06h      */
+      regs.x.cx = 0;                   /* initializes a window      */
+      regs.h.dh = 24;
+      regs.h.dl = 79;
+      int86(0x10, &regs, &regs);
+  }
+
+  /*
+      Position cursor to (x,y)
+  */
+  void gotoxy(int x, int y)
+  {
+      regs.h.dl = x;                   /* ROM BIOS video driver     */
+      regs.h.dh = y;                   /* int 10h function 02h      */
+      regs.h.bh = 0;                   /* positions the cursor      */
+      regs.h.ah = 2;
+      int86(0x10, &regs, &regs);
+  }
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 5-3.  MOUDEMO.C: A simple Microsoft C program that polls the mouse
+  and continually displays the coordinates of the mouse pointer in the upper
+  left corner of the screen. The program uses the ROM BIOS video driver,
+  which is discussed in Chapter 6, to clear the screen and position the
+  text cursor.
+
+
+

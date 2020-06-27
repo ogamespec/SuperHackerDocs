@@ -1,0 +1,39 @@
+***** Žˆ‘€ˆ… ˆ’…”…‰‘€ Norton Commander ˆ View'…Ž‚ *****
+
+This is translation to english from message which discusses
+parameter passing from Norton Commander 3.0 to external
+viewers.
+Re: Re: ARCVIEW
+------------------------------------------------------------
+
+PK> I have been looking... But NC does not pass any
+PK> parameters except file name...
+
+Well, it passes something, though uses non-standard way.
+
+Offset PSP:80h...  First number is length in bytes...
+-------------------------------------------------------------
+1  Length of command line from next byte to 0Dh.
+?  File name to view (ASCIIZ, variable length!).
+6  The signature 'Socha'+'\0', shows that called from NCMAIN.
+2  011Fh, probably version of NC or some other ID...
+2  Color set: 0=mono, 1=color, 2=black&white
+1  FFh-Mouse AND mask, =0 if mouse is not installed
+1  0=righthand mouse, 1=lefthand mouse.
+2  0001H usually (probably Mouse XOR mask), =0 if no mouse.
+2  0=Fullscreen mode (F3), 1=Quickview Mode (CTRL-Q)
+-------------------------------------------------------------
+Following data is defined only for Quickview mode
+-------------------------------------------------------------
+2  X (column) 0=left view, 40=right view
+2  Y (row)    0 usually, 1 if menu bar is visible
+2  Height     21=full screen, 13=half screen, EGA43.., VGA50..
+2  0000h  usually, changing does not matter
+2  0001h  usually, setting to 0 causes to pause before continuing
+4  Pointer _into_ NCMAIN. This is where the fun begins...
+?  File name once more (variable ASCIIZ)
+?  junk?
+1  0Dh (CR)   command line terminator.
+-------------------------------------------------------------
+Plus: PSP:5Ch - Filename; PSP:6Ch - Current directory
+

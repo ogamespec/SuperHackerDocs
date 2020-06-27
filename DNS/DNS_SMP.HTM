@@ -1,0 +1,345 @@
+<html><head>
+<title>Пример настройки Name-сервера</title>
+		    <style type="text/css">
+TH.arial { font-family: Arial, Serif;}
+P.topic { font-family: sans-serif;}
+A.plain { text-decoration: none;}
+A.topic01 { color: #006890;
+font-family: sans-serif;
+text-decoration: none;}
+A.topic02 { color: #099771;
+font-family: sans-serif;
+text-decoration: none;}
+A.topic03 { color: #719709;
+font-family: sans-serif;
+text-decoration: none;}
+A.topic04 { color: #98650A;
+font-family: sans-serif;
+text-decoration: none;}
+A.topic05 { color: #98340A;
+font-family: sans-serif;
+text-decoration: none;}
+A.topic06 { color: #099607;
+font-family: sans-serif;
+text-decoration: none;}
+A.topic07 { color: #9E1215;
+font-family: sans-serif;
+text-decoration: none;}
+A.topic08 { color: #970941;
+font-family: sans-serif;
+text-decoration: none;}
+A.topic09 { color: #950995;
+font-family: sans-serif;
+text-decoration: none;}
+A.topic010 { color: #390A98;
+font-family: sans-serif;
+text-decoration: none;}
+H1 { font-family: sans-serif;}
+H2 { font-family: sans-serif;}
+H3 { font-family: sans-serif;}
+H4 { font-family: sans-serif;}
+H5 { font-family: sans-serif;}
+H6 { font-family: sans-serif;}
+</style>
+</head>
+<body bgcolor="#FFFFFF" link="#006890" vlink="#003860" alink="#800000" text="#000000">
+<table cellspacing=0 cellpadding=0 border=0 background="../../PICTURES/MENU/HEADER0.JPG" width="100%">
+<tr><td align="center">
+<table cellspacing=0 cellpadding=4 border=0 width="100%" background="">
+<tr><td align="left">
+<img src="../../PICTURES/MENU/LOGO.GIF" width=157 height=53 border=0 alt="Server for Information Technologies">
+</td><td align="right">
+<font size="-2">Сервер поддерживается<br><a class="plain" href="http://www.citmgu.ru">Центром Информационных Технологий</a><br>(095) 932-9212, 932-9213, 939-0783<br>E-mail: <a class=noneline href="mailto:info@citmgu.ru?Subject='From page topic CIT FORUM local copy'">info@citforum.ru</a></font>
+</td></tr>
+</table>
+<table cellspacing=0 cellpadding=4 border=0 width="100%" background="">
+<tr><td align="left">
+<font size="-1">Сервер содержит море(!) аналитической информации</font>
+</td><td align="right">
+<font size="-1">CIT Forum CD-ROM</font>
+</td></tr>
+</table>
+</td></tr>
+</table>
+<H3 ALIGN=center>Пример настройки Name-сервера</H3>
+<P> Спланируем нашу зону так: <OL>
+ <DT><LI> наша фирма получила зону "<TT>фирма.домен</TT>";
+ <DT><LI> в ней будет три машины со следующими функциями: <OL>
+  <DT><LI> troll
+   <DD> первичный Name-сервер; почтовая машина;
+  <DT><LI> ogre
+   <DD> вторичный Name-сервер; FTP- и WWW-сервер;
+  <DT><LI> goblin
+   <DD> просто машина без каких-либо функций, да еще расположенная
+	совершенно в другом месте.
+ </OL>
+ <DT><LI> Имеется группа "<TT>группа.фирма.домен</TT>" с двумя машинами: <OL>
+  <DT><LI> dwarf
+   <DD> почтовый шлюз группы
+  <DT><LI> elf
+   <DD> просто машина
+ </OL>
+ <DT><LI> Имеется отдел "<TT>отдел.фирма.домен</TT>" со своим Name-сервером.
+ <DT><LI> Имеется удаленный филиал "<TT>филиал.фирма.домен</TT>"
+	со своим Name-сервером, который надо дублировать.
+</OL>
+<H4>Старт</H4>
+При старте машины запускается DNS-сервер:
+<PRE>
+	named -b /etc/namedb/<A HREF="#named.boot">named.boot</A>
+</PRE>
+В качестве аргумента ему передается имя файла с описанием рабочей конфигурации.
+<H4>Формат файлов</H4>
+<PRE>
+	|&lt;-
+	| Текст файла начинается с этой позиции.
+	|&lt;-
+</PRE>
+Формат файла:
+<PRE>
+	имя	аргументы
+</PRE>
+В качестве разделителя используются пробелы и табуляции.
+<P>Пустые строки игнорируются.
+<P>Точка&nbsp;с&nbsp;запятой ";" - признак комментария;
+все от нее до конца строки игнорируется.
+<P>Если строка начинается с пробела или с табуляции, она относится
+к тому же имени, что и предыдущая строка.
+<H4>Файл <TT><A NAME="named.boot">named.boot</A></TT></H4>
+<PRE>
+	directory			/etc/namedb
+</PRE>
+Это - указание на то, в какой директории находятся
+все упоминаемые дальше файлы.
+<PRE>
+	primary 0.0.127.in-addr.arpa	<A HREF="#localhost.rev">localhost.rev</A>
+</PRE>
+Каждый Name-сервер должен обслуживать зону <TT>0.0.127.in-addr.arpa</TT>,
+ибо каждая машина должна знать свой внутренний номер как <TT>localhost</TT>.
+<PRE>
+	primary фирма.домен		<A HREF="#фирма.домен.hosts">фирма.домен.hosts</A>
+</PRE>
+Это - домен, выделенный нашей организации.
+<PRE>
+	primary 1.168.192.in-addr.arpa	<A HREF="#1_168_192.rev">1_168_192.rev</A>
+</PRE>
+Это - обратное преобразование IP-адресов в имена.
+<PRE>
+	secondary филиал.фирма.домен	 192.168.1.193	 <A HREF="#филиал_фирма_домен.hosts">филиал_фирма_домен.hosts</A>
+</PRE>
+Для ускорения обращений к Name-серверу филиала на нашем сервере
+должна быть копия содержимого его зоны.
+<H4>Файл <TT><A NAME="localhost.rev">localhost.rev</A></TT></H4>
+<PRE>
+	@	IN SOA	troll.фирма.домен. ответственный_за_зону. (
+			19970315 ; Serial
+			3600	 ; Refresh
+			300	 ; Retry
+			3600000  ; Expire
+			3600	 ; Minimum
+		IN NS	troll.фирма.домен.
+	1	IN PTR	localhost.домен.
+</PRE>
+Пояснения:
+<DL>
+ <DT><LI> <TT>@</TT>
+  <DD> текущий исходный домен, от которого будут отсчитываться
+	все имена, которые не заканчиваются на точку.
+	в данном случае - <TT>0.0.127.in-addr.arpa</TT>. <DL>
+  <DT><LI> <TT>IN</TT>
+   <DD> Запись относится к InterNet. Должно присутствовать
+	во всех записях, но часто это игнорируют.
+  <DT><LI> <TT>SOA</TT>
+   <DD> Start Of Authorisation - Начало Полномочий.
+  <DT><LI> <TT>первичный_сервер_зоны.</TT>
+   <DD> Имя первичного сервера зоны. Так как мы создаем этот файл
+	на первичном серере, здесь должно быть доменное имя самОй машины;
+	точка в конце обязательна.
+  <DT><LI> <TT>ответственный_за_зону.</TT>
+   <DD> Почтовый адрес лица, отвественного за зону;
+	"@" в адресе заменяется на ".".
+  <DT><LI> В скобки заключаются параметры, растянутые на несколько строк: <UL>
+   <DT><LI> 19970315 ; Serial
+    <DD> Серийный номер версии; должен увеличиваться при каждом изменении в зоне -
+	по нему вторичный сервер обнаруживает, что надо обновить информацию.
+	Обычно пишется в виде &lt;год&gt;&lt;месяц&gt;&lt;число&gt;&lt;номер&gt;.
+   <DT><LI> 3600 ; Refresh
+    <DD> Временной интервал в секундах, через который вторичный сервер
+	будет проверять необходимость обновления информации.
+   <DT><LI> 300 ; Retry
+    <DD> Временной интервал в секундах, через который вторичный сервер
+	будет повторять обращения при неудаче.
+   <DT><LI> 3600000 ; Expire
+    <DD> Временной интервал в секундах, через который вторичный сервер
+	будет считать имеющуюся у него информацию устаревшей.
+   <DT><LI> 3600 ) ; Minimum
+    <DD> Значение времени жизни информации на кэширующих серверах.
+  </UL>
+  <DT><LI> <TT>IN NS первичный_сервер_зоны.</TT>
+   <DD> Запись <TT>NS</TT> авторизует сервер как ответственный за зону.
+	Естественно, надо авторизовать самогО себя.
+  </DL>
+ </DL>
+ <DT><LI> <TT>1 IN PTR localhost.домен.</TT>
+  <DD> Номер <TT>127.0.0.1</TT> всегда должен быть <TT>localhost</TT>.
+	<TT>.0.0.127.</TT> автоматически приписывается к <TT>1</TT>,
+	ибо она не кончается на точку.
+</UL>
+<H4>Файл <TT><A NAME="фирма_домен.hosts">фирма_домен.hosts</A></TT></H4>
+<P> Файл <TT>фирма_домен.hosts</TT> достаточно велик,
+поэтому я буду перемежать текст файла обьяснениями.
+<PRE>
+	@	IN SOA	troll.фирма.домен. ответственный_за_зону. (
+			19970315 ; Serial
+			3600	 ; Refresh
+			300	 ; Retry
+			3600000  ; Expire
+			3600	 ; Minimum
+		)
+</PRE>
+Да в общем-то нет никаких причин делать эту зону отличной
+от зоны, содержащейся в <A HREF="#localhost.rev">localhost.rev</A>,
+разве что Serial может (и скорее всего будет) различаться.
+<PRE>
+		IN NS	troll
+		IN NS	ogre
+		IN NS	вторичный_сервер_провайдера.
+</PRE>
+Раз у нас есть вторичный сервер, да к тому же провайдер обещал держать
+у себя на сервере копию нашего сервера, надо авторизовать их тоже.
+<PRE>
+		IN MX	10	troll
+		IN MX	20	почтовый_шлюз_провайдера.
+</PRE>
+Здесь описаны почтовые шлюзы в порядке возрастания "удаленности"
+от пункта назначения. Почтовые серверы, имеющие почту для наших машин,
+пытаются послать ее непосредственно по адресу назначения; если это
+не удается, они пытаются послать ее самому близкому к пункту назначения
+шлюзу, при неудаче - следующему и так далее до исчерпания списка.
+Это касается только адреса <TT>фирма.домен</TT>, но не относится
+к машинам зоны (см.ниже).
+<PRE>
+	localhost	IN A	127.0.0.1
+</PRE>
+Каждая машина, обратившаяся по адресу <TT>localhost</TT> или
+<TT>localhost.зона</TT>, должна получить номер <TT>127.0.0.1</TT>.
+<PRE>
+	*	IN MX	10	troll
+		IN MX	20	почтовый_шлюз_провайдера.
+</PRE>
+Для всех машин данной зоны установить почтовые шлюзы
+(те же, что и для самОй зоны).
+<PRE>
+	troll	IN A	192.168.1.1
+		IN HINFO "486DX2-66" "FreeBSD"
+	ns	IN CNAME troll
+	mail	IN CNAME troll
+</PRE>
+<DL>
+ <DT><LI> <TT>IN A 192.168.1.1</TT>
+  <DD> Определяет, что имени <TT>troll</TT> соответствует IP-номер
+	<TT>192.168.1.1</TT>.
+ <DT><LI> <TT>IN HINFO "486DX2-66" "FreeBSD"</TT>
+  <DD> Содержит некоторыю информацию о машине, обычно -
+	тип процессора и операционной системы.
+ <DT><LI> <TT>ns IN CNAME troll</TT> и <TT>mail IN CNAME troll</TT>
+  <DD> Делают имена <TT>ns</TT> и <TT>mail</TT> псевдонимами машины
+	<TT>troll</TT>. Следует помнить, что этого не всегда достаточно:
+	некоторые протоколы, включая HTTP 1.1 и E-mail работают
+	непосредственно с именем хоста, так что сам хост
+	тоже должен понимать, что это имя - его.
+</DL>
+<PRE>
+	ogre	IN A	192.168.1.2
+		IN HINFO "Pentium" "Linux"
+	nss	IN CNAME troll
+	www	IN CNAME ns.misa.ac.ru.
+	ftp	IN CNAME ns.misa.ac.ru.
+	goblin	IN A	172.16.21.114
+</PRE>
+В общем-то все то же самое, что и для <TT>troll</TT>.
+<PRE>
+	группа		IN MX	 5	dwarf.группа
+			IN MX	10	troll
+			IN MX	20	почтовый_шлюз_провайдера.
+	*.группа	IN MX	 5	dwarf.группа
+			IN MX	10	troll
+			IN MX	20	почтовый_шлюз_провайдера.
+</PRE>
+На всякий случай отдельно зафиксируем почтовые шлюзы
+как для самой группы, так и для всех ее машин.
+<PRE>
+	localhost.группа	IN A	127.0.0.1
+	elf.группа		IN A	192.168.1.11
+	dwarf.группа		IN A	192.168.1.12
+</PRE>
+Обычные записи для машин группы. Можно сделать им HINFO
+или добавить псевдонимы, но и так сойдет.
+<PRE>
+	отдел		IN NS	192.168.1.21.
+	; и, если есть, вторичные Name-серверы
+</PRE>
+Так как отдел имеет свой Name-сервер, нужно только авторизовать его,
+причем по номеру; а дальше он сам должен отвечать за записи своей зоны.
+<P>И напоследок - красивый фокус:
+<PRE>
+	altavista       IN CNAME        altavista.digital.com
+	yahoo		IN CNAME	www.yahoo.com
+</PRE>
+Это позволяет моим юзерам обращаться к самым известным поисковым машинам,
+не набирая <TT>www.</TT> в начале и <TT>.com</TT> в конце!
+Однако, когда я пытался обращаться к этим машинам через Proxy-сервер
+провайдера, тот обратился к своей зоне DNS и сказал:
+"<CITE>Не знаю имени <TT>yahoo.провайдер</TT></CITE>! Впрочем, полное
+имя <TT>www.yahoo.com</TT> продолжало нормально функционировать.
+Есть еще одна особенность такой конфигурации: машина <TT>yahoo.фирма.домен</TT>
+находится в нашей зоне, поэтому некоторые программы, кэширующие обращения
+к WWW, могут решить, что ее кэшировать не надо.
+<H4>Файл <TT><A NAME="1_168_192.rev">1_168_192.rev</A></TT></H4>
+<PRE>
+	@	IN SOA	troll.фирма.домен. ответственный_за_зону. (
+			19970315 ; Serial
+			3600	 ; Refresh
+			300	 ; Retry
+			3600000  ; Expire
+			3600	 ; Minimum
+		)
+</PRE>
+Тут даже думать не надо.
+<PRE>
+	1	IN PTR	troll.фирма.домен.
+	2	IN PTR	ogre.фирма.домен.
+	11	IN PTR	dwarf.группа.фирма.домен.
+	12	IN PTR	elf.группа.фирма.домен.
+	; и так далее
+</PRE>
+Этот файл содержит преобразования IP-адресов в доменные имена.
+Многие программы вообще отказываются работать с машинами, чей IP-адрес
+не прописан в обратной (reverce) зоне, видимо, считая, что этот адрес
+кем-то присвоен самовольно, без санкции ответственного администратора.
+<BR> Здесь же мы должны прописать все остальные машины, имеющие IP-номера
+<TT>192.168.1.*</TT> - дело в том, что зоны в <TT>in-addr.arpa</TT>
+выделяются сразу на 256 адресов и не делегируются на меньшее число.
+<BR> Хочу также обратить внимание на то, что в обратной зоне нет машины
+<TT>goblin</TT>: она находится в совсем другой обратной зоне.
+<H4>Файл <TT><A NAME="#филиал_фирма_домен.hosts">филиал_фирма_домен.hosts</A></TT></H4>
+Этот файл создается автоматически; главное - чтобы он был правильно
+построен (прописаны все NS и MX).
+<H3 ALIGN=center>Инструменты</H3>
+<P align=justify>Для тестирования правильности построения зоны используется программа
+<TT>nslookup</TT>. Она сообщает IP-адрес по доменному имени, а при запуске
+без параметров она переходит в командный режим, где проявляет все свои
+незаурядные качества - читай `<TT>man&nbsp;nslookup</TT>`.
+<table cellspacing=0 cellpadding=0 border=0 background="../../PICTURES/MENU/FOOTER0.JPG" width="100%">
+<tr><td align="center">
+<table cellspacing=0 cellpadding=4 border=0 width="100%" background="">
+<tr><td align="right" valign="top" width="33%">
+<font size="-2">Comments: <a class="plain" href="mailto:info@citmgu.ru?Subject='From bottom of CIT FORUM local copy'">info@citmgu.ru</a><br>
+Designed by <a class="plain" href="mailto:andrey@novikov.com">Andrey Novikov</a><br>
+Copyright &copy; <a class="plain" href="http://www.citmgu.ru/">CIT</a></font>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>

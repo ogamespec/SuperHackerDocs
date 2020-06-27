@@ -1,0 +1,58 @@
+
+[OPTIONS]
+CONTENTS=main_index             ; only 3.1
+INDEX=main_index                ; only 3.0
+TITLE=INTERRUPT LIST VERSION 33
+COMPRESS=high                   ; 3.1 other values: off, medium
+;COMPRESS=1                     ; 3.0
+; 1 is on, 0 off
+WARNING=3
+COPYRIGHT=WINHELP CONVERSION (c) 1992, -93 RAIMO KOSKI  ; 3.1
+OLDKEYPHRASE=OFF
+icon=int.ico                    ; 3.1, make your own, otherwise hc's complain won't hurt
+REPORT=1
+ERRORLOG=INTER.ERR              ; 3.1
+
+[FILES]
+intrtf.toc
+intrtf.idx
+intrtf.byf
+intrtf.byv
+intrtf.bot
+intrtf.fil
+
+[CONFIG]                        ;  this section all 3.1
+CreateButton("Ind", "&Index", "JumpId(`', `_int.idxZ')")
+CreateButton("byf", "&Function", "JumpId(`', `_int.byfuncZ')")
+CreateButton("val", "&Value", "JumpId(`', `_int.byvalZ')")
+CreateButton("mem", "&Mem list", "JumpId(`', `_int.memZ')")
+BrowseButtons()
+InsertMenu("goto", "&Goto", 3)
+InsertItem("goto", "idx", "&Index",                    "JI(`', `_int.idxZ')",    0)
+InsertItem("goto", "byf", "By &function",              "JI(`', `_int.byfuncZ')", 1)
+InsertItem("goto", "byv", "By &value",                 "JI(`', `_int.byvalZ')",  2)
+InsertItem("goto", "mem", "&Memory list",              "JI(`', `_int.memZ')",    3)
+InsertItem("goto", "pri", "Interrupt &primer",         "JI(`', `_int.priZ')",    4)
+InsertItem("goto", "gen", "&General info",             "JI(`', `_int.1stZ')",    5)
+InsertItem("goto", "hea", "File &header",              "JI(`', `_int.introZ')",  6)
+InsertMenu("gene", "Gene&ral Info", 4)
+InsertItem("gene", "ver", "&Version",                  "JI(`', `__IL1255Z')",  0)
+InsertItem("gene", "cop", "&Copyright Notice",         "JI(`', `__IL1256Z')",  1)
+InsertItem("gene", "add", "&Additional Copyright",     "JI(`', `__IL1257Z')",  2)
+InsertItem("gene", "dis", "&Disclaimer",               "JI(`', `__IL1258Z')",  3)
+InsertItem("gene", "upd", "&Updates and Distribution", "JI(`', `__IL1259Z')",  4)
+InsertItem("gene", "sys", "&System Abbreviations",     "JI(`', `__IL1260Z')",  5)
+InsertItem("gene", "con", "Co&ntributors",             "JI(`', `__IL1261Z')",  6)
+InsertItem("gene", "sou", "So&urces",                  "JI(`', `__IL1262Z')",  7)
+InsertItem("gene", "api", "A&PI Reference Providers",  "JI(`', `__IL1263Z')",  8)
+InsertItem("gene", "oth", "&Other Addresses",          "JI(`', `__IL1264Z')",  9)
+InsertItem("gene", "tra", "&Trademarks and Copyrights","JI(`', `__IL1265Z')", 10)
+InsertItem("gene", "rev", "&Reviews",                  "JI(`', `__IL1266Z')", 11)
+InsertItem("gene", "aut", "Aut&hor Contact",           "JI(`', `__IL1267Z')", 12)
+
+;[BITMAPS]
+
+
+;[MAP]
+
+

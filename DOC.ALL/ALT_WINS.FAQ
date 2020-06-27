@@ -1,0 +1,1094 @@
+� New areas (2:5100/17) 컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴 ALT.WINSOCK �
+ Msg  : 134 of 201                                                              
+ From : Nancy Cedeno <nac@sirius.com>                       06 Feb 96  09:05:28 
+ To   : All                                                 07 Feb 96  20:31:08 
+ Subj : alt.winsock FAQ                                                         
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+
+Archive-name: windows/winsock-faq
+Posting-Frequency: biweekly (first and third Monday)
+Last-modified: 1996/1/15
+URL: http://www.well.com/user/nac/alt-winsock-faq.html
+
+================================================
+The alt.winsock FAQ (Frequently Asked Questions)
+================================================
+
+Updated January 15, 1996
+------------------------
+
+Table of Contents
+
+I. The alt.winsock Newsgroup
+  1) What Is This Newsgroup For?
+  2) What Can I Post Here?
+  3) What Should I Not Post Here?
+
+II. What is a WinSock?
+  1) Where Did WinSock Come From?
+     A) Berkeley Sockets
+  2) How does it work?
+  3) What do I need to run WinSock applications?
+
+III. What Are SLIP and PPP?
+
+IV. What WinSocks Are Available and Where Can I Get Them?
+  1) Trumpet Winsock
+     A) Which MTU, TCP RWIN, and TCP MSS settings are best?
+     B) Registration Problems
+  2) Chameleon Sampler
+  3) Microsoft TCP/IP-32
+  4) NetCruiser
+  5) Do I Need This Stuff Now That Windows 95 Is Out?
+  6) IBM OS/2 Warp
+
+V. Common WinSock Problems
+  1) "Call to Undefined Dynalink"
+  2) COMM Overrun
+  3) Can't Find C:\TEMP Directory" (Netscape)
+  4) Netscape 1.1's Window Doesn't Open Properly
+  5) How Do I Cure Various Errors in WinTalk?
+  6) How Do I Cure Various Errors in News Xpress?
+  7) "More Original Lines than New Lines" Error in a Newsreader?
+  8) GPF Errors in WSIRC
+  9) I have SLIP Emulation and DCC won't work in IRC.
+  10) "________ Did Not Call WSCLEANUP"
+
+VI. Can I Run Cool Stuff Like Netscape From My Unix Shell Account?
+  1) The Internet Adapter (tm)
+     A) I Use Netcom and TIA -- Why Won't My Newsreader Work?
+  2) Twinsock (Troy's Winsock)
+  3) SLiRP
+  4) Remsock
+
+VII. What's the Best __________ Application?
+  1) Lists, Lists, Lists
+  2) Windows 95 Software
+  3) Shareware is Not Freeware
+
+VIII. Even More Information
+  1) Application FAQs
+     A) Free Agent
+     B) Netscape
+     C) News Xpress
+     D) WinVN
+  2) Other WinSock Resources
+     A) #Winsock on IRC (EFFNet)
+     B) #Winsock FAQ
+  3) TCP/IP
+  4) Windows Data Communication
+  5) TIA and Trumpet Winsock
+  6) SLIP Emulation
+  7) WinSock Developer Information
+     A) Winsock Programming FAQ by John Thomas Willis
+     B) WinSock 1.1 Standard
+     C) WinSock 2.0 Standard (in development)
+     D) Microsoft's WinSock Developer Info
+     E) Usenet
+     F) Stardust Technologies WinSock Resource Page
+  8) Other alt.winsock.* newsgroups
+  9) Winsock Newsgroups in the comp.os.ms-windows Hierarchy
+ 10) UUEncoding and MIME Encoding Binary Files
+
+IX. Where to Find the FAQ
+
+X. Administrivia
+
+------------------------------------------------------------------------
+
+I. The alt.winsock Newsgroup
+============================
+
+   1) What Is This Newsgroup For?
+   ------------------------------
+
+   alt.winsock is an unmoderated newsgroup for general discussion of the
+   WinSock (Windows Sockets) API and the myriad applications that run 
+   under it. Postings range from questions on how to setup a WinSock 
+   application to more advanced topics concerning Internet protocols and 
+   programming. This group is also open to both newcomers and advanced 
+   programmers alike. Unfortunately, this openness has made alt.winsock a 
+   very high volume newsgroup. That is why this FAQ was created. If you 
+   have a question or suggestion, please do not be afraid to post it. 
+   Flames have never been a problem and people will usually answer what 
+   seem like the dumbest questions. But, in order to reduce the volume on 
+   this newsgroup, we ask that people consult this FAQ prior to posting a 
+   question. We've put together an abundance of information which we'll 
+   try to keep as up to date as possible.
+
+   2) What Can I Post Here?
+   ------------------------
+
+   Due to the general nature of alt.winsock, there really aren't any
+   restrictions on what can or cannot be posted. However, some important
+   points should be kept in mind.
+
+   * Be very specific in your questions.
+     People will always be willing to help out. But they can't help you
+     if they don't know what you're talking about. If the problem
+     concerns your computer rather than a remote site, remember to
+     state which WinSock you are using (e.g., Trumpet, Chameleon), what
+     type of computer you have, and whether or not you are using TIA.
+
+   * If you are replying to a post, decide whether or not the whole
+     group needs to see your reply. Sometimes, many people could use
+     your information or answer your question. Other times, it may be
+     better to simply e-mail your reply to a specific person or persons.
+
+   * When announcing a new program or new version, please announce what
+     site it's available at and provide details about the program.
+
+   Also, it is common courtesy to not only ask questions, but to answer
+   some as well. That is what keeps this group functioning. So, if
+   someone has a question that you know the answer to, please take a
+   little time to reply.
+
+   3) What Should I Not Post Here?
+   -------------------------------
+
+   Most importantly do not ask off-topic questions. The most frequent 
+   off-topic questions are those concerning helper applications for 
+   WWW browsers. Posts regarding graphics or sound viewers should be 
+   posted to alt.binaries.multimedia.d, alt.binaries.pictures.utilities,
+   alt.binaries.sounds.utilities, or another more appropriate newsgroup.
+
+   Never post binaries to alt.winsock. In general, binaries should only 
+   be posted to alt.binaries.* groups. Even if you believe that you have 
+   found or written a great program that you think everyone in alt.winsock
+   will want, please do not post a binary to the newsgroup. Simply post a 
+   message that gives a description of the program and tell people where 
+   it can be found.
+
+   Advertisers should be very careful when considering whether they 
+   should post on alt.winsock.  alt.winsock is NOT a forum for 
+   advertising. But, if your product is a WinSock application, or 
+   might be of interest to WinSock users, please announce yourself as an 
+   advertiser and give an accurate description of your product.
+
+   Before you post any generic questions, please check the FAQ. 
+   Please do not post any questions that can be answered in the FAQ. Many 
+   of the routine questions include "What Telnet programs are out there?" 
+   "Where can I find xxxx?" or other such questions.  Checking the FAQ 
+   first will reduce traffic and get you a quicker answer as well.
+
+
+II.  What is a WinSock?
+=======================
+
+WinSock is short for Windows Sockets.  Today's most popular Internet 
+applications for Microsoft Windows and IBM OS/2 are developed according 
+to the WinSock standard.
+
+   1) Where Did WinSock Come From?
+   -------------------------------
+
+   WinSock is short for Windows Sockets, and is used as the interface 
+   between TCP/IP (Transmission Control Protocol/Internet Protocol), and 
+   Windows. TCP/IP has been called "the language of the Internet" and 
+   rightly so--most of the Internet is comprised of systems that use TCP/IP 
+   to talk to one another.
+
+   The WinSock specification was born at one of the "Birds of a Feather"
+   sessions at the Interop conference in Fall of 1991. The current 
+   version of the specification is 1.1, but work continues on the WinSock 
+   2.0 specification, which is scheduled for completion mid-1995.
+
+      A) Berkeley Sockets
+      -------------------
+
+      Berkeley Sockets is the standard programming model for TCP/IP
+      networking under Unix. Windows Sockets was designed to be very 
+      similar to Berkeley Sockets so that those experienced in programming 
+      with sockets in Unix will be able to easily make the transition to
+      Windows Sockets. However, there are a few deviations in the WinSock
+      standard that take advantage of Windows-specific features not
+      supported in Unix. For more information, see the following:
+
+        ftp://ftp.microsoft.com/bussys/winsock/spec11/winsock.txt
+
+   2) How does it work?
+   --------------------
+
+   WinSock is a .DLL (Dynamic Link Library) and runs under Windows 3.x,
+   Windows for Workgroups, Windows NT, and Windows 95. The WINSOCK.DLL is 
+   the interface to TCP/IP and, from there, on out to the Internet. 
+   (TCP/IP stands for "Transmission Control Protocol / Internet 
+   Protocol," the "language" that computers on the Internet use to 
+   communicate with each other.)
+
+   The easiest way to show how it works is with a diagram:
+
+       WinSock-compliant Application (e.g., Netscape, WinVN)
+                              |
+                          WINSOCK.DLL
+                              |
+                            TCP/IP
+                              |
+                     Modem or Network card
+                              |
+                       Network and beyond
+
+   WINSOCK.DLL actually acts as a "layer" between your WinSock 
+   applications and your TCP/IP stack.  Your WinSock applications tell 
+   WINSOCK.DLL what to do, WINSOCK.DLL translates these commands to your 
+   TCP/IP stack, and your TCP/IP stack passes them on to the Internet!
+
+   But the most important thing for you to remember about WINSOCK.DLL is 
+   that the WINSOCK.DLL you're using must match the version of TCP/IP 
+   that you're running. Don't assume that because all WinSocks are called 
+   WINSOCK.DLL that they're all the same--they're not. So, for example, 
+   if I'm using Microsoft's TCP/IP, I can't use Trumpet Winsock.
+
+   Similarly, if I'm running on a SLIP connection, and I want to switch 
+   from Chameleon Sampler's Winsock to Trumpet Winsock, I first need to 
+   remove Chameleon's version of WINSOCK.DLL before installing the new 
+   one.
+
+   If you end up with multiple versions of WINSOCK.DLL floating around 
+   your hard disk, you're asking for trouble. Before you come screaming 
+   at alt.winsock, take a couple of minutes to check your hard disk for 
+   multiple WINSOCK.DLLs.
+
+   For more information, see NCSA's winsock.dll page on the Web at:
+
+     http://www.ncsa.uiuc.edu/SDG/Software/WinMosaic/winsocks.htm
+
+   3) What do I need to run WinSock applications?
+   ----------------------------------------------
+
+   Using WinSock applications to access the Internet requires:
+
+   - A suitable connection to the Internet.
+   - A TCP/IP stack (which includes it's own WINSOCK.DLL).
+
+   Your connection to the Internet may take the form of a direct 
+   connection via a network card or a dialup account using a modem.  Most 
+   users reading this FAQ will be using the latter.  You'll probably need 
+   to acquire an account with an Internet service provider (or else 
+   get an account through work or school, if available) -- either a 
+   SLIP or PPP account (these are protocols for communicating with the 
+   Internet via modem; either is fine, though PPP is generally preferred), 
+   or a shell account which allows you to run a SLIP emulator (covered in 
+   Section VI.)
+
+   The TCP/IP stack you use depends upon your needs.  Some operating 
+   systems include stacks, such as Microsoft Windows 95 and IBM OS/2. For 
+   other operating systems, like Microsoft Windows 3.1/3.11 or Microsoft 
+   Windows for Workgroups 3.11, you'll need to add a stack. Section IV. 
+   of this FAQ covers some of the most popular.  Some are free, some are 
+   shareware (if you continue to use them after an evaluation period, you 
+   must pay a small fee), and others are commercial.  Some include no 
+   WinSock applications, while others include all the basic apps you'll
+   need.
+
+   A fast computer, 8MB or more of memory, and a high speed modem for 
+   dialup connections (at least 14.4k) are also recommended.
+
+   And, of course, you'll need some WinSock applications.  Section VII.
+   points to lists of WinSock applications available.
+
+
+III.  What Are SLIP and PPP?
+============================
+
+   There are several different ways individual PC users can get access to 
+   the Internet. Of all the access methods available, SLIP (Serial Line
+   Interface Protocol) and PPP (Point-to-Point Protocol) accounts give 
+   you the most options, as far as applications are concerned.
+
+   SLIP has been around since the mid-1980s. It was originally designed 
+   to allow Unix machines to connect to one another over the phone. It 
+   essentially "tricks" your computer into thinking that its modem 
+   connection is a dedicated network connection (the kind you would 
+   usually need a network card for).
+
+   PPP is based on SLIP, but it is a more sophisticated protocol. It 
+   contains additional error checking and authentication, which makes it 
+   more reliable than SLIP. For most PC users, there really isn't much 
+   difference between the two. Because PPP is more reliable and is 
+   generally accepted to be the standard of the future, you should get 
+   PPP if you're offered a choice between the two.
+
+   WinSock works great with SLIP and PPP. Most WinSock versions come with 
+   dialer programs to do the actual connection over your modem.
+
+
+IV. What WinSocks Are Available and Where Can I Get Them?
+=========================================================
+
+   1) Trumpet Winsock
+   ------------------
+
+   Peter Tattam's Trumpet Winsock is one of the most popular WINSOCK.DLLs 
+   available. It includes both WINSOCK.DLL and a dialer program to get 
+   you connected if you're using SLIP or PPP. Versions 2.0b and 2.0e have
+   been replaced by version 2.1. Version 2.0b is still available from:
+
+     ftp://ftp.cica.indiana.edu/pub/pc/win3/winsock/twsk20b.zip
+     ftp://ftp.coast.net/SimTel/win3/winsock/twsk20b.zip
+
+   Version 2.1 is still in development. Recent developments have improved
+   PPP performance and fixed scripting errors. Like version 2.0, version
+   2.1 supports both SLIP and PPP. A fairly powerful scripting language 
+   is also included for login, logout, and other actions. Trumpet Winsock
+   is shareware. After 30 days, you must register (international: US$25,
+   Australia: AU$25).
+
+     ftp://b-box.trumpet.com.au/pub/winsock/twsk21f.zip
+
+   Mirrors:
+     ftp://ftp.synapse.net/contrib/trumpet/winsock/twsk21f.zip
+     ftp://ftp.coast.net/SimTel/vendors/trumpet/winsock/twsk21f.zip
+
+   Make sure you read the README.1ST file if you're upgrading from Trumpet
+   Winsock 2.0x.
+
+   Trumpet is currently beta-testing a 32-bit implementation of their
+   WinSock.  They warn that it is still VERY beta, but encourage brave
+   beta testers to give it a try.  For more information, see:
+
+     http://www.trumpet.com.au/wsk/faq/wsk32.htm
+
+   More Information:
+      http://www.trumpet.com.au/wsk/winsock.htm
+
+      A) Which MTU, TCP RWIN, and TCP MSS settings are best?
+      ------------------------------------------------------
+
+      Unfortunately, there isn't a simple answer to this question. 
+      It really depends on what kind of connection you have. Ethernet, 
+      SLIP, PPP, and CSLIP all require different settings. Also, your 
+      Internet provider may require that you use certain values. But there 
+      are a few rules that may help you find the best values.
+
+      First check which values your Internet provider recommends. These
+      values will generally be the best. However, not all providers have
+      experience with Trumpet Winsock, or the values they give you may 
+      still need additional adjustment for optimal speed and reliability.
+
+      The INSTALL.DOC that comes with Trumpet Winsock also lists a few
+      general rules for setting these values. MTU should be TCP MSS+40. 
+      TCP RWIN should be 3 or 4 times TCP MSS. It suggests starting with 
+      the following values: MTU=256, TCP RWIN=848, TCP MSS=212. However, 
+      these are only general rules and there may be better values for 
+      your particular situation.
+
+      Peter Tattam also believes that MTU should be pushed up to 1500 if 
+      supported by your provider, although many providers recommend 
+      setting the MTU at 1006. 
+
+      He also recommends that you set the values for SLIP/PPP as follows: 
+      TCP MSS=512, TCP RWIN=2048. CSLIP/CPPP values should be: TCP 
+      MSS=212, TCP RWIN=848.
+
+      Ethernet and TIA users should use the following values: MTU=1500,
+      TCP RWIN=4096, TCP MSS=1460.
+
+      B) Registration Problems
+      ------------------------
+
+      One of the biggest problems Trumpet has been having is responding 
+      to user registrations. Be patient because they are busy. But if you 
+      find that they never respond, send e-mail to 
+      registrations@trumpet.com.au.  Give your full name and Trumpet 
+      should respond promptly with your registration number.
+
+         More Information:
+
+            Trumpet Software International Home Page:
+               http://www.trumpet.com.au/
+
+
+   2) Chameleon Sampler
+   ---------------------
+
+   Chameleon Sampler is another popular WinSock. Internet Chameleon is 
+   NetManage's heavy-duty full-featured commercial package. Chameleon 
+   Sampler is a freeware package that includes both SLIP and PPP support. 
+   In addition, it also includes basic FTP, Telnet, Mail, and Ping 
+   clients. Like Trumpet, it also includes its own dialer and has proven 
+   itself to be stable and compatible. It is included with several books.
+
+    More Information:
+      http://www.netmanage.com/netmanage/products/chamsamp.html
+
+   3) Microsoft TCP/IP-32
+   ----------------------
+
+   This is Microsoft's stack for use with Windows NT or Windows for 
+   Workgroups 3.11.  Unfortunately, this stack does NOT support dialup 
+   connections. Free for owners of Windows NT or Windows for Workgroups.  
+   Available from:
+
+      ftp://ftp.microsoft.com/peropsys/windows/Public/tcpip/
+
+   4) NetCruiser
+   -------------
+
+   NetCruiser probably doesn't belong on this list, as it's not 100%
+   WinSock compatible.  NetCruiser includes a proprietary stack and 
+   suite of applications included with SLIP accounts from Netcom (a 
+   large Internet service provider), the latest version has added 
+   *some* WinSock compatibility. NetCruiser itself works only with Netcom.
+
+   Compatibility Notes: WinSock applications known to have difficulty with 
+   NetCruiser include WinTalk and mIRC.
+
+   More Information: 
+      http://www.netcom.com/faq/
+      http://www.netcom.com/
+
+   5) Do I Need This Stuff Now That Windows 95 Is Out?
+   ----------------------------------------------------
+
+   Nope.  Windows 95 includes all the 32-bit TCP/IP and WinSock drivers 
+   that you'll need.  And, it includes its own "Dial-Up Networking" that 
+   lets you use SLIP or PPP.
+
+   A lot of Windows 95 beta users have installed Trumpet Winsock and are 
+   using it quite happily.
+
+   More Information: 
+      http://www.microsoft.com/Windows/
+      http://www.wwa.com/~barry/wn95slip.html
+      http://www.trumpet.com.au/wsk/faq/win95.htm
+      http://www-leland.stanford.edu/~llurch/win95netbugs/faq.html
+
+   6) IBM OS/2 Warp
+   ----------------
+
+   IBM's OS/2 Warp operating system includes a stack and a suite of 
+   applications that have been well-received.  Aside from the included 
+   applications, native WinSock software for OS/2 is sparse.  Most 
+   Windows WinSock applications run well. Included with the operating 
+   system (street price approx. US$70-140 depending upon 
+   configuration)
+
+    More Information:
+      http://www.austin.ibm.com/pspinfo/warp.html
+      http://pclt.cis.yale.edu/pclt/winworld/os2.htm
+
+
+V. Common WinSock Problems
+==========================
+
+   1) "Call to Undefined Dynalink"
+   ---------------------------------------------------
+
+   Although this error message can be caused by a number of different 
+   problems, as far as WinSock users are concerned, it probably has to do 
+   with having multiple versions of WINSOCK.DLL hanging around your hard 
+   disk.  To solve this problem, make sure that you do not have multiple 
+   versions of WINSOCK.DLL in your PATH. If so, remove or rename the 
+   versions you're not using. If you only have a single version of 
+   WINSOCK.DLL, it may not be in the path. Simply put it in 
+   \WINDOWS\SYSTEM or add your WinSock's directory to the PATH statement
+   in your AUTOEXEC.BAT file.
+
+   2) COMM Overrun
+   ---------------
+
+   This error occurs when the modem goes too fast for the COM port and 
+   Windows.  There are a couple of things you have to check.  First, if 
+   you've got an external modem running at 14.4kbps or above, make sure 
+   you're connecting it to a COM port that uses the UART 16550a (or some 
+   1655xx variant) chip. You can check this using the MSD.EXE program that 
+   comes with Windows.
+
+   Now, once you've got that verified, you need to replace the old 
+   COMM.DRV driver that came with Windows 3.x, because it was designed to 
+   work with the older UART 8550 chip.  (Windows for Workgroups 3.11
+   users don't need to worry about this.)  The two most popular
+   replacement COMM drivers are  CyberCom and WFXComm. Documentation is
+   included and they can be found at the following sites: 
+
+      ftp://ftp.coast.net/simtel/win3/commprog/cybercom.zip
+      ftp://dorm.rutgers.edu/pub/novell/utilities/wfxcom.zip
+
+   Also, you need to edit your SYSTEM.INI file to include the following 
+   statements in your [386Enh] section:
+
+      com1FIFO=1
+      com1buffer=1024
+      comboosttime=8
+
+   (If you're using a COM port other than 1, change the com1 to com2, 
+   etc.)
+
+   Although it is quite out of date, There is a FAQ that provides a more 
+   in-depth discussion of this subject: 
+
+     http://www.cis.ohio-state.edu:80/hypertext/faq/usenet/windows-com-
+     faq/faq.html
+
+   3) Can't Find C:\TEMP Directory" (Netscape)
+   -------------------------------------------
+
+   Most Windows users have their temporary directory set to 
+   C:\WINDOWS\TEMP -- but Netscape assumes that you use C:\TEMP unless
+   you tell it otherwise.
+
+   To correct this problem, do the following:
+
+   1. In Netscape, go to the "Options" menu.  Choose "Preferences."
+   2. At the very top of the dialog there will be a drop-down listbox. 
+      Click it, and choose "Directories, Applications, and News."
+   3. Change C:\TEMP to C:\WINDOWS\TEMP (or whatever your actual 
+      temporary directory is) and click "OK."
+
+   Users of Windows or Windows for Workgroups can determine their 
+   temporary directory by examining their AUTOEXEC.BAT file.  The line
+   will look similar to this:
+
+     SET TEMP=c:\windows\temp\
+
+   If no such line exists, you'll want to add one.  Make sure that the 
+   indicated directory exists.
+
+   4) Netscape 1.1's Window Doesn't Open Properly
+   ----------------------------------------------
+
+   Although this bug has been fixed in the beta releases of Netscate 1.2,
+   users of Netscape 1.1 may experience problems with window sizing.
+
+   In Netscape 1.1, there is a bug that may cause the Netscape window to 
+   open off-center and partially off the screen. Unfortunately, this was 
+   not fixed in the official release of Netscape 1.1N.
+
+   There are two methods to improve this:
+
+   1. Resize the window with the mouse (do not maximize). Then save the 
+      window size by clicking "Save Options" under the "Options" menu.
+   2. Directly edit the NETSCAPE.INI file. This method generally works
+      best. It also enables you to see what the problem is. Using an 
+      example of a 640x480 monitor, Netscape 1.1 gave the NETSCAPE.INI 
+      file the following default values:
+
+        [Main Window]
+        x=-4
+        y=-4
+        width=648
+        height=488
+
+      Change the settings to:
+
+        [Main Window]
+        x=0
+        y=0
+        width=640
+        height=480
+
+   5) How Do I Cure Various Errors In WinTalk?
+   -------------------------------------------
+
+   Depending upon the version of WinTalk you use, you may either:
+
+     1) have trouble running the program, with frequent "gethostname()" 
+        or similar error messages, or 
+     2) the program may appear to work properly until you attempt to talk 
+        with someone, and you receive a "They don't recognize us!" error.
+
+   The solution depends upon the way you're accessing the Internet.  If 
+   you're not sure which the of the below you're using, ask your provider 
+   for help.
+
+     If you're on a SLIP or PPP connection with a permanent IP Address: 
+     ------------------------------------------------------------------
+
+     Your machine may not be listed in your provider's DNS.  Ask your 
+     provider to add it.  If your account is new, keep in mind that it 
+     may take several days before your machine name is in the DNS, at
+     which point WinTalk should work properly.
+
+     If you're on a SLIP or PPP connection with Dynamic IP Addressing:
+     -----------------------------------------------------------------
+
+     It's very likely that some, if not all, of the IP addresses in the
+     dynamic IP pool are not registered in the DNS.  Ask your provider to
+     please do this, if possible.
+
+     Emulated SLIP (TIA, etc.):
+     --------------------------
+
+     WinTalk is incompatible with emulated SLIP.  Sorry, there are no
+     workarounds at this time.
+
+   6) How Do I Cure Various Errors in News Xpress?
+   -----------------------------------------------
+
+   If you receive a "No Authorization" or similar error in News Xpress, 
+   do the following:
+
+   1. Choose "Setup" from the "Config" menu.  
+   2. Delete any information you typed into the "Username" and "Password" 
+      fields.  Click "OK."
+
+   7) "More Original Lines than New Lines" Error in a Newsreader?
+   ---------------------------------------------------------------
+
+   If you receive a "More Original Lines than New Lines" or "More Quoted 
+   Text than Original Text," or another similar error when trying to 
+   follow-up to a Usenet news article, your newsreader program is not
+   to blame.
+
+   This is an option set by your system administrator to prevent users 
+   from sending articles which contain, for example, 100 lines of quoted 
+   text with "I agree" added to the bottom.  Such articles are considered
+   a nuisance.  Consider editing the quoted text for clarity.
+
+   Some users adjust their newsreader to use an unusual quote character.  
+   In some cases, this can fool the news server software and thwart your 
+   provider's options.  Please be aware that this is a blatant 
+   circumvention of your provider's policies, and may result in loss of 
+   your Internet access.  This type of action is inadvisable.
+
+   If the quoted text limitation really bothers you, try *politely* 
+   asking your provider to change this option in their news server 
+   software.
+
+   8) GPF Errors in WSIRC
+   ----------------------
+
+   While WSIRC does have some stability problems, some releases also have 
+   a bug which allows other IRC users to easily cause WSIRC to crash
+   (GPF, General Protection Fault).  In Version 1.4e and before, a simple
+   null CTCP command is all it takes.
+
+   However, Versions 1.4f and later, including the recently released
+   Version 2.0 have apparently fixed this problem.
+
+   If you're receiving frequent GPF errors with WSIRC, you may wish to 
+   update or switch to another IRC client.
+
+   9) I have SLIP Emulation and DCC won't work in IRC
+   --------------------------------------------------
+
+   Like Talk, DCC will not completely work with SLIP emulation. Although 
+   it is a feature of IRC, DCC connects directly between two computers.
+   Therefore, it requires both computers to have an IP address for full 
+   functionality.
+
+   Fortunately, some features of DCC will work. You will be able to 
+   receive a DCC Chat request and DCC Get will also work. But you will be
+   unable to initiate a DCC Chat or use DCC Send.
+
+   10) "________ Did Not Call WSCLEANUP"
+
+   Fill in the blank -- it can be any WinSock app.  Not a problem,
+   really.  All it means is that the app in question did not tell WinSock 
+   that is was finished with the socket it was using.
+
+
+VI. Can I Run Cool Stuff Like Netscape From My Unix Shell Account?
+==================================================================
+
+If you're limited to a Unix shell account, you may still be able to take 
+advantage of Winsock applications.  Several SLIP Emulators are available 
+which "convert" standard shell accounts into makeshift SLIP accounts.
+
+Note: Many providers do not allow you to run a SLIP emulator.  Some are 
+      concerned about system resources; others want you to buy a real
+      SLIP or PPP account (which are almost universally more expensive).
+      If your provider bans use of SLIP emulators, using one may result
+      in loss of your Internet access.  (Yes, system administrators can
+      tell if you're using a SLIP emulator even if you change the
+      executable's file name or size.)
+
+   1) The Internet Adapter (tm)
+   ----------------------------
+
+   The Internet Adapter (TIA) is an innovative product by Cyberspace
+   Development, Inc. that allows Unix shell users to simulate a SLIP
+   connection over a Unix shell account. PPP is not yet supported, but it
+   is expected to be included when v2.0 is released. TIA is installed on
+   the Unix host (either in your home directory, if you're a single user,
+   or with the other Unix executables on the system if it's a site-
+   licensed copy provided by your provider). When you run TIA on your
+   Unix host, you can then run WinSock applications on your own machine.
+   (Note that you still need to install WinSock on your PC.)
+
+   For most applications, there is no difference between a true SLIP
+   account and TIA. But there are a few drawbacks. Because TIA users do
+   not have a real, unique IP address, applications that require this
+   (some DCC Chat, Talk, CuSeeMe, Ping, etc.) will not work. Also,
+   servers, in general, will not work. The latest beta version does have
+   a port redirection feature, but TIA is not meant for server use. TIA
+   requires that you have an "8-bit clean" connection to the Internet.
+   Check the TIA FAQs for more information.
+
+   TIA currently costs U.S. $25.00 for a single-site license. They also
+   have 14-day temporary licenses available. Version 1.04 has recently 
+   been moved from beta to official release in preperation for the 
+   release of Version 2.0, which is currently in closed beta testing.
+   All future upgrades will be free to registered users.
+
+   More information:
+      http://marketplace.com:80/tia/tiahome.html
+      e-mail: tia-info@marketplace.com
+
+      A) I use Netcom and TIA -- Why Won't My Newsreader Work?
+      --------------------------------------------------------
+
+      So far, Netcom is the only large provider that has had this
+      problem. Netcom does not allow its users to access the NNTP server.
+      But there is a way around this. A free product also found at:
+
+         ftp://marketplace.com/tia
+
+      allows the newsreader to access news off the disk. This program is
+      installed, just like TIA, in your Unix shell. It is executed at the
+      same time as TIA by executing "tia -p:119 nntpd." There is also
+      good documentation in the tiabeta directory.
+
+      More Information:
+         ftp://marketplace.com/tia/readme.nntpd
+
+   2) Twinsock (Troy's Winsock)
+   ----------------------------
+
+   Troy Rollo's Twinsock is a freeware alternative to TIA.  Unlike TIA,
+   Twinsock includes both a host program to be placed on your shell
+   account and its own special stack.  Setup can be easier than TIA,
+   since the stack requires no special configuration.  Note that Twinsock
+   will work even without an 8-bit clean connection, though the 6-bit
+   mode is slower.
+
+   See the FAQ (under More Information, below) for information about
+   FTPing the latest compiled versions for various hosts.  You must FTP
+   the complete package (see below) to obtain the required stack, which
+   is compiled.  Source code for the host program and the stack is
+   included.
+
+   More Information:
+      http://www_ug.eecg.utoronto.ca/~luk/tsfaq.html
+
+   FTP Sites:
+      ftp://ftp.coast.net/simtel/win3/winsock/twnsck14.zip
+      ftp://archive.orst.edu/pub/mirrors/simtel/win3/winsock/twnsck14.zip
+      ftp://micros.hensa.ac.uk/mirrors/simtel/win3/winsock/twnsck14.zip 
+
+   3) SLiRP
+   --------
+
+   A recent addition to the SLIP emulation scene, Danny Gasparovski's
+   SLiRP is quickly gaining momentum.  It's similar to TIA, but doesn't 
+   include a stack, although it is free. No compiled versions are 
+   available yet; you'll have to compile it yourself. Available from:
+
+      ftp://peace.wit.com/danjo/slirp/slirp-0.9o.tar.gz
+      ftp://blitzen.canberra.edu.au/pub/slirp/slirp-0.95d.tar.gz
+
+   More Information:
+      http://blitzen.canberra.edu.au/slirp
+
+   4) Remsock
+   ----------
+
+   Oslonett's Remsock is a little-used SLIP emulator similar to Twinsock
+   in that it includes its own stack.  Much of the documentation is in
+   Norwegian. Aside from compatibility problems, Remsock's biggest
+   failing is that it's "crippleware."  It stops working 15 minutes into
+   each connection until you pay the registration fee ($15).  Available
+   from:
+
+      ftp://kids.kotel.co.kr/pub/network/remsock.zip
+
+VII. What's the Best ________ Application?
+==========================================
+
+There are currently over a hundred WinSock applications out there. We
+won't try to tell you which one is the best one for your needs. To a
+certain extent, you're going to have to figure that out for yourself.
+
+   1) Lists, Lists, Lists
+   ----------------------
+
+   Fortunately, there are several excellent resources out there that can
+   provide you with pointers to (and evaluations of) most of the Internet
+   programs available on the Internet for Windows users.
+
+   There are several regularly updated lists of WinSock applications. If
+   you're looking for something, try these lists first. You can FTP the 
+   files directly through either of the Web-based lists.  Here are the most
+   popular and useful:
+
+   - Stroud's Consummate Winsock Apps List (updated regularly)
+     http://cwsapps.texas.net/cwsa.html
+
+   - The Ultimate Collection of Winsock Compliant Software
+     http://www.tucows.com/
+
+   - Ed Sinkovits' Winter List (updated weekly)
+     http://www.mbnet.mb.ca/winter/index.html
+      or
+     ftp://ftp.coast.net/SimTel/win3/winsock/winter15.zip
+
+   - Craig Larsen's Winsock Application FAQ (complete list of all
+     Winsock applications)
+     http://www.primenet.com/~larsenc/faqhtml.html
+
+   - Stardust Technologies, Inc. WinSock Page
+     http://www.winsock.com
+
+   2) Windows 95 Software
+   ----------------------
+
+   Finding WinSock applications for Windows 95 is much more difficult
+   than finding software for Windows 3.x. Fortunately, there is a
+   new software archive that exclusively lists Windows 95 applications:
+
+   - Net Ex Unofficial Windows 95 Software Archive
+     http://www.netex.net/w95/index.html
+
+   - Windows95.com
+     http://www.windows95.com
+
+   3) Shareware is Not Freeware
+   ----------------------------
+
+   The WinSock community has been very fortunate to have many freeware 
+   applications available. For this, everyone should be grateful to the
+   many authors who have put many countless hours writing these programs.
+
+   However, not all winsock applications are freeware. Many are
+   shareware, and shareware is NOT the same as freeware. Please use your
+   conscience. If you try out a shareware program and find it to be
+   useful, send in the registration fee. The prices are usually quite
+   reasonable. Moreover, it encourages and enables further development of
+   many great applications.
+
+
+VIII.  Even More Information
+============================
+
+   1) Application FAQs
+   -------------------
+
+   There are a growing number of FAQs and an abundance of README files
+   available for many individual WinSock applications. Several FAQs are
+   listed below. The following site also provides a fairly descent 
+   selection of README files and other text documents covering a variety 
+   of WinSock applications.
+
+     ftp://ftp.best.com/pub/schaft/Internet_Apps/TXT_FILES
+
+     A) Free Agent
+     -------------
+
+     Free Agent Frequently Asked Questions:
+       http://www2.interpath.net:80/forte/agent/csfaq.htm
+
+     B) Netscape
+     -----------
+
+     Netscape Navigator - Frequently Asked Questions:
+       http://home.netscape.com/eng/mozilla/1.1/faq.html
+
+     C) News Xpress
+     --------------
+
+     Brian H. Smither has recently written the News Xpress FAQ. The 
+     author of News Xpress has also indicated that he plans to include
+     the FAQ with releases of News Xpress as well.
+ 
+     NewsXpress FAQ
+        http://www.malch.com/nxfaq.html
+
+     D) WinVN
+     --------
+
+     The WinVN FAQ is available both from the sites below and
+     is also included with recent versions of WinVN.
+
+     HTML Version:
+       Frequently Asked Questions about the WinVN Newsreader:
+         http://www.ksc.nasa.gov/software/winvn/faq/WINVNFAQ-Contents.html
+
+     ASCII Version:
+       Frequently Asked Questions about the WinVN Newsreader:
+         ftp://ftp.ksc.nasa.gov/pub/winvn/docs/winvnfaq.txt
+
+
+   2) Other WinSock Resources
+   --------------------------
+
+      A) #Winsock on IRC (EFFNet)
+      ---------------------------
+
+      The IRC channel #Winsock was created by Keith Veseleny (IRC nick:
+      VC). Participants discuss the latest WinSock applications, assist
+      new users, and are a friendly bunch.
+
+      For those unfamiliar with IRC bots, bots are special computer
+      programs which look like other IRC users and can respond to requests.
+      Two bots on #Winsock provide help and files, 24 hours a day.
+
+      Mookbot is #Winsock's help bot (portions of this FAQ are based on the 
+      help file first created for Mookbot).  Type "/msg mookbot help" for 
+      answers to common questions.
+
+      IgBot is #Winsock's file bot.  Many of the latest WinSock
+      applications can be downloaded from the bot using DCC file
+      transfer. Type "/msg igbot files" to see a list of available files
+      and "/msg igbot help filetransfer" for file transfer instructions.
+
+      B) #Winsock FAQ
+      ---------------
+
+      This is the faq that grew out of the IRC channel #Winsock. Much of
+      the information in this FAQ has been incorporated here, although it
+      does cover a few issues that this FAQ does not address.
+
+         http://mars.superlink.net/user/mook/winfaq.html
+
+   3) TCP/IP
+   ---------
+
+   Although similar to alt.winsock, the 
+   comp.os.ms-windows.networking.tcp-ip newsgroup is less crowded and
+   tends to discuss issues concerning TCP/IP with MS Windows itself
+   rather than the usually application-based discussion on alt.winsock.
+
+   The comp.os.ms-windows.networking.tcp-ip FAQ can be found at:
+     http://www.cis.ohio-state.edu/hypertext/faq/usenet/ibmpc-tcp-ip-faq/
+     top.html
+
+   4) Windows Data Communication
+   -----------------------------
+
+   The most important part of your SLIP or PPP Internet connection is, of
+   course, your telephone link. Malcolm Hoar has written a modem guide
+   that includes information to help you troubleshoot an unstable
+   connection. It also has several links to other sites with more
+   information on modems.
+
+      http://www.best.com/~malch/comfaq.html
+
+   5) SLiRP/TIA and Trumpet Winsock
+   --------------------------------
+
+   Lynn Larrow has written an excellent troubleshooting guide for TIA and
+   Trumpet Winsock. This FAQ also address several related issues as well.
+
+      http://www.webcom.com/~llarrow/tiarefg.html
+
+   6) SLIP Emulation
+   -----------------
+
+   For general discussion about SLIP Emulation, check out the
+   alt.dcom.slip-emulators newsgroup.
+
+   7) WinSock Developer Information
+   --------------------------------
+
+   Here are several resources available to WinSock Developers on the 
+   Internet.
+
+      A) Winsock Programming FAQ by John Thomas Willis
+      ------------------------------------------------
+
+      Offers links to source code for C/C++, Visual Basic, and Pascal.
+
+         http://www.LCS.com/program.html
+
+      B) WinSock 1.1 Standard
+      -----------------------
+
+         ftp://SunSite.UNC.EDU/pub/micro/pc-stuff/ms-windows/winsock/FAQ
+
+      C) WinSock 2.0 Standard (in development)
+      ----------------------------------------
+
+         ftp://sunsite.unc.edu/pub/micro/pc-stuff/ms-windows/winsock/
+         winsock-2.0
+
+      D) Microsoft's WinSock Developer Info
+      -------------------------------------
+
+         http://www.microsoft.com/products/developer/winsock/default.htm
+
+      E) Usenet
+      ---------
+
+         alt.winsock.programming
+
+      F) Stardust Technologies WinSock Resource Page
+      ----------------------------------------------
+
+         http://www.stardust.com/wsresource/wsresrce.html
+
+   8) Other alt.winsock.* Newsgroups
+   ---------------------------------
+
+         alt.winsock.ivc
+         alt.winsock.programming
+         alt.winsock.trumpet
+         alt.winsock.voice
+
+   The traffic on alt.winsock.ivc and alt.winsock.voice is often sparse
+   and overlapping. Although not as active as alt.winsock, both 
+   alt.winsock.programming and alt.winsock.trumpet are active groups.
+
+   Also, when posting, please do not post the same message to multiple
+   groups in the alt.winsock hierarchy.  
+
+   9) Winsock Newsgroups in the comp.os.ms-windows Hierarchy
+   ---------------------------------------------------------
+
+         comp.os.ms-windows.apps.winsock.mail
+         comp.os.ms-windows.apps.winsock.misc
+         comp.os.ms-windows.apps.winsock.news
+
+   10) UUEncoding and MIME Encoding Binary Files
+   ---------------------------------------------
+   Jim Howard has written an excellent FAQ on the subject.  You can
+   usually find the latest copy in many of the alt.binaries.pictures.*
+   newsgroups, or at:
+
+     ftp://rtfm.mit.edu/pub/usenet/news.answers/pictures-faq
+
+
+IX. Where to Find the FAQ
+=========================
+
+The alt.winsock FAQ will be posted to alt.winsock every other Monday. It
+can also be found in HTML format at:
+
+  http://www.well.com/user/nac/alt-winsock-faq.html
+
+The FAQ will be archived monthly through news.answers as of this posting.
+It can be found at:
+
+  ftp://rtfm.mit.edu/pub/usenet/news.answers/windows/winsock-faq
+
+Or send e-mail to mail-server@rtfm.mit.edu with the following message:
+
+  send usenet/news.answers/windows/winsock-faq
+
+
+------------------------------------------------------------------------
+
+X. Administrivia
+================
+
+This FAQ was instigated by Darran Edmundson, and compiled by Kevin Osborn
+(Kevin.Osborn@bc.edu) and Nancy Cedeno (nac@sirius.com), and includes
+information from the #Winsock FAQ by Mike J.M. (mook@mars.superlink.net).
+
+Thanks also to Bob Ennis, Lynn Larrow, Craig Larsen, Ed Sinkovits, Perry
+Grieb, and Aaron Weintraub.
+
+Comments and suggestions are welcome--this is a document in progress!
+ 
+--
+Nancy Cedeno           "I'm not procrastinating -- I'm researching!"
+Writer, netsurfer
+nac@well.com                 Author of "The Internet Tool Kit"
+nac@sirius.com                 (SYBEX, ISBN 0-7821-1688-4)
+
+
+---
+ * Origin: Usenet:Better Than Life (2:5100/128)
+
+

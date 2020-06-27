@@ -1,0 +1,206 @@
+
+                INTERRUPT LIST TO WINDOWS HELPFILE    12/17/92 first version
+                                                      02/08/93 second --"---
+
+          Table of contents
+                     Disclaimer                       1
+                     Preface                          1
+                     Tools                            1
+                     Work flow and time estimates     2
+                     Included files list              3
+                     Second version notes             3
+                     Making pop-up windows            4
+
+          DISCLAIMER
+
+I claim only copyright for included files. Use them as you see fit. No money
+required -- no warranties. If you make changes and redistrubute mark changes
+and comment orginal lines, do not delete. Mail your changes to me too!
+Many mentioned products are trademarked or copyrighted by their owners.
+
+
+          PREFACE
+
+Winhelp.exe is "system hypertext viewer" in windows, it doesn't go TSR and
+eat lot of memory, it is fast and reasonably rich in features. Interrupt list
+is a good project if you want to study making Windows help files and of course
+you need the finished inter.hlp version. What you also need is a FAST machine,
+OS/2, about 14MB of disk space and a weekend.
+What I have done is essentially only a search and replace filter for Spinellis
+int2hlp.bat 15-11-91 version.
+This is first version. I might try convert int2hlp.bat to produce format to
+hc directly, but not sooner than inter33 is released. This package was made
+to inter32 and all major problems stem from int2hlp.bat, apparently it is not
+quite able to handle inter32. Another possible improvement is to use hc 3.1
+specific features. You are free to do them yourself too. I have tried to format
+text with as little rtf commands as possible, yet making it readable. I you do
+have monospaced font you might make appropriate changes replacing terminal
+font in awk scripts.
+I looked also at inthelp package 26-10-91 version but it generated exception
+12h with complete list and it uses units not included, which I do not have.
+Otherwise it looked promising, so if you speak Pascal and have Object
+Professional you might try increasing stack size and recompile.
+Hc offers compression option but 3.00 doesn't compress much so you will want
+to place help file on a Stacker or a similar volume.
+
+        TOOLS YOU WILL NEED
+
+Except for the first item they are PD/SW and available on CD-ROM and internet
+
+OS/2 2.0
+recommended, you might find tools that work in ms-dos but you will have hard
+work finding them.
+
+perl intepreter
+There is a ms-dos version of perl but the one i have told very soon it was
+out of memory, and I gave 716KB. I found OS/2 version from Walnut Creek
+CD-ROM OS/2 may 92 \hobbes\os2_1_x\progrmng\perl4010.zoo
+
+Sort
+OS/2 or MS-DOS sort won't do, use gnu sort. See perl script for requirements.
+
+
+HC.EXE, Microsoft help compiler
+I found 3.00b (PD?) from CICA july 92 CD-ROM \win3\winword\hc300b.zip and
+3.00 or 3.1 is included with many compilers eg. BC++, TPW and Windows SDK.
+3.00b needs less memory than 3.00 but if you have 3.1 use it. Inter.hpj has
+some lines that should work with 3.1 but otherwise no 3.1 specifics are
+included. I ran hc in a 729KB OS/2 dos box and it may need more than usual
+600+ KB. Compression=off|0 in inter.hpj eases RAM requirements a little and
+file size grows only little. Context strings and titles apparently must be
+stored in memory so you will want to keep them short. The best cure for memory
+problems though is to run hc in OS/2 as it is bound binary. It also runs faster
+in protected mode because it has more memory accessible. It may come as a
+surprise to a TPW (1.0 at least) owner that included hc can be run also in
+OS/2.
+
+MAWK AWK interpreter
+Simtel20 june 92 CD-ROM \msdos\awk\mawk10.zip
+I have noticed that different AWK implementations find '\' with different
+number of \'s, eg. '\v' is found with '\\\\v' and sometimes with '\\v' in mawk.
+However, mawk was fastest of three different ones on the disk. A2p included
+with perl produced noncompiling, nondoing programs. I am not as familiar with
+perl as I am with AWK but actually I should learn also perl. In the meantime
+use mawk to slip work.
+
+HELPMAKE.EXE if you also want to compile to qh format
+This is also bound binary and 4os2 told that 3.5MB of memory had been in use.
+It is included in MASM 6.0 and others? Compile time about 3 h, file size about
+half of hc format.
+
+
+
+        WORK FLOW AND TIME ESTIMATES
+
+I used 33MHz 386 with 10MB memory and fast, normal IDE drives and all times
+are with this setup.
+
+Start with creating a small test file set. Take interrup.a, say up to int 10
+video mode set (tables should be monospaced and here is first big table), write
+to disk with name interrup.lst and run int2hlp.bat (from interxxc.zip). If no
+alarming errors occur other than complaints about false references, rename
+resulting files int.* eg to int2.*. All this is not neccessary but you may
+spot troubles with less waiting this way.
+
+Next follow int2hlp.bat instructions. With inter32 it took about 44 hours so
+you have time to check following steps with test file set.
+
+Run hlp2rtf.bat to convert from helpmake to hc format. This is fast, about
+5 min.
+
+As a final step run hc inter.hpj > inter.err and if it creates inter.hlp file
+you are ready. To find trouble spots you must interpret inter.err. The most
+serious trouble usually is inequal number of closing and opening braces and
+it is told with line: ' ... is not a usable rtf topic file. Warning lines
+you may safely ignore but they might give valuable hints, have luck! If you
+have editor that handles this big files and can find matching braces just see
+if offending file begins and ends with matching brace, if not, either near the
+match for ending or beginning brace you will fing erroneus spot. Inter32 had
+about 10 topics with same name in int.bot. You should concatenate topics
+with same name and remove title (begins with a $), browse sequence (+) and
+context string (#) lines from later duplicates. The browse sequence number
+ends with same number as hc reports as topic number. Hc ran 1 h 22 min in dos
+box and 52 min in OS/2 window.
+
+
+As an optional final step you might want to do some formatting with WinWord.
+Obvious one is uncommenting wanted deff line in *.awk files, running hlp2rtf
+and with WinWord changing all tables to monospaced font in intrtf.* files.
+Remember to save in rtf format and you are safer if you don't touch jump
+references. Hc 3.00b fixes some problems with WinWord 2.0. WinWord is not in
+my experience stable with huge files and giving it 3+ MB might cause a horrible
+death. One serious problem with using WinWord is that adding formatting
+causes hc to need more memory and file sizes grow quite much.
+
+Raimo Koski
+Uudenmaantie 23 K 3
+20720 TURKU
+FINLAND
+
+Files:
+
+Name         Desc.
+============
+BOT2RTF.AWK  int.bot filter
+TOC2RTF.AWK  int.toc filter
+FIL2RTF.AWK  int.fil filter
+BY2RTF.AWK   int.by? filter
+IDX2RTF.AWK  int.idx filter
+SCANSHOR.AWK scans for short topics, Win 3.1
+POPUPS.BAT   short topics to pop-up windows, Win 3.1
+WINHELP.DOC  this file
+HLP2HC.BAT   runs filters
+INTER.HPJ    hc project file
+
+
+
+
+SECOND VERSION NOTES
+
+Biggest change is adding and testing of hc version 3.1 specific features. Some
+minor fixes in *.awk filters but major ones in inter.hpj. With hc31 inter.hlp
+from inter33 is mere 2.3 megs compared with over 4 megs using hc30. I played
+with some new features introduced in hc31, you'll find them all in inter.hpj.
+
+For conviniency to users of different versions of hc is that same set of files
+work with 3.0 and 3.1. Error messages about inter.hpj vary with hc version,
+discard all about illegal options, they are meant for other version of hc.
+
+As hc31 doesn't run out of memory so easily as hc ver. 3.0 titles and keywords
+could be made longer and more descriptive. I was lazy and did not see much
+point in doing it.
+
+Here are my observations about hc31:
+Compression=high needs total of about 15 megs of temporary disk space! Set tmp
+environment variable to partition that has that much free space. Run in
+dos box, in OS/2 box you'll get silly 'out of file handles' message. No more
+memory problems in dos box. If you want to use help files with winhelp 3.0
+compile with hc 3.0, incompatibility is propably due to compression method, but
+since .hpj files work with either hc version (copy CONTENTS= value to INDEX=
+line) switching compilers is easier. I found hc31 from WIN32 SDK CD-ROM, a real
+bargain provided you have a CD-ROM drive. Hc30 on that same disk is not same
+as earlier versions of hc ver. 3.0, it is similar to hc31 in memory
+utilization, so run it in dos box if you compile huge help files.
+
+
+MAKING POP-UP WINDOWS
+
+Winhelp 3.0 had pop-up windows that were shown only as long as user hold mouse
+button down. Proceeding to a topic that had link in a pop-up window was
+impossible. Winhelp 3.1 keeps pop-up window until next click and jumping is
+possible.
+I made an awk script that converts all references to short topics into jumps
+to pop-up windows. Short topic is defined by a constant 'ln_limit' in
+scanshor.awk. Scanshor.awk is quite strange construction, it scans intrtf.bot
+for short topics and when found adds a line to an another awk script. Mawk has
+script size limitations and therefore Scanshor.awk must count lines it adds
+to a new awk script. When size limit is exceeded it creates yet an another new
+script. Calling of new awk scripts is done by a .bat file which is also created
+by scanshor.awk. The whole process is most conviniently started with
+popups.bat. Disk size need is two times intrtf.* or about 9MB during the run
+which takes about 8 hours. I have mixed feelings about scanshor.awk, on the
+other hand it avoids awk's limitations rather cleverly but it is so strange
+and rather slow that I suspect it is not so clever. Anyway, it works!
+Running popups.bat is not required, hc30 handles the results but winhelp 3.0
+doesn't (see above).
+

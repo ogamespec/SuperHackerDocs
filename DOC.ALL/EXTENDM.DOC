@@ -1,0 +1,344 @@
+                Using Extended Memory on the PC AT
+                __________________________________
+
+            Paul Thomson Dr.Dobb's Journal January 1989
+
+ The PC AT BIOS contains a service - service 87h of interrupt 15h - forcopying
+ memory in protected mode, thereby allowing you to copy memory anywhere in the
+ 16-MByte address range or the 80286.This means that you can copy memory from
+ real-mode memory to extended memory amd back again.Before calling this servi-
+ ce routine,however,you must set up a data structure for protected-mode opera-
+ tion.This structure is called a global descriptor table.It contains six des-
+ criptors, each with 8 bytes.Two of these are segment descriptors that descri-
+ be the source and target byffers.The rest of the descriptors that will be
+ initialized by the BIOS routine.The 8-byte segment descriptors are shown in
+ Table 1.
+
+ Before calling the service routine,you must set up the registers as shown in
+ Table 2.
+
+ There is also another interrupt 15h service - service 88h - which is useful
+ for extended memory.Service 88h returns the number of Kbytes of extended me-
+ mory (which starts at 0x100000) in AX.Since service 88h will not return an
+ error when accessing nonexistent memory,service 88h can be used to determine
+ if the move will involve valid memory locations.
+
+ Listing One shows a Microsft C (compact or large model) version of the move
+ routine (movphy),the top of memory routine (getext),and a test routine (main)
+ while Listing Two is an assembly language version movphy will copy memory
+ in 64K-byte chunks given the source and destination addresses in 24-bit format
+ getext,which must be called once (before movphy is called for the first time)
+ sets up a static variable with the maximum physical address of extended memory.
+ The test copies a string between extended and real-mode memory to show that
+ the routine is working correctly.An error can be discovered be checking the
+ routine return code (AX in C, AH in the assembler routine).Before you use the
+ program, check that your extended memory is not occypied by VDISK;the program
+ can wipe out your virtual disk files and/or render VDISK unusable.
+
+
+ Table 1: Segment descriptor formats
+ ___________________________________
+
+ Descriptor              Format
+ __________              ______
+
+ 16 bits                 Null : Reserved for future use
+
+  8 bits                 Access rights byte:Contains attribute flags for
+                         the segment
+
+ 24 bits                 Physical address:Any real mode address must be conver-
+                         ted to a 24 bit physical address by the following
+                         formula: (segreg*16)+offset
+
+ 16 bits                 Segment length in bytes:Words to transfer*2
+
+
+ Table 2: Setup for registers
+ ____________________________
+
+
+         AH            = 87H
+         ES:SI         = Real mode address of global descriptor table
+         CX            = Count of words to copy
+
+
+
+ Listing One
+ ___________
+
+/***
+ *** ROUTINE FOR COPYING MEMORY USING PHYSICAL ADDRESSES OF THE PCAT.
+ ***     COMPILE USING MICROSOFT C V4.0, LARGE OR COMPACT MODEL
+ ***/
+
+#include <stdio.h>
+#include <dos.h>
+
+#define PHYS(s)  (((long)FP_SEG(s) << 4) + FP_OFS(s))   /* CALC PHYS ADDR */
+#define BUFSZ 16                                        /* BUF SIZE IN BYTES */
+#define PHY_ADDR 0x100000L                              /* BEG OF EXT MEMORY */
+
+char *buf="ORIGINAL MESSAGE";
+
+/* TEST MOVPHY BY COPYING A MESSAGE TO EXTENDED MEMORY AND BACK */
+main()
+{
+  extsize();
+  puts(buf);
+  movphy(PHY_ADDR,PHYS(buf),BUFSZ/2);       /* MOVE TO EXTENDED MEMORY */
+  sprintf(buf,"XXXXXXXXXXXXXXXXXX");        /* OVERWRITE BUFFER */
+  puts(buf);
+  movphy(PHYS(buf),PHY_ADDR,BUFSZ/2);       /* MOVE BACK FROM EXTENDED MEM */
+  puts(buf);
+}
+
+static long maxext;               /* HOLDS MAX ADDRESS OF EXTEBDED MEMORY */
+extsize()
+{
+
+     union REGS r;
+
+     r.h.ah = 0x88;
+     int86(0x15,&r,&r);           /* RETURNS SIZE OF EXTENDED MEM IN KBYTES */
+     maxext = (r.x.ax + 1024L)*1024; /* FIND TOP OF EXTENDED MEMORY */
+}
+
+/* MOVE MEMORY USING PHYSICAL ADDRESSES */
+movphy(target,source,wcount)
+unsigned long target;             /* PHYSICAL 24 BIT TARGET ADDRESS */
+unsigned long source;             /* PHYSICAL 24 BIT SOURCE ADDRESS */
+int wcount;                       /* 16 BIT COUNT OF WORDS TO MOVE 0 -32767 */
+{
+    int bcount;
+    char gdt[48];              /* GLOBAL DESCRIPTOR TABLE (6 DESCRIPTORS * 8)*/
+    char *g = gdt;             /* POINTER TP gdt FOR MACROS FP_SEG & FP_OFF */
+    union REGS r;              /* HOLDS REGISTER VALUE FOR int86x CALL */
+    struct SREGS s;            /* HOLDS SEG REGISTER VALUES FOR int86x CALL */
+
+    if(wcount <= 0)            /* CHECK FOR WORD COUNT TOO BIG OR 0 */
+       return(wcount);
+    bcount = wcount*2;         /* SIZE IN BYTES TO MOVE */
+
+    if(target+bcount >= maxext || source+bcount >= maxext)
+       return(4);
+
+    /* DESCRIPTORS 0 AND 1 ARE DUMMIES (NULL) */
+    gdt[0]=gdt[1]=gdt[2]=gdt[3]=gdt[4]=gdt[5]=gdt[6]=gdt[7]=0;
+    gdt[8]=gdt[9]=gdt[10]=gdt[11]=gdt[12]=gdt[13]=gdt[14]=gdt[15]=0;
+
+    /* DESCRIPTOR 2: SOURCE */
+    gdt[16] = bcount;                 /* BYTE COUNT */
+    gdt[17] = bcount>>8;
+    gdt[18] = source;                 /* PHYSICAL ADDRESS TO COPY FROM */
+    gdt[19] = source>>8;
+    gdt[20] = source>>16;
+    gdt[21] = 0x93;                   /* ACCESS RIGHT BYTE */
+    gdt[22] = gdt[23] = 0;            /* UNUSED ENTRIES */
+
+    /* DESCRIPTORS 4 AND 5 ARE DUMMIES (NULL) */
+    gdt[32]=gdt[33]=gdt[34]=gdt[35]=gdt[36]=gdt[37]=gdt[38]=gdt[39]=0;
+    gdt[40]=gdt[41]=gdt[42]=gdt[43]=gdt[44]=gdt[45]=gdt[46]=gdt[47]=0;
+
+    r.h.ah = 0x87;                    /* AH = SERVICE 0x87 */
+    r.x.cx = wcount;                  /* CX = COUNT OF WORDS TO TRANSFER */
+    s.es   = FP_SEG(g);               /* ES:SI = SEGMENT:OFFSET OF GDT */
+    r.x.si = FP_OFF(g);
+
+    int86x(0x15,&r,&r,&s);            /* PERFORM BIOS INTERRUPT 0x15 */
+
+    return(r.h.ah);                   /* RETURN STATUS:
+                                         0: SUCCESSFUL MOVE
+                                         1: RAM PARITY ERROR
+                                         2: EXCEPRION ERROR
+                                         3: ADDRESS LINE 20 FAILED
+                                         4: MEMORY OUT OF RANGE
+                                         < 0: WORD COUNT >32767
+                                      */
+
+
+ Listing Two
+ ___________
+
+; ROUTINE FOR COPYING MEMORY USING PHYSICAL ADDRESSES ON THE PCAT.
+; DO NOT USE THIS ROUTINE WITH A VURTUAL DISK IN EXTENDED MEMORY.
+
+.286p                                     ;allow 286 instructions
+code segment
+assume cs:code,ds:code,es:code,ss:code
+
+; TEST MOVPHY BY COPYING A MESSAGE TO EXTENDED MEMORY AND BACK
+
+test proc near
+     mov  ax,cs                           ;allow access of data in code seg
+     mov  ds,ax
+
+     call extsize                         ;find top of extended memory
+
+     mov  dx,offset mess1                 ;print message
+     mov  ah,9
+     int  21h
+
+     mov  dx,cs                           ;calculate phys addr from real addr
+                                          ;of message buf
+     shr  dx,12                           ;si = bits 0-15,dl = bits 15-23
+     mov  ax,cs
+     shl  ax,4
+     mov  si,offset mess1
+     add  si,ax
+     adc  dl,0
+     push si                              ;save phys address for later
+     push dx
+
+     mov  dh,10h                          ;top of extended memory (100000h)
+     mov  di,0                            ;di = bits 0-15,dh = 16-23
+
+     mov  cx,8                            ;size of message buf in words
+     call movphy                          ;move message to extended memory
+
+     sub  bx,bx                           ;overwrite message buffer
+top:
+     mov  al,mess2[bx]
+     mov  mess1[bx],al
+     inc  bx
+     cmp  bx,16
+     jl   top
+     mov  dx,offset mess1
+
+     mov  ah,9                            ;print ovewritten message buffer
+     int  21h
+
+     pop  dx                              ;get phys buffer address from before
+     pop  di                              ;di = bits 0-15 dh = 16-23
+
+     mov  cx,8                            ;size of message buf in words
+     call movphy                          ;move message back from extended mem
+
+     mov  dx,offset mess1                 ;print restored message
+     mov  ah,9
+     int  21h
+
+     mov  ah,4ch
+     int  21h
+test endp
+mess1     db 'ORIGINAL MESSAGE',0dh,0ah,'$'
+mess2     db 'XXXXXXXXXXXXXXXX'
+
+;extsize - GET PHYSICAL ADDRESS OF TOP OF EXTENDED MEMORY
+;ADDRESS RETURNED IN max_hi,max-lo
+extsize proc near
+     mov  ah,88h
+     int  15h
+     mov  cx,1024
+     add  ax,cx
+     mul  cx
+     mov  max_hi,dl
+     mov  max_lo,ax
+     ret
+extsize   endp
+max_hi    db ?
+max_lo    dw ?
+
+;movphy - MOVE MEMORY USING PHYSICAL ADDRESSES
+;CALLED WITH:
+;       dh:di = physical 24 bit target address.
+;       dl:si = physical 24 bit source address.
+;       cx    = word count
+;STATUS RETURNED IN ah:
+;       0 : successful move
+;       1 : RAM parity error
+;       2 : exception error
+;       3 : address line 20 failed
+;       4 : memory out of range
+;     255 : word count > 32767.
+
+public movphy
+movphy proc near
+     push ds
+     mov  ax,cs                           ;allow access of gdt in code segment
+     mov  ds,ax
+     mov  es,ax                           ;es = segment of gdt for int 15h
+     mov  ax,cx                           ;calculate maximum target address
+     shl  ax,1
+     mov  bl,dh
+     add  ax,di
+     adc  bl,0
+     cmp  bl,max_hi                       ;check if target address out of range
+     jl   $target_ok
+     jg   $bad_range
+     cmp  ax,max_lo
+     jge  $bad_range
+$target_ok:
+     mov  cx,ax                           ;calculate maximum source address
+     shl  ax,1
+     mov  bl,dl
+     add  ax,si
+     adc  bl,0
+     cmp  bl,max_hi                       ;check if source address out of range
+     jl   $source_ok
+     jg   $bad_range
+     cmp  ax,max_lo
+     jl   $source_ok
+$bad_range:
+     mov  ah,4                            ;if accessing non-existent memory,
+                                          ;return error 4
+     jmp  $xend
+$source_ok:
+
+     cmp  cx,0                            ;check for word count too big or 0
+     jg   $wcount_ok
+     mov  ax,cx                           ;return 255 if word count > 32767
+     jmp  $xend
+$wcount_ok:
+
+;DESCRIPTORS 0,1,4,5 ARE DUMMIES (NULL)
+     sub  ax,ax
+
+     mov  gdt,ax                          ;descriptor 0
+     mov  gdt+2,ax
+     mov  gdt+4,ax
+     mov  gdt+6,ax
+
+     mov  gdt+8,ax                        ;descriptor 1
+     mov  gdt+10,ax
+     mov  gdt+12,ax
+     mov  gdt+14,ax
+
+     mov  gdt+32,ax                       ;descriptor 4
+     mov  gdt+34,ax
+     mov  gdt+36,ax
+     mov  gdt+38,ax
+
+     mov  gdt+40,ax                       ;descriptor 5
+     mov  gdt+42,ax
+     mov  gdt+44,ax
+     mov  gdt+46,ax
+
+     mov  gdt+22,ax                       ;unused entries in descriptor 2
+     mov  gdt+30,ax                       ;unused entries in descriptor 3
+
+     mov  ax,cx                           ;change word count to byte count
+     shl  ax,1
+     mov  gdt+16,ax                       ;byte count descriptor 2
+     mov  gdt+24,ax                       ;byte count descriptor 3
+
+     mov  gdt+18,si                       ;physical address to copy from
+     mov  al,dl
+     mov  ah,93h                          ;access right byte
+     mov  gdt+28,ax
+
+     mov  ah,87h
+     mov  si,offset gdt                   ;es:si = segment:offset of global
+                                          ;descriptor table
+     int  15h                             ;perform move
+$xend:
+     pop  ds
+     ret
+
+     gdt  dw 24 dup (?)                   ;global descriptor table
+
+movphy endp
+code ends
+end
+
+

@@ -1,0 +1,34 @@
+		éëíéêéÜçé, Norton Utilities 6.0 !!!
+-------------------------------------------------------------------
+
+If you use Norton Utilities 6.0 - be careful !!!
+------------------------------------------------
+See PC WEEK July 29, 1991, Vol. 8 No. 30 !
+------------------------------------------
+In brief :
+------------------------------------*------------------------------
+     operation			    | result
+------------------------------------*------------------------------
+Using Norton Speed Disk with the    | Computer freezes; FAT and
+DOS 5.0 FastOpen caching directory  | boot sectors on hard disk
+utility 			    | destroyed
+------------------------------------*------------------------------
+Running Norton Cache with	    | Computer freezes; corrupts
+Desqview, QEMM or Windows	    | Windows files; fatal error
+				    | message
+------------------------------------*------------------------------
+Marking files in Erase Protect that | Computer freezes
+should be moved to a less-used part |
+of the hard disk when deleted	    |
+------------------------------------*------------------------------
+Searching directories that have no  | Error message: can't find
+subdirectory using the *.* command  | directory in *.*
+in Text Search			    |
+------------------------------------*------------------------------
+Copying files to or from	    | Operation is aborted, system
+low-density 5.25-inch disks when    | reboots
+Norton Cache is installed	    |
+------------------------------------*------------------------------
+For more information see PC WEEK July 29, 1991, page 8
+(article "Glitches in Norton Utilities 6.0 Prompt Update from Symantec")
+

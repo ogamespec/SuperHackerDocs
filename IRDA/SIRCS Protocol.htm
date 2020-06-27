@@ -1,0 +1,593 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.78 [en] (Win98; U) [Netscape]">
+   <title>SIRCS Protocol</title>
+</head>
+<body background="../texture.gif">
+
+<center>
+<h2>
+Sony SIRCS Protocol Specifications</h2></center>
+
+<hr>
+<pre>Scott Coleman and Edward Cheung
+
+
+&nbsp;&nbsp; The following is a reference guide to using a microcomputer to&nbsp;
+control Sony equipment via the SIRCS protocol.&nbsp; This can occur either&nbsp;
+via an infrared interface, or with a Control-S port. It is being&nbsp;
+released in the hope that it will be useful to some of you. Apparently&nbsp;
+there is no documentation on the protocol available from Sony (at least,&nbsp;
+that's what their publications office said). Thus, the following&nbsp;
+information is a synthesis of bits and pieces obtained from many&nbsp;
+sources, including the Sony Service Manual for the RMT-124 IR&nbsp;
+controller, some net.friends, and by connecting an oscilloscope across&nbsp;
+the LED in a Sony IR remote controller and observing the signals sent as
+various buttons on the controller were pressed, and writing computer&nbsp;
+programs to try various codes. The timings given may not be exactly&nbsp;
+those used by the Sony products, but these timings have been used&nbsp;
+successfully in controlling a Sony SL-HF900 VCR and a SL-HF400 VCR via&nbsp;
+their Control-S ports, and a XBR32 TV and SL-V585HF VCR via infrared, so&nbsp;
+we figure they're pretty close. We make no guarantees of accuracy for&nbsp;
+any of the information contained in this document, although we'd&nbsp;
+appreciate hearing from you if you find any errors contained herein.&nbsp;
+Also, the names used here may not correspond to any "official" Sony&nbsp;
+names used for the various aspects of the protocol. We have made up some
+reasonably descriptive names for various things, since there is no&nbsp;
+official reference information (that we are aware of) which would tell&nbsp;
+me the official names.&nbsp;
+
+
+Acknowledgment
+
+&nbsp;&nbsp; We'd like to acknowledge the assistance of Paul Milazzo&nbsp;
+(milazzo@bbn.com) for providing valuable pointers in the right direction&nbsp;
+when Scott first began to research this topic. Without his response to Scott's
+usenet post, He might never have figured all this stuff out and gotten Scott's
+controller program working.
+
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Protocol Description
+
+
+&nbsp;&nbsp; The wired Control-S protocol used by various Sony video products is&nbsp;
+simply a TTL-level baseband version of the signals sent by the Sony&nbsp;
+remote controllers (such as the RMT-124). The Control-S command word is&nbsp;
+12 or 15 bits long, and consists of a 5 or 8-bit device ID code followed&nbsp;
+by a 7-bit button code. The control-S data packet is preceded by a 2.4
+millisecond TTL logic-1 pulse (start bit) followed by 0.4 ms of logic-0.&nbsp;
+Each 1 bit in the control word is represented by a 1.2 ms logic-1 level
+followed by a 0.4 ms logic-0 level, and each 0 bit is 0.8 ms high, 0.4&nbsp;
+ms low. The end of the control packet is always a TTL logic-0 level, and&nbsp;
+the total length of each packet usually fixed at 45 ms in length. The&nbsp;
+bits in each control word are sent in increasing bit position order&nbsp;
+(i.e. low order bit first, high order bit last). As an example, let's&nbsp;
+look at the command to toggle the power on a SL-HF900. The device ID for&nbsp;
+the VCR is 00010, and the button code for the power switch is 0010101.&nbsp;
+Thus, the entire control word is 000100010101. To send this command to&nbsp;
+the VCR, we first send out a 2.4 ms start bit, and then send the bits in
+reverse order (i.e. 101010001000). We then hold the Control-S port to&nbsp;
+logic-0 level to make the total packet time (i.e. the time since the&nbsp;
+rising edge of the start pulse) equal 45 ms.&nbsp;
+
+&nbsp;&nbsp; As mentioned above, command words are usually 12 bits long.&nbsp; However,&nbsp;
+some commands are 15 bit long, the device code in that case is 8 bits&nbsp;
+long.&nbsp; For example to command a Sony XBR32 TV to turn off Picture-in-
+Picture, you send command 110 (decimal) to device 164 (decimal).&nbsp; Note&nbsp;
+that the 12-bit command can be distinguished from a 15-bit command&nbsp;
+becuase it is three bits shorter.&nbsp; Since both (0 and 1) logic levels&nbsp;
+cause the transmission of hi and low transitions, one can tell the&nbsp;
+length of the bit stream.
+
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Interfacing
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To send commands to a VCR equipped with a Control-S port, your&nbsp;
+computer will need a TTL-level binary output port. A standard IBM-PC&nbsp;
+parallel printer port works well, as does a data acquisition and control
+adapter (IBM DACA board). As long as the port can send a TTL-level&nbsp;
+signal (0VDC = logic-0, 5VDC = logic-1) you should be OK. Connect the&nbsp;
+output line from the port to a 1/8" mini phone plug, with the tip&nbsp;
+carrying the TTL signal and the ring grounded. A simple software routine&nbsp;
+can then be written to toggle the status of a bit in the output port
+corresponding to the output line. Setting the corresponding bit in the&nbsp;
+output port will cause the line to go high, clearing the bit will cause&nbsp;
+the line to go low. By controlling the pattern and timing of these high&nbsp;
+and low signals, the commands may be sent to the VCR.
+
+Instead of a hard wired connection, you can also emulate a pushbutton&nbsp;
+remote and flash an Infra Red LED to the appliance(s) to be controlled.&nbsp;&nbsp;
+One way is to set up a 40 kHz LED flasher which is gated by the&nbsp;
+computerUs TTL output line mentioned above.
+
+The following pseudocode outlines a routine to send a command through a&nbsp;
+port setup such as that described above:
+
+
+begin
+
+/* send the start bit */
+
+raise Ctrl-S line to TTL logic-1
+
+wait 2.4 ms
+
+lower Ctrl-S line to logic-0
+
+wait 0.4 ms
+
+
+for current_bit = low_order_bit to high_order_bit do begin
+
+&nbsp;&nbsp;&nbsp; raise Ctrl-S line to logic-1
+
+&nbsp;&nbsp;&nbsp; if (current_bit is a 1)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; wait 1.2 ms
+
+&nbsp;&nbsp;&nbsp; else
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; wait 0.6 ms
+
+&nbsp;&nbsp;&nbsp; lower Ctrl-S line to logic-0
+
+&nbsp;&nbsp;&nbsp; wait 0.6ms
+
+&nbsp;&nbsp;&nbsp; end
+
+
+wait a sufficient time to make the total message duration 45 ms (see&nbsp;
+paragraph below).
+
+end
+
+
+We derived our SIRCS information independently from each other.&nbsp; Because&nbsp;
+of that there are slight differences in our findings.&nbsp; Among the results
+gathered by Ed is that the above packet needs to be sent twice (with a&nbsp;
+small gap of a few msec. in between) in order for the device to respond;&nbsp;
+he also did not observe the need to have the packet take a full 45 msec.&nbsp;&nbsp;
+This was not the case with Scott's findings.&nbsp; In addition, Ed observed&nbsp;
+slightly different timing on the high and low duration of the stream.&nbsp;&nbsp;
+One possible reason for this difference is that Ed used an Infra Red&nbsp;
+interface, while Scott used the wired interface.&nbsp; We suspect that there&nbsp;
+is sufficient tolerance built into the receivers to allow a wide range&nbsp;
+of timing.
+A note from Robert Rolf&nbsp;<robert.rolf@UAlberta.CA> confirms Ed's timings:
+--Begin mail message
+Extracting from the RM101 service manual.
+'
+The "Guide pulse" is 2.4mSec. The IR rcvr uses it to set AGC level.
+The base bit rate is .6mSec, 1.2mSec. The frame rate is 45.0 mSec.
+The remote control outputs a minimum of THREE frames.
+'
+
+I suspect the the reason for the differences in your bit timings may
+be due to the variations in the IR detectors you used.
+I found that the RipShack Sharp IR module has a delay of about 200uS
+and that it varied depending on signal strength.
+
+Most of the Sony remotes use a 480Khz ceramic oscillator (for low cost)
+so there can be a 5% variation in timing from part to part.
+I would suggest using HEX numbers for the commands since its a lot easier
+to map to them from a binary scope trace. Its also a lot easier to
+manually contruct commands from DEVICE+COMMAND if they're in hex,
+and patterns in the commands would be more readily seen as well.
+
+I don't recall if you explained SIRC (serial infra red control).
+-- End mail message
+
+
+Example Device and Command codes
+
+
+&nbsp;&nbsp; The following are some&nbsp; of the&nbsp; codes we've&nbsp; discovered while&nbsp;
+experimenting with the protocol. Note that not all of these commands&nbsp;
+work with all VCR or TV models.&nbsp; For example, button code 22 causes the
+SL-HF900 to eject a tape, but the SL-HF400 ignores that command. If you&nbsp;
+come across any codes which are not listed here, we'd appreciate it if&nbsp;
+you'd send us a list of the codes you discover.
+
+
+
+Note: All numbers in the following table are base 10 (may be updated to hex
+in the future)
+
+Device ID Codes
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; TV
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp; VTR1
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp; VTR2
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6&nbsp;&nbsp; laserdisk
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7&nbsp;&nbsp; VTR2
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 11&nbsp; VTR3
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12&nbsp; Surround Sound Processor
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 18&nbsp; Equalizer
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 16&nbsp; Cassette Deck and Tuner
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 17&nbsp; CD Player
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 164&nbsp; TV digital effects (note 8 bit device code)
+
+&nbsp;&nbsp; Note that Ed found VTR2 to be Device code 7, while Scott found it to&nbsp;
+be 2.&nbsp; Some devices can be contained in the same box.&nbsp; For example, the
+Surround Sound Processor, Equalizer, and Tuner are in one box, and the&nbsp;
+TV digital effects is combined with the TV.
+
+
+Button Codes for VCR
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 000&nbsp;&nbsp;&nbsp;&nbsp; 1 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 001&nbsp;&nbsp;&nbsp;&nbsp; 2 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 002&nbsp;&nbsp;&nbsp;&nbsp; 3 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 003&nbsp;&nbsp;&nbsp;&nbsp; 4 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 004&nbsp;&nbsp;&nbsp;&nbsp; 5 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 005&nbsp;&nbsp;&nbsp;&nbsp; 6 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 006&nbsp;&nbsp;&nbsp;&nbsp; 7 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 007&nbsp;&nbsp;&nbsp;&nbsp; 8 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 008&nbsp;&nbsp;&nbsp;&nbsp; 9 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 009&nbsp;&nbsp;&nbsp;&nbsp; 10 button/0 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 010&nbsp;&nbsp;&nbsp;&nbsp; 11 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 011&nbsp;&nbsp;&nbsp;&nbsp; 12 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 012&nbsp;&nbsp;&nbsp;&nbsp; 13 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 013&nbsp;&nbsp;&nbsp;&nbsp; 14 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 020&nbsp;&nbsp;&nbsp;&nbsp; X 2 play w/sound&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 021&nbsp;&nbsp;&nbsp;&nbsp; power&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 022&nbsp;&nbsp;&nbsp;&nbsp; eject&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 023&nbsp;&nbsp;&nbsp;&nbsp; L-CH/R-CH/Stereo&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 024&nbsp;&nbsp;&nbsp;&nbsp; stop&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 025&nbsp;&nbsp;&nbsp;&nbsp; pause&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 026&nbsp;&nbsp;&nbsp;&nbsp; play&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 027&nbsp;&nbsp;&nbsp;&nbsp; rewind&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 028&nbsp;&nbsp;&nbsp;&nbsp; FF&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 029&nbsp;&nbsp;&nbsp;&nbsp; record&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 032&nbsp;&nbsp;&nbsp;&nbsp; pause engage&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 035&nbsp;&nbsp;&nbsp;&nbsp; X 1/5 play
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 040&nbsp;&nbsp;&nbsp;&nbsp; reverse visual scan&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 041&nbsp;&nbsp;&nbsp;&nbsp; forward visual scan&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 042&nbsp;&nbsp;&nbsp;&nbsp; TV/VTR&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 045&nbsp;&nbsp;&nbsp;&nbsp; VTR from TV&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 047&nbsp;&nbsp;&nbsp;&nbsp; power off&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 048&nbsp;&nbsp;&nbsp;&nbsp; single frame reverse/slow reverse play&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 049&nbsp;&nbsp;&nbsp;&nbsp; single frame advance/slow forward play&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 060&nbsp;&nbsp;&nbsp;&nbsp; aux&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 070&nbsp;&nbsp;&nbsp;&nbsp; counter reset&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 078&nbsp;&nbsp;&nbsp;&nbsp; TV/VTR&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 083&nbsp;&nbsp;&nbsp;&nbsp; index (scan)&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 106&nbsp;&nbsp;&nbsp;&nbsp; edit play&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 107&nbsp;&nbsp;&nbsp;&nbsp; mark&nbsp;
+
+
+Button Codes for TV
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 000&nbsp;&nbsp;&nbsp;&nbsp; 1 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 001&nbsp;&nbsp;&nbsp;&nbsp; 2 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 002&nbsp;&nbsp;&nbsp;&nbsp; 3 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 003&nbsp;&nbsp;&nbsp;&nbsp; 4 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 004&nbsp;&nbsp;&nbsp;&nbsp; 5 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 005&nbsp;&nbsp;&nbsp;&nbsp; 6 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 006&nbsp;&nbsp;&nbsp;&nbsp; 7 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 007&nbsp;&nbsp;&nbsp;&nbsp; 8 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 008&nbsp;&nbsp;&nbsp;&nbsp; 9 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 009&nbsp;&nbsp;&nbsp;&nbsp; 10 button/0 button&nbsp;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 011&nbsp;&nbsp;&nbsp;&nbsp; Enter
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 016&nbsp;&nbsp;&nbsp;&nbsp; channel up
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 017&nbsp;&nbsp;&nbsp;&nbsp; channel down
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 018&nbsp;&nbsp;&nbsp;&nbsp; volume up
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 019&nbsp;&nbsp;&nbsp;&nbsp; volume down
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 020&nbsp;&nbsp;&nbsp;&nbsp; Mute
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 021&nbsp;&nbsp;&nbsp;&nbsp; Power
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 022&nbsp;&nbsp;&nbsp;&nbsp; Reset TV
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 023&nbsp;&nbsp;&nbsp;&nbsp; Audio Mode:Mono/SAP/Stereo
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 024&nbsp;&nbsp;&nbsp;&nbsp; Picture up
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 025&nbsp;&nbsp;&nbsp;&nbsp; Picture down
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 026&nbsp;&nbsp;&nbsp;&nbsp; Color up
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 027&nbsp;&nbsp;&nbsp;&nbsp; Color down
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 030&nbsp;&nbsp;&nbsp;&nbsp; Brightness up
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 031&nbsp;&nbsp;&nbsp;&nbsp; Brightness down
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 032&nbsp;&nbsp;&nbsp;&nbsp; Hue up
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 033&nbsp;&nbsp;&nbsp;&nbsp; Hue down
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 034&nbsp;&nbsp;&nbsp;&nbsp; Sharpness up
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 035&nbsp;&nbsp;&nbsp;&nbsp; Sharpness down
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 036&nbsp;&nbsp;&nbsp;&nbsp; Select TV tuner
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 038&nbsp;&nbsp;&nbsp;&nbsp; Balance Left
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 039&nbsp;&nbsp;&nbsp;&nbsp; Balance Right
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 041&nbsp;&nbsp;&nbsp;&nbsp; Surround on/off
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 042&nbsp;&nbsp;&nbsp;&nbsp; Aux/Ant
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 047&nbsp;&nbsp;&nbsp;&nbsp; Power off
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 048&nbsp;&nbsp;&nbsp;&nbsp; Time display
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 054&nbsp;&nbsp;&nbsp;&nbsp; Sleep Timer
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 058&nbsp;&nbsp;&nbsp;&nbsp; Channel Display
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 059&nbsp;&nbsp;&nbsp;&nbsp; Channel jump
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 064&nbsp;&nbsp;&nbsp;&nbsp; Select Input Video1
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 065&nbsp;&nbsp;&nbsp;&nbsp; Select Input Video2
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 066&nbsp;&nbsp;&nbsp;&nbsp; Select Input Video3
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 074&nbsp;&nbsp;&nbsp;&nbsp; Noise Reduction on/off
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 078&nbsp;&nbsp;&nbsp;&nbsp; Cable/Broadcast
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 079&nbsp;&nbsp;&nbsp;&nbsp; Notch Filter on/off
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 088&nbsp;&nbsp;&nbsp;&nbsp; PIP channel up
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 089&nbsp;&nbsp;&nbsp;&nbsp; PIP channel down
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 091&nbsp;&nbsp;&nbsp;&nbsp; PIP on
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 092&nbsp;&nbsp;&nbsp;&nbsp; Freeze screen
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 094&nbsp;&nbsp;&nbsp;&nbsp; PIP position
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 095&nbsp;&nbsp;&nbsp;&nbsp; PIP swap
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 096&nbsp;&nbsp;&nbsp;&nbsp; Guide
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 097&nbsp;&nbsp;&nbsp;&nbsp; Video setup
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 098&nbsp;&nbsp;&nbsp;&nbsp; Audio setup
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 099&nbsp;&nbsp;&nbsp;&nbsp; Exit setup
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 107&nbsp;&nbsp;&nbsp;&nbsp; Auto Program
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 112&nbsp;&nbsp;&nbsp;&nbsp; Treble up
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 113&nbsp;&nbsp;&nbsp;&nbsp; Treble down
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 114&nbsp;&nbsp;&nbsp;&nbsp; Bass up
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 115&nbsp;&nbsp;&nbsp;&nbsp; Bass down
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 116&nbsp;&nbsp;&nbsp;&nbsp; + key
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 117&nbsp;&nbsp;&nbsp;&nbsp; - key
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 120&nbsp;&nbsp;&nbsp;&nbsp; Add channel
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 121&nbsp;&nbsp;&nbsp;&nbsp; Delete channel
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 125&nbsp;&nbsp;&nbsp;&nbsp; Trinitone on/off
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 127&nbsp;&nbsp;&nbsp;&nbsp; Displays a red RtestS on the screen
+
+
+Button Codes for TV digital effects
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 110&nbsp;&nbsp;&nbsp;&nbsp; PIP off
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 115&nbsp;&nbsp;&nbsp;&nbsp; replay last 15 seconds
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 116&nbsp;&nbsp;&nbsp;&nbsp; channel preview
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 119&nbsp;&nbsp;&nbsp;&nbsp; Split screen
+
+
+If you have any questions, or would like to share some new device/button&nbsp;
+codes, we can be reached at the following addresses:
+
+
+Scott Coleman:&nbsp; tmkk@uiuc.edu&nbsp;&nbsp;
+
+Edward Cheung:&nbsp; edward.cheung@gsfc.nasa.gov
+From news.gsfc.nasa.gov!newsfeed.gsfc.nasa.gov!ukma!news.uky.edu!gatech!psuvax1!news.math.psu.edu!news.cac.psu.edu!newsserver.jvnc.net!newsserver2.jvnc.net!howland.reston.ans.net!newsfeed.internetmci.com!in1.uu.net!noc.near.net!news.ipswitch.com!ddl Wed Dec 13 10:07:57 EST 1995
+Article: 13287 of comp.home.automation
+Path: news.gsfc.nasa.gov!newsfeed.gsfc.nasa.gov!ukma!news.uky.edu!gatech!psuvax1!news.math.psu.edu!news.cac.psu.edu!newsserver.jvnc.net!newsserver2.jvnc.net!howland.reston.ans.net!newsfeed.internetmci.com!in1.uu.net!noc.near.net!news.ipswitch.com!ddl
+From: ddl@harvard.edu (Dan Lanciani)
+Newsgroups: comp.home.automation
+Subject: Re: IR Remote Specifications
+Message-ID: &lt;3506@news.IPSWITCH.COM>
+Date: 11 Dec 95 21:27:02 GMT
+References:&nbsp;<jdabbs.256.0BAC1545@eme.com> &lt;4ahcq3$8kb@post.gsfc.nasa.gov>
+Organization: Internet&nbsp;
+Lines: 111
+
+Here is a slightly larger set of Sony VCR button codes that might be of
+use.&nbsp; They are collected from several different VCRs, so not all will
+work on all models, of course...&nbsp; Name is at the left; the 2 is the
+device code and the final number is the button code.
+
+1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 0
+2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 1
+3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 2
+4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 3
+5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 4
+6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 5
+7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 6
+8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 7
+9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 8
+0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 9
+10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 9
+11&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 10
+12&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 11
+enter&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 11
+13&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 12
+14&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 13
+#
+ch+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 16
+channel-up&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 16
+ch-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 17
+channel-down&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 17
+#
+x2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 20
+power&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 21
+eject&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 22
+audio-monitor&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 23
+stop&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 24
+pause&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 25
+play&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 26
+rewind&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 27
+rew&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 27
+fast-forward&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 28
+ff&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 28
+record&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 29
+rec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 29
+# 30-31 noop
+pause-engage&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 32
+# 33 noop
+x1/10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 34
+x1/5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 35
+# 36-37 noop
+scan&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 38
+track-auto/man&nbsp; sony&nbsp;&nbsp;&nbsp; 2 39
+search-rew&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 40
+search-ff&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 41
+tv/vtr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 42
+# 43-44 noop
+vtr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 45
+power-on&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 46
+power-off&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 47
+<direction	sony	2 48
+direction>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 49
+# 50 noop
+x1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 51
+# 52-54
+track-normal&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 55
+# 56-57
+rewind-play&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 58
+# 59 noop
+aux&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 60
+# 61-64 noop
+counter-remain&nbsp; sony&nbsp;&nbsp;&nbsp; 2 65
+up&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 66
+down&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 67
+tracking-up&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 68
+tracking-down&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 69
+counter-reset&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 70
+# 71 noop
+index-mark&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 72
+index-erase&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 73
+# 74-75 noop
+time-search&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 76
+menu&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 77
+tv&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 78
+input-select&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 79
+ee&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 80
+execute&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 81
+quick-timer&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 82
+index&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 83
+# 84-87 noop
+tape-speed&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 88
+tape-return&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 89
+display&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 90
+# 91-95 noop
+timer-set&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 96
+right&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 97
+next&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 97
+left&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 98
+timer-clear&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 99
+timer-check&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 100
+timer-record&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 101
+timer-rec&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 101
+# 102-103 noop
+insert-audio&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 104
+insert-video&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 104
+edit-assemble&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 106
+edit-mark&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 107
+edit-start&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 108
+#
+digital-off&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 110
+speed+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 111
+speed-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 112
+stop-motion&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 113
+flash-motion&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 115
+digital-scan&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 124
+pause-on&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sony&nbsp;&nbsp;&nbsp; 2 126</pre>
+
+<center><a href="ha.htm">Home Automation Main Page</a><a href="../default.htm"></a>
+<p><a href="../default.htm">Back Home</a></center>
+
+</body>
+</html>

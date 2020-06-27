@@ -1,0 +1,43 @@
+
+			 AstroFORTH
+		software development system
+
+
+     The AstroFORTH  system  is  an  implementation  of  the
+FORTH-83 language  standard for personal computers, equipped
+with the  i8086/i8088 microprocessors. The AstroFORTH system
+may  be  used  to  design  software  of  different  kinds  -
+operating  systems,  workstations  intellectual  interfaces,
+interactive   information    management   systems,   on-line
+tutorials, computer games etc.
+     The system  operates under the control of the operating
+system MS  DOS or  its analogues. For the system to work one
+needs 128K  main memory  (without taking into account memory
+for operating  system and  resident software), a floppy/hard
+disk drive,  a colour/monochrome  display controller and (if
+required) a  printer. AstroFORTH uses standard mechanisms of
+operating system for external memory access, which allows to
+manipulate   with programs  and data,  keeping	in  external
+files  of   the  FORTH-system	by  using  standard  MS  DOS
+utilities.
+     In addition  to standard  primitives  of  the  FORTH-83
+language the  nucleus of the AstroFORTH system contains user
+window interface  (window control  system),  interface	with
+operating  system,   access   procedures   to	video	RAM,
+intersegment memory access and other tools.
+     The AstroFORTH  system includes  full implementation of
+the FORTH-83 standard and following software tools:
+
+   - fullscreen editing of the FORTH input text;
+   - text editor for screen files with fullscreen editing;
+   - dynamically loaded FORTH-assembler, which provides code
+     generation for  the i8086/i8088  processor and  for the
+     i8087 coprocessor;
+   - time-sharing execution of FORTH-definitions;
+   - access procedures	to the	DOS  file  system  via	file
+     handles;
+   - interactive FORTH-debugger;
+   - subsystem of  the interactive  "help", allowing  to get
+     detailed descriptions of FORTH-definitions.
+
+

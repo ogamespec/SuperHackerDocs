@@ -1,0 +1,1361 @@
+Function Requests Specification
+
+There is a need for access to features from the MSCDEX redirector that transend DOS
+capabilities. This proposal documents a means that the application can use to talk directly
+to MSCDEX to request information or set parameters that only MSCDEX can provide. This
+document outlines some of the features I think MSCDEX should support. Comments and
+suggestions are welcome.
+
+Access to these functions is provided through an INT 2Fh interface. AH contains 15h which
+is what MSCDEX will use to tell its requests from those of other INT 2Fh handlers. AL will
+contain the code of the function to be performed.
+
+Function Request Command Codes:
+
+Contents of AL   Function
+
+00h              Get Number of CD-ROM Drive Letters
+01h              Get CD-ROM Drive Device List
+02h              Get Copyright File Name
+03h              Get Abstract File Name
+04h              Get Bibliographic Doc File Name
+05h              Read VTOC
+06h              Turn Debugging On
+07h              Turn Debugging Off
+08h              Absolute Disk Read
+09h              Absolute Disk Write
+0Ah              Reserved
+0Bh             CD-ROM Drive Check
+0Ch             MSCDEX Version
+0Dh             Get CD-ROM Drive Letters
+0Eh             Get/Set Volume Descriptor Preference
+0Fh             Get Directory Entry
+10h             Send Device Request
+11h-0FFh         Reserved
+
+Get Number of CD-ROM Drive Letters
+
+     AX   1500h
+     BX   Number of CD-ROM drive letters used
+     CX   Starting drive letter of CD-ROM drive letters (A=0, B=1, ...Z=25)
+
+MSCDEX will return the number of CD-ROM drive letters in BX and the starting drive letter
+in CX. The first CD-ROM device will be installed at the starting drive letter and subsequent
+drives will be assigned the next greater drive letter. A single device driver may be assigned
+to more than one drive letter, such as the case of a device driver that supports multiple
+units. MSCDEX keeps track of which sub-unit a particular drive letter is assigned to.
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴�
+NOTE: This function can be used to determine if MSCDEX is installed by setting BX to zero
+before executing INT 2Fh. MSCDEX is not installed if BX is still zero on return.
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴�
+
+Also, in a networking environment, one cannot assume that drive letters will always be
+assigned contiguously beginning with the starting drive letter. Use function Get CD-ROM drive
+letters instead.
+
+Get CD-ROM Drive Device List
+
+     AX        1501h
+     ES:BX     Transfer address; pointer to buffer to copy drive letter device list
+
+The buffer must be large enough to hold the device list. By calling function Get Number of
+CD-ROM Drive Letters, one can find out the number of CD-ROM drive letters and the buffer size
+will be a multiple of that. This will be an absolute maximum of 26. Each drive letter device
+entry will consist of one byte for the sub-unit followed by 4 bytes for the address of the
+device header assigned to that drive letter. This byte for the sub-unit takes care of the
+problem of distinguishing which unit is assigned to which drive letter for device drivers
+that handle sub-units.
+
+For example: Suppose there are two installed CD-ROM device drivers, FOO, which supports 1
+sub-unit, and BAR, which supports two sub-units, on a system with 2 floppy drives (A=0 and
+B=1) and a hard disk (C=2). Then asking for the number of CD-ROM drive letters will report
+that there are 3 drive letters used starting at drive letter D=3. ES:BX must point to a
+buffer that is at least 3 * 5 = 15 bytes long. The buffer will be filled as follows:
+
+ES:BX  = Buffer
+
+Buffer   DB   0                        ; sub-unit of FOO on drive letter D:
+         DD   <far addr of FOO device header>
+         DB   0                        ; sub-unit of BAR on drive letter E:
+         DD   <far addr of BAR device header>
+         DB   1                        ; sub-unit of BAR on drive letter F:
+         DD   <far addr of BAR device header>
+
+Get Copyright File Name
+
+     AX     1502h
+     ES:BX  Transfer address; pointer to a 38 byte buffer
+     CX     CD-ROM drive letter (A=0, B=1, ... Z=25)
+
+MSCDEX will copy the name of the copyright file in the VTOC for that drive letter into the
+buffer space provided. The copyright filename is presently restricted in the High Sierra
+proposal to 8.3 but we require 38 bytes here for the possibility at a later date of handling
+31 character file names plus 6 bytes for a ';' and 5 digit version number and 1 byte for a
+NULL at the end. Carry will be set if the drive letter is not a CD-ROM drive and
+error_invalid_drive (15) will be returned in AX.
+
+Get Abstract File Name
+
+     AX     1503h
+     ES:BX  Transfer address; pointer to a 38 byte buffer
+     CX     CD-ROM drive letter (A=0, B=1, ... Z=25)
+
+MSCDEX will copy the name of the abstract file in the VTOC for that drive letter into the
+buffer space provided. The abstract filename is presently restricted in the High Sierra
+proposal to 8.3 but we require 38 bytes here for the possibility at a later date of handling
+31 character file names plus 6 bytes for a ';' and 5 digit version number and 1 byte for a
+NULL at the end. Carry will be set if the drive letter is not a CD-ROM drive and
+error_invalid_drive (15) will be returned in AX.
+
+Get Bibliographic Documentation File Name
+
+     AX     1504h
+     ES:BX  Transfer address; pointer to a 38 byte buffer
+     CX     CD-ROM drive letter (A=0, B=1, ... Z=25)
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴�
+NOTE: This function is provided in advance of the ISO standard. For discs complying with the
+May 28th draft from the High Sierra Group, this function will return a null string as though
+the field is blank on the disc.
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴�
+
+MSCDEX will copy the name of the bibliographic documentation file in the VTOC for that drive
+letter into the buffer space provided. The bibliographic documentation filename is presently
+restricted in the High Sierra proposal to 8.3 but we require 38 bytes here for the
+possibility at a later date of handling 31 character file names plus 6 bytes for a ';' and
+5 digit version number and 1 byte for a NULL at the end. Carry will be set if the drive
+letter is not a CD-ROM drive and error_invalid_drive (15) will be returned in AX.
+
+Read VTOC
+
+     AX     1505h
+     ES:BX  Transfer address; pointer to a 2048 byte buffer
+     CX     CD-ROM Drive letter
+     DX     Sector index
+
+This function is provided to scan the Volume Descriptors on a disc. A sector index of 0 will
+read the first volume descriptor, 1 reads the second, etc. If there is no error, then AX will
+return 1 if the volume descriptor read was the standard volume descriptor, 0FFh if it was
+the volume descriptor terminator and there are no more volume descriptors to be read, and
+0 for all other types.
+
+If there is an error in processing the request, the Carry Flag will be set and AL will
+contain the MS-DOS error code. These will be either error_invalid_drive (15) or
+error_not_ready (21).
+
+Turn Debugging On
+
+     AX     1506h
+     BX     Debugging function to enable
+
+This is used for development and is reserved. It will be non-functional in the production
+version of MSCDEX.
+
+Turn Debugging Off
+
+     AX     1507h
+     BX     Debugging function to disable
+
+This is used for development and is reserved. It will be non-functional in the production
+version of MSCDEX.
+
+Absolute Disk Read
+
+     AX     1508h
+     ES:BX  Disk Transfer Address; pointer to a buffer to copy data to
+     CX     CD-ROM Drive letter (A=0, B=1, ... Z=25)
+     DX     Number of sectors to read
+     SI:DI  Starting sector
+
+This function corresponds to INT 25h. It will be converted directly into a READ_LONG device
+driver request and sent to the correct device driver. There are no requirements for this call
+to pop flags as there are with INT 25h. SI holds the high word and DI the low word for the
+starting sector to begin reading from.
+
+If there is an error in processing the request, the Carry Flag will be set and AL will
+contain the MS-DOS error code. These will be either error_invalid_drive (15) or
+error_not_ready (21).
+
+Absolute Disk Write
+
+     AX     1509h
+     ES:BX  Disk Transfer Address; pointer to buffer to copy data from
+     CX     CD-ROM Drive letter
+     DX     Number of sectors to write
+     SI:DI  Starting sector
+
+This function corresponds to INT 26h. It is not supported at this time and is reserved. It
+is intended to be used by authoring systems.
+
+CD-ROM Drive Check
+
+     AX     150Bh
+     BX     Signature word
+     CX     CD-ROM Drive letter (A=0, B=1,...Z=25)
+
+This function returns whether or not a drive letter is a CD-ROM drive supported by MSCDEX.
+If the extensions are installed, BX will be set to ADADh. If the drive letter is supported
+by MSCDEX, then AX is set to a non- zero value. AX is set to zero if the drive is not
+supported. One must be sure to check the signature word to know that MSCDEX is installed and
+that AX has not been modified by another INT 2Fh handler.
+
+MSCDEX Version
+
+     AX     150Ch
+     BX     MSCDEX Version
+
+This function returns the version number of the CD-ROM Extensions installed on the system.
+BH contains the major version number and BL contains the minor version. Values returned are
+binary. For example, BX would contain 0x020a for version 2.10. This function does not work
+on versions earlier than 2.00 so if BX is zero before and after this function is called, an
+earlier version of MSCDEX is installed.
+
+Get CD-ROM Drive Letters
+
+     AX     150Dh
+     ES:BX  Transfer address; pointer to buffer to copy drive letter device list
+The buffer must be large enough to hold a list of drive letters. The buffer size will be a
+multiple of the number of drives returned by the Get Number of CD-ROM Drive Letters function.
+There are a maximum of 26 drive letters. Each drive letter entry is a single byte (0=A:, 1=B:
+.. 25=Z:) that exactly corresponds each respective entry returned by the command Get CD-ROM
+Drive Device List. This command is included to allow applications to locate CD-ROM drives
+supported by MSCDEX. CD-ROM drive letters may sometimes be noncontiguous so this command is
+necessary.
+
+For example: Suppose there is an installed CD-ROM device driver FOO supporting 3 sub-units
+on a system with 2 floppy drives (A=0 and B=1), a hard disk (C=2) and a network drive (E=4).
+Note the network drive occupies one of the drive letters normally taken by a CD-ROM drive.
+MSCDEX assigns that CD-ROM drive to the next available drive letter. Asking for the number
+of CD-ROM drive letters reports there are 3 drive letters used starting at drive letter D=3.
+ES:BX must point to a buffer that is at least 3 bytes long and will be filled as follows:
+
+ES:BX   = Buffer
+
+Buffer  DB   3                   ; drive letter for CD-ROM (D=3)
+        DB   5                   ; drive letter for CD-ROM (F=5)
+        DB   6                   ; drive letter for CD-ROM (G=6)
+
+Get/Set Volume Descriptor Preference
+
+     AX     150Eh
+     BX     0 - Get Preference. 1 - Set Preference
+     CX     CD-ROM Drive letter (A=0, B=1,...Z=25)
+     DX     if BX = Get Preference
+                    DX = 0
+                    MSCDEX will return preference settings in DX
+            if BX = Set Preference
+                    DH = volume descriptor preference
+                         1 - PVD - Primary Volume  Descriptor
+                         2 - SVD - Supplementary Volume Descriptor
+                    DL = Supplementary Volume Descriptor Preference
+                          if DH = PVD
+                                  DL = 0
+                          if DH = SVD
+                                  1 - shift-Kanji (an unregistered ISO coded character set)
+
+Normally, MSCDEX will scan for the PVD (Primary Volume Descriptor) when initializing a CD-
+ROM. This behavior can be altered for each individual drive to scan for a SVD (Supplementary
+Volume Descriptor) instead. A CD-ROM drive set to scan for an SVD will use the PVD if there
+is no SVD present. There can be more than one SVD on a CD-ROM but at present, MSCDEX will
+only recognize SVDs for shift-Kanji CD-ROMs. Carry will be set, AX will be set to
+error_invalid_function (1) and DX will be set to 0 if the coded character set is not
+recognized.
+
+If BX contains Get_Preference, MSCDEX will report the present setting for that drive. If DX
+is still zero on return, that version of MSCDEX does not support this function or reading
+SVDs. Otherwise DX will contain the setting.
+
+If the drive letter is not a CD-ROM drive, carry will be set and error_invalid_drive (15)
+will be returned in AX. If BX is anything other than Get/Set_Preference, AX will be set to
+error_invalid_function (1) and carry will be set.
+
+Get Directory Entry
+
+     AX     150Fh
+     CX     CD-ROM Drive letter (A=0, B=1,...Z=25)
+     ES:BX  Pointer to buffer with null-terminated path name
+     SI:DI  Pointer to buffer to copy directory record information
+     AX     0 is returned if the disc is High Sierra, 1 is returned if the
+            disc is ISO-9660
+
+The pathname expected is a null-terminated string e.g. char far *path = "\\a\\b\\c.txt";
+(note: the "\\" characters map to a single '\' character in C so this would be '\a\b\c.txt'
+if printed). The path must consist only of valid High Sierra or ISO-9660 filename characters
+and must not contain any wildcards nor may it include entries for '.' or '..'.
+
+The buffer to copy the directory record to can be a maximum of 255 bytes long including all
+system use information. The directory record is a direct copy from the directory file and
+it is up to the application to choose what fields to use.
+
+Carry will be set and an error code returned if there were problems with the request. The
+error codes will be error_invalid_drive (15) if the drive letter is incorrect,
+error_not_ready (21) if the disc didn't initialize correctly, error_file_not_found (2) if
+the file was not found and error_no_more_files (18) if the pattern fails to find a match or
+if mscdex failed to allocate buffers.
+
+The format of the directory record for High Sierra discs is:
+
+     /* High Sierra directory entry structure */
+typedef struct hsg_dir_entry {
+    uchar      len_dr;        /* length of this directory entry  */
+    uchar      XAR_len;       /* length of XAR in LBN's          */
+    ulong      loc_extentI;   /* LBN of data Intel format        */
+    ulong      loc_extentM;   /* LBN of data Molorola format     */
+    ulong      data_lenI;     /* length of file Intel format     */
+    ulong      data_lenM;     /* length of file Motorola format  */
+    uchar      record_time[6];/* date and time                   */
+    uchar      file_flags_hsg;/* 8 flags                         */
+    uchar      reserved;      /* reserved field                  */
+    uchar      il_size;       /* interleave size                 */
+    uchar      il_skip;       /* interleave skip factor          */
+    ushort     VSSNI;         /* volume set sequence num Intel   */
+    ushort     VSSNM;         /* volume set sequence num Motorola*/
+    uchar      len_fi;        /* length of name                  */
+    uchar      file_id[...];  /* variable length name upto 32 chars       */
+    uchar      padding;       /* optional padding if file_id is odd length*/
+    uchar      sys_data[...]  /* variable length system data              */
+    } hsg_dir_entry;
+
+The format of the directory record for ISO-9660 discs is:
+
+     /* ISO-9660 directory entry structure */
+typedef struct iso_dir_entry {
+    uchar      len_dr;        /* length of this directory entry  */
+    uchar      XAR_len;       /* length of XAR in LBN's          */
+    ulong      loc_extentI;   /* LBN of data Intel format        */
+    ulong      loc_extentM;   /* LBN of data Molorola format     */
+    ulong      data_lenI;     /* length of file Intel format     */
+    ulong      data_lenM;     /* length of file Motorola format  */
+    uchar      record_time[7];/* date and time                   */
+    uchar      file_flags_iso;/* 8 flags                         */
+    uchar      il_size;       /* interleave size                 */
+    uchar      il_skip;       /* interleave skip factor          */
+    ushort     VSSNI;         /* volume set sequence num Intel   */
+    ushort     VSSNM;         /* volume set sequence num Motorola*/
+    uchar      len_fi;        /* length of name                  */
+    uchar      file_id[...];  /* variable length name upto 32 chars       */
+    uchar      padding;       /* optional padding if file_id is odd length*/
+    uchar      sys_data[...]  /* variable length system data              */
+    } iso_dir_entry;
+
+The difference between the two forms is the file flag byte moved to account for an additional
+byte of date and time used for a Greenwich mean time offset. See the May 28th draft of the
+High Sierra proposal or ISO-9660 for a more complete explanation of the fields. Note that
+the C structs above are not syntactically correct; C does not allow variable length arrays
+as struct elements.
+
+Send Device Driver Request
+
+     AX     1510h
+     CX     CD-ROM drive letter (A=0, B=1, ... Z=25)
+     ES:BX  Address of CD-ROM device driver request header
+
+This function has been added to simplify communication with CD-ROM drivers and help prevent
+contention between applications that wish to communicate with the device driver. It is highly
+recommended that all applications communicate with device drivers through this function
+request. Applications using this function will not have to locate the device driver. The
+format of the request header is specified by the Microsoft MS-DOS CD-ROM Extensions Hardware-
+Dependent Device Driver Specification.
+
+Hardware-Dependent Device Driver Specification
+
+Intent
+
+This document (Document Number: 000080010-100-O00-1186) describes the CD-ROM hardware-
+dependent device driver and its interface with MSCDEX.EXE, the MS- DOS CD-ROM Extensions
+resident program. Differences between CD-ROM drives and hard- or floppy-disk drives account
+for the differences in this device driver specification from the normal MS-DOS block and
+character device driver specification. The chapters on device drivers in the MS-DOS
+Programmer's Reference Manual (MS-PRM) provide more information.
+
+The MS-DOS operating system reads CONFIG.SYS and installs the device. MSCDEX.EXE performs
+an open system call on the device driver name in order to communicate with it and uses an
+IOCTL call to ask the device driver for the address of its device header. From the device
+header address, MSCDEX.EXE locates the device driver's interrupt and strategy routines. After
+that, all requests the device driver receives come directly from MSCDEX.EXE, not MS- DOS.
+To avoid reentrancy problems and allow MSCDEX to monitor all media changes, all other
+applications that wish to communicate directly with CD- ROM device drivers should do so
+through the Send Device Driver Request INT 2Fh function 10h. MSCDEX.EXE interfaces with MS-
+DOS so that normal requests for I/O with files on a CD-ROM drive down to the MS-DOS INT 21h
+service layer will work just as they would for a normal MS-DOS device.
+
+
+Installation
+
+The device driver will be installed in the same way as any other device with an entry in
+CONFIG.SYS. The syntax is:
+
+  DEVICE=<filename> /D:<device_name> /N:<number of drives>
+
+The following are examples:
+
+  DEVICE=HITACHI.SYS /D:MSCD001 /D:MSCD002
+
+  DEVICE=SONY.SYS    /D:MSCD003 /N:2
+
+
+The arguments will be the character device names that will be used on the command line when
+starting MSCDEX.EXE so that it can find and communicate with the device driver.
+
+A device driver may support one or more physical drives or logical disks. This may be done
+by having multiple device headers in the device driver file (in which case it will be
+necessary to have more than one device_name on the command line - one for each device header;
+see the HITACHI.SYS example above) or through the use of subunits. Each disk handled by a
+device driver that supports multiple disks using subunits is addressed by the subunit field
+of the request header when a request is made for that disk. A device driver that supports
+more than one disk can share code and data instead of requiring separate device drivers for
+each disk. A "jukebox" CD-ROM system would be an example of a CD-ROM device that might wish
+to support more than one drive or a disk pack using a single device driver.
+
+Device drivers that use multiple subunits should use the optional switch /n:<number of
+drives> to say how many drives are present. If not present, the default number of drives is
+1. If the driver can tell how many drives are installed without a command line switch, then
+this argument is not necessary. Unless there are special considerations, it is better
+practice to support multiple drives using subunits than to have multiple device headers in
+the same device driver file.
+
+
+Device Header
+
+The device header is an extension to what is described in the MS-PRM.
+
+DevHdr    DD   -1        ; Ptr to next driver in file or -1 if last driver
+          DW   ?         ; Device attributes
+          DW   ?         ; Device strategy entry point
+          DW   ?         ; Device interrupt entry point
+          DB   8 dup (?) ; Character device name field
+          DW   0         ; Reserved
+          DB   0         ; Drive letter
+          DB   ?         ; Number of units
+
+The following are the device attributes for MSCDEX.EXE device drivers:
+
+  Bit 15         1       - Character device
+  Bit 14         1       - IOCTL supported
+  Bit 13         0       - Output 'till  busy
+  Bit 12         0       - Reserved
+  Bit 11         1       - OPEN/CLOSE/RM supported
+  Bit 10-4       0       - Reserved
+  Bit  3         0       - Dev is CLOCK
+  Bit  2         0       - Dev is NUL
+  Bit  1         0       - Dev is STO
+  Bit  0         0       - Dev is STI
+
+MSCDEX.EXE device drivers will be character devices that understand IOCTL calls and handle
+OPEN/CLOSE/RM calls.
+
+The drive letter field is a read-only field for the device driver and is initialized to 0.
+The field is for MSCDEX.EXE to use when it assigns the device driver to a drive letter (A
+= 1, B = 2...Z = 26). It should never be modified by the device driver. For drivers that
+support more than one unit, the drive letter will indicate the first unit, and each
+successive unit is assigned the next higher drive letter. For example, if the device driver
+has four units defined (0-3), it requires four drive letters. The position of the driver in
+the list of all drivers determines which units correspond to which drive letters. If driver
+ALPHA is the first driver in the device list, and it defines 4 units (0-3), they will be A,
+B, C, and D. If BETA is the second driver and defines three units (0-2), they will be E, F,
+and G, and so on. The theoretical limit to the number of drive letters is 63, but it should
+be noted that the device installation code will not allow the installation of a device if
+it would result in a drive letter > 'Z' (5Ah). All block device drivers present in the
+standard resident BIOS will be placed ahead of installable device drivers in the list.
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴�
+NOTE:
+  It is important that one set lastdrive=<letter> in CONFIG.SYS to accommodate the additional
+drive letters that CD-ROM device drivers will require.
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴�
+
+The number-of-units field is set by the device driver to the number of disks that are
+supported. Normal character devices do not support more than one unit and MS-DOS does not
+expect a character device to handle more than one unit or have a nonzero subunit value in
+the request header. Since these device drivers are not called by MS-DOS directly, this is
+not a problem. Nonetheless, the number of units returned by the device driver in the number-
+of-units field during the INIT call must be 0, since MS-DOS makes the INIT call and does not
+expect a nonzero value for a character device. MSCDEX.EXE will never see what is returned
+anyway, and relies on the number- of-units field in the device header.
+
+Sample device header:
+
+HsgDrv    DD   -1             ; Pointer to next device
+          DW   0c800h         ; Device attributes
+          DW   STRATEGY       ; Pointer to device strategy routine
+          DW   DEVINT         ; Pointer to device interrupt routine
+          DB   'HSG-CD1 '     ; 8-byte character device name field
+          DW   0              ; Reserved (must be zero)
+          DB   0              ; Drive letter (must be zero)
+          DB   1              ; Number of units supported (one or more)
+
+As with other MS-DOS device drivers, the code originates at offset 0, not 100H. The first
+device header will be at offset 0 of the code segment. The pointer to the next driver is a
+double word field (offset/segment) that is the address of the next device driver in the list,
+or -1 if the device header is the only one or the last in the list. The strategy and
+interrupt entry points are word fields and must be offsets into the same segment as the
+device header. The device driver is expected to overwrite the name(s) in each of its one or
+more device headers with the <device_name> command line arguments during its initialization.
+
+MSCDEX.EXE will call the device driver in the following manner:
+
+  1.  MSCDEX.EXE makes a far call to the strategy entry.
+
+  2.  MSCDEX.EXE passes device driver information in a request header to the strategy
+routine.
+
+  3.  MSCDEX.EXE makes a far call to the interrupt entry.
+
+
+Request header
+
+MSCDEX.EXE will call the device's strategy routine with the address of a request header in
+ES:BX. The format of the request header is the same as what is described in the MS-PRM.
+
+ReqHdr    DB   ?         ; Length in bytes of request header
+          DB   ?         ; Subunit code for minor devices
+          DB   ?         ; Command code field
+          DW   ?         ; Status
+          DB   8 dup (?) ; Reserved
+
+Status
+
+The status word also has the same format as described in the MS-PRM. It is 0 on entry and
+is set by the device driver.
+
+  Bit 15         - Error bit
+  Bit 14-10      - Reserved
+  Bit  9         - Busy
+  Bit  8         - Done
+  Bit  7-0       - Error code (bit 15 on)
+
+Bit 15, the error bit, is set by the device driver if an error is detected or if an invalid
+request is made to the driver. The low 8 bits indicate the error code.
+
+Bit 9, the busy bit, should be set by the device driver when the drive is in audio play mode.
+Device drivers should fail all requests to the physical device that require head movement
+when the device is playing and return the request with this bit and the error bit set and
+an error code. Requests that would not interrupt audio play may return without error but will
+also have this bit set when the drive is in audio play mode. Play mode can be terminated
+prematurely with a reset or STOP AUDIO request and a new request can be made at that point.
+Monitoring this bit in each successive request, an Audio Q-Channel Info IOCTL for example,
+will tell when play mode is complete.
+
+Bit 8, the done bit, is set by the device driver when the operation is finished.
+
+Error codes are the following:
+
+  0  Write-protect violation
+  1  Unknown unit
+  2  Drive not ready
+  3  Unknown command
+  4  CRC error
+  5  Bad drive request structure length
+  6  Seek error
+  7  Unknown media
+  8  Sector not found
+  9  Printer out of paper
+  A  Write fault
+  B  Read fault
+  C  General failure
+  D  Reserved
+  E  Reserved
+  F  Invalid disk change
+
+Command Code Field
+
+The following values are valid command codes:
+
+    0  INIT
+    1   MEDIA CHECK (block devices)
+    2   BUILD BPB (block devices)
+    3  IOCTL INPUT
+    4   INPUT (read)
+    5   NONDESTRUCTIVE INPUT NO WAIT
+    6   INPUT STATUS
+    7  INPUT FLUSH
+    8   OUTPUT (write)
+    9   OUTPUT WITH VERIFY
+   10   OUTPUT STATUS
+   11  OUTPUT FLUSH
+   12  IOCTL OUTPUT
+   13  DEVICE OPEN
+   14  DEVICE CLOSE
+   15   REMOVABLE MEDIA (block devices)
+   16   OUTPUT UNTIL BUSY
+  128  READ LONG                (NEW) 
+  129   Reserved
+  130  READ LONG PREFETCH       (NEW)
+  131  SEEK                     (NEW)
+  132  PLAY AUDIO               (NEW)
+  133  STOP AUDIO               (NEW)
+  134  WRITE LONG               (NEW)
+  135  WRITE LONG VERIFY        (NEW)
+  136  RESUME AUDIO             (NEW)
+
+Unsupported or illegal commands will set the error bit and return the error code for Unknown
+Command. This includes command codes 1, 2, 4, 5, 6, 8, 9, 10, 15, 16, and 129; and 11, 134
+and 135 for systems that do not support writing.
+
+If, in the time since the last request to that device driver unit, the media has changed,
+the device driver will return the error code for invalid disk change and set the error bit.
+MSCDEX.EXE will then decide whether to retry the request or abort it.
+
+The minimal CD-ROM device driver will read cooked Mode 1 data sectors using HSG addressing
+mode and return appropriate values for the IOCTL calls. Most other features enhance
+performance or add useful capabilities.
+
+
+INIT
+
+Command code = 0
+ES:BX = INIT
+
+INIT      DB   13 dup (0); Request header
+          DB   0         ; Number of units (must be 0)
+          DD   ?         ; End address
+          DD   ?         ; Ptr to BPB array
+          DB   0         ; Block device number
+
+This call is made only once, when the device is installed. INIT and a single IOCTL call for
+the device header address are the only device driver calls that come directly from MS-DOS.
+Because the INIT function is called from MS- DOS, the number of units returned is 0, as for
+normal MS-DOS character devices. MSCDEX.EXE will get the number of units supported from the
+device header.
+
+The device must return the END ADDRESS, which is a DWORD pointer to the end of the portion
+of the device driver to remain resident. Code and data following the pointer is used for
+initialization and then discarded. If there are multiple device drivers in a single file,
+the ending address returned by the last INIT call will be the one that MS-DOS uses, but it
+is recommended that all the device drivers in the file return the same address. The code to
+remain resident for all the devices in a single file should be grouped together low in memory
+with the initialization code for all devices following it in memory.
+
+The pointer to BPB array points to the character after the "=" on the line in CONFIG.SYS that
+caused this device driver to be loaded. This data is read-only and allows the device driver
+to scan the invocation line for parameters. This line is terminated by a carriage return or
+a line feed.
+During initialization, the device driver must set the device name field in the device header
+to the argument provided on the invocation line in CONFIG.SYS. The device driver must also
+check that the device_name command line argument is a legal 8-character filename and pad it
+out to 8 characters with spaces (20H) when copying it to the device name field.
+
+The block device number and number of units are both 0 for character devices.
+
+
+READ (IOCTL Input)
+
+Command code = 3
+ES:BX = IOCTLI
+
+IOCTLI    DB   13 dup (0); Request header
+          DB   0         ; Media descriptor byte from BPB
+          DD   ?         ; Transfer address
+          DW   ?         ; Number of bytes to transfer
+          DW   0         ; Starting sector number
+          DD   0         ; DWORD ptr to requested vol ID if error 0FH
+
+The media descriptor byte, starting sector number, and volume ID fields are all 0.
+
+The transfer address points to a control block that is used to communicate with the device
+driver. The first byte of the control block determines the request that is being made. If
+the command code is reserved or the function not supported, then the device driver will
+return the error code for Unknown Command. If, for some reason, the device driver is not able
+to process the request at that time, it will return the error code for Drive Not Ready.
+
+          Number of Bytes
+ Code       to Transfer                 Function
+
+   0             5            Return Address of Device Header
+   1             6            Location of Head
+   2             ?            Reserved
+   3             ?            Error Statistics
+   4             9            Audio Channel Info
+   5           130            Read Drive Bytes
+   6             5            Device Status
+   7             4            Return Sector Size
+   8             5            Return Volume Size
+   9             2            Media Changed
+  10             7            Audio Disk Info
+  11             7            Audio Track Info
+  12            11            Audio Q-Channel Info
+  13            13            Audio Sub-Channel Info
+  14            11            UPC Code
+  15            11            Audio Status Info
+  16-255        ?             Reserved
+
+Return Address of Device Header
+
+Raddr     DB   0         ; Control block code
+          DD   ?         ; Address of device header
+
+The device driver will fill the 4-byte field with the address of its device header. This is
+used by MSCDEX.EXE to locate the device driver's strategy and interrupt routines.
+
+Location of Head
+
+LocHead   DB   1         ; Control block code
+          DB   ?         ; Addressing mode
+          DD   ?         ; Location of drive head
+
+The device driver will return a 4-byte address that indicates where the head is located. The
+value will be interpreted based on the addressing mode. (See function READ LONG for more
+information about addressing modes.)
+
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴�
+NOTE: The drive could provide this information by monitoring the Q-channel on the disk.
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴�
+
+Error Statistics
+
+ErrStat   DB   3         ; Control block code
+          DB   N dup (?) ; Error statistics
+
+The format of the Error Statistics is not yet defined.
+
+Audio Channel Info
+
+AudInfo   DB   4       ; Control block code
+          DB   ?       ; Input  channel (0, 1, 2, or 3) for output channel 0
+          DB   ?       ; Volume control (0 - 0xff) for output channel 0
+          DB   ?       ; Input  channel (0, 1, 2, or 3) for output channel 1
+          DB   ?       ; Volume control (0 - 0xff) for output channel 1
+          DB   ?       ; Input  channel (0, 1, 2, or 3) for output channel 2
+          DB   ?       ; Volume control (0 - 0xff) for output channel 2
+          DB   ?       ; Input  channel (0, 1, 2, or 3) for output channel 3
+          DB   ?       ; Volume control (0 - 0xff) for output channel 3
+
+This function returns the present settings of the audio channel control set with the Audio
+Channel Control Ioctl Write function. The default settings for the audio channel control are
+for each input channel to be assigned to its corresponding output channel (0 to 0, 1 to 1,
+etc.) and for the volume control on each channel is set at 0xff.
+
+Read Drive Bytes
+
+DrvBytes  DB   5          ; Control block code
+          DB   ?          ; Number bytes read
+          DB   128 dup (?); Read buffer
+
+Data returned from the CD-ROM drive itself can be read using this function. The number-bytes-
+read field returns the length of the number of bytes read, which will not exceed 128 per
+call. If more than this needs to be returned, the call will be repeated until the number
+returned is 0.
+
+The function and content of these bytes are entirely device and device driver dependent. This
+function is provided to allow access to device- specific features that are not addressed
+under any other portion of the device driver spec.
+
+Device Status
+
+DevStat   DB   6         ; Control block code
+          DD   ?         ; Device parameters
+
+The device driver will return a 32-bit value. Bit 0 is the least significant bit. The bits
+are interpreted as follows:
+
+  Bit 0     0    Door closed
+            1    Door open
+ 
+  Bit 1     0    Door locked
+            1    Door unlocked
+ 
+  Bit 2     0    Supports only cooked reading
+            1    Supports cooked and raw reading
+ 
+  Bit 3     0    Read only
+            1    Read/write
+ 
+  Bit 4     0    Data read only
+            1    Data read and plays audio/video tracks
+ 
+  Bit 5     0    No interleaving
+            1    Supports interleaving
+ 
+  Bit 6     0    Reserved
+ 
+  Bit 7     0    No prefetching
+            1    Supports prefetching requests
+ 
+  Bit 8     0    No audio channel manipulation
+            1    Supports audio channel manipulation
+ 
+  Bit 9     0    Supports HSG addressing mode
+            1    Supports HSG and Red Book addressing modes
+ 
+  Bit 10-31 0    Reserved (all 0)
+
+Return Sector Size
+
+SectSize  DB   7         ; Control block code
+          DB   ?         ; Read mode
+          DW   ?         ; Sector size
+
+The device driver will return the sector size of the device given the read mode provided.
+In the case of CD-ROM, the value returned for cooked is 2048, and the return value  for raw
+is 2352.
+
+Return Volume Size
+
+VolSize   DB   8         ; Control block code
+          DD   ?         ; Volume size
+
+The device driver will return the number of sectors on the device. The size returned is the
+address of the lead-out track in the TOC converted to a binary value according to FRAME +
+(SEC * 75) + (MIN * 60 * 75). A disc with a lead out track starting at 31:14.63 would return
+a volume size of 140613. The address of the lead-out track is assumed to point to the first
+sector following the last addressable sector recorded on the disc.
+
+Media Changed
+
+MedChng   DB   9         ; Control block code
+          DB   ?         ; Media byte
+
+The normal media check function (command code 1) is not performed on character devices and
+contains additional semantics that are not needed for CD-ROM device drivers. This is why
+there is an IOCTL request for this function.
+
+When the device driver receives a call to see if the media has changed on that subunit, it
+will return one of the following values:
+
+   1         Media not changed
+   0         Don't know if changed
+  -1 (0FFh)  Media changed
+
+If the driver can assure that the media has not been changed (through a door-lock or other
+interlock mechanism), performance is enhanced because MSCDEX.EXE does not need to reread the
+VTOC and invalidate in-memory buffers for each directory access. For drives that do not
+report if the media has changed, CD-ROM device drivers can utilize the same solution that
+has been applied to floppy disks. In some floppy-disk device drivers, if the MEDIA CHECK
+occurs within 2 seconds of a floppy-disk access, the driver reports "Media not changed." It
+is highly recommended though that drives be able to detect and report media changes.
+
+If the drive can enforce a door lock mechanism so that the device driver is notified when
+the door lock has been unlocked or the device driver is requested to do so by MSCDEX.EXE,
+then to improve performance, the driver could return that the media has not changed without
+bothering to communicate with the physical device.
+
+If the media has not been changed, MSCDEX.EXE will proceed with the disk access. If the value
+returned is "Don't know," or "Media changed," then MSCDEX.EXE will check to see if the disk
+has changed. It will  continue if it has not, and reinitialize what it knows about the disk
+if it has.
+
+It is not necessary for the device driver to do anything for the volume ID when the media
+has changed.
+
+Audio Disk Info
+
+DiskInfo  DB   10        ; Control block code
+          DB   ?         ; Lowest track number
+          DB   ?         ; Highest track number
+          DD   ?         ; Starting point of the lead-out track
+
+This function returns TOC (Table of Contents) information from the Q-Channel in the lead-in
+track indicating what the first and last track numbers are and the Red Book address for the
+lead-out track (PMIN/PSEC/PFRAME when POINT = A2). The first and last track numbers are
+binary values and not BCD. It is recommended that the information for Audio Disk Info and
+Audio Track Info should be read by the drive when the disc is initialized and made accessible
+to the driver so that when these functions are called, the drive or driver do not have to
+interrupt audio play to read them from the TOC. If the TOC is not made available to the
+driver and the driver must obtain the information itself from the lead-in track, the driver
+should read and and attempt to cache the disk and track information during the Audio Disk
+Info command and invalidate this information only if the media changes.
+
+Audio Track Info
+
+TnoInfo   DB   11        ; Control block code
+          DB   ?         ; Track number
+          DD   ?         ; Starting point of the track
+          DB   ?         ; Track control information
+
+This function takes a binary track number, from within the range specified by the lowest and
+highest track number given by the Audio Disk Info command, and returns the Red Book address
+for the starting point of the track and the track control information for that track. The
+track control information byte corresponds to the byte in the TOC in the lead-in track
+containing the two 4-bit fields for CONTROL and ADR in the entry for that track. The CONTROL
+information is in the most significant 4 bits and the ADR information is in the lower 4 bits.
+The track control information is encoded as follows:
+
+  00x00000  - 2 audio channels without pre-emphasis
+  00x10000  - 2 audio channels with pre-emphasis
+  10x00000  - 4 audio channels without pre-emphasis
+  10x10000  - 4 audio channels with pre-emphasis
+  01x00000  - data track
+  01x10000  - reserved
+  11xx0000  - reserved
+  xx0x0000  - digital copy prohibited
+  xx1x0000  - digital copy permitted
+
+Audio Q-Channel Info
+
+QInfo     DB   12        ; Control block code
+          DB   ?         ; CONTROL and ADR byte
+          DB   ?         ; Track number (TNO)
+          DB   ?         ; (POINT) or Index (X)
+                         ; Running time within a track
+          DB   ?         ; (MIN)
+          DB   ?         ; (SEC)
+          DB   ?         ; (FRAME)
+          DB   ?         ; (ZERO)
+                         ; Running time on the disk
+          DB   ?         ; (AMIN) or (PMIN)
+          DB   ?         ; (ASEC) or (PSEC)
+          DB   ?         ; (AFRAME) or (PFRAME)
+
+This function reads and returns the most up to date Q-channel address presently available.
+It should not interrupt the present status of the drive as one of its intended purposes is
+to monitor the location of the read head while playing audio tracks. This function should
+return valid information even when no audio tracks are being played and the head is
+stationary. The fields returned correspond to the data that is stored in the Q-channel as
+described in the Red Book. The values in MIN-SEC-FRAME, AMIN-ASEC-AFRAME and PMIN-PSEC-PFRAME
+are converted by the driver from BCD to binary so that minutes range from 0 to 59+, seconds
+from 0 to 59, and frames from 0 to 74. The Control and ADR byte, TNO, and POINT/Index bytes
+are always passed through as they appear on the disc and are not converted. If the drive
+returns Q-channel information when ADR is not equal to 1, then when ADR is not equal to 1
+all ten bytes of information are passed through unmodified to the caller.
+
+Audio Sub-Channel Info
+
+SubChanInfo DB   13        ; Control block code
+            DD   ?         ; Starting frame address
+            DD   ?         ; Transfer address
+            DD   ?         ; Number of sectors to read
+
+This function takes a Red Book address for a particular frame (also known as a block or
+frame) and copies 96 bytes of sub-channel information per frame for all the sectors that are
+requested sequentially at the transfer address given. Each 96 bytes of information do not
+include the two sync patterns (S0 and S1) that head the subcoding block but only the the 96
+bytes of subcoding symbols each with one bit of information for the eight different channels
+(P-W) that follow them. P is the MSB, W is the LSB of each byte.
+
+The caller is responsible for making sure that 96 * Number_of_sectors_to_read bytes are
+available at the transfer address for the device driver to store the results.
+
+Data definition and integrity restrictions for data received with this command are
+interpreted according to the CD-ROM standard (Red and Yellow Book).
+
+UPC Code
+
+UPCCode   DB   14        ; Control block code
+          DB   ?         ; CONTROL and ADR byte
+          DB   7 dup (?) ; UPC/EAN code
+                         ; (last 4 bits are zero; the low-order nibble of ; byte 7)
+          DB   ?         ; Zero
+          DB   ?         ; Aframe
+
+This function returns the UPC/EAN (Universal Product Code - BAR coding) for the disc. This
+information is stored as a mode-2 (ADR=2) Q-channel entry. The UPC code is 13 successive BCD
+digits (4 bits each) followed by 12 bits of zero. The last byte is the continuation of FRAME
+in mode-1 though in the lead-in track (TNO=0) this byte is zero. If the CONTROL/ADR byte is
+zero or if the 13 digits of UPC code are all zero, then either no catalog number was encoded
+on the disc or it was missed by the device driver. If the command is not supported, then the
+driver will return an error code of Unknown Command. If the command is supported but the disc
+does not have a UPC Code recorded, then the driver will return an error code of Sector not
+Found.
+
+Audio Status Info
+
+AudStat DB   15        ; Control block code
+        DW   ?         ; Audio status bits
+                       ; Bit 0 is Audio Paused bit
+                       ; Bits 1-15 are reserved
+        DD   ?         ; Starting location of last Play or for next Resume
+        DD   ?         ; Ending location for last Play or for next Resume
+
+The Audio Paused bit and Starting and Ending locations are those referred to in the RESUME
+command.
+
+
+WRITE (IOCTL OUTPUT)
+
+Command code = 12
+ES:BX = IOCTLO
+
+IOCTLO    DB   13 dup (0); Request header
+          DB   0         ; Media descriptor byte from BPB
+          DD   ?         ; Transfer address
+          DW   ?         ; Number of bytes to transfer
+          DW   0         ; Starting sector number
+          DD   0         ; DWORD ptr to requested vol ID if error 0FH
+
+The media descriptor byte, starting sector number, and volume ID fields are all 0.
+
+The transfer address points to a control block that is used to communicate with the device
+driver. The first byte of the control block determines the request that is being made. The
+Length of Block is the number of bytes to transfer.
+
+       Length of Code   Block            Function
+  0      1              Eject Disk
+  1      2              Lock/Unlock Door
+  2      1              Reset Drive
+  3      9              Audio Channel Control
+  4      ?              Write Device Control String
+  5      1              Close Tray
+  6-255  ?              Reserved
+
+Eject Disk
+
+Eject          DB   0         ; Control block code
+
+The device driver will unlock the drive and eject the CD-ROM disk from the drive unit. The
+door will report as being open until the user has inserted a disk  into the drive unit and
+closed the door. The status bit for door open can be monitored to determine when a disk has
+been reinserted.
+
+Lock/Unlock Door
+
+LockDoor  DB   1         ; Control block code
+          DB   ?         ; Lock function
+
+When this function is received, the device driver will ask the CD-ROM drive to unlock or lock
+the door. If lock function is 0, the device driver will unlock the door. If lock function
+is 1, it will lock the door.
+
+Reset Drive
+
+ResetDrv  DB   2         ; Control block code
+
+This function directs the device driver to reset and reinitialize the drive.
+
+Audio Channel Control
+
+AudInfo   DB   3     ; Control block code
+          DB   ?     ; Input  channel (0, 1, 2, or 3) for output channel 0 DB   ?     ;
+Volume control (0 - 0xff) for output channel 0
+          DB   ?     ; Input  channel (0, 1, 2, or 3) for output channel 1 DB   ?     ;
+Volume control (0 - 0xff) for output channel 1
+          DB   ?     ; Input  channel (0, 1, 2, or 3) for output channel 2 DB   ?     ;
+Volume control (0 - 0xff) for output channel 2
+          DB   ?     ; Input  channel (0, 1, 2, or 3) for output channel 3         DB   ? 
+   ; Volume control (0 - 0xff) for output channel 3
+
+This function is intended to provide playback control of audio information on the disk. It
+allows input channels on the CD-ROM to be assigned to specific output speaker connections.
+The purpose of this function is to allow two independent channels to be recorded컴in
+different languages for example컴and to play back only one of them at a time or to be able
+to manipulate an audio signal so that the source appears to move컴to make a sound seem to
+move from left to right for example.
+
+Output channel 0 is the left channel, 1 is right, 2 is left prime, and 3 is right prime. The
+Red Book specification allows for 4 audio channels. The two "prime" channels (2 and 3) extend
+stereo to quadrophonic stereo.
+
+An audio volume setting of 0 means off. Drives that don't support 4 output audio channels
+may ignore output to channels 2 and 3. Assignment of input channels 2 and 3 to output
+channels 0 and 1 may be treated as though the volume control for that channel is 0.
+
+Drives that do not support variable audio control will treat a setting of 0 as off and 1-
+0xff as on. Drives that support less than 256 volume settings will do their best to break
+up the 256 settings among the settings they can support. E.g. if there are 16 settings
+supported, then the first setting will cover 0x01-0x10, the second 0x11-0x20...the sixteenth
+0xf1-0xff. Drives that can't play a single channel in both must play only that one channel
+and try to suppress the other if possible. Drives that can't swap channels should play the
+channel that was moved in its normal channel.
+
+Write Device Control String
+
+DrvBytes  DB   4         ; Control block code
+          DB   N dup (?) ; Write buffer
+
+This function is provided to allow programs to talk directly to the CD-ROM drive. All
+remaining bytes are sent uninterpreted to the drive unit.
+
+The function and content of these bytes are entirely device and device driver dependent. This
+function is provided to allow access to device- specific features that are not addressed
+under any other portion of the device driver spec.
+
+Close Tray
+
+CloseTray DB   5         ; Control block code
+
+This command is the logical complement to the Eject Disk command. This command will instructs
+drives that can do so to close the door or tray.
+
+
+READ LONG
+
+Command code = 128
+ES:BX = ReadL
+
+ReadL     DB   13 dup (0); Request header
+          DB   ?         ; Addressing mode
+          DD   ?         ; Transfer address
+          DW   ?         ; Number of sectors to read
+          DD   ?         ; Starting sector number
+          DB   ?         ; Data read mode
+          DB   ?         ; Interleave size
+          DB   ?         ; Interleave skip factor
+
+The request block is different from a normal character device READ to accommodate the larger
+size and different characteristics of CD-ROM devices.
+
+The media descriptor byte, which has no meaning for character devices, is now the addressing
+mode field. The following values are recognized addressing modes:
+
+  0      HSG addressing mode
+  1      Red Book addressing mode
+  2-255  Reserved
+
+The default addressing mode is the HSG addressing mode. Long (DWORD) address values are
+treated as logical block numbers, as defined by the High Sierra proposal. When Red Book
+addressing mode is on, all disk addresses are interpreted as Minute/Second/Frame addresses,
+according to the Philips/Sony Red Book standard. Each of these fields is 1 byte. The frame
+byte is the least significant byte of the address field, the "second" byte the next most
+significant, the minute byte the next, and the most significant byte of the 4-byte field is
+unused. These values are represented in binary rather than 
+in BCD format. For example, if we are referencing the sector addressed by minute 36, second
+24, frame 12, the hex long value for this would be 0x0024180C. The relationship between High
+Sierra sectors and Red Book frames is described by the equation:
+
+  Sector = Minute * 60 * 75 + Second * 75 + Frame - 150
+
+The byte/sector count field becomes the number of sectors to read and the starting sector
+number expands from one word to two, which  means we can address up to 4 giga-sectors (over
+8 terabytes). The DWORD ptr for requested volume ID is eliminated and MSCDEX.EXE will keep
+track of what volume is needed.
+
+MSCDEX.EXE handles buffering requests, but performance may be improved if the device driver
+reads ahead or uses a sector caching scheme, given the slow seek times of CD-ROM drives. The
+operating system will use the prefetch function when it can to give hints to the driver.
+
+The data read mode field will be one of the following:
+
+  0      Cooked mode
+  1      Raw mode
+  2-255  Reserved
+
+Cooked mode is the default mode in which the hardware typically handles the EDC/ECC and the
+device driver returns 2048 bytes of data per sector read. When raw mode is set, the driver
+will return all 2352 bytes of user data, including any EDC/ECC present independent of the
+actual sector mode (Mode 2 Form 1 vs. Mode 2 Form 2). User programs will have to consider
+this and allow enough room for buffer space when reading in raw mode as each sector returned
+will take up 2352 bytes of space. Drives that cannot return all 2352 bytes will return what
+they can and leave blank what they cannot. For example, drives that can return all 2336 bytes
+except the 16 byte header will leave a space in the first 16 bytes where the header would
+go so that the sectors align on 2352 byte boundaries. Drivers should do what they can to
+return as much of the user data per sector as possible.
+
+The two interleave parameters are for drivers that support interleaved reading. If the driver
+does not support interleaving, these fields are both ignored. If it does, interleave size
+is the number of consecutive logical blocks or sectors that are stored sequentially, and the
+interleave skip factor is the number of consecutive logical blocks or sectors that separate
+portions of the interleaved file.
+
+
+READ LONG PREFETCH
+
+Command code = 130
+ES:BX = ReadLPre
+
+ReadLPre  DB   13 dup (0); Request header
+          DB   ?         ; Addressing mode
+          DD   0         ; Transfer address
+          DW   ?         ; Number of sectors to read
+          DD   ?         ; Starting sector number
+          DB   ?         ; Read mode
+          DB   ?         ; Interleave size
+          DB   ?         ; Interleave skip factor
+
+This function is similar in form to READ LONG, but control returns immediately to the
+requesting process. The device driver is not obligated to read in the requested sectors but
+can instead consider the request for these sectors as hints from the operating system that
+they are likely to be needed. It is recommended that at a minimum, the driver seek to the
+location provided. The attribute in the device status for prefetching is used to distinguish
+drivers that do more than just seek to the given location. The requests are low priority and
+preemptible by other requests for service. A READ LONG PREFETCH with 0 number of sectors to
+read should be treated as an advisory seek, and the driver can, if it is not busy, move the
+head to the starting sector. Since prefetching requests are advisory, there will be no
+functional difference between a device driver that supports prefetching from one that does
+not, except in terms of performance. The transfer address is not applicable for this call
+as the driver is not meant to transfer any data into the user address space.
+
+
+SEEK
+
+Command code = 131
+ES:BX = SeekReq
+
+SeekReq   DB   13 dup (0); Request header
+          DB   ?         ; Addressing mode
+          DD   0         ; Transfer address
+          DW   0         ; Number of sectors to read
+          DD   ?         ; Starting sector number
+
+Control returns immediately to the caller without blocking and waiting for the seek to be
+completed. The number of sectors to be read and the transfer address are ignored. SEEK is
+used to relocate the head in order to begin playing audio or video tracks, or in anticipation
+of reading in a particular region on the disk. Further requests for disk activity will wait
+until the given SEEK is completed. This seek is not advisory and the head must move to the
+desired location.
+
+
+PLAY AUDIO
+
+Command code = 132
+ES:BX = PlayReq
+
+PlayReq   DB   13 dup (0); Request header
+          DB   ?         ; Addressing mode
+          DD   ?         ; Starting sector number
+          DD   ?         ; Number of sectors to read
+
+This function will cause the driver to play the selected audio tracks until the requested
+sectors have been exhausted or until play is interrupted with a AUDIO STOP request. Control
+returns immediately to the caller. Monitoring the busy bit in the status word will determine
+if the drive is presently playing audio and also when the play request is completed.
+
+
+STOP AUDIO
+
+Command code = 133
+ES:BX = StopPlayReq
+
+StopPlayReq    DB   13 dup (0)     ; Request header
+
+This function is included to interrupt the drive unit when it is currently in play mode. At
+the next stopping point it reaches, the drive will discontinue playing and process the next
+request. If the drive is not currently playing or does not support playing, this request is
+ignored.
+
+
+RESUME AUDIO
+
+Command code = 136
+ES:BX = ResumeReq
+
+ResumeReq DB   13 dup (0)     ; Request header
+
+This function is used to resume playing audio tracks when play has been interrupted with the
+STOP AUDIO command. Its behavior should correspond to the following:
+
+  RESET, NEW DISC, PLAY/RESUME COMPLETED
+       playing = FALSE;
+       paused  = FALSE;
+       last_startloc = 0;
+       last_endloc   = 0;
+ 
+  PLAY_AUDIO(startloc, endloc) {
+       if (play(startloc, endloc) != SUCCESSFUL) {
+            return error;
+ 
+       playing = TRUE;
+       paused = FALSE;
+       last_startloc = startloc
+       last_endloc = endloc
+       return no error;
+       }
+ 
+  STOP_AUDIO() {
+       if (playing) {
+            last_startloc = present q-channel location
+            playing = FALSE;
+            paused = TRUE;
+            if (stop() == SUCCESSFUL)
+                 return no error;
+            return error;
+            }
+       else {
+            playing = FALSE;
+            paused = FALSE;
+            last_startloc = 0;
+            last_endloc = 0;
+            return no error;
+            }
+       }
+ 
+  RESUME_AUDIO() {
+       if (paused) {
+            if (play(last_startloc, last_endloc) != SUCCESSFUL)
+                 return error;
+            playing = TRUE;
+            paused = FALSE;
+            return no error;
+            }
+       else
+            return error;
+ 
+Note that the playing flag corresponds to the state that should be reported by the busy bit
+in the status word in the request header when the drive is in audio play mode. The paused
+flag corresponds to the Audio Paused bit and last_startloc and last_endloc correspond to the
+starting and ending location in the Audio Status Info IOCTL.
+
+
+WRITE LONG
+
+Command code = 134
+ES:BX = WriteL
+
+WriteL    DB   (dup 13 0); Request header
+          DB   ?         ; Addressing mode
+          DD   ?         ; Transfer address
+          DW   ?         ; Number of sectors to write
+          DD   ?         ; Starting sector number
+          DB   ?         ; Write mode
+          DB   ?         ; Interleave size
+          DB   ?         ; Interleave skip factor
+
+The device will copy the data at the transfer address to the CD RAM device at the sector
+indicated. The media must be writable for this function to work. Data is written sector by
+sector, depending on the current write mode and the interleave parameters. The following
+values are recognized as valid write modes:
+
+  0      Mode 0
+  1      Mode 1
+  2      Mode 2 Form 1
+  3      Mode 2 Form 2
+  4-255  Reserved
+
+Writing in Mode 1 is the default and must be supported. If the device driver supports the
+other modes, then they can be used. If Mode 0 is used, the transfer address is ignored and
+all sectors are written with zeroes. If the current write mode is Mode 1 or Mode 2 Form 1,
+each sector will consist of 2048 bytes of data located sequentially at the transfer address.
+If the write mode is Mode 2 Form 2, the device driver will expect 2336 bytes of data per
+sector at the transfer address.
+
+
+WRITE LONG VERIFY
+
+Command code = 136
+ES:BX = WriteLV
+
+WriteLV   DB   (dup 13 0); Request header
+          DB   ?         ; Addressing mode
+          DD   ?         ; Transfer address
+          DW   ?         ; Number of sectors to write
+          DD   ?         ; Starting sector number
+          DB   ?         ; Write mode
+          DB   ?         ; Interleave size
+          DB   ?         ; Interleave skip factor
+
+This function is identical to WRITE LONG, with the addition that the device driver is
+responsible for verifying the data written to the device.
+
+
+INPUT FLUSH
+
+Command code = 7
+ES:BX = FlushI
+
+FlushI         DB   13 dup (0)     ; Request header
+
+Requests that the device driver free all input buffers and clear any pending requests.
+
+
+OUTPUT FLUSH
+
+Command code = 11
+ES:BX = FlushO
+
+FlushO         DB   (dup 13 0)     ; Request header
+
+Requests that the device driver write all unwritten buffers to the disk.
+
+
+DEVICE OPEN
+DEVICE CLOSE
+
+Command code = 13,14
+ES:BX = DevOpen, DevClose
+
+DevOpen   DB   13 dup (0)     ; Request header
+
+Used by the device driver to monitor how many different callers are currently using the CD-
+ROM device driver. All new device drivers should support these calls even if nothing is done
+with the information.
+
+

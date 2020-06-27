@@ -1,0 +1,140 @@
+<html><head> 
+   
+   
+<title> Протокол UDP</title>
+		    <style type="text/css">
+TH.arial { font-family: Arial, Serif;}
+P.topic { font-family: sans-serif;}
+A.plain { text-decoration: none;}
+A.topic01 { color: #006890;
+font-family: sans-serif;
+text-decoration: none;}
+A.topic02 { color: #099771;
+font-family: sans-serif;
+text-decoration: none;}
+A.topic03 { color: #719709;
+font-family: sans-serif;
+text-decoration: none;}
+A.topic04 { color: #98650A;
+font-family: sans-serif;
+text-decoration: none;}
+A.topic05 { color: #98340A;
+font-family: sans-serif;
+text-decoration: none;}
+A.topic06 { color: #099607;
+font-family: sans-serif;
+text-decoration: none;}
+A.topic07 { color: #9E1215;
+font-family: sans-serif;
+text-decoration: none;}
+A.topic08 { color: #970941;
+font-family: sans-serif;
+text-decoration: none;}
+A.topic09 { color: #950995;
+font-family: sans-serif;
+text-decoration: none;}
+A.topic010 { color: #390A98;
+font-family: sans-serif;
+text-decoration: none;}
+H1 { font-family: sans-serif;}
+H2 { font-family: sans-serif;}
+H3 { font-family: sans-serif;}
+H4 { font-family: sans-serif;}
+H5 { font-family: sans-serif;}
+H6 { font-family: sans-serif;}
+</style>
+</head>
+<body bgcolor="#FFFFFF" link="#006890" vlink="#003860" alink="#800000" text="#000000">
+<table cellspacing=0 cellpadding=0 border=0 background="../../PICTURES/MENU/HEADER0.JPG" width="100%">
+<tr><td align="center">
+<table cellspacing=0 cellpadding=4 border=0 width="100%" background="">
+<tr><td align="left">
+<img src="../../PICTURES/MENU/LOGO.GIF" width=157 height=53 border=0 alt="Server for Information Technologies">
+</td><td align="right">
+<font size="-2">Сервер поддерживается<br><a class="plain" href="http://www.citmgu.ru">Центром Информационных Технологий</a><br>(095) 932-9212, 932-9213, 939-0783<br>E-mail: <a class=noneline href="mailto:info@citmgu.ru?Subject='From page topic CIT FORUM local copy'">info@citforum.ru</a></font>
+</td></tr>
+</table>
+<table cellspacing=0 cellpadding=4 border=0 width="100%" background="">
+<tr><td align="left">
+<font size="-1">Сервер содержит море(!) аналитической информации</font>
+</td><td align="right">
+<font size="-1">CIT Forum CD-ROM</font>
+</td></tr>
+</table>
+</td></tr>
+</table>
+<h3> Протокол UDP </h3>
+Протокол UDP (User Datagram  Protocol  -  протокол  пользовательских
+датаграмм)  является  одним  из  двух  основных протоколов, расположенных
+непосредственно над IP.  Он предоставляет прикладным процессам транспортные 
+услуги, которые не многим отличаются от услуг, предоставляемых протоколом IP.
+  Протокол UDP обеспечивает ненадежную доставку датаграмм  и  не
+поддерживает  соединений  из  конца  в  конец.   К заголовку IP-пакета он
+добавляет два поля, одно из которых, поле "порт",  обеспечивает  
+мультиплексирование  информации  между  разными прикладными процессами, а 
+другое
+поле - "контрольная сумма" - позволяет поддерживать целостность данных. <p>
+Примерами сетевых приложений, использующих UDP, являются  NFS  
+(Network  File  System  -  сетевая  файловая  система) и SNMP (Simple Network
+Management Protocol - простой протокол управления сетью). <p>
+<hr>
+<h3><a name="1"> Порты </a></h3>
+Взаимодействие между прикладными процессами и модулем UDP  
+осуществляется  через  UDP-порты.   Порты  нумеруются начиная с нуля.  
+Прикладной
+процесс, предоставляющий некоторые  услуги  другим  прикладным  процессам
+(сервер), ожидает поступления сообщений в порт, специально выделенный для
+этих услуг.  Сообщения должны содержать запросы на предоставление  услуг.
+Они отправляются процессами-клиентами. <p>
+Например, сервер SNMP всегда ожидает поступлений  сообщений  в  порт
+161.   Если клиент SNMP желает получить услугу, он посылает запрос в UDPпорт
+ 161 на машину, где работает сервер.  В каждом узле может быть только
+один  сервер  SNMP,  так как существует только один UDP-порт 161.  Данный
+номер порта является общеизвестным, то есть фиксированным номером, официально
+ выделенным для услуг SNMP.  Общеизвестные номера определяются стандартами
+ Internet. <p>
+Данные, отправляемые прикладным процессом через модуль  UDP,  достигают
+   места  назначения  как  единое  целое.   Например,  если  
+процессотправитель производит 5 записей в UDP-порт, то процесс-получатель 
+должен
+будет  сделать 5 чтений.  Размер каждого записанного сообщения будет 
+совпадать с размером каждого прочитанного.  Протокол UDP  сохраняет  границы
+сообщений,  определяемые  прикладным процессом.  Он никогда не объединяет
+несколько сообщений в одно и не делит одно сообщение на части. <p>
+<hr>
+<h3><a name="2"> Контрольное суммирование </a></h3>
+Когда модуль UDP получает датаграмму  от  модуля  IP,  он  проверяет
+контрольную  сумму,  содержащуюся в ее заголовке.  Если контрольная сумма
+равна нулю, то это означает, что отправитель датаграммы ее  не  подсчитывал, 
+ и, следовательно, ее нужно игнорировать.  Если два модуля UDP 
+взаимодействуют только через одну сеть Ethernet, то от контрольного  
+суммирования  можно отказаться, так как средства Ethernet обеспечивают 
+достаточную степень надежности обнаружения ошибок передачи.  Это снижает  
+накладные расходы, связанные с работой UDP.  Однако рекомендуется всегда 
+выполнять контрольное суммирование, так как возможно в какой-то момент 
+изменения  в таблице маршрутов приведут к тому, что датаграммы будут 
+посылаться через менее надежную среду. <p>
+Если контрольная сумма правильная (или равна нулю),  то  проверяется
+порт  назначения,  указанный  в заголовке датаграммы.  Если к этому порту
+подключен прикладной процесс, то  прикладное  сообщение,  содержащееся  в
+датаграмме,  становится  в  очередь  для  прочтения.  В остальных случаях
+датаграмма отбрасывается.  Если  датаграммы  поступают  быстрее,  чем  их
+успевает  обрабатывать  прикладной  процесс,  то при переполнении очереди
+сообщений поступающие датаграммы отбрасываются модулем UDP. <p>
+<p> <center> <font size="-1">
+[<a href="ROUTE.HTM">Назад</a>]
+[<a href="INDEX.HTM">Содержание</a>]
+[<a href="TCP.HTM">Вперед</a>]
+</font>
+<table cellspacing=0 cellpadding=0 border=0 background="../../PICTURES/MENU/FOOTER0.JPG" width="100%">
+<tr><td align="center">
+<table cellspacing=0 cellpadding=4 border=0 width="100%" background="">
+<tr><td align="right" valign="top" width="33%">
+<font size="-2">Comments: <a class="plain" href="mailto:info@citmgu.ru?Subject='From bottom of CIT FORUM local copy'">info@citmgu.ru</a><br>
+Designed by <a class="plain" href="mailto:andrey@novikov.com">Andrey Novikov</a><br>
+Copyright &copy; <a class="plain" href="http://www.citmgu.ru/">CIT</a></font>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</center></body></html>

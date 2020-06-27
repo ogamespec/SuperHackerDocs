@@ -1,0 +1,254 @@
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+SECTION 1  PROGRAMMING FOR MS-DOS
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+Chapter 1  Genealogy of MS-DOS
+
+  In only seven years, MS-DOS has evolved from a simple program loader into
+  a sophisticated, stable operating system for personal computers that are
+  based on the Intel 8086 family of microprocessors (Figure 1-1). MS-DOS
+  supports networking, graphical user interfaces, and storage devices of
+  every description; it serves as the platform for thousands of application
+  programs; and it has over 10 million licensed usersÄÄdwarfing the combined
+  user bases of all of its competitors.
+
+  The progenitor of MS-DOS was an operating system called 86-DOS, which was
+  written by Tim Paterson for Seattle Computer Products in mid-1980. At that
+  time, Digital Research's CP/M-80 was the operating system most commonly
+  used on microcomputers based on the Intel 8080 and Zilog Z-80
+  microprocessors, and a wide range of application software (word
+  processors, database managers, and so forth) was available for use with
+  CP/M-80.
+
+  To ease the process of porting 8-bit CP/M-80 applications into the new
+  16-bit environment, 86-DOS was originally designed to mimic CP/M-80 in
+  both available functions and style of operation. Consequently, the
+  structures of 86-DOS's file control blocks, program segment prefixes, and
+  executable files were nearly identical to those of CP/M-80. Existing
+  CP/M-80 programs could be converted mechanically (by processing their
+  source-code files through a special translator program) and, after
+  conversion, would run under 86-DOS either immediately or with very little
+  hand editing.
+
+  Because 86-DOS was marketed as a proprietary operating system for Seattle
+  Computer Products' line of S-100 bus, 8086-based microcomputers, it made
+  very little impact on the microcomputer world in general. Other vendors of
+  8086-based microcomputers were understandably reluctant to adopt a
+  competitor's operating system and continued to wait impatiently for the
+  release of Digital Research's CP/M-86.
+
+  In October 1980, IBM approached the major microcomputer-software houses in
+  search of an operating system for the new line of personal computers it
+  was designing. Microsoft had no operating system of its own to offer
+  (other than a stand-alone version of Microsoft BASIC) but paid a fee to
+  Seattle Computer Products for the right to sell Paterson's 86-DOS. (At
+  that time, Seattle Computer Products received a license to use and sell
+  Microsoft's languages and all 8086 versions of Microsoft's operating
+  system.) In July 1981, Microsoft purchased all rights to 86-DOS, made
+  substantial alterations to it, and renamed it MS-DOS. When the first IBM
+  PC was released in the fall of 1981, IBM offered MS-DOS (referred to as
+  PC-DOS 1.0) as its primary operating system.
+
+  IBM also selected Digital Research's CP/M-86 and Softech's P-system as
+  alternative operating systems for the PC. However, they were both very
+  slow to appear at IBM PC dealers and suffered the additional disadvantages
+  of higher prices and lack of available programming languages. IBM threw
+  its considerable weight behind PC-DOS by releasing all the IBM-logo PC
+  application software and development tools to run under it. Consequently,
+  most third-party software developers targeted their products for PC-DOS
+  from the start, and CP/M-86 and P-system never became significant factors
+  in the IBM PCÄcompatible market.
+
+  In spite of some superficial similarities to its ancestor CP/M-80, MS-DOS
+  version 1.0 contained a number of improvements over CP/M-80, including the
+  following:
+
+  ş  An improved disk-directory structure that included information about a
+     file's attributes (such as whether it was a system or a hidden file),
+     its exact size in bytes, and the date that the file was created or last
+     modified
+
+  ş  A superior disk-space allocation and management method, allowing
+     extremely fast sequential or random record access and program loading
+
+  ş  An expanded set of operating-system services, including
+     hardware-independent function calls to set or read the date and time, a
+     filename parser, multiple-block record I/O, and variable record sizes
+
+  ş  An AUTOEXEC.BAT batch file to perform a user-defined series of commands
+     when the system was started or reset
+
+  IBM was the only major computer manufacturer (sometimes referred to as
+  OEM, for original equipment manufacturer) to ship MS-DOS version 1.0 (as
+  PC-DOS 1.0) with its products. MS-DOS version 1.25 (equivalent to IBM
+  PC-DOS 1.1) was released in June 1982 to fix a number of bugs and also to
+  support double-sided disks and improved hardware independence in the DOS
+  kernel. This version was shipped by several vendors besides IBM, including
+  Texas Instruments, COMPAQ, and Columbia, who all entered the personal
+  computer market early. Due to rapid decreases in the prices of RAM and
+  fixed disks, MS-DOS version 1 is no longer in common use.
+
+  MS-DOS version 2.0 (equivalent to PC-DOS 2.0) was first released in March
+  1983. It was, in retrospect, a new operating system (though great care was
+  taken to maintain compatibility with MS-DOS version 1). It contained many
+  significant innovations and enhanced features, including those listed on
+  the following page.
+
+  ş  Support for both larger-capacity floppy disks and hard disks
+
+  ş  Many UNIX/XENIX-like features, including a hierarchical file structure,
+     file handles, I/O redirection, pipes, and filters
+
+  ş  Background printing (print spooling)
+
+  ş  Volume labels, plus additional file attributes
+
+  ş  Installable device drivers
+
+  ş  A user-customizable system-configuration file that controlled the
+     loading of additional device drivers, the number of system disk
+     buffers, and so forth
+
+  ş  Maintenance of environment blocks that could be used to pass
+     information between programs
+
+  ş  An optional ANSI display driver that allowed programs to position the
+     cursor and control display characteristics in a hardware-independent
+     manner
+
+  ş  Support for the dynamic allocation, modification, and release of memory
+     by application programs
+
+  ş  Support for customized user command interpreters (shells)
+
+  ş  System tables to assist application software in modifying its currency,
+     time, and date formats (known as international support)
+
+  MS-DOS version 2.11 was subsequently released to improve international
+  support (table-driven currency symbols, date formats, decimal-point
+  symbols, currency separators, and so forth), to add support for 16-bit
+  Kanji characters throughout, and to fix a few minor bugs. Version 2.11
+  rapidly became the base version shipped for 8086/8088-based personal
+  computers by every major OEM, including Hewlett-Packard, Wang, Digital
+  Equipment Corporation, Texas Instruments, COMPAQ, and Tandy.
+
+  MS-DOS version 2.25, released in October 1985, was distributed in the Far
+  East but was never shipped by OEMs in the United States and Europe. In
+  this version, the international support for Japanese and Korean character
+  sets was extended even further, additional bugs were repaired, and many of
+  the system utilities were made compatible with MS-DOS version 3.0.
+
+  MS-DOS version 3.0 was introduced by IBM in August 1984 with the release
+  of the 80286-based PC/AT machines. It represented another major rewrite of
+  the entire operating system and included the important new features listed
+  on the following page.
+
+  ş  Direct control of the print spooler by application software
+
+  ş  Further expansion of international support for currency formats
+
+  ş  Extended error reporting, including a code that suggests a recovery
+     strategy to the application program
+
+  ş  Support for file and record locking and sharing
+
+  ş  Support for larger fixed disks
+
+  MS-DOS version 3.1, which was released in November 1984, added support for
+  the sharing of files and printers across a network. Beginning with version
+  3.1, a new operating-system module called the redirector intercepts an
+  application program's requests for I/O and filters out the requests that
+  are directed to network devices, passing these requests to another machine
+  for processing.
+
+  Since version 3.1, the changes to MS-DOS have been evolutionary rather
+  than revolutionary. Version 3.2, which appeared in 1986, generalized the
+  definition of device drivers so that new media types (such as 3.5-inch
+  floppy disks) could be supported more easily. Version 3.3 was released in
+  1987, concurrently with the new IBM line of PS/2 personal computers, and
+  drastically expanded MS-DOS's multilanguage support for keyboard mappings,
+  printer character sets, and display fonts. Version 4.0, delivered in 1988,
+  was enhanced with a visual shell as well as support for very large file
+  systems.
+
+  While MS-DOS has been evolving, Microsoft has also put intense efforts
+  into the areas of user interfaces and multitasking operating systems.
+  Microsoft Windows, first shipped in 1985, provides a multitasking,
+  graphical user "desktop" for MS-DOS systems. Windows has won widespread
+  support among developers of complex graphics applications such as desktop
+  publishing and computer-aided design because it allows their programs to
+  take full advantage of whatever output devices are available without
+  introducing any hardware dependence.
+
+  Microsoft Operating System/2 (MS OS/2), released in 1987, represents a new
+  standard for application developers: a protected-mode, multitasking,
+  virtual-memory system specifically designed for applications requiring
+  high-performance graphics, networking, and interprocess communications.
+  Although MS OS/2 is a new product and is not a derivative of MS-DOS, its
+  user interface and file system are compatible with MS-DOS and Microsoft
+  Windows, and it offers the ability to run one real-mode (MS-DOS)
+  application alongside MS OS/2 protected-mode applications. This
+  compatibility allows users to move between the MS-DOS and OS/2
+  environments with a minimum of difficulty.
+
+  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+  ³ MS-DOS 1.0  ³ 1981: First operating system on IBM PC
+  ³ PC-DOS 1.0  ³
+  ÀÄÄÄÄÄÄÂÄÄÄÄÄÄÙ
+         ³
+  ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿
+  ³ MS-DOS 1.25 ³ Double-sided disk support and bug fixes added:
+  ³ PC-DOS 1.1  ³ widely distributed by OEMs other than IBM
+  ÀÄÄÄÄÄÄÂÄÄÄÄÄÄÙ
+         ³
+  ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿ 1983: Introduced with IBM PC/XT;
+  ³ MS-DOS 2.0  ³ support for UNIX/XENIX-like hierarchical
+  ³ PC-DOS 2.0  ³ file structure and hard disks added
+  ÀÄÄÄÄÄÄÂÄÄÄÄÄÄÙ
+         ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+  ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿                        ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿
+  ³ MS-DOS 2.01 ³ 2.0 with international ³ PC-DOS 2.1  ³ Introduced with PCjr;
+  ÀÄÄÄÄÄÄÂÄÄÄÄÄÄÙ support                ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÙ 2.0 with bug fixes
+         ³
+  ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿
+  ³ MS-DOS 2.11 ³ 2.01 with bug fixes
+  ÀÄÄÄÄÄÄÂÄÄÄÄÄÄÙ
+         ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+  ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿ 1984: Introduced with  ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿ 1985: Far East OEMs;
+  ³ MS-DOS 3.0  ³ PC/AT; support for     ³ MS-DOS 2.25 ³ support for extended
+  ³ PC-DOS 3.0  ³ 1.2 MB floppy disk,    ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÙ character sets
+  ÀÄÄÄÄÄÄÂÄÄÄÄÄÄÙ larger hard disk added
+         ³
+  ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿
+  ³ MS-DOS 3.1  ³ Support for Microsoft  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄ¿ 1985: Graphical
+  ³ PC-DOS 3.1  ³ Networks added         ³   Windows   ³ user interface
+  ÀÄÄÄÄÄÄÂÄÄÄÄÄÄÙ                        ³     1.0     ³ for MS-DOS
+         ³                               ÀÄÄÄÄÄÄÂÄÄÄÄÄÄÙ
+  ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿                               ³
+  ³ MS-DOS 3.2  ³ 1986: Support for 3.5-        ³
+  ³ PC-DOS 3.2  ³ inch disks added              ³
+  ÀÄÄÄÄÄÄÂÄÄÄÄÄÄÙ                               ³
+         ³                               ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿ 1987: Compatibility
+  ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿ 1987: Introduced with  ³   Windows   ³ with OS/2
+  ³ MS-DOS 3.3  ³ IBM PS/2; generalized  ³     2.0     ³ Presentation Manager
+  ³ PC-DOS 3.3  ³ code-page (font)       ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+  ÀÄÄÄÄÄÄÂÄÄÄÄÄÄÙ support
+         ³
+  ÚÄÄÄÄÄÄÄÄÄÄÄÄ¿ 1988: Support for
+  ³ MS-DOS 4.0  ³ logical volumes larger
+  ³ PC-DOS 4.0  ³ than 32 MB; visual shell
+  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+  Figure 1-1.  The evolution of MS-DOS.
+
+  What does the future hold for MS-DOS? Only the long-range planning teams
+  at Microsoft and IBM know for sure. But it seems safe to assume that
+  MS-DOS, with its relatively small memory requirements, adaptability to
+  diverse hardware configurations, and enormous base of users, will remain
+  important to programmers and software publishers for years to come.
+
+
+

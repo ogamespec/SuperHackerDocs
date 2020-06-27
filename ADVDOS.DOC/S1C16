@@ -1,0 +1,843 @@
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+Chapter 16  Compatibility and Portability
+
+  At the beginning of this book, we surveyed the history of MS-DOS and saw
+  that new versions come along nearly every year, loosely coupled to the
+  introduction of new models of personal computers. We then focused on each
+  of the mainstream issues of MS-DOS applications programming: the user
+  interface; mass storage; memory management; control of "child" processes;
+  and special classes of programs, such as filters, interrupt handlers, and
+  device drivers.
+
+  It's now time to close the circle and consider two global concerns of
+  MS-DOS programming: compatibility and portability. For your programs to
+  remain useful in a constantly evolving software and hardware environment,
+  you must design them so that they perform reliably on any reasonable
+  machine configuration and exploit available system resources; in addition,
+  you should be able to upgrade them easily for new versions of MS-DOS, for
+  new machines, and, for that matter, for completely new environments such
+  as MS OS/2.
+
+
+Degrees of Compatibility
+
+  If we look at how existing MS-DOS applications use the operating system
+  and hardware, we find that we can assign them to one of four categories:
+
+  ş  MS-DOSÄcompatible applications
+
+  ş  ROM BIOSÄcompatible applications
+
+  ş  Hardware-compatible applications
+
+  ş  "Ill-behaved" applications
+
+  MS-DOSÄcompatible applications use only the documented MS-DOS function
+  calls and do not call the ROM BIOS or access the hardware directly. They
+  use ANSI escape sequences for screen control, and their input and output
+  is redirectable. An MS-DOSÄcompatible application will run on any machine
+  that supports MS-DOS, regardless of the machine configuration. Because of
+  the relatively poor performance of MS-DOS's built-in display and serial
+  port drivers, few popular programs other than compilers, assemblers, and
+  linkers fall into this category.
+
+  ROM BIOSÄcompatible applications use the documented MS-DOS and ROM BIOS
+  function calls but do not access the hardware directly. As recently as
+  three years ago, this strategy might have significantly limited a
+  program's potential market. Today, the availability of high-quality
+  IBM-compatible ROM BIOSes from companies such as Phoenix has ensured the
+  dominance of the IBM ROM BIOS standard; virtually no machines are being
+  sold in which a program cannot rely as much on the ROM BIOS interface as
+  it might on the MS-DOS interface. However, as we noted in Chapters 6 and
+  7, the ROM BIOS display and serial drivers are still not adequate to the
+  needs of high-performance interactive applications, so the popular
+  programs that fall into this category are few.
+
+  Hardware-compatible applications generally use MS-DOS functions for mass
+  storage, memory management, and the like, and use a mix of MS-DOS and ROM
+  BIOS function calls and direct hardware access for their user interfaces.
+  The amount of hardware dependence in such programs varies widely. For
+  example, some programs only write characters and attributes into the video
+  controller's regen buffer and use the ROM BIOS to switch modes and
+  position the cursor; others bypass the ROM BIOS video driver altogether
+  and take complete control of the video adapter. As this book is written,
+  the vast majority of the popular MS-DOS "productivity" applications (word
+  processors, databases, telecommunications programs, and so on) can be
+  placed somewhere in this category.
+
+  "Ill-behaved" applications are those that rely on undocumented MS-DOS
+  function calls or data structures, interception of MS-DOS or ROM BIOS
+  interrupts, or direct access to mass storage devices (bypassing the MS-DOS
+  file system). These programs tend to be extremely sensitive to their
+  environment and typically must be "adjusted" in order to work with each
+  new MS-DOS version or PC model. Virtually all popular terminate-
+  and-stay-resident (TSR) utilities, network programs, and disk
+  repair/optimization packages are in this category.
+
+Writing Well-Behaved MS-DOS Applications
+
+  Your choice of MS-DOS functions, ROM BIOS functions, or direct hardware
+  access to solve a particular problem must always be balanced against
+  performance needs; and, of course, the user is the final judge of a
+  program's usefulness and reliability. Nevertheless, you can follow some
+  basic guidelines, outlined below, to create well-behaved applications that
+  are likely to run properly under future versions of MS-DOS and under
+  multitasking program managers that run on top of MS-DOS, such as Microsoft
+  Windows.
+
+  Program structure
+
+  Design your programs as .EXE files with separate code, data, and stack
+  segments; shun the use of .COM files. Use the Microsoft conventions for
+  segment names and attributes discussed in Chapter 3. Inspect the
+  environment block at runtime to locate your program's overlays or data
+  files; don't "hard-wire" a directory location into the program.
+
+  Check host capabilities
+
+  Obtain the MS-DOS version number with Int 21H Function 30H during your
+  program's initialization and be sure that all of the functions your
+  program requires are actually available. If you find that the host MS-DOS
+  version is inadequate, be careful about which functions you call to
+  display an error message and to terminate.
+
+  Use the enhanced capabilities of MS-DOS versions 3 and 4 when your program
+  is running under those versions. For example, you can specify a sharing
+  mode when opening a file with Int 21H Function 3DH, you can create
+  temporary or unique files with Int 21H Functions 5AH and 5BH, and you
+  can obtain extended error information (including a recommended recovery
+  strategy) with Int 21H Function 59H. Section 2 of this book contains
+  version-dependency information for each MS-DOS function.
+
+  Input and output
+
+  Use the handle file functions exclusively and extend full path support
+  throughout your application (being sure to allow for the maximum possible
+  path length during user input of filenames). Use buffered I/O whenever
+  possible. The device drivers in MS-DOS versions 2.0 and later can handle
+  strings as long as 64 KB, and performance will be improved if you write
+  fewer, larger records as opposed to many short ones.
+
+  Avoid the use of FCBs, the Int 25H or Int 26H functions, or the ROM BIOS
+  disk driver. If you must use FCBs, close them when you are done with them
+  and don't move them around while they are open. Avoid reopening FCBs that
+  are already open or reclosing FCBs that have already been closedÄÄthese
+  seemingly harmless practices can cause problems when network software is
+  running.
+
+  Memory management
+
+  During your program's initialization, release any memory that is not
+  needed by the program. (This is especially important for .COM programs.)
+  If your program requires extra memory for buffers or tables, allocate that
+  memory dynamically when it is needed and release it as soon as it is no
+  longer required. Use expanded memory, when it is available, to minimize
+  your program's demands on conventional memory.
+
+  As a general rule, don't touch any memory that is not owned by your
+  program. To set or inspect interrupt vectors, use Int 21H Functions 25H
+  and 35H rather than editing the interrupt vector table directly. If you
+  alter the contents of interrupt vectors, save their original values and
+  restore them before the program exits.
+
+  Process management
+
+  To isolate your program from dependencies on PSP structure and relocation
+  information, use the EXEC function (Int 21H Function 4BH) when loading
+  overlays or other programs. Terminate your program with Int 21H Function
+  4CH, passing a zero return code if the program executes successfully and
+  a nonzero code if an error is encountered. Your program's parent can then
+  test this return code with Int 21H Function 4DH or, in a batch file, with
+  the IF ERRORLEVEL statement.
+
+  Exception handling
+
+  Install Ctrl-C (Int 23H) and critical-error (Int 24H) handlers so that
+  your program cannot be terminated unexpectedly by the user's entry of
+  Ctrl-C or Ctrl-Break or by a hardware I/O failure. This is particularly
+  important if your program uses expanded memory or installs its own
+  interrupt handlers.
+
+ROM BIOS and Hardware-Compatible Applications
+
+  When you feel the need to introduce ROM BIOS or hardware dependence for
+  performance reasons, keep it isolated to small, well-documented procedures
+  that can be easily modified when the hardware changes. Use macros and
+  equates to hide hardware characteristics and to avoid spreading "magic
+  numbers" throughout your program.
+
+  Check host capabilities
+
+  If you use ROM BIOS functions in your program, you must check the machine
+  model at runtime to be sure that the functions your program needs are
+  actually available. There is a machine ID byte at F000:FFFEH whose value
+  is interpreted as follows:
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  F8H                      PS/2 Models 70 and 80
+
+  F9H                      PC Convertible
+
+  FAH                      PS/2 Model 30
+
+  FBH                      PC/XT (later models)
+
+  FCH                      PC/AT, PC/XT-286, PS/2 Models 50 and 60
+
+  FDH                      PCjr
+
+  FEH                      PC/XT (early models)
+
+  FFH                      PC "Classic"
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  In some cases, submodels can be identified; see Int 15H Function C0H on
+  page 573. Section 3 of this book contains version-dependency information
+  for each ROM BIOS function.
+
+  When writing your own direct video drivers, you must determine the type
+  and capabilities of the video adapter by a combination of Int 10H calls,
+  reading ports, and inspection of the ROM BIOS data area at 0040:0000H and
+  the memory reserved for the EGA or VGA ROM BIOS, among other things. The
+  techniques required are beyond the scope of this book but are well
+  explained in Programmer's Guide to PC and PS/2 Video Systems (Microsoft
+  Press, 1987).
+
+  Avoid unstable hardware
+
+  Some areas of IBM personal computer architecture have remained remarkably
+  stable from the original IBM PC, based on a 4.77 MHz 8088, to today's PS/2
+  Model 80, based on a 20 MHz 80386. IBM's track record for upward
+  compatibility in its video and serial communications controllers has been
+  excellent; in many cases, the same hardware-dependent code that was
+  written for the original IBM PC runs perfectly well on an IBM PS/2 Model
+  80. Other areas of relative hardware stability are:
+
+  ş  Sound control via port 61H
+
+  ş  The 8253 timer chip's channels 0 and 2 (ports 40H, 42H, and 43H)
+
+  ş  The game adapter at port 201H
+
+  ş  Control of the interrupt system via the 8259 PIC's mask register at
+     port 21H
+
+  However, direct sound generation and manipulation of the 8253 timer or
+  8259 PIC are quite likely to cause problems if your program is run under a
+  multitasking program manager such as Microsoft Windows or DesqView.
+
+  Keyboard mapping, the keyboard controller, and the floppy and fixed disk
+  controllers are areas of relative hardware instability. Programs that
+  bypass MS-DOS for keyboard or disk access are much less likely to function
+  properly across the different PC models and are also prone to interfere
+  with each other and with well-behaved applications.
+
+
+OS/2 Compatibility
+
+  MS-DOS is upwardly compatible in several respects with OS/2, Microsoft's
+  multitasking protected-mode virtual memory operating system for 80286 and
+  80386 computers. The OS/2 graphical user interface (the Presentation
+  Manager) is nearly identical to Microsoft Windows 2.0. OS/2 versions 1.0
+  and 1.1 use exactly the same disk formats as MS-DOS so that files may
+  easily be moved between MS-DOS and OS/2 systems. Most important, OS/2
+  includes a module called the "DOS Compatibility Environment" or "3.x Box,"
+  which can run one MS-DOS application at a time alongside protected-mode
+  OS/2 applications.
+
+  The 3.x Box traps Int 21H function calls and remaps them into OS/2
+  function calls, emulating an MS-DOS 3.3 environment with the file-sharing
+  module (SHARE.EXE) loaded but returning a major version number of 10
+  instead of 3 for Int 21H Function 30H. The 3.x Box also supports most ROM
+  BIOS calls, either by emulating their function or by interlocking the
+  device and then calling the original ROM BIOS routine. In addition, the
+  3.x Box maintains the ROM BIOS data area, provides timer ticks to
+  applications via Int 1CH, and supports certain undocumented MS-DOS
+  services and data structures so that most TSR utilities can function
+  properly. Nevertheless, the 3.x Box's emulation of MS-DOS is not perfect,
+  and you must be aware of certain constraints on MS-DOS applications
+  running under OS/2.
+
+  The most significant restriction on an MS-DOS application is that it does
+  not receive any CPU cycles when it is in the background. That is, when a
+  protected-mode application has been "selected," so that the user can
+  interact with it, the MS-DOS application is frozen. If the MS-DOS
+  application has captured any interrupt vectors (such as the serial port or
+  timer tick), these interrupts will not be serviced until the application
+  is again selected and in the foreground. OS/2 must freeze MS-DOS
+  applications when they are in the background because they execute in real
+  mode and are thus not subject to hardware memory protection; nothing else
+  ensures that they will not interfere with a protected-mode process that
+  has control of the screen and keyboard.
+
+  Use of FCBs is restricted in the 3.x Box, as it is under MS-DOS 3 or 4
+  with SHARE.EXE loaded. A file cannot be opened with an FCB if any other
+  process is using it. The number of FCBs that can be simultaneously opened
+  is limited to 16 or to the number specified in a CONFIG.SYS FCBS=
+  directive. Even when the handle file functions are used, these functions
+  may fail unexpectedly due to the activity of other processes (for example,
+  if a protected-mode process has already opened the file with "deny all"
+  sharing mode); most MS-DOS applications are not written with file sharing
+  in mind, and they do not handle such errors gracefully.
+
+  Direct writes to a fixed disk using Int 26H or Int 13H are not allowed.
+  This prevents the file system from being corrupted, because protected-mode
+  applications running concurrently with the MS-DOS application may also be
+  writing to the same disk. Imagine the mess if a typical MS-DOS unerase
+  utility were to alter the root directory and FAT at the same time that a
+  protected-mode database program was updating its file and indexes!
+
+  MS-DOS applications that attempt to reprogram the 8259 to move the
+  interrupt vector table or that modify interrupt vectors already belonging
+  to an OS/2 device driver are terminated by the operating system. MS-DOS
+  applications can change the 8259's interrupt-mask register, disable and
+  reenable interrupts at their discretion, and read or write any I/O port.
+  The obvious corollary is that an MS-DOS program running in the 3.x Box can
+  crash the entire OS/2 system at any time; this is the price for allowing
+  real-mode applications to run at all.
+
+Porting MS-DOS Applications to OS/2
+
+  The application program interface (API) provided by OS/2 to protected-mode
+  programs is quite different from the familiar Int 21H interface of MS-DOS
+  and the OS/2 3.x Box. However, the OS/2 API is functionally a proper
+  superset of MS-DOS. This makes it easy to convert well-behaved MS-DOS
+  applications to run in OS/2 protected mode, whence they can be enhanced to
+  take advantage of OS/2's virtual memory, multitasking, and interprocess
+  communication capabilities.
+
+  To give you a feeling for both the nature of the OS/2 API and the
+  practices that should be avoided in MS-DOS programming if portability to
+  OS/2 is desired, I will outline my own strategy for converting existing
+  MS-DOS assembly-language programs to OS/2. For the purposes of discussion,
+  I have divided the conversion process into five steps and have assigned
+  each an easily remembered buzzword:
+
+  1.  Segmentation
+
+  2.  Rationalization
+
+  3.  Encapsulation
+
+  4.  Conversion
+
+  5.  Optimization
+
+  The first three stages can (and should) be performed and tested in the
+  MS-DOS environment; only the last two require OS/2 and the protected-mode
+  programming tools. As you read on, you may notice that an MS-DOS program
+  that follows the compatibility guidelines presented earlier in this
+  chapter requires relatively little work to make it run in protected mode.
+  This is the natural benefit of working with the operating system instead
+  of against it.
+
+  Segmentation
+
+  Most of the 80286's protected-mode capabilities revolve around a change in
+  the way memory is addressed. In real mode, the 80286 essentially emulates
+  an 8088/86 processor, and the value in a segment register corresponds
+  directly to a physical memory address. MS-DOS runs on the 80286 in real
+  mode.
+
+  When an 80286 is running in protected mode, as it does under OS/2, an
+  additional level of indirection is added to memory addressing.
+Although the 80386 has additional modes and addressing capabilities,
+current versions of OS/2 use the 80386 as though it were an 80286.
+ A segment
+  register holds a selector, which is an index to a table of descriptors. A
+  descriptor defines the physical address and length of a memory segment,
+  its characteristics (executable, read-only data, or read/write data) and
+  access rights, and whether the segment is currently resident in RAM or has
+  been swapped out to disk. Each time a program loads a segment register or
+  accesses memory, the 80286 hardware checks the associated descriptor and
+  the program's privilege level, generating a fault if the selector or
+  memory operation is not valid. The fault acts like a hardware interrupt,
+  allowing the operating system to regain control and take the appropriate
+  action.
+
+  This scheme of memory addressing in protected mode has two immediate
+  consequences for application programs. The first is that application
+  programs can no longer perform arithmetic on the contents of segment
+  registers (because selectors are magic numbers and have no direct
+  relationship to physical memory addresses) or use segment registers for
+  storage of temporary values. A program must not load a segment register
+  with anything but a legitimate selector provided by the OS/2 loader or
+  resulting from an OS/2 memory allocation function call. The second
+  consequence is that a program must strictly segregate machine code
+  ("text") from data, placing them in separate segments with distinct
+  selectors (because a selector that is executable is not writable, and vice
+  versa).
+
+  Accordingly, the first step in converting a program for OS/2 is to turn it
+  into a .EXE-type program that uses the Microsoft segment, class, and group
+  conventions described in Chapter 3. At minimum, the program must have one
+  code segment and one data segment, and should declare a groupÄÄwith the
+  special name DGROUPÄÄthat contains the "near" data segment, stack, and
+  local heap (if any). At the same time, you should remove or rewrite any
+  code that performs direct manipulation of segment values.
+
+  After restructuring and segmentation, reassemble and link your program and
+  check to be sure it still works as expected under MS-DOS. Changing or
+  adding segmentation often uncovers hidden addressing assumptions in the
+  code, so it is best to track these problems down before making other
+  substantive changes to the program.
+
+  Rationalization
+
+  Once you've successfully segmented your program so that it can be linked
+  and executed as a .EXE file under MS-DOS, the next step is to rationalize
+  your code. By rationalization I mean converting your program into a
+  completely well-behaved MS-DOS application.
+
+  First, you must ruthlessly eliminate any elements that manipulate the
+  peripheral device adapters directly, alter interrupt priorities, edit the
+  system interrupt-vector table, or depend on CPU speed or characteristics
+  (such as timing loops). In protected mode, control of the interrupt system
+  is completely reserved to the operating system and its device drivers, I/O
+  ports may be read or written by an application only under very specific
+  conditions, and timing loops burn up CPU cycles that can be used by other
+  processes.
+
+  As I mentioned earlier in this chapter, display routines constitute the
+  most common area of hardware dependence in an MS-DOS application. Direct
+  manipulation of the video adapter and its regen buffer poses obvious
+  difficulties in a multitasking, protected-memory environment such as OS/2.
+  For porting purposes, you must convert all routines that write text to the
+  display, modify character attributes, or affect cursor shape or position
+  into Int 21H Function 40H calls using ANSI escape sequences or into ROM
+  BIOS Int 10H calls. Similarly, you must convert all hardware-dependent
+  keyboard operations to Int 21H Function 3FH or ROM BIOS Int 16H calls.
+
+  Once all hardware dependence has been expunged from your program, your
+  next priority is to make it well-behaved in its use of system memory.
+  Under MS-DOS an application is typically handed all remaining memory in
+  the system to do with as it will; under OS/2 the converse is true: A
+  process is initially allocated only enough memory to hold its code,
+  declared data storage, and stack. You can make the MS-DOS loader behave
+  like the OS/2 loader by linking your application with the /CPARMAXALLOC
+  switch. Alternatively, your program can give up all extra memory during
+  its initialization with Int 21H Function 4AH, as recommended earlier in
+  this chapter.
+
+  After your program completes its initialization sequence, it should
+  dynamically obtain and release any additional memory it may require for
+  buffers and tables with MS-DOS Int 21H Functions 48H and 49H. To ensure
+  compatibility with protected mode, limit the size of any single allocated
+  block to 65,536 bytes or less, even though MS-DOS allows larger blocks to
+  be allocated.
+
+  Finally, you must turn your attention to file and device handling. Replace
+  any calls to FCB file functions with their handle-based equivalents,
+  because OS/2 does not support FCBs in protected mode at all. Check
+  pathnames for validity within the application; although MS-DOS and the 3.x
+  Box silently truncate a name or extension, OS/2 refuses to open or create
+  a file in protected mode if the name or extension is too long and returns
+  an error instead. Replace any use of the predefined handles for the
+  standard auxiliary and standard list devices with explicit opens of COM1,
+  PRN, LPT1, and so on, using the resulting handle for read and write
+  operations. OS/2 does not supply processes with standard handles for the
+  serial communications port or printer.
+
+  Encapsulation
+
+  When you reach this point, with a well-behaved, segmented MS-DOS
+  application in hand, the worst of a port to OS/2 is behind you. You are
+  now ready to prepare your program for true conversion to protected-mode
+  operation by encapsulating, in individual subroutines, every part of the
+  program that is specific to the host operating system. The objective here
+  is to localize the program's "knowledge" of the environment into small
+  procedures that can be subsequently modified without affecting the
+  remainder of the program.
+
+  As an example of encapsulation, consider a typical call by an MS-DOS
+  application to write a string to the standard output device (Figure
+  16-1). In order to facilitate conversion to OS/2, you would replace every
+  instance of such a write to a file or device with a call to a small
+  subroutine that "hides" the mechanics of the actual operating-system
+  function call, as illustrated in Figure 16-2.
+
+  Another candidate for encapsulation, which does not necessarily involve an
+  operating-system function call, is the application's code to gain access
+  to command-line parameters, environment-block variables, and the name of
+  the file it was loaded from. Under MS-DOS, this information is divided
+  between the program segment prefix (PSP) and the environment block, as we
+  saw in Chapters 3 and 12; under OS/2, there is no such thing as a PSP,
+  and the program filename and command-line information are appended to the
+  environment block.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  stdin   equ     0               ; standard input handle
+  stdout  equ     1               ; standard output handle
+  stderr  equ     2               ; standard error handle
+
+  msg     db      'This is a sample message'
+  msg_len equ     $-msg
+
+          .
+          .
+          .
+          mov     dx,seg msg      ; DS:DX = message address
+          mov     ds,dx
+          mov     dx,offset DGROUP:msg
+          mov     cx,msg_len      ; CX = message length
+          mov     bx,stdout       ; BX = handle
+          mov     ah,40h          ; AH = function 40h write
+          int     21h             ; transfer to MS-DOS
+          jc      error           ; jump if error
+          cmp     ax,msg_len      ; all characters written?
+          jne     diskfull        ; no, device is full
+          .
+          .
+          .
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 16-1.  Typical in-line code for an MS-DOS function call. This
+  particular sequence writes a string to the standard output device. Since
+  the standard output might be redirected to a file without the program's
+  knowledge, it must also check that all of the requested characters were
+  actually written; if the returned length is less than the requested
+  length, this usually indicates that the standard output has been
+  redirected to a disk file and that the disk is full.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  stdin   equ     0               ; standard input handle
+  stdout  equ     1               ; standard output handle
+  stderr  equ     2               ; standard error handle
+
+  msg     db      'This is a sample message'
+  msg_len equ     $-msg
+
+          .
+          .
+          .
+          mov     dx,seg msg      ; DS:DX = message address
+          mov     ds,dx
+          mov     dx,offset DGROUP:msg
+          mov     cx,msg_len      ; CX = message length
+          mov     bx,stdout       ; BX = handle
+          call    write           ; perform the write
+          jc      error           ; jump if error
+          cmp     ax,msg_len      ; all characters written?
+          jne     diskfull        ; no, device is full
+          .
+          .
+          .
+
+  write   proc    near            ; write to file or device
+                                  ; Call with:
+                                  ; BX = handle
+                                  ; CX = length of data
+                                  ; DS:DX = address of data
+                                  ; returns:
+                                  ; if successful, carry clear
+                                  ; and AX = bytes written
+                                  ; if error, carry set
+                                  ; and AX = error code
+
+          mov     ah,40h          ; function 40h = write
+          int     21h             ; transfer to MS-DOS
+          ret                     ; return status in CY and AX
+
+  write   endp
+
+          .
+          .
+          .
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 16-2.  Code from Figure 16-1 after "encapsulation." The portion of
+  the code that is operating-system dependent has been isolated inside a
+  subroutine that is called from other points within the application.
+
+  When you have completed the encapsulation of system services and access to
+  the PSP and environment, subject your program once more to thorough
+  testing under MS-DOS. This is your last chance, while you are still
+  working in a familiar milieu and have access to your favorite debugging
+  tools, to detect any subtle errors you may have introduced during the
+  three conversion steps discussed thus far.
+
+  Conversion
+
+  Next, you must rewrite each system-dependent procedure you created during
+  the encapsulation stage to conform to the OS/2 protected-mode API. In
+  contrast to MS-DOS functions, which are actuated through software
+  interrupts and pass parameters in registers, OS/2 API functions are
+  requested through a far call to a named entry point. Parameters are passed
+  on the stack, along with the addresses of variables within the calling
+  program's data segment that will receive any results returned by the
+  function. The status of an operation is returned in register AXÄÄzero if
+  the function succeeded, an error code otherwise. All other registers are
+  preserved.
+
+  Although it is not my intention here to provide a detailed introduction to
+  OS/2 programming, Figure 16-3 illustrates the final form of our previous
+  example, after conversion for OS/2. Note especially the addition of the
+  extrn statement, the wlen variable, and the simulation of the MS-DOS
+  function status. This code may not be elegant, but it serves the purpose
+  of limiting the necessary changes to a very small portion of the source
+  file. Some OS/2 functions (such as DosOpen) require parameters that have
+  no counterpart under MS-DOS; you can usually select reasonable values for
+  these extra parameters that will make their existence temporarily
+  invisible to the remainder of the application.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  stdin   equ     0               ; standard input handle
+  stdout  equ     1               ; standard output handle
+  stderr  equ     2               ; standard error handle
+
+          extrn   DosWrite:far
+
+  msg     db      'This is a sample message'
+  msg_len equ     $-msg
+
+  wlen    dw      ?               ; receives actual number
+                                  ; of bytes written
+
+          .
+          .
+          .
+          mov     dx,seg msg      ; DS:DX = message address
+          mov     ds,dx
+          mov     dx,offset DGROUP:msg
+          mov     cx,msg_len      ; CX = message length
+          mov     bx,stdout       ; BX = handle
+          call    write           ; perform the write
+          jc      error           ; jump if error
+          cmp     ax,msg_len      ; all characters written?
+          jne     diskfull        ; no, device is full
+          .
+          .
+          .
+
+  write   proc    near            ; write to file or device
+                                  ; call with:
+                                  ; BX = handle
+                                  ; CX = length of data
+                                  ; DS:DX = address of data
+                                  ; returns:
+                                  ; if successful, carry clear
+                                  ; and AX = bytes written
+                                  ; if error, carry set
+                                  ; and AX = error code
+
+          push    bx              ; handle
+          push    ds              ; address of data
+          push    dx
+          push    cx              ; length of data
+          push    ds              ; receives length written
+          mov     ax,offset DGROUP:wlen
+          push    ax
+          call    DosWrite        ; transfer to OS/2
+          or      ax,ax           ; did write succeed?
+          jnz     write1          ; jump, write failed
+          mov     ax,wlen         ; no error, OR cleared CY
+          ret                     ; and AX := bytes written
+
+  write1: stc                     ; write error, return CY set
+          ret                     ; and AX = error number
+
+  write   endp
+
+          .
+          .
+          .
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 16-3.  Code from Figure 16-2 after "conversion." The MS-DOS
+  function call has been replaced with the equivalent OS/2 function call.
+  Since the knowledge of the operating system has been hidden inside the
+  subroutine by the previous encapsulation step, the surrounding program's
+  requests for write operations should run unchanged. Note that the OS/2
+  function had to be declared as an external name with the "far" attribute,
+  and that a variable named wlen was added to the data segment of the
+  application to receive the actual number of bytes written.
+
+  Figures 16-4, 16-5, and 16-6 list the OS/2 services that are equivalent
+  to selected MS-DOS and ROM BIOS Int 21H, Int 10H, and Int 16H calls.
+  MS-DOS functions related to FCBs and PSPs are not included in these tables
+  because OS/2 does not support either of these structures. The MS-DOS
+  terminate-and-stay-resident functions are also omitted. Because OS/2 is a
+  true multitasking system, a process doesn't need to terminate in order to
+  stay resident while another process is running.
+
+
+  MS-DOS               Description                     OS/2 function
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  Int 21H Function
+  0                   Terminate process               DosExit
+  1                   Character input with echo       KbdCharIn
+  2                   Character output                VioWrtTTY
+  3                   Auxiliary input                 DosRead
+  4                   Auxiliary output                DosWrite
+  5                   Printer output                  DosWrite
+  6                   Direct console I/O              KbdCharIn,
+                                                       VioWrtTTY
+  7                   Unfiltered input without echo   KbdCharIn
+  8                   Character input without echo    KbdCharIn
+  9                   Display string                  VioWrtTTY
+  0AH (10)            Buffered keyboard input         KbdStringIn
+  0BH (11)            Check input status              KbdPeek
+  0CH (12)            Reset buffer and input          KbdFlushBuffer,
+                                                       KbdCharIn
+  0DH (13)            Disk reset                      DosBufReset
+  0EH (14)            Select disk                     DosSelectDisk
+  19H (25)            Get current disk                DosQCurDisk
+  1BH (27)            Get default drive data          DosQFSInfo
+  1CH (28)            Get drive data                  DosQFSInfo
+  2AH (42)            Get date                        DosGetDateTime
+  2BH (43)            Set date                        DosSetDateTime
+  2CH (44)            Get time                        DosGetDateTime
+  2DH (45)            Set time                        DosSetDateTime
+  2EH (46)            Set verify flag                 DosSetVerify
+  30H (48)            Get MS-DOS version              DosGetVersion
+  36H (54)            Get drive allocation            DosQFSInfo
+                       information
+  38H (56)            Get or set country              DosGetCtryInfo
+                       information
+  39H (57)            Create directory                DosMkdir
+  3AH (58)            Delete directory                DosRmdir
+  3BH (59)            Set current directory           DosChdir
+  3CH (60)            Create file                     DosOpen
+  3DH (61)            Open file                       DosOpen
+  3EH (62)            Close file                      DosClose
+  3FH (63)            Read file or device             DosRead
+  40H (64)            Write file or device            DosWrite
+  41H (65)            Delete file                     DosDelete
+  42H (66)            Set file pointer                DosChgFilePtr
+  43H (67)            Get or set file attributes      DosQFileMode,
+                                                       DosSetFileMode
+  44H (68)            I/O control (IOCTL)             DosDevIOCtl
+  45H (69)            Duplicate handle                DosDupHandle
+  46H (70)            Redirect handle                 DosDupHandle
+  47H (71)            Get current directory           DosQCurDir
+  48H (72)            Allocate memory block           DosAllocSeg
+  49H (73)            Release memory block            DosFreeSeg
+  4AH (74)            Resize memory block             DosReAllocSeg
+  4BH (75)            Execute program                 DosExecPgm
+  4CH (76)            Terminate process with          DosExit
+                       return code
+  4DH (77)            Get return code                 DosCWait
+  4EH (78)            Find first file                 DosFindFirst
+  4FH (79)            Find next file                  DosFindNext
+  54H (84)            Get verify flag                 DosQVerify
+  56H (86)            Rename file                     DosMove
+  57H (87)            Get or set file date and time   DosQFileInfo,
+                                                       DosSetFileInfo
+  59H (89)            Get extended error              DosErrClass
+                       information
+  5BH (91)            Create new file                 DosOpen
+  5CH (92)            Lock or unlock file region      DosFileLocks
+  65H (101)           Get extended country            DosGetCtryInfo
+                       information
+  66H (102)           Get or set code page            DosGetCp,
+                                                       DosSetCp
+  67H (103)           Set handle count                DosSetMaxFH
+  68H (104)           Commit file                     DosBufReset
+  6CH (108)           Extended open file              DosOpen
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+  Figure 16-4.  Table of selected MS-DOS function calls and their OS/2
+  counterparts. Note that OS/2 functions are typically more powerful and
+  flexible than the corresponding MS-DOS functions, and that this is not a
+  complete list of OS/2 services.
+
+  ROM BIOS           Description                         OS/2 function
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  Int 10H Function
+  0                 Select display mode                 VioSetMode
+  1                 Set cursor type                     VioSetCurType
+  2                 Set cursor position                 VioSetCurPos
+  3                 Get cursor position                 VioGetCurPos
+  6                 Initialize or scroll window up      VioScrollUp
+  7                 Initialize or scroll window down    VioScrollDn
+  8                 Read character and attribute        VioReadCellStr
+  9                 Write character and attribute       VioWrtNCell
+  0AH (10)          Write character                     VioWrtNChar
+  0EH (14)          Write character in teletype mode    VioWrtTTY
+  0FH (15)          Get display mode                    VioGetMode
+  10H (16)          Set palette, border color, etc.     VioSetState
+  13H (19)          Write string in teletype mode       VioWrtTTY
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 16-5.  Table of ROM BIOS Int 10H video-display driver functions
+  used by MS-DOS applications and their OS/2 equivalents. This is not a
+  complete list of OS/2 video services.
+
+  ROM BIOS           Description                         OS/2 function
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  Int 16H Function
+  0                 Read keyboard character             KbdCharIn
+  1                 Get keyboard status                 KbdPeek
+  2                 Get keyboard flags                  KbdGetStatus
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 16-6.  Table of ROM BIOS Int 16H keyboard driver functions used by
+  MS-DOS applications and their OS/2 equivalents. This is not a complete
+  list of OS/2 keyboard services.
+
+  Optimization
+
+  Once your program is running in protected mode, it is time to unravel some
+  of the changes made for purposes of conversion and to introduce various
+  optimizations. Three obvious categories should be considered:
+
+  1.  Modifying the program's user-interface code for the more powerful OS/2
+      keyboard and display API functions.
+
+  2.  Incorporating 80286-specific machine instructions where appropriate.
+
+  3.  Revamping the application to exploit the OS/2 facilities that are
+      unique to protected mode. (Of course, the application benefits from
+      OS/2's virtual memory capabilities automatically; it can allocate
+      memory until physical memory and disk swapping space are exhausted.)
+
+  Modifying subroutines that encapsulate user input and output to take
+  advantage of the additional functionality available under OS/2 is
+  straight-forward, and the resulting performance improvements can be quite
+  dramatic. For example, the OS/2 video driver offers a variety of services
+  that are far superior to the screen support in MS-DOS and the ROM BIOS,
+  including high-speed display of strings and attributes at any screen
+  position, "reading back" selected areas of the display into a buffer, and
+  scrolling in all four directions.
+
+  The 80286-specific machine instructions can be very helpful in reducing
+  code size and increasing execution speed. The most useful instructions are
+  the shifts and rotates by an immediate count other than one, the
+  three-operand multiply where one of the operands is an immediate (literal)
+  value, and the push immediate value instruction (particularly handy for
+  setting up OS/2 function calls). For example, in Figure 16-3, the
+  sequence
+
+  mov     ax,offset DGROUP:wlen
+  push    ax
+
+  could be replaced by the single instruction
+
+  push    offset DGROUP:wlen
+
+  Restructuring an application to take full advantage of OS/2's
+  protected-mode capabilities requires close study of both the application
+  and the OS/2 API, but such study can pay off with sizable benefits in
+  performance, ease of maintenance, and code sharing. Often, for instance,
+  different parts of an application are concerned with I/O devices of vastly
+  different speeds, such as the keyboard, disk, and video display. It both
+  simplifies and enhances the application to separate these elements into
+  subprocesses (called threads in OS/2) that execute asynchronously,
+  communicate through shared data structures, and synchronize with each
+  other, when necessary, using semaphores.
+
+  As another example, when several applications are closely related and
+  contain many identical or highly similar procedures, OS/2 allows you to
+  centralize those procedures in a dynamic link library. Routines in a
+  dynamic link library are bound to a program at its load time (rather than
+  by LINK, as in the case of traditional runtime libraries) and are shared
+  by all the processes that need them. This reduces the size of each
+  application .EXE file and allows more efficient use of memory. Best of
+  all, dynamic link libraries drastically simplify code maintenance; the
+  routines in the libraries can be debugged or improved at any time, and the
+  applications that use them will automatically benefit the next time they
+  are executed.
+
+
+

@@ -1,0 +1,1207 @@
+                
+               Introduction
+
+                The New Enhanced AT (NEAT[(r)]) CHIPSet[tm] from Chips &
+                Technologies has brought many of the memory and performance
+                features of an 80386 system to the less expensive 80286 CPU.
+                In addition, it offers features not found in any previous
+                personal computer system.  Among these, user-controllable
+                shadow RAM, bus timing, wait state control and LIM EMS 4.0
+                emulation, all in a jumperless configuration.
+
+                To control all of these features, a ROM-based Setup routine
+                stores appropriate values into CMOS registers contained in
+                three of the NEAT[(r)] chips.  To simplify configuration for
+                new users, a minimal setup routine is accessible under the
+                "Easy NEAT CHIPSet Register Setup" option.  This
+                "stripped-down" setup contains all of the mandatory setup
+                information and is fully detailed in the JE3010 and JE3011
+                Owner's Manuals.
+
+                To access all of the features of the NEAT[(r)] CHIPSet[tm], the
+                user will have to be acquainted with the NEAT[(r)] registers
+                themselves.  These registers are accessible under the "Advanced
+                NEAT[(r)] CHIPSet[tm] Register Setup" option and are fully
+                explained in this supplement.  Before consulting this, read the
+                Owner's Manual and complete the installation and setup of your
+                new computer system.
+
+
+                WARNING!  It is conceivable that contradictory settings may be
+                stored in the CMOS registers that can prevent the system from
+                booting.  In this event, attempt the re-initialization
+                procedure that follows several times before calling for
+                technical assistance.  If you are still unsuccessful, please
+                refer to the Obtaining Assistance section of this document.
+                ATTEMPTING TO RE-INITIALIZE THESE SETTINGS EITHER BY REMOVING
+                THE BATTERY OR CMOS DEVICES CAN RESULT IN PERMANENT DAMAGE TO
+                THE MOTHERBOARD AND WILL VOID ANY WARRANTY.
+
+
+
+
+CMOS Reset      To re-initialize the NEAT[(r)] CMOS registers, follow this
+                procedure:
+
+                [C1] Turn on the computer
+                [C1] Wait 20 seconds
+                [C1] Press and hold down the [Key: ] key
+                [C1] Press the reset button for at least 3 seconds
+                [C1] When the memory test starts, release the [Key: ] key.
+
+                This procedure will reinitialize the CMOS setup and the
+                Extended CMOS settings to their default values.  Of course, the
+                Extended CMOS Setup and possibly the CMOS Setup will need to be
+                run again to set the proper values.
+
+
+
+                
+               Memory Types
+
+                The NEAT[(r)] 80286 motherboard can utilize its RAM in four
+                different configurations:  base, shadow, extended and expanded
+                (EMS).  As more memory is added to it (up to eight megabytes),
+                this flexibility increases.
+
+                If 1024Kb (1Mb) has been installed on it, the residual 384Kb
+                above 640Kb can be used for either shadow RAM or Extended
+                memory.
+
+
+Base            The memory addresses from 0Kb to 640Kb comprise the base memory
+                of the system.  This is the memory that DOS manages and is
+                sometimes referred to as "conventional memory". Some
+                applications require the full amount of base memory.
+
+
+Shadow          In all IBM software compatible computers, the addresses from
+                640Kb to 1024Kb are reserved for the system BIOS ROMs and ROMs
+                of I/O expansion cards.  In systems with 1024Kb of RAM, the
+                memory addressed from 640Kb to 1024Kb would normally be lost.
+
+                The NEAT[(r)] Motherboards have the ability to copy the
+                contents of the BIOS ROMs into this unused RAM, disable the
+                ROMs and run the BIOS routines from RAM.  This process is
+                referred to as "shadowing."  The main advantage to the shadow
+                feature is the increase in system performance.  Most ROMs have
+                access times of only 200 to 400ns.  Since these boards
+                typically operate with memory faster than 80ns, the shadowed
+                BIOS routines can attain a 200 to 400% increase in performance.
+
+                If shadow RAM is enabled during the Extended Setup procedure,
+                the following events will take place after a reset or power on:
+
+
+                1) After the POST, the AMI BIOS looks at the Extended Setup
+                parameters and finds that you have shadow features enabled.
+
+                2) It looks at the BIOS locations that are to be shadowed.
+
+                3) It then takes each BIOS (at the selected locations) and
+                copies their complete contents into RAM addressed at the same
+                location.
+
+                4) The BIOS ROMs are then disabled.  Their operations are then
+                executed from shadow RAM.
+
+                Note:  Shadow RAM cannot be enabled when the "memory
+                relocating" feature in advanced setup is used.
+
+
+Extended        The memory addresses above 1024Kb are referred to as extended
+                memory.  While the 80286 CPU is capable of using this memory,
+                DOS and other PC applications can only address 1024Kb.
+                Therefore, most applications are unable to take advantage of
+                extended memory.  Some examples of programs that can utilize
+                extended memory are:  VDISK, VCACHE, Framework II and AutoCAD.
+
+                The NEAT[(r)] Motherboard takes any memory that is not used for
+                EMS (Expanded Memory Specification), and uses it for Extended
+                memory with the starting address beginning at 1024Kb.
+
+                If 1024Kb is installed, the 384Kb of memory that is above the
+                640Kb base may be used for extended memory.  To select this
+                option, set bit 6 on at register 6BH in the advanced setup
+                program.  If more than 1Mb is available, DO NOT use this
+                option.
+
+                Note:  The "memory relocating" feature cannot be enabled when
+                the "shadow" feature is used.
+
+
+
+Expanded        The NEAT[(r)] Motherboards conform to the Lotus/Intel/Microsoft
+(EMS)           Expanded Memory Specification version 4.0 (LIM EMS 4.0).
+                Expanded memory is not addressed as part of the system RAM.
+                Instead, it is partitioned from the rest of the RAM and is
+                accessed in pages by programs that support LIM EMS 4.0.  Note
+                that LIM EMS 4.0 is downward-compatible with older LIM EMS
+                specifications (ie. LIM EMS 3.2).
+
+                RAM that is partitioned for EMS is removed from the available
+                extended memory, reducing the total RAM displayed at POST.  The
+                interface between applications software and EMS is a software
+                driver that is provided on diskette with the motherboard.
+
+                Some examples of programs that can utilize expanded memory
+                are:  Lotus 1-2-3 v2.01, Freelance Plus v3.0, Manuscript;
+                Microsoft File, Word, Works; Ashton-Tate dBase III/IV,
+                Framework II; Software Publishing Corp. Professional File;
+                Borland Sidekick Plus and AutoCAD.
+
+
+Examples        A system with 8192Kb of RAM could be configured with the
+                following memory arrangement:  640Kb of conventional memory
+                with all shadow features enabled.  6144Kb (6M) of expanded
+                memory, leaving 1024Kb that is automatically configured as
+                extended memory.
+
+                With this configuration, the POST memory test will count to
+                1664Kb which is 640Kb conventional plus 1024Kb extended.  The
+                384Kb is used for shadow and expanded memory addressing, plus
+                the actual 6Mb set aside for expanded memory, is not included
+                in the POST memory count.  The BIOS tests the 384Kb RAM
+                separately, while the expanded memory is tested by using one of
+                the options offered by the driver software (explained later).
+
+
+
+Alternate       While there are a variety of non-DOS operating systems (ie.
+Operating       Xenix, PC/MOS, etc.) which we will not discuss, there are some
+Systems         alternate operating environments that overlay DOS giving the
+                user additional functionality.  These include Microsoft's
+                Windows/286 and Quarterdeck's DesqView.  These operating
+                systems load from DOS and assume control of the system allowing
+                advanced windowing, applications control and memory management
+                features.  Both Windows/286 and DesqView utilize base, extended
+                and expanded memory for optimum performance.  Follow the
+                recommendations of the software manufacturer for configuring
+                the memory to achieve the best performance.  Typically, this
+                calls for a small amount of extended memory and as much
+                expanded memory as possible.
+
+                
+               Extended Setup
+
+                During each setup, use [Key: ][Key: ][Key: ]
+                [Key: ] to move the highlight bar.  Use [Key: ] or
+                [Key: ] to change parameters.  Each setup screen will
+                display a window describing each option.  Use the [Key: ]
+                key to exit the current setup screen.
+
+
+Entering        Reset or power up the system.  The system will go through POST
+Extended Setup  and display the size of the memory being tested.  Note that
+                this test can be bypassed by pressing the [Key: ] key.
+                This option is useful when the memory on the system is quite
+                large, although It is a good idea to let the test count
+                through.
+
+                Immediately after the memory test, the following prompt will
+                appear on the screen:
+
+                Press <DEL> key to run SETUP/EXTD-SET
+
+                Press the [Key: ] key to get into the Setup Mode.  Note
+                that [Key: ] key will initiate the setup mode only when
+                the above message is present on the screen.  A moment after the
+                [Key: ] is pressed, this menu will appear:
+
+                EXIT FOR BOOT
+                RUN CMOS SETUP
+                RUN XCMOS SETUP
+
+                Use [Key: ][Key: ] and highlight "RUN XCMOS SETUP"
+                and press [Key: ].  The Extended Setup screen appears as
+                follows:
+
+
+                                   NEAT CHIPSET SETUP PROGRAM
+                                           MAIN MENU
+
+                                EASY NEAT CHIPSET REGISTER SETUP
+                              ADVANCED NEAT CHIPSET REGISTER SETUP
+                            ENABLE/DISABLE VIDEO & MAIN BIOS SHADOW
+                                 WRITE CMOS REGISTERS AND EXIT
+                              DO NOT WRITE CMOS REGISTERS AND EXIT
+
+
+
+
+Enable/         Highlight this option and press [Key: ].  The display
+Disable Video   will change to a graphic depiction of the CMOS registers as
+and Main BIOS   shown in the following diagram.  Setting these bits to '1'
+Shadow          enables the SHADOW RAM function for that bit.  We recommend
+                enabling all shadow options for maximum performance.
+
+
+                    SETUP SHADOW RAM FOR 212
+                 [LN Length:RM]
+                  MAIN  BIOS SHADOW AT F0000H,64Kb ->0
+                  VIDEO BIOS SHADOW AT C0000H,16Kb ->0
+                  VIDEO BIOS SHADOW AT C4000H,16Kb ->0
+
+
+                Shadowing the main ROM BIOS will improve overall system speed.
+                Shadowing the video ROM BIOS will offer a 20% to 30% increase
+                in video performance.  You must have a minimum of 1Mb of RAM
+                and the Relocate Option must be disabled (82C212, 6BH, set bit
+                6 to 0).  This may cause the screen to flicker with some
+                systems.  If any video problems are encountered, turn off the
+                video shadow feature.
+
+                Note:  The "shadow" features cannot be enabled if the "memory
+                relocating" feature is used.
+
+                Press [Key: ] to return to the main menu.
+
+
+Advanced NEAT   Highlight "Advanced NEAT CHIPSet Register Setup" and press
+[(r)] Register  [Key: ].  The system will warn you that improper setup
+Setup           may prevent the computer from operating.  If this occurs, refer
+                to the CMOS Reset section at the beginning of this supplement.
+
+                Next, the display will change to a graphic depiction of the
+                CMOS registers as shown in the following diagrams.  The first
+                diagram shows default settings for boards with the 82C212.  The
+                second diagram shows default settings for boards with the
+                82C212B.
+
+
+                A description of the currently selected bit's function will
+                appear on the right portion of the screen.  Any permissible
+                values will also be displayed.  All bits marked as "R"eserved
+                cannot be changed.  For clarity, we will discuss the options
+                available at each bit in the following sections.
+
+82C212          *           BITS   7 - 0
+                82C211   60H -> 00  0 0 R 0 R 0
+                         61H -> 0 1  00  01  01
+                         62H -> RR   01  10  00
+
+                82C212   64H -> 0    00   RRRRR
+                         65H -> 0 0 0 0 1 1 1 0
+                         66H -> 1       RRRRRRR
+                         67H -> 0 0 0 0 0 0 0 0
+                         68H -> 0 0 0 0 0 0 0 0
+                         69H -> 0 0 0 0 0 0 0 0
+                         6AH -> **  *     RRRRR
+                         6BH -> * 1 1 0  10  11
+                         6CH -> **    *   RRRRR
+                         6DH -> 0100       0000
+                         6EH -> 00   00  00  00
+                         6FH -> 000  RR   1 0 R
+
+                82C206   01H -> 11  00  00  0 0
+
+
+82C212B         *           BITS   7 - 0
+                82C211   60H -> 00  0 0 R 0 R 0
+                         61H -> 0 1  00  01  01
+                         62H -> RR   01  10  00
+
+                82C212B  64H -> 0    01   RRRRR
+                         65H -> 0 0 0 0 1 1 1 0
+                         66H -> 1 0 0     RRRRR
+                         67H -> 0 0 0 0 0 0 0 0
+                         68H -> 0 0 0 0 0 0 0 0
+                         69H -> 0 0 0 0 0 0 0 0
+                         6AH -> **  *     RRRRR
+                         6BH -> * 1 1 0  10  11
+                         6CH -> **    *  0 RRRR
+                         6DH -> 0100       0000
+                         6EH -> 00   00  00  00
+                         6FH -> 000  0 R  1 1 R
+
+                82C206   01H -> 11  00  00  0 0
+
+                Note:  "*" indicates that the default values will automatically
+                adjust for the system RAM configuration.  The correct values
+                should be present, however, check them to be sure.
+
+                
+               82C211
+
+                The 82C211 Bus Controller consists of the following functional
+                sub-modules:  Reset and Shut Down Logic, Clock Generation and
+                Selection, CPU State, Bus State, Bus Arbitration and Refresh
+                Logic, NMI Generation Logic, Numeric Coprocessor Interface.
+
+
+60H             PROCCLK Register RA0
+
+
+7,6             82C211 Revision Number
+
+                This bit is not revisable by the user.
+
+
+5               Alternate CPU Reset
+
+                This bit is not revisable by the user.
+
+
+4               Processor Clock Select
+
+                0:   PROCCLK = CLK2IN
+                1:   PROCCLK = BCLK
+
+                This determines the source of the PROCCLK signal and should be
+                set for CLK2IN.  This will divide the CLK signal by two.  For
+                example, the 32MHz oscillator will be divided by two, providing
+                a 16MHz timing signal for the 80286 processor.
+
+
+2               Local Bus Ready TIMEOUT NMI
+
+                0:   Disable
+                1:   Enable
+
+                This option is set by the ROM BIOS and need not be changed.
+
+
+
+0               Local Bus Ready TIMEOUT
+
+                This bit is not revisable by the user.
+
+
+61H             Command Delay Register RA1
+
+
+7               Address Hold Time Delay
+
+                0:   Disable
+                1:   Enable
+
+                This option is set by the ROM BIOS and need not be changed.
+
+
+6               Quick Mode Enable
+
+                0:   Disable
+                1:   Enable
+
+                This option is set by the ROM BIOS and need not be changed.
+
+
+5,4             AT Bus 16 Bit Memory Command Delay
+
+                00:  Delay is 0 BCLK Cycles
+                01:  Delay is 1 BCLK Cycles
+                10:  Delay is 2 BCLK Cycles
+                11:  Delay is 3 BCLK Cycles
+
+                This option is set by the ROM BIOS and need not be changed.
+
+
+3,2             AT Bus 8 Bit Memory Command Delay
+
+                00:  Delay is 0 BCLK Cycles
+                01:  Delay is 1 BCLK Cycles
+                10:  Delay is 2 BCLK Cycles
+                11:  Delay is 3 BCLK Cycles
+
+                This option is set by the ROM BIOS and need not be changed.
+
+
+
+1,0             AT Bus I/O Cycle Command Delay
+
+                00:  Delay is 0 BCLK Cycles
+                01:  Delay is 1 BCLK Cycles
+                10:  Delay is 2 BCLK Cycles
+                11:  Delay is 3 BCLK Cycles
+
+                This option is set by the ROM BIOS and need not be changed.
+
+
+62H             Wait State Register RA2
+
+
+5,6             16 Bit AT Cycle Wait State
+
+                00:  0 Wait States
+                01:  1 Wait States
+                10:  2 Wait States
+                11:  3 Wait States
+
+                This option is set by the ROM BIOS and need not be changed.
+
+
+3,2             8 Bit AT Cycle Wait State
+
+                00:  2 Wait States
+                01:  3 Wait States
+                10:  4 Wait States
+                11:  5 Wait States
+
+                This option is set by the ROM BIOS and need not be changed.
+
+
+1,0             Bus Clock (BCLK) Source Select
+
+                00:  BCLK = CLK2IN/2
+                01:  BCLK = CLK2IN
+                10:  BCLK = ATCLK
+                11:  Reserved
+
+
+                This option selects the bus clock (BCLK) source.  Default is
+                CLK2IN/2.  In a system with a 32MHz oscillator, CLK2IN will be
+                16MHz and the resulting bus speed will be 8MHz (CLK2IN/2).
+                When this option is selected, you have an advantage of being
+                able to switch the system speed down twice.  Once with the
+                keyboard (system switches to 8MHz), and once with the turbo
+                switch (system switches to 4MHz).  This can come in handy when
+                some software needs to run near IBM-PC speed.
+
+                Changing this bit to 01 would result in a bus speed of 16MHz.
+                Attempts to change the clock speed via keyboard, will lock up
+                the system.  The bus speed cannot be faster than the system
+                speed.  Also, be aware that most AT expansion cards are
+                incapable of exceeding 10MHz.  This option is most useful when
+                the source oscillator has been replaced.
+
+                
+               82C212(B)
+
+                The 82C212 and the 82C212B memory controllers consists of the
+                following functions:  RAM Page / Interleave Mode, Shadow RAM,
+                Lotus Intel Microsoft (LIM) Expanded Memory Specification (EMS)
+                version 4.0 emulation.
+
+
+64H             Version Register RB0
+
+
+7               NEAT[(r)] Memory Controller Identifier
+
+                This bit is not revisable by the user.
+
+
+6,5             82C212 Revision Number
+
+                This bit is not revisable by the user.  For the 82C212, this
+                value will be 00.  For the 82C212B, this value will be 01.  If
+                you get a 00 and you have an 82C212B chip, you should execute a
+                CMOS Reset as explained at the beginning of this supplement.
+
+
+65H             ROM Configuration Register RB1
+
+
+                In most cases all Shadow RAM should be set from the other menu
+                "ENABLE/DISABLE VIDEO AND MAIN BIOS SHADOW".  However, if you
+                have a special application, you may set specific bits here.
+
+                NOTE:  Please use caution when using this option.  Many ROMs
+                will have problems.  Hard disk drive controller card ROMs, for
+                example, should not be shadowed.  Other ROMs (i.e. a Floppy
+                controller card ROM) can possibly be shadowed without
+                problems.  If you have any operation problems with a ROM you
+                have shadowed, disable this option.
+
+
+                If you have a BIOS ROM that is located at a specific address
+                and you wish to provide shadow RAM for this BIOS, you must set
+                three bits:
+
+                [C1] Set one of the RAM bits from register 65H (bit 7, 6, 5 or
+                4) within the address range of the BIOS to be shadowed, to the
+                Read Only/Write Protected state.
+
+                [C1] Disable one of the ROM bits from register 65H (bit 3, 2,
+                1, or 0) within the address range of the BIOS to be shadowed.
+
+                [C1] Enable one (or more, depending on the BIOS size) of the
+                bits from registers 67H to 69H.  The first bit enabled should
+                be equal to the starting address of the BIOS to be shadowed.
+                If the BIOS to be shadowed occupies an address area larger than
+                the area of one of these bits, you must enable the next
+                consecutive bit (or bits) until the complete BIOS address area
+                is shadowed.
+
+
+7               SHADOW RAM at C0000H to CFFFFH
+
+                0:   Read/Write Enable
+                1:   Read Only (Write Protected)
+
+
+6               SHADOW RAM at D0000H to DFFFFH
+
+                0:   Read/Write Enable
+                1:   Read Only (Write Protected)
+
+
+5               SHADOW RAM at E0000H to EFFFFH
+
+                0:   Read/Write Enable
+                1:   Read Only (Write Protected)
+
+
+4               SHADOW RAM at F0000H to FFFFFH
+
+                0:   Read/Write Enable
+                1:   Read Only (Write Protected)
+
+
+
+3               ROM at C0000H to CFFFFH
+
+                0:   ROM Enabled
+                1:   ROM Disabled
+
+
+2               ROM at D0000H to DFFFFH
+
+                0:   ROM Enabled
+                1:   ROM Disabled
+
+
+1               ROM at E0000H to EFFFFH
+
+                0:   ROM Enabled
+                1:   ROM Disabled
+
+
+0               ROM at F0000H to FFFFFH
+
+                0:   ROM Enabled
+                1:   ROM Disabled
+
+
+66H             Memory Enable-1 Register RB2
+
+
+7               Address Map For RAM in 512Kb to 640Kb Area
+
+                0:   RAM on I/O Channel
+                1:   RAM on System Board
+
+
+6               256Kb to 512Kb Memory status (82C212B only)
+
+                0:   Memory on system board
+                1:   Memory on AT-bus
+
+
+5               0Kb to 256Kb Memory Status (82C212B only)
+
+                0:   Memory on system board
+                1:   Memory on AT-bus
+
+
+
+67H             Memory Enable-2 Register RB3
+
+
+7               SHADOW RAM at BC000H to BFFFFH
+
+                0:   Disable
+                1:   Enable
+
+
+6               SHADOW RAM at B8000H to BBFFFH
+
+                0:   Disable
+                1:   Enable
+
+
+5               SHADOW RAM at B4000H to B7FFFH
+
+                0:   Disable
+                1:   Enable
+
+
+4               SHADOW RAM at B0000H to B3FFFH
+
+                0:   Disable
+                1:   Enable
+
+
+3               SHADOW RAM at AC000H to AFFFFH
+
+                0:   Disable
+                1:   Enable
+
+
+2               SHADOW RAM at A8000H to ABFFFH
+
+                0:   Disable
+                1:   Enable
+
+
+1               SHADOW RAM at A4000H to A7FFFH
+
+                0:   Disable
+                1:   Enable
+
+
+
+0               SHADOW RAM at A0000H to A3FFFH
+
+                0:   Disable
+                1:   Enable
+
+
+68H             Memory Enable-3 Register RB4
+
+
+7               SHADOW RAM at DC000H to DFFFFH
+
+                0:   Disable
+                1:   Enable
+
+
+6               SHADOW RAM at D8000H to DBFFFH
+
+                0:   Disable
+                1:   Enable
+
+
+5               SHADOW RAM at D4000H to D7FFFH
+
+                0:   Disable
+                1:   Enable
+
+
+4               SHADOW RAM at D0000H to D3FFFH
+
+                0:   Disable
+                1:   Enable
+
+
+3               SHADOW RAM at CC000H to CFFFFH
+
+                0:   Disable
+                1:   Enable
+
+
+2               SHADOW RAM at C8000H to CBFFFH
+
+                0:   Disable
+                1:   Enable
+
+
+
+1               SHADOW RAM at C4000H to C7FFFH
+
+                0:   Disable
+                1:   Enable
+
+
+0               SHADOW RAM at C0000H to C3FFFH
+
+                0:   Disable
+                1:   Enable
+
+
+69H             Memory Enable-4 Register RB5
+
+
+7               SHADOW RAM at FC000H to FFFFFH
+
+                0:   Disable
+                1:   Enable
+
+
+6               SHADOW RAM at F8000H to FBFFFH
+
+                0:   Disable
+                1:   Enable
+
+
+5               SHADOW RAM at F4000H to F7FFFH
+
+                0:   Disable
+                1:   Enable
+
+
+4               SHADOW RAM at F0000H to F3FFFH
+
+                0:   Disable
+                1:   Enable
+
+
+3               SHADOW RAM at EC000H to EFFFFH
+
+                0:   Disable
+                1:   Enable
+
+
+
+2               SHADOW RAM at E8000H to EBFFFH
+
+                0:   Disable
+                1:   Enable
+
+
+1               SHADOW RAM at E4000H to E7FFFH
+
+                0:   Disable
+                1:   Enable
+
+
+0               SHADOW RAM at E0000H to E3FFFH
+
+                0:   Disable
+                1:   Enable
+
+
+6AH             Bank 0/1 Enable Register RB6
+
+
+7,6             Bank 0/1 DRAM Types
+
+                00:  Disabled
+                01:  256Kb and 64Kb Combination
+                10:  256Kb DRAMS
+                11:  1M DRAMS
+
+
+5               Bank 0/1 Number Of RAM Banks Used
+
+                0:   1 Bank, Non Interleaved
+                1:   2 Banks
+
+
+6BH             DRAM Configuration Register RB7
+
+
+7               Page/Interleaved Mode Enable
+
+                0:   DRAMS used in Normal Mode
+                1:   DRAMS used in Page/Interleaved
+
+                The JE3010 and JE3011 use an advanced memory accessing scheme
+                incorporating both Paged and Interleaved memory techniques.
+                These methods are available when
+
+                two or four banks of RAM are installed in the motherboard.
+                This option will permit the installation of slower RAM (i.e.
+                150 or 120ns) to operate in the motherboard.  When either two
+                or four banks are installed, paging and interleaving can both
+                occur, resulting in greatly improved memory performance.  These
+                techniques require RAM chips that have a CAS before RAS
+                design.  There are no provisions for paging or interleaving
+                when only one bank or only three banks of RAM are installed.
+
+                This feature can only be enabled if you have two or four banks
+                of memory filled with the same size DRAM.  This option is not
+                valid if you have only one or three banks of DRAM or if your
+                banks contain mixed size memory (ie. 256Kb and 64Kb).
+
+
+6               Relocate DRAM at 640Kb to above 1Mb
+
+                0:   Do not relocate RAM (Reserve for SHADOW)
+                1:   Relocate 80000H-FFFFFH to 100000H-11FFFFH
+
+                This option allows only a 1Mb system to take the 384Kb of
+                memory (located between 640Kb and 1Mb) and remap it to be
+                addressed above 1Mb so that it can be used as "extended"
+                memory.
+
+                If the motherboard has more than 1Mb installed, this bit should
+                be set to 0.  If not, you will be remapping this RAM onto other
+                RAM.
+
+                NOTE:  You will not be able to enable any shadow RAM features
+                if you choose to relocate RAM.
+
+
+5               RAM Access Wait States
+
+                0:   Zero Wait States
+                1:   One Wait State
+
+                In non-interleaved operation, 80ns or faster DRAM is required
+                for 0ws access.  In interleaved operation, 150ns or faster DRAM
+                is all that is required.
+
+
+
+4               EMS Enable Bit (requires driver)
+
+                0:   EMS Disabled
+                1:   EMS Enabled
+
+                This option allows extended memory to be remapped as expanded
+                memory (EMS).  Therefore, you must have at least 1.5Mb to use
+                this feature.
+
+                NOTE:  Please read the section "Setting up EMS" located later
+                in this manual for a complete step by step procedure for
+                completely setting up EMS memory.
+
+
+3,2             EMS Memory Access Wait State
+
+                00:  0 Wait States
+                01:  1 Wait State
+                10:  2 Wait States
+                11:  Reserved
+
+                This option is set by the ROM BIOS and need not be changed.
+
+
+1,0             RW ROM Access Wait State Control
+
+                00:  0 Wait States
+                01:  1 Wait State
+                10:  2 Wait States
+                11:  3 Wait States
+
+                This option is set by the ROM BIOS and need not be changed.
+
+
+6CH             Bank 2/3 Enable Register RB8
+
+
+7,6             Bank 2/3 DRAM Types
+
+                00:  None
+                01:  Reserved
+                10:  256Kb DRAMS
+                11:  1M DRAMS
+
+
+
+5               Bank 2/3 Number of banks
+
+                0:   1 Bank, Non Interleaved
+                1:   2 Banks
+
+
+4               Interleave type (82C212B only)
+
+                0:   2 Way Interleave
+                1:   4 Way Interleave
+
+                Only with the 82C212B, 4-way interleaving is possible when all
+                four banks are filled with the same RAM type (i.e. banks 0 and
+                1 filled with 1Mb chips AND banks 2 and 3 filled with 1Mb
+                SIPPs), allowing for more performance.  4-way interleaving can
+                be enabled by setting register 6CH (bit 4) to a 1.  This bit is
+                reserved on the regular 82C212.
+
+                If all four memory banks contain the same size DRAM, select
+                option 1.  If you have only two memory banks of DRAM or if
+                banks 0 and 1 do not contain the same size memory as banks 2
+                and 3 select option 0.
+
+
+6DH             EMS Base Address Register RB9
+
+
+7,6,5,4         Expanded Memory Base Address
+
+                0000:  C0000H,C4000H,C8000H,CC000H
+                0001:  C4000H,C8000H,CC000H,D0000H
+                0010:  C8000H,CC000H,D0000H,D4000H
+                0011:  CC000H,D0000H,D4000H,D8000H
+                0100:  D0000H,D4000H,D8000H,DC000H
+                0101:  D4000H,D8000H,DC000H,E0000H
+                0110:  D8000H,DC000H,E0000H,E4000H
+                0111:  DC000H,E0000H,E4000H,E8000H
+                1000:  E0000H,E4000H,E8000H,EC000H
+
+                The default of 0100 should be fine for most applications.
+                Ensure that none of the four selected addresses conflicts with
+                other peripherals in your system.  For example, hard and floppy
+                controllers often use C0000H, C4000H, C8000H or CC000H.
+
+
+
+3,2,1,0         EMS Page Reg I/O Base Address
+
+                0000:  208H/209H
+                0001:  218H/219H
+                0101:  258H/259H
+                0110:  268H/269H
+                1010:  2A8H/2A9H
+                1011:  2B8H/2B9H
+                1110:  2E8H/2E9H
+
+                The default should be fine for most applications.  Ensure that
+                neither of the two I/O addresses selected conflicts with other
+                peripherals in your system.  For example, COM4: is usually
+                2E8H.
+
+
+6EH             EMS Address Extension Register RB10
+
+
+7,6             EMS Page 0 Position
+
+                00:  1M to 2M of EMS Memory
+                01:  2M to 4M of EMS Memory
+                10:  4M to 6M of EMS Memory
+                11:  6M to 8M of EMS Memory
+
+                This option is set by the ROM BIOS and need not be changed.
+
+
+5,4             EMS Page 1 Position
+
+                00:  1M to 2M of EMS Memory
+                01:  2M to 4M of EMS Memory
+                10:  4M to 6M of EMS Memory
+                11:  6M to 8M of EMS Memory
+
+                This option is set by the ROM BIOS and need not be changed.
+
+
+
+3,2             EMS Page 2 Position
+
+                00:  1M to 2M of EMS Memory
+                01:  2M to 4M of EMS Memory
+                10:  4M to 6M of EMS Memory
+                11:  6M to 8M of EMS Memory
+
+                This option is set by the ROM BIOS and need not be changed.
+
+
+1,0             EMS Page 3 Position
+
+                00:  1M to 2M of EMS Memory
+                01:  2M to 4M of EMS Memory
+                10:  4M to 6M of EMS Memory
+                11:  6M to 8M of EMS Memory
+
+                This option is set by the ROM BIOS and need not be changed.
+
+
+6FH             Miscellaneous Register RB12
+
+
+7,6,5           Set EMS Memory Size
+
+                000:   0 to 512Kb
+                001:   1Mb
+                010:   2Mb
+                011:   3Mb
+                100:   4Mb
+                101:   5Mb
+                110:   6Mb
+                111:   7Mb
+
+                This should be set to reflect the total amount of expanded
+                memory you desire.  This amount is deducted from the available
+                extended memory.
+
+
+4               External EMS mapper (82C212B only)
+
+                0:   External EMS disable
+                1:   External EMS enable
+
+
+                This feature is not supported by the existing LIM EMS standard
+                and is for future use.
+
+
+2               Enable RAS Timeout Counter
+
+                0:   Disable
+                1:   Enable
+
+                This option is set by the ROM BIOS and should not be changed.
+
+
+1               Enable CPUA20 onto A20
+
+                0:   Enable
+                1:   Disable
+
+                This option is set by the ROM BIOS and should not be changed.
+
+                
+               82C206
+
+01H             Clock and Wait State Control
+
+
+7,6             XIOR/XIOW Wait States
+
+                00:  1 I/O Wait State
+                01:  2 I/O Wait States
+                10:  3 I/O Wait States
+                11:  4 I/O Wait States
+
+                This option is set by the ROM BIOS and need not be changed.
+
+
+5,4             16-Bit DMA Wait States
+
+                00:  1 DMA Wait State
+                01:  2 DMA Wait States
+                10:  3 DMA Wait States
+                11:  4 DMA Wait States
+
+                This option is set by the ROM BIOS and need not be changed.
+
+
+3,2             8-Bit DMA Wait States
+
+                00:  1 DMA Wait State
+                01:  2 DMA Wait States
+                10:  3 DMA Wait States
+                11:  4 DMA Wait States
+
+                This option is set by the ROM BIOS and need not be changed.
+
+
+1               EMR Bit
+
+                0:   Disabled
+                1:   Enabled
+
+
+                This option is set by the ROM BIOS and need not be changed.
+
+
+0               CLK Bit
+
+                0:   DMA CLK = SCLK / 2
+                1:   DMA CLK = SCLK
+
+                This option is set by the ROM BIOS and need not be changed.
+
+
+Setting up EMS  There are many steps that need to be completed in order to set
+                up EMS memory.  From the "Advanced NEAT CHIPSET Register Setup"
+                screen, execute the following steps:
+
+                [C1] Set EMS enable bit (Reg 6BH, bit 4).  This bit enables or
+                disables the EMS memory function.
+
+                [C1] Set EMS memory wait states (Reg 6BH, bits 3,2).  The
+                default is 2 wait states.  Normally EMS memory wait states
+                should be more than normal system RAM wait states.
+
+                [C1] Set EMS base address (Reg 6DH, bits 7,6,5,4).  The default
+                address area for standard EMS is D0000H to DFFFFH, however,
+                other addresses may be specified.  If you have an application
+                that requires you to change the EMS address, be sure you select
+                a new address that is not used so that other items in the
+                system will not conflict.
+
+                [C1] Set EMS page I/O address (Reg 6DH, bits 3,2,1,0).  The
+                default I/0 address is 208H/209H.  However, other I/O addresses
+                may be specified.  If you have an application that requires you
+                to change the I/O address, be sure you select a new address
+                that is not used by other items in the system.
+
+                [C1] You do not need to set the EMS page positions (Reg 6EH,
+                bits 7,6,5,4,3,2,1,0).  You should leave all of these set to
+                00.  The only time you would be required to change these is
+                when you have other EMS RAM cards installed in the system.
+
+
+                [C1] Set EMS memory size (Reg 6FH, bits 7,6,5).  This bit
+                allows you to specify the amount of memory in your system that
+                you want used as EMS.  That amount you select must be equal to
+                the (total amount of RAM in your system) MINUS (1Mb and any
+                Extended memory you want).  The first one meg of RAM must be
+                used for 640Kb Base and 384Kb Shadow.  This is why you cannot
+                enable EMS unless you have 1.5Mb of RAM or more installed.  Any
+                RAM that is left over (not used for EMS, Base or Shadow) will
+                be set up as Extended memory.
+
+                [C1] Press [Key: ].  Highlight the "Write CMOS Registers
+                and Exit" option and press [Key: ].
+
+                [C1] Since the system now finds a new RAM size, the regular
+                CMOS setup must be run.  Press [Key: ] to enter the set up
+                choices screen.  Select "CMOS Setup" and make sure all
+                parameters are correct.  You may not need to change anything;
+                the system just needs to clarify the new RAM configuration.
+
+                [C1] Save and exit from setup.  Boot the system.
+
+                [C1] In order to complete the installation of EMS memory, a
+                CONFIG.SYS file must be created or modified on your boot drive
+                to include the EMS driver.  The diskette included with the
+                motherboard contains two files: an EMS driver file and a
+                document file.  The document file describes the options
+                available for the EMS driver.  Copy both files to your boot
+                drive.
+
+                An example line in the CONFIG.SYS file would be:
+
+                DEVICE=NEATEMM.SYS
+
+                NOTE:  When inserting this command in your CONFIG.SYS file,
+                make sure you insert it AFTER the "FILES=xx" and "BUFFERS=xx"
+                commands.
+
+                [C1] Reboot the system.  The CONFIG.SYS file is read by the
+                system only during bootup.
+
+
+
+Write CMOS      To save all parameters and reboot, highlight this option and
+Registers and   press [Key: ].
+Exit
+
+
+Do Not Change   To discard all changes and reboot, highlight this option and
+CMOS and Exit   press [Key: ].
+
+                
+               Obtaining Assistance
+
+                Jameco Electronics carefully selects and tests all of our
+                products.  However, even the best tested and documented
+                products can still cause you an occasional problem.  If you
+                experience difficulty in either assembly or operation of your
+                equipment, recheck cable connections and configuration settings
+                against this document and any other addenda that may have been
+                included.  If you have exhausted all other options and are
+                still encountering difficulty, refer to the appropriate section
+                below for assistance.
+
+
+Technical       Our Technical Support Staff are available between 7am and 5pm,
+Support         Pacific Time, Monday through Friday.  When you call, please
+                have the equipment in question handy, along with the necessary
+                customer and order numbers.  If appropriate, please write down
+                settings or other configuration data.  The technicians will
+                need all of this information to assist you fully.  The phone
+                number is (415) 592-9990.
+
+
+Customer        Discrepancies in shipment, returns, exchanges and refunds are
+Service         handled by our Customer Service Department.  They are also
+                available between 7am and 5pm, Pacific Time, Monday through
+                Friday.  Their number is (415) 592-8121.
+
+
+Foreign         If you are located outside the United States, you may find it
+Customers       more convenient to contact us by either FAX or Telex, both
+                available 24 hours a day.  Inquiries should be marked to the
+                attention of either Customer Service or Technical Support, as
+                appropriate.  Our FAX numbers are (415) 592-2503 and
+                (415) 595-2664.  Our Telex number is 176043, answerback:
+                Jameco Blmt.
+
+
+
+Corrections     If you run across any errors or omissions in this manual or the
+                manual does not explain something thoroughly enough, please
+                write to us and let us know.  Feedback from our customers
+                provides for consistently high quality now, and in the future.
+                Please reference the document and revision numbers as well as
+                the printing date (located on the cover of all Jameco
+                Electronics documentation) when writing so that corrections can
+                be made as easily as possible.  Address correspondence to:
+
+                                       JAMECO ELECTRONICS
+                                       1355 Shoreway Road
+                                       Belmont, CA  94002
+                                    ATTN:  Technical Support

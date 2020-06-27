@@ -1,0 +1,528 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+              Personalized Interpreters for Version
+                           8 of Icon*
+
+
+                        Ralph E. Griswold
+
+
+
+
+                            TR 90-3a
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+         January 1, 1990; last revised Feburary 13, 1990
+
+
+                 Department of Computer Science
+
+                    The University of Arizona
+
+                      Tucson, Arizona 85721
+
+
+
+
+*This work was supported by the National Science Foundation under
+Grant CCR-8713690.
+
+
+
+
+
+
+
+
+
+
+
+
+
+              Personalized Interpreters for Version
+                            8 of Icon
+
+
+
+
+1.__Introduction
+
+   Despite the fact that the Icon programming language has a
+large repertoire of functions and operations for string and list
+manipulation, as well as for more conventional computations
+[1,2], some users need to extend that repertoire. While many
+extensions can be written as procedures that build on the exist-
+ing repertoire, there are some kinds of extensions for which this
+approach is unacceptably inefficient, inconvenient, or simply
+impractical.
+
+   Icon itself is written C and its built-in functions are writ-
+ten as corresponding C functions. Thus, the natural way to extend
+Icon's computational repertoire is to add new C functions to it.
+
+   The Icon system is organized so that this is comparatively
+easy to do.  Adding new functions does not require changes to the
+Icon grammar, since all functions have a common syntactic form.
+An entry must be made in an array that identifies built-in func-
+tions and connects references to them to the code itself.
+
+   One method of adding new functions to Icon is to add the
+corresponding C functions to the Icon system itself and to
+rebuild the entire system.  If the extensions are not of general
+interest, it is inappropriate to include them in the public ver-
+sion of Icon. On the other hand, Icon is a large and complicated
+system, and having many private versions may create serious prob-
+lems of maintenance and disk usage. Furthermore, rebuilding the
+Icon system is time-consuming. This approach may be impractical,
+for example, in a situation such as a class in which students
+implement their own versions of an extension.
+
+   To remedy these problems, a mechanism for building ``personal-
+ized interpreters'' is included in UNIX* implementations of Icon.
+This mechanism allows a user to add C functions and to build a
+corresponding interpreter quickly, easily, and without the neces-
+sity to have a copy of the source code for the entire Icon sys-
+tem.
+
+   To construct a personalized interpreter, the user must perform
+a one-time set up that copies relevant source files to a direc-
+tory specified by the user and builds the nucleus of a run-time
+__________________________
+*UNIX is a trademark of AT&T Bell Laboratories.
+
+
+
+
+                              - 1 -
+
+
+
+
+
+
+
+
+system. Once this is done, the user can add and modify C func-
+tions and include them in the personalized run-time system with
+little effort.
+
+   The modifications that can be made to Icon via a personalized
+interpreter essentially are limited to the run-time system: the
+addition of new functions, and modifications to existing func-
+tions, operations, and support routines. There is no provision
+for changing the syntax of Icon or for incorporating new opera-
+tors, keywords, and control structures.
+
+
+2.__Building_and_Using_a_Personalized_Interpreter
+
+2.1__Setting_Up_a_Personalized_Interpreter_System
+
+   To set up a personalized interpreter, a new directory should
+be created solely for the use of the interpreter; otherwise files
+may be accidentally destroyed by the set-up process.  For the
+purpose of example, suppose this directory is named myicon. The
+set-up consists of
+
+        mkdir myicon
+        cd myicon
+        icon_pi
+
+Note that icon_pi must be run when in the area in which the per-
+sonalized interpreter is to be built.  The location of icon_pi
+may vary from site to site.
+
+   The shell script icon_pi constructs four subdirectories: h,
+common, std, and pi. The subdirectory h contains header files
+that are needed in C routines.  The subdirectory common contains
+files common to several components of Icon.  The subdirectory std
+contains the machine-independent portions of the Icon system that
+are needed to build a personalized interpreter.  The subdirectory
+pi contains a Makefile for building a personalized interpreter
+and also is the place where source code for new C functions nor-
+mally resides. Thus, work on the personalized interpreter is done
+in myicon/pi.
+
+   The Makefile that is constructed by icon_pi contains two
+definitions to facilitate building personalized interpreters:
+
+     OBJS a list of object modules that are to be added to or
+          replaced in the run-time system. OBJS initially is
+          empty.
+
+     LIB  a list of library options that are used when the run-
+          time system is built. LIB initially is empty, but the
+          math library is loaded as a normal part of building the
+          run-time system.
+
+See the listing of the generic version of this Makefile in the
+
+
+
+                              - 2 -
+
+
+
+
+
+
+
+
+appendix of this report.
+
+2.2__Building_a_Personalized_Interpreter
+
+   Performing a
+
+        make pi
+
+in myicon/pi creates two files in myicon:
+
+        picont     command processor
+        piconx     run-time system
+
+Links to these files also are constructed in myicon/pi so that
+the new personalized interpreter can be tested in the directory
+in which it is made.
+
+   The user of the personalized interpreter uses picont in the
+same fashion that the standard icont is used.  (Note that the
+accidental use of icont in place of picont may produce mysterious
+results.)
+
+   The relocation bits and symbols in piconx can be removed by
+
+        make Stripx
+
+in myicon/pi. This reduces the size of this file substantially
+but may interfere with debugging.
+
+   If a make is performed in myicon/pi before any run-time files
+are added or modified, the resulting personalized interpreter is
+identical to the standard one. Such a make can be performed to
+verify that the personalized interpreter system is performing
+properly.
+
+2.3__Version_Numbering
+
+   The Icon run-time system checks an identifying version number
+to be sure the output of picont corresponds to piconx. The ver-
+sion number is the string defined for IVersion in
+myicon/h/version.h following the construction of a personalized
+interpreter as described in Section 2.1.
+
+   In order to assure that files produced by picont can only be
+run by the current versions of piconx, the value of IVersion
+should be changed whenever a change is made to a personalized
+interpreter. It is not important what the definition of IVersion
+is, so long as it is a short string that is different from those
+for other versions of Icon.
+
+2.4__Adding_New_Functions
+
+   To add new functions to the personalized interpreter, it is
+first necessary to provide the C code for them, adhering to the
+
+
+
+                              - 3 -
+
+
+
+
+
+
+
+
+conventions and data structures used throughout Icon [3,4].  The
+directory src/iconx in the Version 8 Icon hierarchy contains the
+source code for the standard functions, which can be used as
+models for new ones.
+
+   Suppose that a function setenv(s) is to be added to a person-
+alized interpreter.
+
+   Four things need to be done to incorporate this function in
+the personalized interpreter:
+
+     1. Provide the code to the function (in, say, setenv.c).
+
+     2. Add a line consisting of
+
+                FncDef(setenv,1)         # one argument
+
+        to myicon/h/fdefs.h.  This adds the new function to the
+        Icon function repertoire.
+
+     3. Add setenv.o to the definition of OBJS in
+        myicon/pi/Makefile.  This causes setenv.c to be compiled
+        and the resulting object file to be loaded with the run-
+        time system when a make is performed.
+
+     4. Perform a make in myicon/pi to produce new versions of
+        picont and piconx in myicon.
+
+The function setenv() now can be used like any other built-in
+function.
+
+   More than one function can be included in a single source
+file.  To incorporate these functions in a personalized inter-
+preter, an FncDef entry needs to be added for each function, but
+only the file need be added to the OBJS list.
+
+2.5__Modifying_the_Existing_Run-Time_System
+
+   The use of personalized interpreters is not limited to the
+addition of new functions. Any module in the standard run-time
+system can be modified as well.
+
+   To modify an existing portion of the Icon run-time system,
+copy the source code file from v8/src/iconx to myicon/pi.
+(Source code for a few run-time routines is placed in myicon/std
+when a personalized interpreter is set up. Check this directory
+first and use the file there, rather than making another copy in
+myicon/pi.) When a source-code file in myicon/pi has been modi-
+fied, place it in the OBJS list just like a new file and perform
+a make. Note that an entire module must be replaced, even if a
+change is made to only one routine.  Any module that is replaced
+must contain all the global variables in the original module to
+prevent ld(1) from also loading the original module. There is no
+way to delete routines from the run-time system.
+
+
+
+                              - 4 -
+
+
+
+
+
+
+
+
+   The directory myicon/h contains header files that are included
+in various source-code files.  The file myicon/h/rt.h contains
+declarations and definitions that are used throughout the run-
+time system. This is where information about a new type would be
+placed.
+
+   Care must be taken when modifying header files so as not to
+make changes that would produce inconsistencies between previ-
+ously compiled components of the Icon run-time system and new
+ones.
+
+References
+
+
+1.   R. E. Griswold and M. T. Griswold, The Icon Programming
+     Language, Prentice-Hall, Inc., Englewood Cliffs, NJ, 1983.
+
+2.   R. E. Griswold, Version 8 of Icon, The Univ. of Arizona
+     Tech. Rep. 90-1, 1990.
+
+3.   R. E. Griswold and M. T. Griswold, The Implementation of the
+     Icon Programming Language, Princeton University Press, 1986.
+
+4.   R. E. Griswold, Supplementary Information for the
+     Implementation of Version 8 of Icon, The Univ. of Arizona
+     Icon Project Document IPD112, 1990.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                              - 5 -
+
+
+
+
+
+
+
+
+          Appendix - Makefile for Personalized Interpreters
+
+
+
+
+Dir=`pwd`
+Sdir=`pwd`/../pi
+
+
+HDRS=          ../h/config.h ../h/define.h
+RHDRS=         ../std/rproto.h ../h/rt.h $(HDRS)
+ICHDRS=        ../std/tproto.h ../std/general.h ../std/globals.h $(HDRS)
+#
+#  To add or replace object files, add their names to the OBJS list below.
+#  For example, to add nfncs.o and iolib.o, use:
+#
+#              OBJS=nfncs.o iolib.o         # this is a sample line
+#
+#  For each object file added to OBJS, add a dependency line to reflect files
+#  that are depended on.  In general, new functions depend on $(RHDRS).
+#  For example, if nfncs.c contains new functions, use
+#
+#              nfncs.o:$(RHDRS)
+#
+#  Such additions to this Makefile should go at the end.
+
+
+OBJS=
+LIB=
+
+
+ICOBJS= ../std/util.o ../std/tmain.o
+RTOBJS= ../std/idata.o $(OBJS)
+
+
+pi:            picont piconx ../std/hdr.h
+
+
+picont:        ../std/icontlib.a $(ICOBJS) $(RHDRS) ../h/paths.h
+               rm -f ../picont picont
+               $(CC) $(CFLAGS) -o picont $(ICOBJS) ../std/icontlib.a
+               strip picont
+               ln picont ../picont
+
+
+../std/ixhdr.o:$(ICHDRS) ../h/header.h ../h/paths.h
+               cd ../std; $(CC) -c $(XCFLAGS) \
+                 -DIconx="\"$(Sdir)/piconx\"" ixhdr.c
+
+
+../std/iconx.hdr:../std/ixhdr.o
+               $(CC) $(XLDFLAGS) ../std/ixhdr.o -o ../std/iconx.hdr
+               strip ../std/iconx.hdr
+
+
+
+
+                              - 6 -
+
+
+
+
+
+
+
+
+../std/hdr.h:  $(ICHDRS) ../std/newhdr.c ../std/iconx.hdr
+               $(CC) $(XLDFLAGS) -o newhdr ../std/newhdr.c
+               ./newhdr <../std/iconx.hdr >../std/hdr.h
+               rm -f newhdr iconx.hdr
+
+
+piconx:        ../std/rtlib.a $(RTOBJS)
+               rm -f ../piconx piconx
+               $(CC) $(LDFLAGS) -o piconx $(RTOBJS) ../std/rtlib.a \
+                  $(LIB) -lm
+               ln piconx ../piconx
+
+../std/idata.o:$(RHDRS) ../h/fdefs.h ../h/odefs.h fdefs.h
+               cd ../std; $(CC) -c $(CFLAGS) idata.c
+
+
+../std/util.o: $(ICHDRS) ../std/link.h ../std/sizes.h ../std/trans.h \
+                  ../std/tree.h ../std/link.h ../h/fdefs.h fdefs.h
+               cd ../std; $(CC) -c $(CFLAGS) util.c
+
+
+../std/tmain.o:$(ICHDRS) ../h/paths.h ../h/fdefs.h fdefs.h
+               cd ../std; $(CC) -c -DIconx="\"$(Dir)/../piconx\"" \
+                  $(ICOBJS) $(CFLAGS) tmain.c
+
+
+Stripx:        piconx picont
+               strip piconx picont
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                              - 7 -
+
+

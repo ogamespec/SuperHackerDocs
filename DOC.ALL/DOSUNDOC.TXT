@@ -1,0 +1,63 @@
+  			UNDOCUMENTED MS-DOS INTERRUPTS
+
+INT 28h: DOS Safe Interrupt
+	Interrupt 28h is commonly called the "DOS safe interrupt" or "keyboard
+busy loop" interrupt. It is used internally by MS-DOS Get Input from  Keyboard
+routine, if  and only  if it  is safe  to use  interrupt 21h functions 0Ch and
+above. INT 28h is used primarily by TSRs, including MS-DOS's PRINT.COM.
+	When a program has called the  Get Input from Keyboard routine and  is
+waiting for a key to be pressed, MS-DOS ceases calling INT 28h as a signal  to
+other applications that no INT 21h functions (0Ch and above) should be called.
+Once a key  is pressed and  the routine has  terminated, INT 28h  is called to
+signal other applications that  the system is sitting  idle and it is  safe to
+execute INT 21h functions.
+	Generally, INT 28h  is used in  conjunction with INT  21h function 34h
+(Get DOS Busy Flag): MS-DOS calls or releases INT 28h as appropriate, and  the
+application calls the Get DOS Busy  Flag function to determine the idle  state
+of the system.
+
+INT 29h: Console Device Output
+	Interrupt 29h, often referred to  as "console device output" or  "fast
+putchar", is called internally by MS-DOS output routines if output is going to
+a device rather than  a file, and if  the attribute word of  the device driver
+has bit 3  set to 1.
+	INT 29h can be  regarded as a back  door to the console  output device
+driver:  the character in the AL  register is output to the console when  this
+interrupt is executed.
+
+INT 2Ah-2Dh: MS-DOS Internal Routines
+	Interrupts  2Ah  through  2Dh  are  MS-DOS  internal interrupts. Their
+vectors all point to  an IRET opcode. INT  2Ah is used for  network control in
+systems installed with MSNET and other Microsoft network software.
+
+INT 2Eh: Back Door to COMMAND Processor
+	The EXEC function (INT 21h fn.  4Bh) is normally used for executing  a
+command through the command processor COMMAND.COM.  However, INT 2Eh  provides
+an alternative, quick and dirty method of accomplishing the same function.
+	To execute a DOS command, first shrink the memory to make room for the
+new program, then make  the DS:SI register point  to the parameter string  for
+the command, and  finally execute INT  2Eh.  The  first byte in  the command's
+parameter string is the length of  the string, followed by the string  itself,
+and is terminated by a CR. After INT 2Eh has been executed, it is important to
+reset the stack, since INT 2Eh may not have saved the SS:SP registers.
+
+UNDOCUMENTED INT 21h FUNCTION CALLS
+
+Functions 18h, 1Dh, 1Eh, 20h: Dummy Functions for Compatibility with CP/M
+	      These functions do not return anything when they are executed.
+Function 1Fh: Locate DPB for Default Drive
+Function 32h: Locate DPB for Specified Drive
+Function 34h: Get MS-DOS Busy Flag
+Function 37h: Get/Set Switch Character
+Function 50h: Set PSP Segment
+Function 51h: Get PSP Segment
+Function 52h: Get Address of the MS-DOS List of Lists
+Function 53h: Translate BPB
+Function 55h: Create a PSP
+Function 58h: Get/Set Memory Allocation Strategy
+Function 60h: Resolve Path String to a Fully Qualified Path String
+Function 63h: Get Lead Byte Table
+----------------------------------------------------------------
+From: The  Waite Group's  MS-DOS Developer's  Guide. Howard  W. Sams& Company,
+Indianapolis 1989.
+

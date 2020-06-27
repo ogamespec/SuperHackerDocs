@@ -1,0 +1,9 @@
+# CFLAGS=-Zi -Od
+CFLAGS=-O
+CC=cl
+
+OBJ= ttfname.obj 
+
+ttfname: $(OBJ)
+	$(CC) -O $(OBJ) -o ttfname.exe
+

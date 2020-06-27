@@ -1,0 +1,230 @@
+\\\\ \\\\\
+ \\  \\  \\     [+] HACKING INFRARED REMOTE CONTOL DEVICES [+]
+ \\  \\\\\                          PART I
+ \\  \\  \\    _     _   ___     _   _     _   ___           ezod '06
+\\\\ \\  \\___| |___| |_|   |___| |_| |___| |_|   |_____________________ _  _
+
+            .----------------------------------------------------.
+            |               Windsor 2600 Meeting                 |
+            | First Friday of the Month, CAW Student Centre, 7PM |
+            '----------------------------------------------------'
+
+[+] 00 0000 ~ INTRODUCTION
+
+  This file (part 1 of 2) teaches some of the general theory and practice of
+  hacking infrared remote control devices. First, we look at the basics, some
+  possible communication methods, and some actual protocol standards. Then we
+  learn how to examine and decode signals using common hardware and software.
+
+  Experiment at your own risk. There are plenty of safe and legal applications
+  for this stuff, so don't be a menace to society while flipping the channel
+  in the hood.
+
+
+[+] 01 0000 ~ HOW REMOTE CONTROLS WORK
+
+  Infrared remote controls communicate signals to their target devices by
+  strobing an LED which emits light in the infrared spectrum. This light is
+  received by another photodiode which receives the signal and demodulates it
+  into logic signals for other purposes.
+
+                                                        .----------.
+        physical communication layer                    | .------. |
+                                                        | | star | |
+          .----.  . \                            \ .    | | wars | |
+          |    o ) ) )  --->      LOS      --->   ) ) ) O '------' |
+          '----'  ' /                            / '    '----------'
+
+  The signal is usually coded in binary pulses modulated with a carrier
+  frequency of around 30 - 40 KHz (explanation to follow).
+  
+  The signal generally consists of a header, which is some sort of signal used
+  to activate the receiver and initiate the communication (usually varying by
+  manufacturer), and the actual modulated signal, which may contain a device
+  address (varying by device) and an instruction code (varying by command). It
+  may also include a trailer, similar to the header but appearing at the end
+  of the signal.
+
+
+[+] 01 0001 ~ MODULATION METHODS
+
+  Like any physical communication medium, there are many possible ways to
+  encode binary data into infrared pulses. The following are some common
+  methods used by many manufacturers and open standards.
+
+  1. Pulse Width Modulation
+       _   ___   ___   _
+  ____| |_|   |_|   |_| |____
+       0    1     1    0
+
+      Pulse coding varies the length of the pulses emitted between spaces of
+      fixed length. This is used by the SIRCS protocol.
+
+  2. Space Width Modulation
+       _   _     _   _     _
+  ____| |_| |___| |_| |___| |____
+         0    1    0    1
+
+      Space coding varies the length between pulses of fixed length. This is
+      essentially the inverse of pulse coding, but requires start and stop
+      pulses to bound the packet. This is used by the REC80 protocol.
+
+  3. Shift Coding
+  ____   _     _   ___   ____
+      |_| |___| |_|   |_|
+      0   0   1   1   0
+
+      Shift coding uses the transition direction at an edge to represent bits,
+      where high to low represents 0 and low to high represents 1. The edges
+      are sampled at a fixed rate, so this method requires a start pulse of
+      some kind (usually a longer pulse) to initiate the link. This is used by
+      the RC-5 protocol.
+
+  As stated before, most remote controls modulate a carrier around 30 - 40 KHz
+  with the binary pulse signal. Thus, a "high" is represented by oscillations
+  rather than the emitter being on the entire time. The receivers use a
+  bandpass filter set to this carrier frequency to isolate the signal from
+  environmental noise.
+
+
+[+] 01 0010 ~ THE SIRCS PROTOCOL
+
+  The SIRCS protocol, originally developed by Sony, is primarily used by Sony
+  devices. It uses the pulse coding method, where if the spaces are T in
+  length, a 2T pulse represents 0 and a 3T pulse represents 1 (T = 0.4 ms).
+
+  A signal consists of a longer (4T) start pulse and either 12 or 15 bits. Each
+  segment is transmitted MSB to LSB.
+
+                  [ Start ] [ Command(7) ] [ Address(5/8) ]
+
+  The start pulse initiates communication and synchronizes the receiver, the
+  address specifies the target device, and the command specifies the specific
+  instruction.
+  
+  There is also apparently a 20 bit version of the SIRCS signal, but I have
+  never seen it and can't comment on its structure.
+
+
+[+] 01 0011 ~ THE REC-80 PROTOCOL
+
+  The REC-80 protocol, originally developed by Panasonic, is a very common
+  encoding standard used by many manufacturers. It uses the space coding
+  method, where if the pulses are T in length, a 2T space represents 0 and a 3T
+  space represents 1.
+
+  A signal consists of 4 bytes: 2 address bytes and 2 command bytes. Usually,
+  the second byte in each is the complement of the first, and the entire data
+  signal appears as follows:
+
+         [ Address(8) ] [ ~Address(8) ] [ Command(8) ] [ ~Command(8) ]
+
+  However, since this protocol is very widespread, there appear to be many
+  permutations. Some devices use both bytes in the address or command sections
+  for data (rather than the redundant complement). Some place the complemented
+  address byte after the original command byte. Some simply repeat the address
+  and command, not complementing them at all. Some even add bits with static
+  values in between bytes. The headers and trailers used also vary.
+
+
+[+] 01 0100 ~ THE RC-5 PROTOCOL
+
+  The RC5 protocol, originally developed by Philips, is also used by many
+  manufacturers. It uses the shift coding method and operates on a carrier
+  frequency of 36KHz (for noise reduction).
+
+  A signal consists of 14 bits. Each segment is transmitted MSB to LSB. 
+
+           [ Start(2) ] [ Toggle(1) ] [ Address(5) ] [ Command(6) ]
+
+  The fixed time between bits is 1.778 ms, so a full RC5 signal is 24.778 ms
+  long. The transmitter also waits 50 bits (88.889 ms) between signals.
+
+  The start bits are used to initiate the transmission and will also be used
+  by the receiver for automatic gain control. The toggle bit changes every
+  time a new button is pressed on the transmitter. The address specifies the
+  target device, and the command specifies the specific instruction.
+
+  Philips has also introduced the RC-6 protocol. It is an extended RC-5 where
+  each command contains a header, a control field, and an information field up
+  to 16 bytes long.
+
+
+[+] 10 0000 ~ SCOPING THE SIGNAL
+
+  In order to examine signals from existing remote controls, we need some way
+  to sample the emitted signal. The important piece of equipment here is an IR
+  receiver module, like a TSOP1736 or TSOP1836. They're not expensive, and can
+  be pulled out of an old VCR or stereo for free.
+
+  Now, if you own or have access to a good oscilloscope, you can probably
+  figure out how to power your receiver module and scope the output. However,
+  here's an easy homebrew solution using any duplex sound card:
+
+     .-------.
+     |     v +------------- +5VDC             |<|  - 1N4001 Diode
+     |       |                  
+     | IR  s +----------+--|<|--.            ( o ) - 1/8" Phono Jack (Mono)
+     |       |          |       |
+     |	   g +----+---( o )-----'            v s g - Voltage, Signal, Ground
+     '-------'    |
+                 ---
+                  -
+
+  Run the 1/8" output to your sound card's Line-In, and record that channel
+  using a decent sound editing program (Audacity is highly recommended). The
+  channel should be recorded on mono, and at a reasonably high sampling rate
+  (the usual 44.1 KHz should be fine).
+
+  The signals you record may be inverted, as many receiver modules output
+  signals normally-high. Also, they will of course not necessarily look
+  like perfect square waves, and there will be some obvious effect from
+  capacitance in the output and some noise on other frequencies not completely
+  filtered out. Since for now we are simply examining the signal visually and
+  not doing any automated signal processing, it's no problem.
+
+
+[+] 10 0001 ~ ANALYZING THE SIGNAL
+
+  Ah, cracking the code. This part embodies the spirit of hacking, and armed
+  with the theory above, should be a fun challenge, so I won't go into too
+  much detail here. However, there are some basics to cover.
+
+  Decoding the signal into strings of bits or commands may not be entirely
+  straightforward. Most remote controls use one of the three methods explained
+  above, but there's no guarantee.
+
+  One important thing to understand is that most remote controls repeat
+  signals on a fairly short interval (perhaps double the length of the actual
+  content) the entire time a button is being pressed. This means that even
+  with the normal quick press of a button, you will likely output several of
+  the same signal. Only one of these repeated signals is considered. REC-80
+  remote controls seem to only output the signal once, then repeatedly
+  transmit the start bit by itself (signaling the repetition). These can also
+  be ignored. Note that even if these extra parts of the signal do not contain
+  any additional useful information, the receiving devices may actually still
+  require them.
+
+
+         -  - ------./\/\/\/'---./\/\/\/'---./\/\/\/'--------- -  -
+	           |         |
+	           |<- cut ->|
+
+  The quick way to determine the modulation method is to compare the output
+  produced by two or more different buttons. Counting the number of bits and
+  comparing to standard protocols like SIRCS, REC80 and RC5 may help.
+
+
+[+] 11 0000 ~ COMING IN PART II
+
+  The second part of this set of files will be the real hacker's meat. We'll
+  learn how to transmit modulated IR signals with some easily built circuits
+  and common software. Then we'll see how we can try new and modified command
+  signals on devices that don't have them on their remote contols. Finally,
+  we'll talk about some potential applications, and how you can have fun with
+  this stuff in the real world.
+
+
+                   STAY TUNED, AND -DO- TOUCH THAT CLICKER!
+
+::: mavrinac.com

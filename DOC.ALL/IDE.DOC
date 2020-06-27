@@ -1,0 +1,3148 @@
+           50 IDE Drive Jumper Settings READ ME FIRST
+               Important Information ............................. 51
+          Conner IDE Drives
+               About Conner ...................................... 51
+               CFA170A     170MB CHS=332x16x63 ................... 52
+               CFA270A     270MB CHS=977x10x53  .................. 52
+               CFA340A     340MB CHS=665x16x63 ................... 52
+               CFA810A     810MB CHS=1572x16x63 .................. 52
+               CFA850A     850MB CHS=1652x16x63 .................. 52
+               CFA1080A   1.08GB CHS=2097x16x63  ................. 52
+               CFN170A     170MB CHS=326x16x63  .................. 52
+               CFN250A     250MB CHS=489x16x63  .................. 52
+               CFN340A     340MB CHS=667x16x63  .................. 52
+               CFS210A     210MB CHS=685x16x38   ................. 52
+               CFS420A     420MB CHS=826x16x63 ................... 52
+               CFS540A     540MB CHS=1050x16x63 .................. 52
+               CP2034       30MB CHS=411x4x38  ................... 52
+               CP2044PK     40MB CHS=980x5x17  ................... 53
+               CP2064       60MB CHS=823x4x38  ................... 53
+               CP2084       85MB CHS=548x8x38  ................... 53
+               CP2088       85MB CHS=548x8x38  ................... 53
+               CP2124      120MB CHS=762x8x39     ................ 53
+               CP3000       40MB CHS=980x5x17  ................... 53
+               CP3024       20MB CHS=615x4x17 .................... 53
+               CP3044       40MB CHS=980x5x17 .................... 53
+               CP3104      100MB CHS=776x8x33 .................... 53
+               CP3184       80MB CHS=832x6x33 .................... 53
+               CP3204F     200MB CHS=683x16x38 ................... 53
+               CP3304      340MB CHS=659x16x63 ................... 53
+               CP3364      360MB CHS=702x16x63  .................. 53
+               CP3504      510MB CHS=987x16x63   ................. 53
+               CP3544      340MB CHS=1023x16x63  ................. 54
+               CP30064      60MB CHS=762x4x39   .................. 54
+               CP30064H     60MB CHS=762x8x39     ................ 54
+               CP30084      80MB CHS=527x8x39  ................... 54
+               CP30084E     85MB CHS=332x16x63   ................. 54
+               CP30104     120MB CHS=762x8x39  ................... 54
+               CP30104H    120MB CHS=762x8x39  ................... 54
+               CP30124     120MB CHS=895x5x55  ................... 54
+               CP30174     170MB CHS=326x16x63 ................... 54
+               CP30174E    170MB CHS=903x18x46  .................. 54
+               CP30204     212MB CHS=683x16x38 ................... 54
+               CP30254     250MB CHS=895x10x55   ................. 54
+               CP30544     540MB CHS=1023x16x63  ................. 54
+               <<< Conner Figures ................................ 54
+               Figure CONNER-1 ................................... 55
+               Figure CONNER-2 ................................... 55
+               Figure CONNER-3 ................................... 55
+               Figure CONNER-4 ................................... 56
+               Figure CONNER-5 ................................... 56
+               Figure CONNER-6 ................................... 57
+               Figure CONNER-7 ................................... 57
+               Figure CONNER-8 ................................... 58
+               Figure CONNER-9 ................................... 58
+               Figure CONNER-10 .................................. 59
+               Figure CONNER-11 .................................. 59
+               Figure CONNER-12 .................................. 60
+               Figure CONNER-13 .................................. 60
+               Figure CONNER-14 .................................. 61
+          Fujitsu IDE Drives
+               About Fujitsu ..................................... 61
+               M2611T       45MB CHS=667x4x33 .................... 61
+               M2612ET      90MB CHS=667x8x33 .................... 62
+               M2613ET     135MB CHS=667x12x33 ................... 62
+               M2614ET     180MB CHS=667x16x33 ................... 62
+               M2616ET     105MB CHS=771x8x33 .................... 62
+               M2622T      327MB CHS=1013x10x63 .................. 62
+               M2623T      420MB CHS=1002x13x63 .................. 62
+               M2624T      514MB CHS=995x16x63 ................... 62
+               M2617T      105MB CHS=725x6x47 .................... 62
+               M2618T      210MB CHS=717x12x47 ................... 62
+               M1603TA     544MB CHS=1055x16x63 .................. 62
+               M1606TA    1.08GB CHS=2111x16x63 .................. 62
+               <<< Fujitsu Figures ............................... 62
+               Figure Fujitsu-1 .................................. 62
+               Figure Fujitsu-2 .................................. 63
+               Figure Fujitsu-3 .................................. 63
+               Figure Fujitsu-4 .................................. 63
+          Hitachi IDE Drives
+               About Hitachi ..................................... 63
+               DK212A-10  1.08GB CHS=2200x16x60  ................. 63
+               DK212A-81   811MB CHS=1650x16x60 .................. 63
+               DK222A-54   540MB CHS=1100x16x60   ................ 64
+               DK222A-27   270MB CHS=550x16x60  .................. 64
+               <<< Hitachi Figures ............................... 64
+               Figure HITACHI-1 .................................. 64
+          IBM IDE Drives
+               About IBM ......................................... 64
+               0662-A10   1.05GB CHS=2037x15x63  ................. 65
+               DHA-2270    270MB CHS=524x16x63  .................. 65
+               DHA-2405    405MB CHS=785x16x63   ................. 65
+               DHA-2540    540MB CHS=1047x16x63 .................. 65
+               DSAA-3270   281MB CHS=954x16x36  .................. 65
+               DSAA-3360   365MB CHS=929x16x48   ................. 65
+               DSAA-3540   548MB CHS=1062x16x63 .................. 65
+               DSAA-3720   730MB CHS=1416x16x63  ................. 65
+               H2172-A2    172MB CHS=989x10x34 ................... 65
+               H2258-A3    258MB CHS=989x15x34 ................... 65
+               H2344-A4    344MB CHS=915x15x49 ................... 65
+               H3133-A2    133MB CHS=1023x15x17 .................. 65
+               H3171-A2    171MB CHS=984x10x34 ................... 65
+               H3256-A3    256MB CHS=872x16x36 ................... 65
+               H3342-A4    342MB CHS=872x16x48  .................. 66
+               <<< IBM Figures ................................... 66
+               Figure IBM-1 ...................................... 66
+               Figure IBM-2 ...................................... 66
+               Figure IBM-3 ...................................... 66
+          Maxtor IDE Drives
+               About Maxtor ...................................... 66
+               2585A        81MB CHS=981x10x17 ................... 67
+               7040A        40MB CHS=981x5x17 .................... 67
+               7060A        62MB CHS=1024x7x17  .................. 67
+               7080A        81MB CHS=981x10x17    ................ 67
+               7120A       124MB CHS=1024x14x17 .................. 67
+               7131A       125MB CHS=1002x8x32 ................... 67
+               7135AV      135MB CHS=966x13x21 ................... 67
+               7170A       170MB CHS=984x10x34 ................... 67
+               7171A       171MB CHS=866x15x26 ................... 67
+               7213A       212MB CHS=683x16x38 ................... 68
+               7245A       245MB CHS=967x16x31 ................... 68
+               7270AV      270MB CHS=959x11x50 ................... 68
+               7273A       273MB CHS=1012x16x33 .................. 68
+               7345A       345MB CHS=790x15x57 ................... 68
+               7405AV      405MB CHS=989x16x50 ................... 68
+               7420A       420MB CHS=986x16x52 ................... 68
+               7425A       425MB CHS=1002x16x52 .................. 68
+               7540A       540MB CHS=1047x16x63 .................. 68
+               7546A       546MB CHS=1059x16x63 .................. 68
+               7850A       850MB CHS=1654x16x63 .................. 68
+               8051A        42MB CHS=981x5x17 .................... 68
+               25084A       80MB CHS=569x16x18 ................... 68
+               25128A      122MB CHS=981x10x17 ................... 68
+               25252A      240MB CHS=569x16x54 ................... 69
+               71050A     1.05GB CHS=2045x16x63 .................. 69
+               71260A     1.26GB CHS=2448x16x63 .................. 69
+               LXT-200A    200MB CHS=816x15x32 ................... 69
+               LXT-213A    213MB CHS=683x16x38 ................... 69
+               LXT-340A    340MB CHS=654x16x63 ................... 69
+               LXT-535A    528MB CHS=1024x16x63 .................. 69
+               MXT-540AL   540MB CHS=1059x16x63 .................. 69
+               <<< Maxtor Figures ................................ 69
+               Figure MAXTOR-1 ................................... 69
+               Figure MAXTOR-2 ................................... 70
+               Figure MAXTOR-3 ................................... 70
+               Figure MAXTOR-4 ................................... 71
+               Figure MAXTOR-5 ................................... 71
+               Figure MAXTOR-6 ................................... 72
+               Figure MAXTOR-7 ................................... 73
+          Micropolis IDE Drives
+               About Micropolis .................................. 74
+               2105A       558MB CHS=1083x16x63 .................. 74
+               2112A      1.04GB CHS=2034x16x63 .................. 75
+               2205A       540MB CHS=1050x16x63 .................. 75
+               2210A       975MB CHS=1891x16x63 .................. 75
+               2217A      1.62GB CHS=3152x16x63 .................. 75
+               <<< Micropolis Figures ............................ 75
+               Figure MICROPOLIS-1 ............................... 75
+               Figure MICROPOLIS-2 ............................... 75
+          NEC IDE Drives
+               D3735        45MB CHS=1084x2x41 ................... 76
+               D3755       105MB CHS=1250x4x41  .................. 76
+               D3741        45MB CHS=423x8x26 .................... 76
+               D3756       104MB CHS=1250x4x41 ................... 76
+               D3761       115MB CHS=915x7x35 .................... 76
+               D3781       425MB CHS=1464x9x63 ................... 76
+               <<< NEC Figures ................................... 76
+               Figure NEC-1 ...................................... 77
+               Figure NEC-2 ...................................... 77
+               Figure NEC-3 ...................................... 77
+          Quantum IDE Drives
+               About Quantum ..................................... 77
+               120AT       120MB CHS=814x9x32 .................... 77
+               170AT       170MB CHS=968x10x34 ................... 77
+               210AT       210MB CHS=873x13x36 ................... 78
+               425AT       425MB CHS=1021x16x51 .................. 78
+               425IAT      425MB CHS=1021x16x51 .................. 78
+               ELS 42AT     42MB CHS=977x5x17 .................... 78
+               ELS 85AT     85MB CHS=977X10X17 ................... 78
+               ELS 127AT   127MB CHS=919x16x17 ................... 78
+               ELS 170AT   170MB CHS=1011x15x22 .................. 78
+               FB 540      544MB CHS=1056x16x63 .................. 78
+               FB 1080    1.08GB CHS=2122x16x63 .................. 78
+               LPS 52AT     50MB CHS=751x8x17 .................... 78
+               LPS 80AT     80MB CHS=616x16x17 ................... 78
+               LPS 105AT   105MB CHS=755x16x17 ................... 78
+               LPS 120AT   120MB CHS=901x5x53 .................... 78
+               LPS 170AT   170MB CHS=1011x15x22 .................. 78
+               LPS 210AT   210MB CHS=873x13x36 ................... 79
+               LPS 240AT   240MB CHS=723x13x51 ................... 79
+               LPS 270AT   270MB CHS=944x14x40 ................... 79
+               LPS 340AT   340MB CHS=1011x15x44 .................. 79
+               LPS 420AT   420MB CHS=1010x16x51 .................. 79
+               LPS 525AT   525MB CHS=1017x16x63 .................. 79
+               LPS 540AT   540MB CHS=1120x16x59 .................. 79
+               LT 365      365MB CHS=976x12x61 ................... 79
+               LT 540      540MB CHS=1120x16x59 .................. 79
+               LT 730      730MB CHS=1416x16x63 .................. 79
+               MV 270      270MB CHS=944x14x40 ................... 79
+               MV 540      540MB CHS=1059x16x63 .................. 79
+               TR 420      420MB CHS=1010x16x51 .................. 79
+               TR 850      850MB CHS=1647x16x63 .................. 79
+               <<< Quantum Figures ............................... 80
+               Figure QUANTUM-1 .................................. 80
+          Samsung IDE Drives
+               About Samsung ..................................... 80
+               3062        121MB CHS=927x15x17 ................... 80
+               3122        251MB CHS=937x15x35  .................. 80
+               3171        178MB CHS=968x8x45 .................... 80
+               3172        356MB CHS=968x16x45 ................... 80
+               3211        213MB CHS=1002x8x52 ................... 80
+               3212        426MB CHS=1002x16x52 .................. 80
+               30280       280MB CHS=1024x8x63 ................... 80
+               30560       560MB CHS=1024x16x63  ................. 81
+               <<< Samsung Figures ............................... 81
+               Figure SAMSUNG-1 .................................. 81
+          Seagate IDE Drives
+               About Seagate ..................................... 81
+               ST-125A      21MB CHS=404x4x26 .................... 81
+               ST-138A      32MB CHS=604x4x26 .................... 81
+               ST-157A      44MB CHS=560x6x26 .................... 82
+               ST-274A      63MB CHS=941x5x26 .................... 82
+               ST-280A      71MB CHS=516x10x17 ................... 82
+               ST-1057A     53MB CHS=1024x6x17   ................. 82
+               ST-1090A     79MB CHS=335x5x29 .................... 82
+               ST-1102A     89MB CHS=1024x10x17 .................. 82
+               ST-1111A     98MB CHS=536x10x36 ................... 82
+               ST-1126A    111MB CHS=469x16x29 ................... 82
+               ST-1133A    117MB CHS=636x10x36 ................... 82
+               ST-1144A    130MB CHS=1001x15x17 .................. 82
+               ST-1156A    138MB CHS=536x14x36 ................... 82
+               ST-1162A    143MB CHS=603x16x29 ................... 82
+               ST-1186A    164MB CHS=636x14x36 ................... 82
+               ST-1201A    177MB CHS=804x12x36 ................... 82
+               ST-1239A    211MB CHS=814x14x36 ................... 83
+               ST-2274A    241MB CHS=873x10x54 ................... 83
+               ST-2383A    338MB CHS=873x14x54 ................... 83
+               ST-3051A     43MB CHS=820x6x17 .................... 83
+               ST-3096A     89MB CHS=1024x10x17 .................. 83
+               ST-3120A    107MB CHS=1024x12x17 .................. 83
+               ST-3123A    106MB CHS=1024x12x17  ................. 83
+               ST-3144A    130MB CHS=1001x15x17 .................. 83
+               ST-3145A    130MB CHS=1001x15x17 .................. 83
+               ST-3195A    170MB 981x10x34 ....................... 83
+               ST-3243A    214MB CHS=1024x12x34 .................. 83
+               ST-3283A    245MB CHS=978x14x35 ................... 83
+               ST-3290A    261MB CHS=1001x15x34 .................. 83
+               ST-3385A    340MB CHS=767x14x62 ................... 83
+               ST-3491A    4281MB CHS=891x15x62 .................. 84
+               ST-3500A    525MB CHS=895x15x62 ................... 84
+               ST-3550A    452MB CHS=1018x14x62 .................. 84
+               ST-3655A    528MB CHS=1024x16x63 .................. 84
+               ST-3660A    545MB CHS=1057x16x63 .................. 84
+               ST-3780A    722MB CHS=1399x16x63 .................. 84
+               ST-31220A  1.08GB CHS=2099x16x63 .................. 84
+               ST-5660A    545MB CHS=1057x16x63 .................. 84
+               ST-5850A    854MB CHS=1656x16x63 .................. 84
+               ST-9051A     42MB CHS=820x6x17 .................... 84
+               ST-9052A     42MB CHS=980x5x17 .................... 84
+               ST-9077A     64MB CHS=669x11x17 ................... 84
+               ST-9080A     64MB CHS=823x4x38 .................... 84
+               ST-9096A     85MB CHS=980x10x17 ................... 84
+               ST-9140AG   127MB CHS=980x15x17 ................... 85
+               ST-9144A    130MB CHS=980x15x17 ................... 85
+               ST-9145AG   127MB CHS=980x15x17 ................... 85
+               ST-9150AG    131MB CHS=419x13x47 .................. 85
+               ST-9190AG   171MB CHS=873x16x24 ................... 85
+               ST-9235A    209MB CHS=985x13x32 ................... 85
+               ST-9550AG   455MB CHS=942x16x59 ................... 85
+               ST-9655AG   524MB CHS=1016x16x63 .................. 85
+               <<< Seagate Figures ............................... 85
+               Figure SEAGATE-1 .................................. 85
+               Figure SEAGATE-2 .................................. 86
+               Figure SEAGATE-3 .................................. 86
+               Figure SEAGATE-4 .................................. 86
+               Figure SEAGATE-5 .................................. 87
+               Figure SEAGATE-6 .................................. 87
+               Figure SEAGATE-7 .................................. 88
+               Figure SEAGATE-8 .................................. 88
+               Figure SEAGATE-9 .................................. 89
+               Figure SEAGATE-10 ................................. 90
+               Figure SEAGATE-11 ................................. 91
+               Figure SEAGATE-12 ................................. 91
+               Figure SEAGATE-13 ................................. 92
+               Figure SEAGATE-14 ................................. 93
+          Toshiba IDE Drives
+               About Toshiba ..................................... 93
+               MK 1522FCV  126MB CHS=812x8x38 .................... 93
+               MK 1722FCV  131MB CHS=842x8x38 .................... 93
+               MK 1624FCV  213MB CHS=684x16x38 ................... 94
+               MK 1724FCV  262MB CHS=842x16x38 ................... 94
+               MK 1824FCV  353MB CHS=682x16x63 ................... 94
+               MK 2326FCH  340MB CHS=969x14x49 ................... 94
+               MK 2428FC   524MB CHS=1016x16x63 .................. 94
+               MK 2526FC   528MB CHS=1023x16x63 .................. 94
+               MK 2528FC   704MB CHS=1365x16x63 .................. 94
+               <<< Toshiba Figures ............................... 94
+               Figure TOSHIBA-1 .................................. 94
+          Western Digital IDE Drives
+               About Western Digital ............................. 94
+               Detailed Jumper Installation ...................... 95
+               WD93024-A    21MB CHS=782x2x27 .................... 96
+               WD93028-A    21MB CHS=782x2x27 .................... 96
+               WD93044-A    43MB CHS=782x4x27 .................... 96
+               WD93048-A    43MB CHS=782x4x27 .................... 96
+               WD95024-A    21MB CHS=782x2x27 .................... 96
+               WD95028-A    21MB CHS=782x2x27 .................... 96
+               WD95044-A    43MB CHS=782x4x27 .................... 97
+               WD95048-A    43MB CHS=782x4x27 .................... 97
+               WDAC140      42MB CHS=980x5x17 .................... 97
+               WDAC160      62MB CHS=1024x7x17 ................... 97
+               WDAC260      62MB CHS=1024x7x17 ................... 97
+               WDAC280      85MB CHS=980x10x17 ................... 97
+               WDAC1170    170MB CHS=1010x6x55 ................... 97
+               WDAC1210    212MB CHS=989x12x35 ................... 97
+               WDAC1270    270MB CHS=917x12x48 ................... 97
+               WDAC1365    365MB CHS=708x16x63 ................... 97
+               WDAC1425    425MB CHS=827x16x63 ................... 97
+               WDAC1540    540MB CHS=1048x16x63 .................. 97
+               WDAC2120    125MB CHS=872x8x35 .................... 97
+               WDAC2170    170MB CHS=1010x6x55 ................... 97
+               WDAC2200    212MB CHS=989x12x35 ................... 98
+               WDAC2250    250MB CHS=1010x9x55 ................... 98
+               WDAC2340    340MB CHS=1010x12x55 .................. 98
+               WDAC2420    420MB CHS=989x15x56 ................... 98
+               WDAC2540    540MB CHS=1048x16x63 .................. 98
+               WDAC2700    730MB CHS=1416x16x63 .................. 98
+               WDAC2850    850MB CHS=1654x16x63 .................. 98
+               WDAC21000   1.0GB CHS=2100x16x63 .................. 98
+               WDAC31000   1.0GB CHS=2100x16x63 .................. 98
+               WDAC31200   1.2GB CHS=2484x16x63 .................. 98
+               WDAC31600   1.6GB CHS=3148x16x63 .................. 98
+               WDAH260      62MB CHS=1024x7x17 ................... 98
+               WDAH280      85MB CHS=980x10x17 ................... 98
+               WDAL2120    130MB CHS=1001x15x17 .................. 98
+               WDAL2170    170MB CHS=980x10x34 ................... 99
+               WDAL2200    200MB CHS=958x12x34 ................... 99
+               WDAP4200    200MB CHS=987x12x35 ................... 99
+               <<< Western Digital Figures ....................... 99
+
+
+
+                                CONNER IDE DRIVES
+                                  ABOUT CONNER
+Conner Peripherals, Inc (USA)
+
+        Telephone:         (408)456-4500
+        Technical Support: (800)4CONNER
+        FAX:               (408)456-4501
+        BBS:               (408)456-4415
+        FAX Back:          (408)456-4903
+
+        3081 Zanker Road
+        San Jose California 95134
+
+
+Conner Peripherals, UK
+
+        Technical Support: +44-1-628-777277
+        FAX:               +44-1-628-592801
+        BBS:               +44-1-628-592857
+        FAX Back:          +44-1-294-315265
+
+        107 King Street
+        Maidenhead
+        Berksire
+        SL1 6DP
+        United Kingdom
+
+
+     Conner Peripherals reserves the right to change product
+     specifications without prior notification.
+
+
+
+                                   Page 51
+
+                         CFA170A     170MB CHS=332X16X63
+See Figure CONNER-1 for jumper setting information.
+
+
+                        CFA270A     270MB CHS=977X10X53
+See Figure CONNER-1 for jumper setting information.
+
+
+                         CFA340A     340MB CHS=665X16X63
+See Figure CONNER-1 for jumper setting information.
+
+
+                        CFA810A     810MB CHS=1572X16X63
+See Figure CONNER-1 for jumper setting information.
+
+
+                        CFA850A     850MB CHS=1652X16X63
+See Figure CONNER-1 for jumper setting information.
+
+
+                        CFA1080A   1.08GB CHS=2097X16X63
+See Figure CONNER-1 for jumper setting information.
+
+
+                        CFN170A     170MB CHS=326X16X63
+See Figure CONNER-2 for jumper setting information.
+
+
+                        CFN250A     250MB CHS=489X16X63
+See Figure CONNER-2 for jumper setting information.
+
+
+                        CFN340A     340MB CHS=667X16X63
+See Figure CONNER-2 for jumper setting information.
+
+
+                        CFS210A     210MB CHS=685X16X38
+See Figure CONNER-1 for jumper setting information.
+
+
+                         CFS420A     420MB CHS=826X16X63
+See Figure CONNER-1 for jumper setting information.
+
+
+                        CFS540A     540MB CHS=1050X16X63
+See Figure CONNER-1 for jumper setting information.
+
+
+                         CP2034       30MB CHS=411X4X38
+See Figure CONNER-3 for jumper setting information.
+
+
+                         CP2044PK     40MB CHS=980X5X17
+See Figure CONNER-4 for jumper setting information.
+
+
+                                   Page 52
+
+
+                         CP2064       60MB CHS=823X4X38
+See Figure CONNER-3 for jumper setting information.
+
+
+                         CP2084       85MB CHS=548X8X38
+See Figure CONNER-4 for jumper setting information.
+
+
+                         CP2088       85MB CHS=548X8X38
+See Figure CONNER-3 for jumper setting information.
+
+
+                       CP2124      120MB CHS=762X8X39
+See Figure CONNER-4 for jumper setting information.
+
+
+                         CP3000       40MB CHS=980X5X17
+See Figure CONNER-5 for jumper setting information.
+
+
+                         CP3024       20MB CHS=615X4X17
+See Figure CONNER-5 for jumper setting information.
+
+
+                         CP3044       40MB CHS=980X5X17
+See Figure CONNER-5 for jumper setting information.
+
+
+                         CP3104      100MB CHS=776X8X33
+See Figure CONNER-11 for jumper setting information.
+
+
+                         CP3184       80MB CHS=832X6X33
+See Figure CONNER-11 for jumper setting information.
+
+
+                         CP3204F     200MB CHS=683X16X38
+See Figure CONNER-12 for jumper setting information.
+
+
+                         CP3304      340MB CHS=659X16X63
+See Figure CONNER-13 for jumper setting information.
+
+
+                        CP3364      360MB CHS=702X16X63
+See Figure CONNER-14 for jumper setting information.
+
+
+                        CP3504      510MB CHS=987X16X63
+See Figure CONNER-14 for jumper setting information.
+
+
+                        CP3544      340MB CHS=1023X16X63
+
+
+                                   Page 53
+See Figure CONNER-14 for jumper setting information.
+
+
+                        CP30064      60MB CHS=762X4X39
+See Figure CONNER-6 for jumper setting information.
+
+
+                       CP30064H     60MB CHS=762X8X39
+See Figure CONNER-6 for jumper setting information.
+
+
+                         CP30084      80MB CHS=527X8X39
+See Figure CONNER-6 for jumper setting information.
+
+
+                        CP30084E     85MB CHS=332X16X63
+See Figure CONNER-7 for jumper setting information.
+
+
+                         CP30104     120MB CHS=762X8X39
+See Figure CONNER-6 for jumper setting information.
+
+
+                         CP30104H    120MB CHS=762X8X39
+See Figure CONNER-6 for jumper setting information.
+
+
+                         CP30124     120MB CHS=895X5X55
+See Figure CONNER-8 for jumper setting information.
+
+
+                         CP30174     170MB CHS=326X16X63
+See Figure CONNER-2 for jumper setting information.
+
+
+                        CP30174E    170MB CHS=903X18X46
+See Figure CONNER-7 for jumper setting information.
+
+
+                         CP30204     212MB CHS=683X16X38
+See Figure CONNER-9 for jumper setting information.
+
+
+                        CP30254     250MB CHS=895X10X55
+See Figure CONNER-1 for jumper setting information.
+
+
+                        CP30544     540MB CHS=1023X16X63
+See Figure CONNER-10 for jumper setting information.
+
+
+                               <<< CONNER FIGURES
+The following are drive jumpering figures for Conner Peripherals drives.
+
+
+
+
+                                   Page 54
+                                 FIGURE CONNER-1
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   CONNECTORS:                                                        ³
+³     ____Power____     __________________Data____________________     ³
+³    |             |   |  . . . . . . . . .   . . . . . . . . . . |    ³
+³    | O  O  O  O  |   |  1 . . . . . . . . . . . . . . . . . . . |    ³
+³    \_____________/   | __________________   ____________________|    ³
+³    +12  G  G +5                          |  |  ===== PCBA=========== ³
+³    red       yellow       Red stripe on ribbon cable is pin 1        ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+   JUMPERS:    x x  x x x x x        Single Drive   Master  Slave
+               x x  x x x x x x      -------------|--------|-------
+   ==PCBA====  C A  -Reserved--         C/D in      C/D in   C/D out
+               D C
+    ÚÄÄÄÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿           A/C out when master slave
+    ³ I ³                      A/C== Jumpers  with non-CFA/CFA Conner
+    ³ O ³                      C/D==          drives (except CP30254
+    ³   ³                         ³           and CP30344).  A/C in
+    ³ C ³        PCBA             ³           with CFA/CFS and all
+    ³ o ³                         ³           other drives.
+    ³ n ³                         ³
+    ³ n ³                         ³
+    ³ . ³                         ³
+    ÀÄÄÄÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+
+                                 FIGURE CONNER-2
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   CONNECTORS:                                         _+5v Power       ³
+³                                                      |                 ³
+³       x x      x x x x x x x x x x   x x x x x x x x 5 x               ³
+³       x x      1 x x x x x x x x x x x x x x x x x x 5 G               ³
+³_pcba_ R R      |                                     | n               ³
+³       s s      Pin 1                                 | d               ³
+³       v v                                            |_+5v Power       ³
+ÀÄÄÄÄÄ  dÄdÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+   JUMPERS:    x x  x x x x x        Single Drive   Master  Slave
+               x x  x x x x x x      -------------|--------|-------
+   ==PCBA====  C A  -Reserved--         C/D in      C/D in   C/D out
+               D C
+    ÚÄÄÄÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+    ³ I ³    x x                  |
+    ³ O ³    x x                  |
+    ³   ³    A C                  ³
+    ³ C ³    C D                  ³
+    ³ o ³                         ³
+    ³ n ³                         ³
+    ³ n ³            PCBA         ³
+    ³ . ³                         ³
+    ÀÄÄÄÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+
+                                 FIGURE CONNER-3
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   CONNECTOR:                                    ³_+5V Power          ³
+
+
+                                   Page 55
+³   X X   X X X X X X X X X   X X X X X X X X X X 5 X                  ³
+³   X X   1 X X X X X X X X X X X X X X X X X X X 5 G                  ³
+³ ==R R========PCBA===============================³=n===               ³
+³   s s   ³                                       ³ d                  ³
+³   v v   Pin 1                                   ³                    ³
+³   d d                                           ³_+5V Power          ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+                                     Single Drive   Master  Slave
+                                     -------------|--------|-------
+                                        E1 in       E1 in    E1 out
+    ÚÄÄÄÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+    ³ I ³                         |
+    ³ O ³                         |
+    ³   ³                         ³
+    ³ C ³        PCBA             ³
+    ³ o ³                  X X    ³
+    ³ n ³                  X X    ³
+    ³ n ³                  E E    ³
+    ³ . ³                  2 1    ³
+    ÀÄÄÄÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+
+                                 FIGURE CONNER-4
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   CONNECTOR:                                       ³_+5v Power       ³
+³     X X    X X X X X X X X X   X X X X X X X X X X 5 X               ³
+³     X X    1 X X X X X X X X X X X X X X X X X X X 5 G               ³
+³   ==R R========PCBA================================³=n====           ³
+³     s s    ³                                       ³ d               ³
+³     v v    Pin 1                                   ³                 ³
+³     d d                                            ³_+5v Power       ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+                                     Single Drive   Master  Slave
+                                     -------------|--------|-------
+                                       MS in        MS in    MS out
+    ÚÄÄÄÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+    ³ I ³                         ³
+    ³ O ³                         ³
+    ³   ³                         ³
+    ³ C ³  C M       PCBA         ³
+    ³ o ³  D S                    ³
+    ³ n ³  x x                    ³
+    ³ n ³  x x                    ³
+    ³ . ³                         ³
+    ÀÄÄÄÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+
+                                 FIGURE CONNER-5
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   CONNECTORS:                                                        ³
+³   _____Power______                     Data                          ³
+³   ³              ³     x x x x x x x x x   x x x x x x x x x x       ³
+³   ³  O  O  O  O  ³     1 x x x x x x x x x x x x x x x x x x x       ³
+³   \______________/         =======PCBA====================           ³
+³    +12  G  G +5        Red stripe on ribbon cable is pin 1           ³
+
+
+                                   Page 56
+³    red       yellow                                                  ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+   JUMPERS:      x  x x x x x        Single Drive   Master     Slave
+                 x  x x x x x x      -------------|-----------|-------
+   ==PCBA====    L  -Reserved--       C/D&ACT in   C/D&DSP in  None
+                 E
+                 D
+    ÚÄÄÄÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+    ³ I ³                         ³
+    ³ O ³                         ³
+    ³   ³                         ³
+    ³ C ³  ADCH         PCBA      ³
+    ³ o ³  CSDS                   ³
+    ³ n ³  TP P                   ³
+    ³ n ³  xxxx                   ³
+    ³ . ³  xxxx                   ³
+    ÀÄÄÄÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+
+                                 FIGURE CONNER-6
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   CONNECTORS:                                                        ³
+³    _____Power____                      Data                          ³
+³   ³             ³      x x x x x x x x x   x x x x x x x x x x       ³
+³   ³  O  O  O  O ³      1 x x x x x x x x x x x x x x x x x x x       ³
+³    \____________/           ======PCBA=====================          ³
+³    +12  G  G +5        Red stripe on ribbon cable is pin 1           ³
+³    red        yellow                                                 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+   JUMPERS:      x  x x x x x        Single Drive   Master      Slave
+                 x  x x x x x x      -------------|-----------|-------
+   ==PCBA====    L  -Reserved--      C/D in        C/D&DSPin      None
+                 E
+                 D
+    ÚÄÄÄÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+    ³ I ³                   xxx   ³
+    ³ O ³                   xxx   ³
+    ³   ³                   ECD   ³
+    ³ C ³        PCBA       1DS   ³
+    ³ o ³                     P   ³
+    ³ n ³                         ³
+    ³ n ³                         ³
+    ³ . ³                         ³
+    ÀÄÄÄÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+
+                                 FIGURE CONNER-7
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   CONNECTORS:                                                        ³
+³    ____Power_____                      Data                          ³
+³   ³              ³     x x x x x x x x x   x x x x x x x x x x       ³
+³   ³   O  O  O  O ³     1 x x x x x x x x x x x x x x x x x x x       ³
+³   \______________/          ======PCBA=====================          ³
+³    +12  G  G +5        Red stripe on ribbon cable is pin 1           ³
+³   red        yellow                                                  ³
+
+
+                                   Page 57
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+   JUMPERS:      x  x x x x x        Single Drive   Master  Slave
+                 x  x x x x x x      -------------|--------|-------
+   ==PCBA====    L  -Reserved--      C/D in         C/D in   C/D out
+                 E
+                 D
+    ÚÄÄÄÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿           CAM out when master slave
+    ³ I ³  x x CD                 ³           with non-CFA/CFA Conner
+    ³ O ³  x x E1                 ³           drives (except CP30254
+    ³   ³  x x CAM                ³           and CP30344).  CAM in
+    ³ C ³                         ³           with CFA/CFS and all
+    ³ o ³         PCBA            ³           other drives.
+    ³ n ³                         ³
+    ³ n ³                         ³
+    ³ . ³                         ³
+    ÀÄÄÄÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+
+                                 FIGURE CONNER-8
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   CONNECTORS:                                                        ³
+³    ___Power______                      Data                          ³
+³   |             |      x x x x x x x x x   x x x x x x x x x x       ³
+³   |  O  O  O  O |      1 x x x x x x x x x x x x x x x x x x x       ³
+³   \_____________/            =====PCBA====================           ³
+³    +12  G  G +5        Red stripe on ribbon cable is pin 1           ³
+³   red         yellow                                                 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+   JUMPERS:    x x  x x x x x        Single Drive   Master  Slave
+               x x  x x x x x x      -------------|--------|-------
+   ==PCBA====  C L  -Reserved--         C/D in      C/D in   C/D out
+               D E
+                 D
+    ÚÄÄÄÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿           A/C out when master slave
+    ³ I ³                     A/C ==Jumpers   with non-CFA/CFA Conner
+    ³ O ³                     C/D ==          drives (except CP30254
+    ³   ³                         ³           and CP30344).  A/C in
+    ³ C ³        PCBA             ³           with CFA/CFS and all
+    ³ o ³                         ³           other drives.
+    ³ n ³                         ³
+    ³ n ³                         ³
+    ³ . ³                         ³
+    ÀÄÄÄÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+
+                                 FIGURE CONNER-9
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   CONNECTORS:                                                        ³
+³    ____Power_____                      Data                          ³
+³    |             |     x x x x x x x x x   x x x x x x x x x x       ³
+³    | 0  0  0  0  |     1 x x x x x x x x x x x x x x x x x x x       ³
+³    \_____________/         ======PCBA=====================           ³
+³    +12  G  G +5        Red stripe on ribbon cable is pin 1           ³
+³    red       yellow                                                  ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+
+                                   Page 58
+   JUMPERS:    x x  x x x x x        Single Drive   Master  Slave
+               x x  x x x x x x      -------------|--------|-------
+   ==PCBA====  S L -Reserved--         C/D in      C/D in   C/D out
+               S E
+                 D
+    ÚÄÄÄÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+    ³ I ³             xxxx        ³
+    ³ O ³             xxxx        ³
+    ³   ³             CEEE        ³
+    ³ C ³             D123        ³
+    ³ o ³                         ³
+    ³ n ³                         ³
+    ³ n ³                         ³
+    ³ . ³                         ³
+    ÀÄÄÄÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+
+                                FIGURE CONNER-10
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   CONNECTORS:                                                        ³
+³    ____Power_____    __________________Data____________________      ³
+³   |              |   | . . . . . . . . .   . . . . . . . . . . |     ³
+³   |  O  O  O  O  |   | 1 . . . . . . . . . . . . . . . . . . . |     ³
+³   \______________/   |__________________    ___________________|     ³
+³    +12  G  G +5                         |  |    ==== PCBA=========== ³
+³    red       yellow       Red stripe on ribbon cable is pin 1        ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+   JUMPERS:    x x  x x x x x   x x  Single Drive   Master  Slave
+               x x  x x x x x x x x  -------------|--------|-------
+   ==PCBA====  S L  -Reserved-- A C  C/D in         C/D in   C/D out
+               S E              C D
+                 D
+    ÚÄÄÄÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿           A/C out when master slave
+    ³ I ³   xxxx                  |           with non-CFA/CFA Conner
+    ³ O ³   xxxx                  |           drives (except CP30254
+    ³   ³   x                     ³           and CP30344).  A/C in
+    ³ C ³    CAD       PCBA       ³           with CFA/CFS and all
+    ³ o ³    DCS                  ³           other drives.
+    ³ n ³      P                  ³
+    ³ n ³      N                  ³
+    ³ . ³                         ³
+    ÀÄÄÄÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+
+                                FIGURE CONNER-11
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   CONNECTORS:                                                        ³
+³   _____Power_____                                                    ³
+³  ³               ³                     Data                          ³
+³  ³  O  O  O  O   ³     x x x x x x x x x   x x x x x x x x x x       ³
+³   \______________/     1 x x x x x x x x x x x x x x x x x x x       ³
+³    +12  G  G +5            ======PCBA=====================           ³
+³   Red        Yellow    Red stripe on ribbon cable is pin 1           ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+   JUMPERS:    x    x x x x x        Single Drive   Master    Slave
+
+
+                                   Page 59
+               x    x x x x x x      -------------|----------|-------
+               L    --Reserved--       C/D&ACT in  C/D&DSP in  NONE
+               E
+               D
+    ÚÄÄÄÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+    ³ I ³                         ³
+    ³ O ³           PCBA          ³
+    ³   ³                         ³
+    ³ C ³                         ³
+    ³ o ³ x x HSP                 ³
+    ³ n ³ x x C/D                 ³
+    ³ n ³ x x DSP                 ³
+    ³ . ³ x x ACT                 ³
+    ÀÄÄÄÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+
+                                FIGURE CONNER-12
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   CONNECTORS:                                                        ³
+³   ____Power______                                                    ³
+³  ³               ³                    Data                           ³
+³  ³   O  O  O  O  ³    x x x x x x x x x   x x x x x x x x x x        ³
+³  \______________/     1 x x x x x x x x x x x x x x x x x x x        ³
+³    +12  G  G +5          =======PCBA======================           ³
+³    Red        yellow  Red stripe on ribbon cable is pin 1            ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+   JUMPERS:    x    x x x x x        Single Drive   Master     Slave
+               x    x x x x x x      -------------|-----------|-------
+               L    --Reserved--        C/D in     C/D&DSP in  None
+               E
+               D
+    ÚÄÄÄÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+    ³ I ³                         ³
+    ³ O ³                         ³
+    ³   ³                         ³
+    ³ C ³        PCBA             ³
+    ³ o ³                         ³
+    ³ n ³              x x DSP    ³
+    ³ n ³              x x C/D    ³
+    ³ . ³              x x N/A    ³
+    ÀÄÄÄÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+
+                                FIGURE CONNER-13
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   CONNECTORS:                                                        ³
+³    ____Power_____                                                    ³
+³   ³              ³                       Data                        ³
+³   ³  O  O  O  O  ³      x x x x x x x x x   x x x x x x x x x x      ³
+³   \______________/      1 x x x x x x x x x x x x x x x x x x x      ³
+³    +12  G  G +5               ====PCBA===================            ³
+³   Red        Yellow     Red stripe on ribbon cable is pin 1          ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+   JUMPERS:    x    x x x x x        Single Drive   Master  Slave
+               x    x x x x x x      -------------|--------|-------
+
+
+                                   Page 60
+               L    --Reserved--        C/D in      C/D in   C/D out
+               E
+               D
+    ÚÄÄÄÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+    ³ I ³    x x x x              ³
+    ³ O ³    x x x x              ³
+    ³   ³    C E E E              ³
+    ³ C ³    D 3 2 1              ³
+    ³ o ³                         ³
+    ³ n ³        PCBA             ³
+    ³ n ³                         ³
+    ³ . ³                         ³
+    ÀÄÄÄÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+
+                                FIGURE CONNER-14
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³   CONNECTORS:                                                        ³
+³  ______Power____    ___________________Data___________________       ³
+³  ³               ³  ³  . . . . . . . . .   . . . . . . . . . .³      ³
+³  ³    O  O  O  O ³  ³  1 . . . . . . . . . . . . . . . . . . .³      ³
+³   \______________/  ³_________________    ____________________³      ³
+³    +12  G  G +5                       ³  ³   ===== PCBA============  ³
+³    Red        Yellow    Red stripe on ribbon cable is pin 1          ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+   JUMPERS:  x x    x x x x x        Single Drive   Master  Slave
+             x x    x x x x x x      -------------|--------|-------
+             S L    --Reserved--     C/D in         C/D in   C/D out
+             S E
+               D
+    ÚÄÄÄÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+    ³ I ³    xxxx                 ³
+    ³ O ³    xxxx                 ³
+    ³   ³    CEEE                 ³
+    ³ C ³    D321                 ³
+    ³ o ³                         ³
+    ³ n ³        PCBA             ³
+    ³ n ³                         ³
+    ³ . ³                         ³
+    ÀÄÄÄÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+
+                               FUJITSU IDE DRIVES
+                                  ABOUT FUJITSU
+Fujitsu Canada
+
+        Telephone: (800)263-8716
+                   (416)602-5454
+        FAX:       (416)602-5457
+
+
+                         M2611T       45MB CHS=667X4X33
+See Figure FUJITSU-1 for switch setting information.
+
+
+
+
+                                   Page 61
+                         M2612ET      90MB CHS=667X8X33
+See Figure FUJITSU-1 for switch setting information.
+
+
+                         M2613ET     135MB CHS=667X12X33
+See Figure FUJITSU-1 for switch setting information.
+
+
+                         M2614ET     180MB CHS=667X16X33
+See Figure FUJITSU-1 for switch setting information.
+
+
+                         M2616ET     105MB CHS=771X8X33
+See Figure FUJITSU-1 for switch setting information.
+
+
+                        M2622T      327MB CHS=1013X10X63
+See Figure FUJITSU-2 for switch setting information.
+
+
+                        M2623T      420MB CHS=1002X13X63
+See Figure FUJITSU-2 for switch setting information.
+
+
+                         M2624T      514MB CHS=995X16X63
+See Figure FUJITSU-2 for switch setting information.
+
+
+                         M2617T      105MB CHS=725X6X47
+See Figure FUJITSU-3 for switch setting information.
+
+
+                         M2618T      210MB CHS=717X12X47
+See Figure FUJITSU-3 for switch setting information.
+
+
+                        M1603TA     544MB CHS=1055X16X63
+See Figure FUJITSU-4 for jumper setting information.
+
+
+                        M1606TA    1.08GB CHS=2111X16X63
+See Figure FUJITSU-4 for jumper setting information.
+
+
+                               <<< FUJITSU FIGURES
+The following are drive jumper/switch setting figures for Fujitsu drives.
+
+
+                                FIGURE FUJITSU-1
+  o=on x=off
+                    1234      123456
+  Single drive  SW1 oxxo  SW2 oxxxxx
+
+  Master drive  SW1 oxxo  SW2 oxoxxx
+
+
+
+                                   Page 62
+  Slave  drive  SW1 oxxo  SW2 xooxxx
+
+
+                                FIGURE FUJITSU-2
+  o=on x=off
+                     123456
+  Master/Single  SW1 xxxxxx
+
+  Slave drive    SW1 xxxxox
+
+
+                                FIGURE FUJITSU-3
+  o=on x=off
+                     123456      123456
+  Master/Single  SW1 oxxoxx  SW2 xxxxxx
+
+  Slave Drive    SW1 oxxoxx  SW2 oxxxxx
+
+
+                                FIGURE FUJITSU-4
+  pins   status    function
+  1-2    jumper    set drive to master
+         open      set drive as slave
+
+
+                               HITACHI IDE DRIVES
+                                  ABOUT HITACHI
+Hitachi America Ltd
+
+        Telephone: (408)653-0311
+        FAX:       (408)653-0376
+
+        Hitachi America LTD
+        Computer Division
+        3101 Tasman Drive
+        Santa Clara, CA. 95054
+
+Hitachi Europe
+
+        Telephone: +44-1-628-585463
+        FAX:       +44-1-628-585460
+
+        Whitebrook Park
+        The Lower Cookham Road
+        Maidenhead
+        Berkshire
+        United Kingdom
+
+
+                        DK212A-10  1.08GB CHS=2200X16X60
+See Figure HITACHI-1 for jumper setting information.
+
+
+                        DK212A-81   811MB CHS=1650X16X60
+See Figure HITACHI-1 for jumper setting information.
+
+
+                                   Page 63
+
+
+                       DK222A-54   540MB CHS=1100X16X60
+See Figure HITACHI-1 for jumper setting information.
+
+
+                        DK222A-27   270MB CHS=550X16X60
+See Figure HITACHI-1 for jumper setting information.
+
+
+                               <<< HITACHI FIGURES
+The following are drive jumpering figures for Hitachi drives.
+
+
+                                FIGURE HITACHI-1
+                                          1  C A
+  _________________Data__________________________
+ ³  . . . . . . . . .   . . . . . . . . . .  . . ³
+ ³  . . . . . . . . . . . . . . . . . . . .  . . ³
+ ³_______________________________________________³
+                                          2  D B
+        Master
+     Single Drive |   Slave   |  CSEL
+     -------------|-----------|-------
+      A/B/C/D     |  A/B in   | A/C in
+      All open    |           |
+
+
+
+                                 IBM IDE DRIVES
+                                    ABOUT IBM
+IBM Europe
+
+        Telephone: +44-1-705-486363
+        FAX:       +44-1-705-498479
+
+        P.O. Box 6
+        Havant
+        Hampshire
+        PO91SA
+        United Kingdom
+
+
+IBM United Kingdom Ltd
+
+        Telephone: +44-1-256-343000
+        FAX:       +44-1-256-817358
+
+        P.O. Box 117
+        Mountbatten House
+        Basing View, Basingstoke
+        Hampshire
+        United Kingdom
+
+
+
+
+                                   Page 64
+                        0662-A10   1.05GB CHS=2037X15X63
+See Figure IBM-3 for jumper setting information.
+
+
+                        DHA-2270    270MB CHS=524X16X63
+See Figure IBM-1 for jumper setting information.
+
+
+                        DHA-2405    405MB CHS=785X16X63
+See Figure IBM-1 for jumper setting information.
+
+
+                        DHA-2540    540MB CHS=1047X16X63
+See Figure IBM-1 for jumper setting information.
+
+
+                        DSAA-3270   281MB CHS=954X16X36
+See Figure IBM-2 for jumper setting information.
+
+
+                        DSAA-3360   365MB CHS=929X16X48
+See Figure IBM-2 for jumper setting information.
+
+
+                        DSAA-3540   548MB CHS=1062X16X63
+See Figure IBM-2 for jumper setting information.
+
+
+                        DSAA-3720   730MB CHS=1416X16X63
+See Figure IBM-2 for jumper setting information.
+
+
+                         H2172-A2    172MB CHS=989X10X34
+See Figure IBM-1 for jumper setting information.
+
+
+                         H2258-A3    258MB CHS=989X15X34
+See Figure IBM-1 for jumper setting information.
+
+
+                         H2344-A4    344MB CHS=915X15X49
+See Figure IBM-1 for jumper setting information.
+
+
+                        H3133-A2    133MB CHS=1023X15X17
+See Figure IBM-2 for jumper setting information.
+
+
+                         H3171-A2    171MB CHS=984X10X34
+See Figure IBM-2 for jumper setting information.
+
+
+                         H3256-A3    256MB CHS=872X16X36
+See Figure IBM-2 for jumper setting information.
+
+
+
+                                   Page 65
+
+                        H3342-A4    342MB CHS=872X16X48
+See Figure IBM-1 for jumper setting information.
+
+
+                                 <<< IBM FIGURES
+The following are drive jumpering figures for IBM drives.
+
+
+                                  FIGURE IBM-1
+         44-pin I/O Connector __                 49 47
+                                ³                     o o
+                              ::::::::::::ù::::::::1  o o
+                            ÍÍÍÍÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+                                          ³          50 48
+ pin-20 removed for keying ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+ Drive is Master, no Slave drive present ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ 47, 48
+ Drive is Master, Slave drive present ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ None
+ Drive is set for Cable Selection ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ 48, 50
+ Reserved Position (Duplex Mode) ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ 49, 47
+
+
+                                  FIGURE IBM-2
+      Option Block (Top of drive near Power Connector)
+  ÚÄÄÄÄÄ¿
+  ³ 0 0 ³JP-1 ------- Master active
+  ³ 0 0 ³JP-2 ------- Slave  active
+  ³ 0 0 ³JP-3 ------- Cable Select active
+  ³ 0 0 ³JP-4
+  ³ 0 0 ³JP-5 ------- Write cache (disabled with jumper)
+  ³ 0 0 ³JP-6 ------- Automatic re-allocation (disabled with jumper)
+  ³ 0 0 ³JP-7
+  ÀÄÄÄÄÄÙ
+
+
+
+                                  FIGURE IBM-3
+    Option Block (Located on top of drive)
+            _________________________                ÚÄÄ¿_
+            |  . . . . . . . . . .  |                ³  ³_ Jumper
+            |  . . . . . . . . . .  |                ÀÄÄÙ
+            |_______________________|
+               ³ ³ ³_____ Duplex
+               ³ ³_______ Slave
+               ³_________ Master
+
+
+                                MAXTOR IDE DRIVES
+                                  ABOUT MAXTOR
+Maxtor Corporation (USA)
+
+        Telephone: (800)2MAXTOR
+                   (303)678-2045
+        FAX:       (303)678-2260
+
+
+                                   Page 66
+        BBS:       (303)678-2222  (2400 baud)
+                   (303)678-2020  (9600 baud)
+
+        211 River Oaks Parkway
+        San Jose, CA. 95134-1913
+
+
+Maxtor Europe Ltd
+
+        Telephone: +44-1-483-747356
+        FAX:       +44-1-483-751208
+
+        Unit 3, Woking Eight
+        Forsyth Road
+        Woking
+        Surrey
+        United Kingdom
+
+
+                         2585A        81MB CHS=981X10X17
+See Figure MAXTOR-2 for jumper setting information.
+
+
+                         7040A        40MB CHS=981X5X17
+See Figure MAXTOR-3 for jumper setting information.
+
+
+                        7060A        62MB CHS=1024X7X17
+See Figure MAXTOR-3 for jumper setting information.
+
+
+                       7080A        81MB CHS=981X10X17
+See Figure MAXTOR-3 for jumper setting information.
+
+
+                        7120A       124MB CHS=1024X14X17
+See Figure MAXTOR-3 for jumper setting information.
+
+
+                         7131A       125MB CHS=1002X8X32
+See Figure MAXTOR-4 for jumper setting information.
+
+
+                         7135AV      135MB CHS=966X13X21
+See Figure MAXTOR-4 for jumper setting information.
+
+
+                         7170A       170MB CHS=984X10X34
+See Figure MAXTOR-4 for jumper setting information.
+
+
+                         7171A       171MB CHS=866X15X26
+See Figure MAXTOR-4 for jumper setting information.
+
+
+
+
+                                   Page 67
+                         7213A       212MB CHS=683X16X38
+See Figure MAXTOR-4 for jumper setting information.
+
+
+                         7245A       245MB CHS=967X16X31
+See Figure MAXTOR-4 for jumper setting information.
+
+
+                         7270AV      270MB CHS=959X11X50
+See Figure MAXTOR-4 for jumper setting information.
+
+
+                        7273A       273MB CHS=1012X16X33
+See Figure MAXTOR-4 for jumper setting information.
+
+
+                         7345A       345MB CHS=790X15X57
+See Figure MAXTOR-4 for jumper setting information.
+
+
+                         7405AV      405MB CHS=989X16X50
+See Figure MAXTOR-4 for jumper setting information.
+
+
+                         7420A       420MB CHS=986X16X52
+See Figure MAXTOR-4 for jumper setting information.
+
+
+                        7425A       425MB CHS=1002X16X52
+See Figure MAXTOR-4 for jumper setting information.
+
+
+                        7540A       540MB CHS=1047X16X63
+See Figure MAXTOR-4 for jumper setting information.
+
+
+                        7546A       546MB CHS=1059X16X63
+See Figure MAXTOR-4 for jumper setting information.
+
+
+                        7850A       850MB CHS=1654X16X63
+See Figure MAXTOR-4 for jumper setting information.
+
+
+                         8051A        42MB CHS=981X5X17
+See Figure MAXTOR-5 for jumper setting information.
+
+
+                         25084A       80MB CHS=569X16X18
+See Figure MAXTOR-1 for jumper setting information.
+
+
+                         25128A      122MB CHS=981X10X17
+See Figure MAXTOR-2 for jumper setting information.
+
+
+
+                                   Page 68
+
+                         25252A      240MB CHS=569X16X54
+See Figure MAXTOR-1 for jumper setting information.
+
+
+                        71050A     1.05GB CHS=2045X16X63
+See Figure MAXTOR-4 for jumper setting information.
+
+
+                        71260A     1.26GB CHS=2448X16X63
+See Figure MAXTOR-4 for jumper setting information.
+
+
+                         LXT-200A    200MB CHS=816X15X32
+See Figure MAXTOR-6 for jumper setting information.
+
+
+                         LXT-213A    213MB CHS=683X16X38
+See Figure MAXTOR-6 for jumper setting information.
+
+
+                         LXT-340A    340MB CHS=654X16X63
+See Figure MAXTOR-6 for jumper setting information.
+
+
+                        LXT-535A    528MB CHS=1024X16X63
+See Figure MAXTOR-6 for jumper setting information.
+
+
+                        MXT-540AL   540MB CHS=1059X16X63
+See Figure MAXTOR-7 for jumper setting information.
+
+
+                               <<< MAXTOR FIGURES
+The following are drive jumpering figures for Maxtor drives.
+
+
+                                 FIGURE MAXTOR-1
+         ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÂÄÄÄÄÄÄÄÄÄÄÄÄ¿
+         ³              ÀÄÙ                     ÀÄÙ        ÍÎÍÍ³
+         ³                                                 ÍÎÍÍ³
+         ³                                                 ÍÎÍÍ³
+         ³                                                 ÍÎÍÍ³
+         ³                                    ÚÄÄÄ¿        ÍÎÍÍ³
+         ³                                    ³   ³        ÍÎÍÍ³
+         ³                                    ÀÄÄÄÙ        ÍÎÍÍ³
+         ³                                      ÚÄÄ¿       ÍÎÍÍ³
+         ³                                 S301 ³ßß³       ÍÎÍÍ³
+         ³                                 S302 ³00³       ÍÎÍÍ³
+         ³                                 S303 ³00³       ÍÎÍÍ³
+         ³                                 S304 ³ßß³       ÍÎÍÍ³
+         ³              ÚÄ¿                     ÀÄÄÙ       ÍÎÍÍ³
+         ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÁÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+                                           S301 S302 S303 S304
+
+
+                                   Page 69
+    ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÂÄÄÄÄÂÄÄÄÄÂÄÄÄÄ¿
+     Master/Slave                          ³    ³    ³    ³    ³
+        Only Drive in single drive system* ³ J  ³    ³    ³    ³
+        Master in dual drive system        ³ J  ³    ³    ³    ³
+        Slave in dual drive system         ³ O  ³    ³    ³    ³
+    ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÅÄÄÄÄÅÄÄÄÄÅÄÄÄÄ´
+     Reserved for factory                  ³    ³    ³    ³    ³
+       Normal operation*                   ³    ³    ³ O  ³ O  ³
+       Factory operation                   ³    ³    ³ J  ³ J  ³
+    ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÅÄÄÄÄÅÄÄÄÄÅÄÄÄÄ´
+     Idle Mode Latch                       ³    ³    ³    ³    ³
+      Option Disabled                      ³    ³ O  ³    ³    ³
+      Option Enabled*                      ³    ³ J  ³    ³    ³
+   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÁÄÄÄÄÁÄÄÄÄÁÄÄÄÄÙ
+    *=Default J=Jumped O=Open
+
+
+                                 FIGURE MAXTOR-2
+         ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÂÄÄÄÄÄÄÄÄÄÄÄÄ¿
+         ³              ÀÄÙ                     ÀÄÙ        ÍÎÍÍ³
+         ³                                                 ÍÎÍÍ³
+         ³                ÉÍÍÍÍÍÍÍÍÍÍÍÍÍÍ»                 ÍÎÍÍ³
+         ³                º  ÚÄÄÄÄÄ¿     º                 ÍÎÍÍ³
+         ³                º  ³ 0 0 ³J304 º    ÚÄÄÄ¿        ÍÎÍÍ³
+         ³                º  ³ 0 0 ³J305 º    ³   ³         ÌÍÍ³
+         ³                º  ³ 0 0 ³J306 º    ÀÄÄÄÙ        ÍÎÍÍ³
+         ³                º  ³ ÛÛÛ ³J308 º      ÚÄÄ¿       ÍÎÍÍ³
+         ³                º  ³ 0 0 ³J309 º      ³::³       ÍÎÍÍ³
+         ³                º  ³ 0 0 ³J307 ÇÄÄÄÄÄ>³;;³       ÍÎÍÍ³
+         ³                º  ÀÄÄÄÄÄÙ     º      ³::³        º  ³
+         ³                ÈÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼      ÀÄÄÙ       ÍÎÍÍ³
+         ³              ÚÄ¿                     ÚÄ¿        ÍÎÍÍ³
+         ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÁÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+                                           J306 J307 J308 J309
+    ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÂÄÄÄÄÂÄÄÄÄÂÄÄÄÄ¿
+     Master/Slave                          ³    ³    ³    ³    ³
+        Only Drive in single drive system* ³    ³    ³ J  ³    ³
+        Master in dual drive system        ³    ³    ³ J  ³    ³
+        Slave in dual drive system         ³    ³    ³ O  ³    ³
+   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÁÄÄÄÄÁÄÄÄÄÁÄÄÄÄÙ
+    *=Default J=Jumped O=Open
+    J304 & J305 reserved for future use
+
+
+                                 FIGURE MAXTOR-3
+    JUMPER DESIGNATION                ³J20³J19³J18³
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄ´
+³ Master/Slave                        ³   ³   ³   ³
+³  Only drive in single drive system* ³ J ³ J ³   ³
+³  Master in dual drive system        ³ J ³ O ³   ³
+³  Slave in dual drive system         ³ O ³ J ³   ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄ´
+  J=Jumpered O=Open *=Default
+                                                              ÚÄÄÄ¿       ³
+
+
+                                   Page 70
+  Note: A spare jumper is supplied                            ³ø ø³J11    ³
+        across J13 & J14                      J20 J18 J16     ³ø ø³J13    ³
+                                             ÚÄÅÄÄÄÅÄÄÄÅÄ¿    ³ø ø³J14    ³
+                                             ³ Û Û Û Û ø ³    ³ø ø³J15    ³
+                                             ³ Û Û Û Û ø ³    ÀÄÄÄÙ       ³
+                                             ÀÄÄÄÅÄÄÄÅÄÄÄÙ                ³
+                                                J19 J17                   ³
+                                           ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+
+                                 FIGURE MAXTOR-4
+                                          ³J24³J23³J22³J20³J19³J18³J17³J16³
+    ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄ´
+    ³ Cable Select                        ³   ³   ³   ³   ³   ³   ³   ³   ³
+    ³  Disabled*                          ³ O ³   ³   ³   ³   ³   ³   ³   ³
+    ³  Enabled                            ³ J ³   ³   ³   ³   ³   ³   ³   ³
+    ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄ´
+    ³ Write Cache                         ³   ³   ³   ³   ³   ³   ³   ³   ³
+    ³  Enabled*                           ³   ³ O ³   ³   ³   ³   ³   ³   ³
+    ³  Disabled                           ³   ³ J ³   ³   ³   ³   ³   ³   ³
+    ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄ´
+    ³ Drive Compatibility                 ³   ³   ³   ³   ³   ³   ³   ³   ³
+    ³  Disabled*                          ³   ³   ³ O ³   ³   ³   ³   ³   ³
+    ³  Enabled                            ³   ³   ³ J ³   ³   ³   ³   ³   ³
+    ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄ´
+    ³ Master/Slave                        ³   ³   ³   ³   ³   ³   ³   ³   ³
+    ³  Only drive in single drive system  ³   ³   ³   ³ J ³   ³   ³   ³   ³
+    ³  Master in dual drive system        ³   ³   ³   ³ J ³   ³   ³   ³   ³
+    ³  Slave in dual drive system         ³   ³   ³   ³ O ³   ³   ³   ³   ³
+    ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄ´
+    ³ Spare Jumper+                       ³   ³   ³   ³   ³   ³   ³   ³   ³
+    ³  <11/1/93 Provided                  ³   ³   ³   ³   ³ J ³   ³   ³   ³
+    ³  >11/1/93 Not Provided              ³   ³   ³   ³   ³ O ³   ³   ³   ³
+    ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÙ
+         J=Jumpered O=Open *=Default +=Manufacture Date
+
+
+                                 FIGURE MAXTOR-5
+                 MAXTOR 8051A IDE Drive
+                8051A DUAL DRIVE SUPPORT
+
+The 8051A operates in a MASTER SLAVE relationship.
+This enables the 8051A to be daisy-chained with another
+IDE drive (i.e. 7080A, 7040A, or another 8051A).
+
+1: Jumpering J4.1 to J4.2 causes the 8051A to operate
+   in the SLAVE role.
+
+2: Jumpering J4.5 to J4.6 causes the 8051A to operate
+   in the MASTER role.
+
+3: Jumpering J4.3 to J4.4 This allows the 8051A to be
+   compatable with some BIOS versions that cannot
+   support 1:1 interleave. This jumper should not be
+   installed under normal conditions.
+
+
+                                   Page 71
+
+4: Jumper J4.7 to J4.8 is not used and should not be
+   installed.
+
+5: Jumpering J4.9 to J4.10 enables the I/O ready signal
+   onto the interface connector, pin 27.
+
+To operate the 8051A as the ONLY DRIVE in a system,
+J4.1 thru J4.10 should all be open (not jumpered)
+except as noted below.
+
+NOTE: The 8051A may be shipped with a jumper across
+J4.1 and J4.3 this jumper has no effect but provides
+you with a spare.
+
+
+                                 FIGURE MAXTOR-6
+                           LXT-xxxA PCB Layout
+ÚÄÄÄÄÂÄÄÄÄÄÄÄÄÄ¿ ÚÄÄ¿  ÚÄÄÄÄÄÄÄÄÄÄ¿  ÚÄÄÄ¿    ÚÄÄÄÄÄÄÄÄÄ¿  ÚÄ¿  ÚÄÄÄÄÄÄÄÄÄÄ¿
+³    ³         ÀÄÙ  ÀÄÄÙ          ÀÄÄÙ   ÀÄÄÄÄÙ         ÀÄÄÙ ÀÄÄÙ          ³
+³ J3 ³                 ÉÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ»                            ³
+³    ³    J6           º    9  7  5  3  1     º                            ³
+ÀÄÄÄÂÙ ÚÄÄÄÄÄ¿         º  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿  º                        ÚÄÂÄÅ
+ÚÄÄÄÁ¿ ³:::|:³<ÄÄÄÄÄÄÄÄ¶  ³ *  *  *  Û  *  ³  º                        ³ ÃÄÅ
+³    Ã ÀÄÄÄÄÄÙ         º  ³ *  *  *  Û  *  ³  º                     J5 ³ ÃÄÅ
+³    Ã                 º  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ  º                        ³ ÃÄÅ
+³    Ã                 º   10  8  6  4  2     º                        ÀÄÁÄÅ
+³    Ã                 ÈÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼                        ÚÄÂÄÅ
+³    Ã                                                                 ³ ÃÄÅ
+³ J1 Ã                                                                 ³ ÃÄÅ
+³    Ã                                                              J2 ³ ÃÄÅ
+³    Ã                                                                 ³ ÃÄÅ
+³    Ã                                                                 ³ ÃÄÅ
+³    Ã                                                                 ³ ÃÄÅ
+³    Ã                                                                 ÀÄÁÄÅ
+³    Ã                                                                 ÚÄÂÄÅ
+ÀÄÄÄÂÙ                                                              J4 ³ ÃÄÅ
+    ³      ÚÄ¿        To attach an external LED, use pins 9-10ÄÄÄÄÄÄÄ> ÀÄÁÄÅ
+    ÀÄÄÄÄÄÄÙ ³                                                          ÚÄÄÙ
+    ÚÄÄÄÄÄÄÄÄÙ                                                          ÀÄÄ¿
+    ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+    LXT-A Jumper Designations           ³1-2³3-4³5-6³7-8³9-10³
+    ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÄ´
+    ³ Master/Slave                      ³   ³   ³   ³   ³    ³
+    ³  Only drive in single drive sys   ³ R ³   ³   ³   ³    ³
+    ³  Master in dual drive system      ³ R ³   ³   ³   ³    ³
+    ³  Slave in dual drive system       ³ J ³   ³   ³   ³    ³
+    ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÄ´
+    ³ Drive Active (System LED)         ³   ³ J ³   ³   ³    ³
+    ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÄ´
+    ³ Slave Present                     ³   ³   ³   ³   ³    ³
+    ³  One drive in single drive sys    ³   ³   ³ R ³   ³    ³
+    ³  Master in dual drive system      ³   ³   ³ R ³   ³    ³
+    ³  Slave in dual drive system       ³   ³   ³ O ³   ³    ³
+    ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÄ´
+
+
+                                   Page 72
+    ³ Two Drive System                  ³   ³   ³   ³   ³    ³
+    ³  One drive in single drive sys    ³   ³   ³   ³ R ³    ³
+    ³  Master in dual drive sys         ³   ³   ³   ³ J ³    ³
+    ³  Slave in dual drive sys          ³   ³   ³   ³ R ³    ³
+    ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÅÄÄÄÄ´
+    ³ Sync Spindle Pulse Source         ³   ³   ³   ³   ³    ³
+    ³  If receiving pulse               ³   ³   ³   ³   ³ R  ³
+    ³  If transmitting pulse*           ³   ³   ³   ³   ³ J  ³
+    ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÄÙ
+      J=Jumpered R=Removed O=Optional
+      *=This jumper may only be used
+        only on one drive in an array
+
+
+                                 FIGURE MAXTOR-7
+ÚÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³    .³ Pin 1                                                          Í  J5
+³ J3  ³           3  1         9  7  5  3  1                           Í
+³     ³         ÚÄÄÄÄÄÄÄ¿   ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿                        Í
+³     ³      JP1³ :  :  ³   ³  :  Û  :  :  :  ³  J6                    ³
+ÃÄÄÄÄÄÙ         ÀÄÄÄÄÄÄÄÙ   ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ                        ³
+ÃÄÄÄÄÄ¿           4  2        10  8  6  4  2                           Í
+³    .³Í Pin 1                    *                                    Í  J2
+³     ³Í                                                               Í
+³     ³Í                                                               Í
+³     ³Í                                                               ³
+³ J1  ³Í                                                               ³
+³     ³Í                                                               Í  J4
+³     ³Í                                                 ÚÄÄ¿          Í
+³     ³Í                                                 ³..³          Í
+³     ³Í                                                 ³..³          ³
+ÀÄÄÄÄÄÙ                                                  ³..³          ³
+ÚÄÄÄÄÄ¿                                                  ³..³          ³
+³ J7  ³Í                                             Û   ³--³          ³
+³     ³Í                                            JP4  ÀÄÄÙ          ³
+³    .³Í Pin 1                                            JP5          ³
+ÀÄÄÄÄÄÙÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+   * J6 pins 7-8  default setting
+    Newer PCBs are different, they have JP5 (5 pair) instead of JP4 (1 pair)
+
+                 Jumper Block   J6
+       ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄ¿
+       ³   DESCRIPTION                 ³   PINS    ³
+       ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄ´
+       ³  Master     = Open            ³    1-2    ³
+       ³  Slave      = Jumper          ³           ³
+       ³  Only Drive = Open            ³           ³
+       ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄ´
+       ³  Normal Self Test   = Open    ³    3-4    ³
+       ³  Extended Self Test = Jumper  ³           ³
+       ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄ´
+       ³  Disable Spindle Sync= Open   ³    5-6    ³
+       ³  Enable Spindle Sync = Jumper ³           ³
+       ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄ´
+       ³  Default Setting  = Jumped    ³    7-8 *  ³ This jumper can be used
+
+
+                                   Page 73
+       ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄ´ for Slave configuration
+       ³  Termination Reference Pulse  ³   9-10    ³ on pins 1-2
+       ³        Applied = Jumper       ³           ³
+       ³    Not Applied = Open         ³           ³
+       ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÙ
+
+                     JP4
+       ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄ¿
+       ³    Write Protect Jumper              ³      ³
+       ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄ´
+       ³      Enables Writing to Drive        ³  J*  ³
+       ³                                      ³      ³
+       ³      Disables Writing to Drive       ³  R   ³
+       ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÙ
+                     or JP5 pins 9-10
+       ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄ¿
+       ³    Write Protect Jumper              ³      ³
+       ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄ´
+       ³      Enables Writing to Drive        ³  J*  ³
+       ³                                      ³      ³
+       ³      Disables Writing to Drive       ³  R   ³
+       ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÙ
+         J = Jumped
+         R = Removed
+         * = Default Setting
+
+
+                              MICROPOLIS IDE DRIVES
+                                ABOUT MICROPOLIS
+Micrpoplis Corporation
+
+        Telephone:         (818)709-3300
+        Technical Support: (818)847-8153
+        FAX:               (818)718-5352
+        BBS:               (818)709-3310
+
+        21123 Nordhoff Street
+        Chatsworth, Ca. 91311
+
+
+Micropolis Ltd
+
+        Telephone: +44-1-734-751315
+        FAX:       +44-1-734-868168
+
+        4 Worton Drive
+        Worton Grange
+        Reading
+        Berkshire
+        United Kingdom
+
+
+                        2105A       558MB CHS=1083X16X63
+See Figure MICROPOLIS-1 for jumper setting details
+
+
+
+                                   Page 74
+
+                        2112A      1.04GB CHS=2034X16X63
+See Figure MICROPOLIS-2 for jumper setting details
+
+
+                        2205A       540MB CHS=1050X16X63
+See Figure MICROPOLIS-1 for jumper setting details
+
+
+                        2210A       975MB CHS=1891X16X63
+See Figure MICROPOLIS-2 for jumper setting details
+
+
+                        2217A      1.62GB CHS=3152X16X63
+See Figure MICROPOLIS-2 for jumper setting details
+
+
+                             <<< MICROPOLIS FIGURES
+The following are jumpering figures for Micropolis drives.
+
+
+                               FIGURE MICROPOLIS-1
+      ____   _______________________   ________
+     | J2 | |         J1            | |   J3   |
+     |    |_|_______________________|_|________|
+     |                                         |
+     |               RESERVED                  |
+     |               | | |                     |
+     |           : : : : :                     |
+     |           | |                           |
+     |          W1 |                           |
+     |            W2                           |
+     |                                         |
+     |           LED                           |
+     |________||_______________________________|
+
+W1, W2 Jumpers (Master / Slave Selection)
+    The interface allows up to two drives (a Master and one Slave) to be
+    attached to the AT/IDE bus. The following table shows the configurations.
+
+       W1     W2    Description
+    +------+------+-------------------------------------------------------+
+    | OUT  |  IN  | Drive is Master, Slave is present                     |
+    +------+------+-------------------------------------------------------+
+    |  IN  | OUT  | Drive Slave                                           |
+    +------+------+-------------------------------------------------------+
+    | OUT  | OUT  | Drive is Master                                       |
+    +------+------+-------------------------------------------------------+
+
+
+                               FIGURE MICROPOLIS-2
+      ____   _______________________   ________
+     | J2 | |         J1            | |   J3   |
+     |    |_|_______________________|_|________|
+     |                                         |
+
+
+                                   Page 75
+     |               RESERVED                  |
+     |               | | |                     |
+     |           : : : : :                     |
+     |           | |                           |
+     |          W1 |                           |
+     |            W2                           |
+     |                                         |
+     |           LED                           |
+     |________||_______________________________|
+
+
+W1, W2 Jumpers (Master / Slave Selection)
+    The interface allows up to two drives (a Master and one Slave) to be
+    attached to the AT/IDE bus. The following table shows the configurations.
+
+       W1     W2    Description
+    +------+------+-------------------------------------------------------+
+    |  IN  |  IN  | Drive emulates *both* Master and Slave (DEFAULT)      |
+    +------+------+-------------------------------------------------------+
+    | OUT  |  IN  | Drive is Master, Slave is present                     |
+    +------+------+-------------------------------------------------------+
+    |  IN  | OUT  | Drive Slave                                           |
+    +------+------+-------------------------------------------------------+
+    | OUT  | OUT  | Drive is Master                                       |
+    +------+------+-------------------------------------------------------+
+
+
+                                 NEC IDE DRIVES
+                         D3735        45MB CHS=1084X2X41
+See Figure NEC-1 for jumper setting information
+
+
+                        D3755       105MB CHS=1250X4X41
+See Figure NEC-1 for jumper setting information
+
+
+                         D3741        45MB CHS=423X8X26
+See Figure NEC-2 for jumper setting information
+
+
+                         D3756       104MB CHS=1250X4X41
+See Figure NEC-1 for jumper setting information
+
+
+                         D3761       115MB CHS=915X7X35
+See Figure NEC-3 for jumper setting information
+
+
+                         D3781       425MB CHS=1464X9X63
+See Figure NEC-3 for jumper setting information
+
+
+                                 <<< NEC FIGURES
+The following are drive jumpering figures for NEC drives.
+
+
+
+                                   Page 76
+
+                                  FIGURE NEC-1
+                    JP12        JP13
+    Single drive    open        open
+    Master drive    closed      open
+    Slave drive     closed      closed
+
+
+                                  FIGURE NEC-2
+                            J1
+                    jumper 2    jumper 3
+    Single drive    open        open
+    Master drive    closed      open
+    Slave drive     closed      closed
+
+
+                                  FIGURE NEC-3
+                            JP1
+                    jumper 1    jumper 2
+    Single drive    closed      open
+    Master drive    closed      open
+    Slave drive     open        closed
+
+
+                               QUANTUM IDE DRIVES
+                                  ABOUT QUANTUM
+Quantum Peripherals (USA)
+
+        Technical Support: (800)826-8022
+        BBS:               (408)894-3214
+        FAX Back:          (800)4DISKFAX
+
+
+Quantum Peripherals Ltd
+
+        Telephone:         +44-1-344-865600
+        Technical Support: +44-1-344-865660
+        BBS:               +49-69-950-76745
+        FAX Back:          +49-69-950-76779
+
+        Quantum House
+        Unit 5 Braknell Beeches
+        Old Bracknell Lane West
+        Bracknell
+        United Kingdom
+
+
+                         120AT       120MB CHS=814X9X32
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                         170AT       170MB CHS=968X10X34
+See Figure QUANTUM-1 for jumper setting information.
+
+
+
+
+                                   Page 77
+                         210AT       210MB CHS=873X13X36
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                        425AT       425MB CHS=1021X16X51
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                        425IAT      425MB CHS=1021X16X51
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                         ELS 42AT     42MB CHS=977X5X17
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                         ELS 85AT     85MB CHS=977X10X17
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                         ELS 127AT   127MB CHS=919X16X17
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                        ELS 170AT   170MB CHS=1011X15X22
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                        FB 540      544MB CHS=1056X16X63
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                        FB 1080    1.08GB CHS=2122X16X63
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                         LPS 52AT     50MB CHS=751X8X17
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                         LPS 80AT     80MB CHS=616X16X17
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                         LPS 105AT   105MB CHS=755X16X17
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                         LPS 120AT   120MB CHS=901X5X53
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                        LPS 170AT   170MB CHS=1011X15X22
+See Figure QUANTUM-1 for jumper setting information.
+
+
+
+                                   Page 78
+
+                         LPS 210AT   210MB CHS=873X13X36
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                         LPS 240AT   240MB CHS=723X13X51
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                         LPS 270AT   270MB CHS=944X14X40
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                        LPS 340AT   340MB CHS=1011X15X44
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                        LPS 420AT   420MB CHS=1010X16X51
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                        LPS 525AT   525MB CHS=1017X16X63
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                        LPS 540AT   540MB CHS=1120X16X59
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                         LT 365      365MB CHS=976X12X61
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                        LT 540      540MB CHS=1120X16X59
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                        LT 730      730MB CHS=1416X16X63
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                         MV 270      270MB CHS=944X14X40
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                        MV 540      540MB CHS=1059X16X63
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                        TR 420      420MB CHS=1010X16X51
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                        TR 850      850MB CHS=1647X16X63
+See Figure QUANTUM-1 for jumper setting information.
+
+
+                                   Page 79
+
+
+                               <<< QUANTUM FIGURES
+The following are drive jumpering figures for Quantum drives.
+
+
+                                FIGURE QUANTUM-1
+Install jumpers on the jumper block as follows:
+
+    Master / No slave present -  DS
+
+    Master / Slave present - DS or DS, SP
+
+    Slave - None
+
+
+                               SAMSUNG IDE DRIVES
+                                  ABOUT SAMSUNG
+Samsung (USA)
+
+        Technical Support: (800)SAMSUNG
+
+
+Samsung (Canada)
+
+        Technical Support: (201)691-6200
+
+
+                         3062        121MB CHS=927X15X17
+See Figure SAMSUNG-1 for jumper setting details
+
+
+                        3122        251MB CHS=937X15X35
+See Figure SAMSUNG-1 for jumper setting details
+
+
+                         3171        178MB CHS=968X8X45
+See Figure SAMSUNG-1 for jumper setting details
+
+
+                         3172        356MB CHS=968X16X45
+See Figure SAMSUNG-1 for jumper setting details
+
+
+                         3211        213MB CHS=1002X8X52
+See Figure SAMSUNG-1 for jumper setting details
+
+
+                        3212        426MB CHS=1002X16X52
+See Figure SAMSUNG-1 for jumper setting details
+
+
+                         30280       280MB CHS=1024X8X63
+See Figure SAMSUNG-1 for jumper setting details
+
+
+
+                                   Page 80
+
+                        30560       560MB CHS=1024X16X63
+See Figure SAMSUNG-1 for jumper setting details
+
+
+                               <<< SAMSUNG FIGURES
+The following are drive jumpering figures for Samsung drives.
+
+
+                                FIGURE SAMSUNG-1
+      Master / No Slave present -  CD
+
+      Master / Slave present  - CD, DSP
+
+      Slave - None
+
+
+                               SEAGATE IDE DRIVES
+                                  ABOUT SEAGATE
+Seagate Technology, Inc. (USA)
+
+        Technical Support: (408)438-8222
+        BBS:               (408)438-8771
+        FAX Back:          (408)438-2620
+        TDD:               (408)438-5382
+
+        920 Disc Drive
+        Scotts Valley, CA  95066, U.S.A.
+
+
+Seagate Technology UK
+
+        Telephone: +44-1-628-890656
+        BBS:       +44-1-628-478011
+        FAX Back:  +44-1-628-477080
+
+        Angler's Court
+        Marlow
+        Buckinghamshire
+        SL71DB
+        United Kingdom
+
+
+Other BBS's
+
+        Germany:   +49-89-140-9331
+        Singapore: +65-292-6973
+        Australia: +61-2-756-2359
+
+
+                         ST-125A      21MB CHS=404X4X26
+See Figure SEAGATE-3 for jumper setting details
+
+
+                         ST-138A      32MB CHS=604X4X26
+
+
+                                   Page 81
+See Figure SEAGATE-3 for jumper setting details
+
+
+                         ST-157A      44MB CHS=560X6X26
+See Figure SEAGATE-3 for jumper setting details
+
+
+                         ST-274A      63MB CHS=941X5X26
+See Figure SEAGATE-5 for jumper setting details
+
+
+                         ST-280A      71MB CHS=516X10X17
+See Figure SEAGATE-5 for jumper setting details
+
+
+                        ST-1057A     53MB CHS=1024X6X17
+See Figure SEAGATE-12 for jumper setting details
+
+
+                         ST-1090A     79MB CHS=335X5X29
+See Figure SEAGATE-2 for jumper setting details
+
+
+                        ST-1102A     89MB CHS=1024X10X17
+See Figure SEAGATE-1 for jumper setting details
+
+
+                         ST-1111A     98MB CHS=536X10X36
+See Figure SEAGATE-2 for jumper setting details
+
+
+                         ST-1126A    111MB CHS=469X16X29
+See Figure SEAGATE-2 for jumper setting details
+
+
+                         ST-1133A    117MB CHS=636X10X36
+See Figure SEAGATE-2 for jumper setting details
+
+
+                        ST-1144A    130MB CHS=1001X15X17
+See Figure SEAGATE-1 for jumper setting details
+
+
+                         ST-1156A    138MB CHS=536X14X36
+See Figure SEAGATE-2 for jumper setting details
+
+
+                         ST-1162A    143MB CHS=603X16X29
+See Figure SEAGATE-2 for jumper setting details
+
+
+                         ST-1186A    164MB CHS=636X14X36
+See Figure SEAGATE-2 for jumper setting details
+
+
+
+
+                                   Page 82
+                         ST-1201A    177MB CHS=804X12X36
+See Figure SEAGATE-2 for jumper setting details
+
+
+                         ST-1239A    211MB CHS=814X14X36
+See Figure SEAGATE-2 for jumper setting details
+
+
+                         ST-2274A    241MB CHS=873X10X54
+See Figure SEAGATE-4 for jumper setting details
+
+
+                         ST-2383A    338MB CHS=873X14X54
+See Figure SEAGATE-4 for jumper setting details
+
+
+                         ST-3051A     43MB CHS=820X6X17
+See Figure SEAGATE-6 for jumper setting details
+
+
+                        ST-3096A     89MB CHS=1024X10X17
+See Figure SEAGATE-6 for jumper setting details
+
+
+                        ST-3120A    107MB CHS=1024X12X17
+See Figure SEAGATE-6 for jumper setting details
+
+
+                        ST-3123A    106MB CHS=1024X12X17
+See Figure SEAGATE-7 for jumper setting details
+
+
+                        ST-3144A    130MB CHS=1001X15X17
+See Figure SEAGATE-6 for jumper setting details
+
+
+                        ST-3145A    130MB CHS=1001X15X17
+See Figure SEAGATE-7 for jumper setting details
+
+
+                           ST-3195A    170MB 981X10X34
+See Figure SEAGATE-7 for jumper setting details
+
+
+                        ST-3243A    214MB CHS=1024X12X34
+See Figure SEAGATE-7 for jumper setting details
+
+
+                         ST-3283A    245MB CHS=978X14X35
+See Figure SEAGATE-8 for jumper setting details
+
+
+                        ST-3290A    261MB CHS=1001X15X34
+See Figure SEAGATE-7 for jumper setting details
+
+
+
+                                   Page 83
+
+                         ST-3385A    340MB CHS=767X14X62
+See Figure SEAGATE-8 for jumper setting details
+
+
+                        ST-3491A    4281MB CHS=891X15X62
+See Figure SEAGATE-7 for jumper setting details
+
+
+                         ST-3500A    525MB CHS=895X15X62
+See Figure SEAGATE-9 for jumper setting details
+
+
+                        ST-3550A    452MB CHS=1018X14X62
+See Figure SEAGATE-8 for jumper setting details
+
+
+                        ST-3655A    528MB CHS=1024X16X63
+See Figure SEAGATE-8 for jumper setting details
+
+
+                        ST-3660A    545MB CHS=1057X16X63
+See Figure SEAGATE-7 for jumper setting details
+
+
+                        ST-3780A    722MB CHS=1399X16X63
+See Figure SEAGATE-13 for jumper setting details
+
+
+                        ST-31220A  1.08GB CHS=2099X16X63
+See Figure SEAGATE-13 for jumper setting details
+
+
+                        ST-5660A    545MB CHS=1057X16X63
+See Figure SEAGATE-10 for jumper setting details
+
+
+                        ST-5850A    854MB CHS=1656X16X63
+See Figure SEAGATE-14 for jumper setting details
+
+
+                         ST-9051A     42MB CHS=820X6X17
+See Figure SEAGATE-11 for jumper setting details
+
+
+                         ST-9052A     42MB CHS=980X5X17
+See Figure SEAGATE-11 for jumper setting details
+
+
+                         ST-9077A     64MB CHS=669X11X17
+See Figure SEAGATE-11 for jumper setting details
+
+
+                         ST-9080A     64MB CHS=823X4X38
+See Figure SEAGATE-11 for jumper setting details
+
+
+                                   Page 84
+
+
+                         ST-9096A     85MB CHS=980X10X17
+See Figure SEAGATE-11 for jumper setting details
+
+
+                         ST-9140AG   127MB CHS=980X15X17
+See Figure SEAGATE-11 for jumper setting details
+
+
+                         ST-9144A    130MB CHS=980X15X17
+See Figure SEAGATE-11 for jumper setting details
+
+
+                         ST-9145AG   127MB CHS=980X15X17
+See Figure SEAGATE-11 for jumper setting details
+
+
+                        ST-9150AG    131MB CHS=419X13X47
+See Figure SEAGATE-11 for jumper setting details
+
+
+                         ST-9190AG   171MB CHS=873X16X24
+See Figure SEAGATE-11 for jumper setting details
+
+
+                         ST-9235A    209MB CHS=985X13X32
+See Figure SEAGATE-11 for jumper setting details
+
+
+                         ST-9550AG   455MB CHS=942X16X59
+See Figure SEAGATE-11 for jumper setting details
+
+
+                        ST-9655AG   524MB CHS=1016X16X63
+See Figure SEAGATE-11 for jumper setting details
+
+
+                               <<< SEAGATE FIGURES
+The following are drive jumpering figures for Seagate drives.
+
+
+                                FIGURE SEAGATE-1
+     ÍÍÍPWAÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+                          Ú....................¿    /ÄÄÄÄÄÄÄÄÄ\
+                           ...................1     ³ O O O O ³
+       1 o o 2  ÄÄÄÄÄÄÄÄ¿       À Cable Connector   ÀÄ5ÄGÄGÄ12Ù
+       3 o o 4  ÄÄÄÄÄÄ¿ ³
+       5 o o 6  ÄÄÄÄ¿ ³ ³
+       7 o o 8  ÄÄ¿ ³ ³ ³
+       9 o o 10 ¿ ³ ³ ³ ³                               1=closed 0=open
+                ³ ³ ³ ³ ÀÄÄ Life-Test (Factory use)
+                ³ ³ ³ ÀÄÄÄÄ Master on (Slave off) ÄÄÄÄ  1  1  0
+                ³ ³ ÀÄÄÄÄÄÄ Slave Present ÄÄÄÄÄÄÄÄÄÄÄÄ  0  1  0
+                ³ ÀÄÄÄÄÄÄÄÄ Reserved
+
+
+                                   Page 85
+                ÀÄÄÄÄÄÄÄÄÄÄ Remote LED                  S  M  S
+                                                        i  a  l
+                                                        n  s  a
+                                                        g  t  v
+                                                        l  e  e
+                                                        e  r
+
+
+                                FIGURE SEAGATE-2
+     ÚÄÄÄ\
+     ³ O ³  5
+     ³ O ³  G                                          ÚÄ¿  Some have
+     ³ O ³  G       AT (IDE) Cable                     ³ ÃÄ these pins
+     ³ O ³ 12  1Ú........................¿   o o o o o(o o)  6 off
+     ÀÄÄÄ/       ........................    o o o o o(o o)  7 off
+    ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+                                             1 2 3 4 5 6 7
+         ON                 OFF              ³ ³ ³ ³ ³ ÀÂÙ
+    1   Slave              Master          ÄÄÙ ³ ³ ³ ³  ³
+    2   5 Heads            7/9 Heads       ÄÄÄÄÙ ³ ³ ³  ³
+    3   Slave installed    Slave not inst. ÄÄÄÄÄÄÙ ³ ³  ³
+    4   7 byte ECC         4 byte ECC      ÄÄÄÄÄÄÄÄÙ ³  ³
+    5   Factory test       Normal Oper.    ÄÄÄÄÄÄÄÄÄÄÙ  ³
+    6/7 Some PWA's have these pins, factory use  ÄÄÄÄÄÄÄÙ
+
+
+
+                                FIGURE SEAGATE-3
+                                        /ÄÄÄÄÄÄÄ\
+          6-pin jumper version          ³O O O O³
+                                        À5ÄGÄGÄ12
+         ÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍ
+          o o o ³::::::::::::::::::::1³
+          o o o ÔÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¾
+          ³ ³ ³
+          ³ 0 1  Single Drive            0=open
+          ³ 1 1  Dual-Drive Master       1=closed
+          ³ 1 0  Dual-Drive Slave
+          ³
+          ÀÄÄÄÄÄ Optional External LED
+
+
+
+                                            /ÄÄÄÄÄÄÄ\
+          10-pin jumper version             ³O O O O³
+                                            À5ÄGÄGÄ12
+         ÍÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍ
+          o o o o o ³::::::::::::::::::::1³
+          o o o o o ÔÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¾
+          ³ ³ ³ ³ ³
+          ³ ³ ³ ³ À LT (Life Test, factory use only)
+          ³ ³ 0 1   Single Drive            0=open
+          ³ ³ 1 1   Dual-Drive Master       1=closed
+          ³ ³ 0 0   Dual-Drive Slave
+          ³ ÀÄÄÄÄÄ  EWS (factory use only)
+
+
+                                   Page 86
+          ÀÄÄÄÄÄÄÄ  Active Busy (Optional External LED)
+
+
+                                FIGURE SEAGATE-4
+      ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿                          /ÄÄÄÄÄÄÄ\
+   ÍÍÍµ1::AT:(IDE):Cable:::ÆÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍµO O O OÆÍÍ
+      ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ          o o o o o o o   ÀÄÄÄÄÄÄÄÙ
+                                      o o o o o o o    5 G G 12
+                                      G F E D C B A
+A  B
+0  0  Factory use only
+0  1  Drive is Slave, motor start delay 20 sec from master start-up
+1  0  Drive is Slave, no motor start delay
+1  1  Drive is Master, motor starts at application of DC power
+C  D
+0  0  Physical mode
+0  1  Translate (logical) mode, sparing scheme is one sector
+1  0  Translate (logical) mode, no sparing space allocated
+1  1  Factory use only
+E
+0     Slave present, only meaningful on master
+1     No Slave present
+F  G
+x  x  Factory test, position G may or may not be present by PWA
+
+
+                                FIGURE SEAGATE-5
+                                    ÚÄÄMaster on /Slave off
+                                    ³             ÚÄÄÄÄÄÄÄÄÄ¿
+                                    ³Ú Leave as is³ O O O O ³ Power
+   1              J3                ³³ 1  J2      \ÄÄÄÄÄÄÄÄÄ/
+   :::AT:(IDE):Cable::::::::::::::: :: :::::::::   12 G G 5
+  ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+                 ³
+                 ³  ³ For "non-C" model, jumper, if present,
+                 ³  ³ must remain on. Drive will not operate
+                 ÀÄÄ´ properly if jumper is removed (or added
+                    ³ if not originally there).
+                    ³
+                    ³ For "C" model, jumper on indicates No
+                    ³ Slave Present; jumper off means Slave
+                    ³ Drive Is Present.
+                    ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Note: There are two different revisions of the ST280A
+        1. If you have a 94204-xxC, then you can connect two different
+         model drives on the same host adapter. (i.e. a 94204-xxC and
+         a 94354-xxx drive)
+
+        2. If you do not have a "C" after the model number, then you
+         can only connect two similar Wren 2 94204-xx model drives.
+
+
+                                FIGURE SEAGATE-6
+                                                   4-pin DC
+
+
+                                   Page 87
+                   3-pin DC                        Power
+                   Power   ÕÍÍÍÍÍÍÍÍÍÍ ÍÍÍÍÍÍÍÍÍ¸/Ä4Ä3Ä2Ä1Ä\
+                 ÍÑÍGÍ12Í5Ñµ::::::::::ù::::::::1Æ³ 0 0 0 0 ÆÍ
+                  ³ 0 0 0 ³ÔÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍ¾ÀÄ5ÄGÄGÄ12Ù
+                  ÔÍ3Í2Í1Í¾   (pin-20 missing
+                               for keying purposes)
+
+                User Configuration Block
+              ³ (located behind 3-pin DC)
+              ÀÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+                      ³                                  1= On, 0= Off
+(back of drive)    2 o-o 1  ÄÄÄ Life Test (do not use)
+                   4 o-o 3  ÄÄÄ Master on (Slave off)ÄÄÄ 1  1  0
+                   6 o-o 5  ÄÄÄ Slave Present ÄÄÄÄÄÄÄÄÄÄ 0  1  0
+                   8 o-o 7  ÄÄÄ Reserved
+(front of drive)  10 o-o 9  ÄÄÄ Active LED               S  M  S
+                                                         i  a  l
+                                                         n  s  a
+                                                         g  t  v
+                                                         l  e  e
+                                                         e  r
+
+
+
+                                FIGURE SEAGATE-7
+                                                   4-pin DC
+                 TOP                               Power
+                           ÕÍÍÍÍÍÍÍÍÍÍ ÍÍÍÍÍÍÍÍÍ¸/Ä4Ä3Ä2Ä1Ä\
+                    ÍÍÍÍÍÍÍµ::::::::::ù::::::::1Æ³ 0 0 0 0 ÆÍ
+                           ÔÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍ¾ÀÄ5ÄGÄGÄ12Ù
+                              (pin-20 missing
+                               for keying purposes)
+    (back of drive)
+                    2o-o1 ÄÄÄÄÄÄÄÄ¿
+                     o-o  ÄÄÄÄÄÄ¿ ³
+                     o-o  ÄÄÄÄ¿ ³ ³    (Options jumper located on bottom)
+                    8o-o7 ÄÄ¿ ³ ³ ³
+   (front of drive)         ³ ³ ³ ³
+                            ³ ³ ³ ÀÄÄ Master OFF, Slave ON ÄÄÄÄÄ  0  0  1
+                            ³ ³ ÀÄÄÄÄ Slave Present ON ÄÄÄÄÄÄÄÄÄ  0  1  0
+                            ³ ÀÄÄÄÄÄÄ Factory Test                ³  ³  ³
+                            ³          (do not use)               S  M  S
+                            ÀÄÄÄÄÄÄÄÄ Reserved                    i  a  l
+                                                                  n  s  a
+                                                                  g  t  v
+                                                                  l  e  e
+                                                                  e  r
+
+
+                                FIGURE SEAGATE-8
+Rear View
+
+       Mini Power      ÚÄ 40 pin AT Interface I/O connector
+        Connector      ³
+            ÚÄÁÄ¿      ³  (TOP)             DC power
+
+
+                                   Page 88
+      ³o o³ 5   G  ÕÍÍÍÍÍÍÍÍÍÍ ÍÍÍÍÍÍÍÍÍ¸ /Ä5ÄGÄGÄ12\
+     Íµo oÆµ0 0 0ÆÍµ::::::::::ú::::::::1ÆÍµ 0 0 0 0 ÆÍ     ...Ä¿
+       ³ ³    12   ÔÍÍÍÍÍÍÍÍÍÍ³ÍÍÍÍÍÍÍÍÍ¾ ÀÄÄÄÄÄÄÄÄÄÙ          ³
+       ³ ³         (BOTTOM)   À(pin 20 missing for    (Factory test jumper
+       ³ ³                      keying purposes)        block located at side)
+       ³ ³
+     OFF OFF  Drive is Master (single)
+     OFF ON   Drive is Master with Slave present (dual)
+     ON  OFF  Drive is Slave (dual)
+
+                          ÚÄÄÄÄÄÄÄÄ Spindle Clock to I/O pin-28
+Front View                ³ ÚÄÄÄÄÄÄ Ext. Spindle Clock Synch
+                          8 ³          (see note below)
+     (TOP)          o o o o-o o o+
+               ÍÍÍÍ o Í o o o o o-ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+     (BOTTOM)      1ÀÄÄÄÂÄÙ ³ ³ ³
+                        ³   ³ ³ ÀÄÄ Remote LED
+                        ³   ³ ÀÄÄÄÄ Reserved
+                        ³   ÀÄÄÄÄÄÄ Clock Ground for Ext. SPSYNC
+                        ³         Ú Reserved
+                        ÀÄÄÄÄÄÄÄÄÄ´ Reserved
+                                  ³ Reserved pin-3 removed for key
+                                  À Reserved
+
+ Spindle Sync note: Enable pin-28 (SPSYNC-) of the AT interface connector
+                    by installing a jumper on pins 8 and 10 of the options
+                    jumper block.
+                    Connect a twisted pair to pins 9 and 10 of the options
+                    jumper block to transmit and receive SPSYNC-.
+
+
+                                FIGURE SEAGATE-9
+                     J5 Drive ID Select and     ³    ³ J6 (located on side
+                     Configuration Select Header³    ³ near rear)
+                     ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÙ    ÀÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄ
+                                           ³                   o o o1
+                                           ³            +5v ---o o o
+ 40-pin I/O Cable Connector                ³                  ÍÍÍÍÍÍÍÍ
+   ÕÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¸             o o o o o1               1 2 3
+ J1³::::::::::ù::::::::1³ /ÄÄÄÄÄÄÄÄÄ\ o o o o o     Remote LEDÃÙ ³ À´Reserved
+  ÍÏÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÏÍ³ 0 0 0 0 ³ÍÍÍÍÍÍÍÍÍÍÍ    ConnectionÙ  ÀÄÄ´Jumper
+  (pin 20 missing for     ÀÄ5ÄGÄGÄ12Ù (see below)Ä¿                 ÀPosition
+   keying purposes)         DC Power     ÚÄÄÄÄÄÄÄÄÙ
+                                         ³
+                    ÚÄJ5ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄ¿
+                    ³        ÚÄ¿     ÚÄ¿ ÚÄ¿   1      ³
+                    ³        ³o³  o-C´oÃE´oÃG-o       ³
+                    ³        ³oÃB-o  ³o³ ³o³  o       ³
+                    ³        ÀAÙ     ÀDÙ ÀFÙ  H       ³
+                    ³   ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ    ³
+                    ÀÄÄDefaults shown in solid linesÄÄÙ
+
+J5 Jumper  Funtion Description (* indicates default)
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+A    B     (A=vertical, pins 9 & 10; B=horizontal, pins 8 & 10)
+
+
+                                   Page 89
+OFF  OFF   Drive is the slave (Drive 1).
+OFF  ON    Drive is the master (Drive 0) with slave (Drive 1) present.
+ON*  OFF   Drive s the master (Drive 0).
+
+C          (C=horizontal, pins 5 & 7)
+ON         Slave (Drive 1) Present is connected to J1 pin 39. Jumpers
+           "D" or "E" cannot be installed if jumper "C" is installed.
+
+D          (D=vertical, pins 5 & 6)
+ON*        DASP- is connected to J1 pin 39. Jumpers "C", "D", "F", or
+           "G" cannot be installed if jumper "E" is installed.
+
+OFF        REFSIG is not connected to J1 pin 39.
+
+E          (E=horizontal, pins 3 & 5)
+ON         REFSIG is connected to J1 pin 39. Jumpers "C", "D", "F",
+           or "G" cannot be installed if jumper "E" is installed.
+
+OFF        REFSIG is not connected to J1 pin 39.
+
+F          (F=vertical, pins 3 & 4)
+ON*        No external reference for REFSIG. Jumpers "E", "G", or "H"
+           cannot be installed if jumper "F" is installed.
+
+OFF        This location provides a port for external connection of
+           the synchronized spindle reference signal (pin 3) and
+           ground (pin 4).
+
+G          (G=horizontal, pins 1 & 3)
+ON         REFSIG is connected to J1 pin 28. Jumpers "E" or "F" cannot
+           be installed if jumper "G" is installed.
+
+OFF        REFSIG is not connected to J1 pin 28.
+
+H          (H=vertical, pins 1 & 2)
+ON         Drive implements "CSEL" (Cable Select line in I/O connector)
+           feature.  Implementation not defined yet.  Jumpers A and B
+           not used if jumper H is on.  (This jumper is mutually
+           exclusive with jumper "G").
+
+OFF*       Drive select is based on use of jumper A or B.
+
+J6 Jumper  Funtion Description (2x3 jumper block)
+-------------------------------------------------
+     1     Remote LED connection. Pin 6 is connected to +5v through a
+           147 ohm resistor. Pin 5 is the LED driver.
+
+     2     Reserved jumper position.
+
+     3     Reserved jumper position.
+
+
+                                FIGURE SEAGATE-10
+  ÉÍÍÍÍÍÍÍÍÍÍÍ»
+  º REAR VIEW º
+
+
+                                   Page 90
+  ÈÍÍÍÍÍÍÍÍÍÍÍ¼
+         40 pin I/O Cable Connection
+         ³
+    J1     ÕÍÍÍÍÍÍÍÍÍ  ÍÍÍÍÍÍÍÍÍ¸ /ÄÄÄÄÄÄÄÄÄ\    TOP (HDA)
+     ÍÍÍÍÍÍµ::::::::::ú::::::::1ÆÍ³ 0 0 0 0 ³ÍÍ
+           ÔÍÍÍÍÍÍÍÍÍÍ³ÍÍÍÍÍÍÍÍÍ¾ ÀÄ5ÄGÄGÄ12Ù    BOTTOM
+                      ³
+                      ÀÄÄÄ pin-20 removed
+ ÉÍÍÍÍÍÍÍÍÍÍÍÍÍÍ»
+ º  Front View  º
+ ÈÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼
+                 ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Slave drive (off for Master)
+                 ³ ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Slave Present (used on Master)
+                 ³ ³ ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Cable Select
+                 ³ ³ ³ ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Ext. Spindle Clock Synch
+  (TOP)          ³ ³ ³ ³ ÚÄÄÄÄÄÄÄÄÄÄÄÄ Remote LED
+                 ³ ³ ³ ³ ³ ÚÄÄÄÄÄÄÄÄÄÄ Reserved
+                 ³ ³ ³ ³ ³ ³   ÚÄpin-16          Ú34
+  J8             o o o o o o   o o o o o o o o o o
+Option Block   Í1o o o o o o o o o o o o o o o o oÍÍÍÍÍÍÍPWAÍÍÍÍÍÍÍÍÍÍ
+                             ³ ÀÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+  (BOTTOM)                   ³    ³
+            pin-14 removed ÄÄÙ    ³
+                  Reserved ÄÄÄÄÄÄÄÙ
+
+          Jumpers on 15-16, 21-22, 23-24 are spares.
+          Cable Select also requires Slave and Slave Present jumpers ON.
+
+
+                                FIGURE SEAGATE-11
+                                      ÚÄ 44-pin I/O Connector (* see below)
+                                      ³                     o o
+                                    ::::::::::::ù::::::::1  o o
+                               ÍPÍWÍAÍÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+                                                ³           ³ ³
+       pin-20 removed for keying ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ           ³ ³
+                                                            ³ ³
+                                                            ³ ³
+ Drive is Master, no Slave drive present ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ 0 0
+ Drive is Master, Seagate Slave drive present ÄÄÄÄÄÄÄÄÄÄÄÄÄ 1 0
+ Drive is Slave to another ST9xxxA/ST9xxxA Master ÄÄÄÄÄÄÄÄÄ 0 1
+ Reserved Position (Do Not Use) ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ 1 1
+
+ * Drive uses +5vdc power supplied to the drive
+   via the interface connector. The drive does
+   NOT make use of a +12vdc power line.
+   pin-41  +5vdc (Logic)
+   pin-42  +5vdc (Motor)
+   pin-43  Ground
+   pin-44  Reserved
+
+
+                                FIGURE SEAGATE-12
+     ÍÍÍPWAÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+                          Ú....................¿    /ÄÄÄÄÄÄÄÄÄ\
+
+
+                                   Page 91
+                           ...................1     ³ O O O O ³
+       1 o o 2  ÄÄÄÄÄÄÄÄ¿       À Cable Connector   ÀÄ5ÄGÄGÄ12Ù
+       3 o o 4  ÄÄÄÄÄÄ¿ ³
+       5 o o 6  ÄÄÄÄ¿ ³ ³
+       7 o o 8  ÄÄ¿ ³ ³ ³
+       9 o o 10 ¿ ³ ³ ³ ³
+                ³ ³ ³ ³ ÀÄÄ Life-Test (Factory use)
+                ³ ³ ³ ÀÄÄÄÄ Master *
+                ³ ³ ÀÄÄÄÄÄÄ Slave Present (on Master only) *
+                ³ ÀÄÄÄÄÄÄÄÄ Reserved
+                ÀÄÄÄÄÄÄÄÄÄÄ Remote LED
+                            * No jumpers if unit is Slave
+
+
+                                FIGURE SEAGATE-13
+  ÉÍÍÍÍÍÍÍÍÍÍÍ»
+  º REAR VIEW º
+  ÈÍÍÍÍÍÍÍÍÍÍÍ¼
+
+                40 pin I/O Cable Connection J1
+     2o o       ³
+     1o o  ÕÍÍÍÍÍÍÍÍÍ  ÍÍÍÍÍÍÍÍÍ¸ /ÄÄÄÄÄÄÄÄÄ\    TOP (HDA)
+     ÍØÍØÍÍµ::::::::::ú::::::::1ÆÍ³ 0 0 0 0 ³ÍÍ
+      ³ ³  ÔÍÍÍÍÍÍÍÍÍÍ³ÍÍÍÍÍÍÍÍÍ¾ ÀÄ5ÄGÄGÄ12Ù    BOTTOM
+      ³ ³             ³
+      ³ ³             ÀÄÄÄ pin-20 removed
+      ³ ³
+    OFF OFF -- One drive only
+     ON OFF -- Drive is slave
+    OFF ON  -- Drive is Master with slave present
+     ON ON  -- Cable Select (must also jumper pins 6 and 8 on J8)
+    SPARE   -- stored on pins 1-3
+
+
+ ÉÍÍÍÍÍÍÍÍÍÍÍÍÍÍ»
+ º  Front View  º
+ ÈÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼
+                        ÚÄÄÄÄÄÄÄÄÄÄÄÄÄ Spare - as shipped
+                        ³    ÚÄÄÄÄÄÄÄÄ Cable Select pins 6-8
+  (TOP)                 ³    ³   ÚÄÄÄÄ Reserved
+                        ³    ³   ³  ÚÄ Remote LED 13-, 14+
+                        ³    ³  ÚÁ¿ ³
+  J8                    o o oÁo o o o14
+Option Block   ÍÍÍÍÍÍÍÍ1o   o o o o o ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍPWAÍÍÍÍÍÍÍÍÍÍ
+                          ³
+  (BOTTOM)                ÀÄÄ pin 3 missing
+
+          Cable Select also requires Slave and Slave Present jumpers ON.
+
+
+  ÉÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ»
+  º RIGHT SIDE VIEW º
+  ÈÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼
+
+              ÚÄÄÄ J6 Dual Drive emulation pins 1-2 AND pins 3-4
+
+
+                                   Page 92
+              ³       (spare jumper stored on pins 1-3, as shipped)
+            2o o
+BACK   ÕÍ¸  1o o                                 TOP (HDA)  FRONT
+ OF      ÆÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍPÍWÍAÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ OF
+DRIVE  ÔÍ¾                                       BOTTOM     DRIVE
+
+Note: If the Dual Drive Emulation jumper is used, then TWO CMOS drive
+      types will be required and only ONE drive per cable is allowed.
+
+
+                                FIGURE SEAGATE-14
+  ÉÍÍÍÍÍÍÍÍÍÍÍ»
+  º REAR VIEW º
+  ÈÍÍÍÍÍÍÍÍÍÍÍ¼
+
+         40 pin I/O Cable Connection
+         ³
+    J1     ÕÍÍÍÍÍÍÍÍÍ  ÍÍÍÍÍÍÍÍÍ¸ /ÄÄÄÄÄÄÄÄÄ\    TOP (HDA)
+     ÍÍÍÍÍÍµ::::::::::ú::::::::1ÆÍ³ 0 0 0 0 ³ÍÍ
+           ÔÍÍÍÍÍÍÍÍÍÍ³ÍÍÍÍÍÍÍÍÍ¾ ÀÄ5ÄGÄGÄ12Ù    BOTTOM
+                      ³
+                   ÀÄÄÄ pin-20 removed
+
+ ÉÍÍÍÍÍÍÍÍÍÍÍÍÍÍ»
+ º  Front View  º
+ ÈÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼
+                 ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Slave drive ON (OFF for Master)
+                 ³ ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Slave Present (used on Master)
+                 ³ ³ ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Cable Select
+                 ³ ³ ³ ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Ext. Spindle Clock Synch
+  (TOP)          ³ ³ ³ ³ ÚÄÄÄÄÄÄÄÄÄÄÄÄ Remote LED (9-, 10+)
+                 ³ ³ ³ ³ ³ ÚÄÄÄÄÄÄÄÄÄÄ Reserved
+                 ³ ³ ³ ³ ³ ³   ÚÄpin-16          Ú34
+  J8             o o o o o o   o o o o o o o o o o
+Option Block   Í1o o o o o o o o o o o o o o o o oÍÍÍÍÍÍÍPWAÍÍÍÍÍÍÍÍÍÍ
+                             ³ ³ ÀÂÙ ÀÂÙ ÀÄÄÂÄÄÄÄÙ
+  (BOTTOM)                   ³ ³  ³   ³     ³
+            pin-14 removed ÄÄÙ ³  ³   ³     ÀÄÄÄÄ Reserved
+              Spare Jumper ÄÄÄÄÙ  ³   ÀÄÄÄÄÄÄÄÄÄÄ Spare Jumpers
+      Dual-Drive Emulation ÄÄÄÄÄÄÄÙ
+      (requires two jumpers)
+
+          Jumpers on 15-16, 21-22, 23-24 are spares.
+          Dual-Drive Emulation requires jumpers on both 17-18 and 19-20.
+          Cable Select also requires Slave and Slave Present jumpers ON.
+
+
+                               TOSHIBA IDE DRIVES
+                                  ABOUT TOSHIBA
+Toshiba (USA)
+
+        Technical Support: (714)455-0407
+
+
+                         MK 1522FCV  126MB CHS=812X8X38
+
+
+                                   Page 93
+See Figure TOSHIBA-1 for jumper setting information.
+
+
+                         MK 1722FCV  131MB CHS=842X8X38
+See Figure TOSHIBA-1 for jumper setting information.
+
+
+                         MK 1624FCV  213MB CHS=684X16X38
+See Figure TOSHIBA-1 for jumper setting information.
+
+
+                         MK 1724FCV  262MB CHS=842X16X38
+See Figure TOSHIBA-1 for jumper setting information.
+
+
+                         MK 1824FCV  353MB CHS=682X16X63
+See Figure TOSHIBA-1 for jumper setting information.
+
+
+                         MK 2326FCH  340MB CHS=969X14X49
+See Figure TOSHIBA-1 for jumper setting information.
+
+
+                        MK 2428FC   524MB CHS=1016X16X63
+See Figure TOSHIBA-1 for jumper setting information.
+
+
+                        MK 2526FC   528MB CHS=1023X16X63
+See Figure TOSHIBA-1 for jumper setting information.
+
+
+                        MK 2528FC   704MB CHS=1365X16X63
+See Figure TOSHIBA-1 for jumper setting information.
+
+
+                               <<< TOSHIBA FIGURES
+The following are drive jumpering figures for Toshiba drives.
+
+
+                                FIGURE TOSHIBA-1
+               44-pin I/O Connector __             J2 J1
+                                      ³                     o o
+                                    ::::::::::::ù::::::::1  o o
+                                  ÍÍÍÍÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+                                                ³           ³ ³
+       pin-20 removed for keying ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ           ³ ³
+                                                            ³ ³
+                                                            ³ ³
+ Drive is Master, no Slave drive present ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ 0 0
+ Drive is Slave,  Master drive present   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ 1 0
+ Reserved Position (Do Not Use) ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ 0 1
+
+
+                           WESTERN DIGITAL IDE DRIVES
+                              ABOUT WESTERN DIGITAL
+
+
+                                   Page 94
+
+Western Digital Corporation (USA)
+
+        Telephone:         (714)932-4900
+        Technical Support: (800)832-4778
+        BBS:               (714)753-1234
+
+        8105 Irvine Center Drive
+        Irvine, California 92718
+
+
+Western Digital (UK) Ltd
+
+        Telephone: +44-1-372-360389
+        FAX:       +44-1-372-360391
+
+        Fairmount House
+        Leatherhead
+        Surrey
+        Kent
+        United Kingdom
+
+
+                          DETAILED JUMPER INSTALLATION
+                             INSTALLATION GUIDE
+ The Caviar drive has a jumper block (J8) located next to the 40-pin
+connector on the drive.  These jumpers define information about the hard
+drive.  The Caviar drive is initially set for single drive installation.
+If you are installing the Caviar drive as the only intelligent drive in
+your system, you do not need to install the jumpers.  This is considered a
+standard installation, and no jumpers are required.
+
+If you need to change this configuration, contact your distributor for
+jumper shunts, small plastic brackets that fit over two jumper pins.
+Using jumper shunts you can designate which drive in a dual installation
+is the primary (master) drive, and which drive is the secondary (slave)
+drive.
+
+o   If you have a dual installation (two intelligent drives) you must
+    designate one of the drives as the master and the other as the slave
+    drive.  The jumper pins on jumper J8 need to be configured for the
+    dual installation.
+
+    -    To designate the intelligent drive as the master, place a jumper
+         shunt on pins 5-6.
+
+    -    To designate the intelligent drive as the slave, place a jumper
+         shunt on pins 3-4.
+
+o   If your system is a PC/AT compatible computer not manufactured by IBM,
+    and it contains a Conner CP342 or CP3022 drive, you can install the
+    Caviar drive as a second drive.  In this configuration, the Conner
+    drive must be configured as the master, and the Caviar as the slave.
+
+    To designate the Caviar drive as the slave to the Conner drive, place
+
+
+                                   Page 95
+    jumper shunts on pins 1-2 and 3-4.  Refer to the Conner manual to
+    configure the Conner drive as the master.
+
+o   If your system is an IBM PC/AT with a Conner CP342 or CP3022 drive,
+    you cannot install the Caviar drive as a second drive.
+
+To install a jumper shunt on the J8 jumper pins:
+
+    1.   Refer to the previous descriptions and Figure 1 to determine your
+         configuration.
+
+    2.   Using one of the jumper shunts, place the shunt over the two pins
+         specified in Figure 1.
+
+    3.   Push the shunt into place until it is flush against the base of
+         the jumper block.
+
+                      J8
+   5 3 1                                5 3 1
+   o o o    Single                      o Ş o    Dual
+   o o o    (Standard Installation)     o Ş o    (Slave)
+   6 4 2                                6 4 2
+
+   5 3 1                                5 3 1
+   Ş o o    Dual                        o Ş Ş    Dual (Slave)
+   Ş o o    (Master)                    o Ş Ş    with Conner CP342 or CP3022
+   6 4 2                                6 4 2
+
+               ÚÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+               ³     ³ Ş JUMPER ADDED ³
+               ³ KEY ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+               ³     ³ o JUMPER       ³
+               ³     ³ o PINS         ³
+               ÀÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+                                  Figure 1
+
+
+                         WD93024-A    21MB CHS=782X2X27
+See Figure WDC-1 for jumper setting information.
+
+
+                         WD93028-A    21MB CHS=782X2X27
+See Figure WDC-1 for jumper setting information.
+
+
+                         WD93044-A    43MB CHS=782X4X27
+See Figure WDC-1 for jumper setting information.
+
+
+                         WD93048-A    43MB CHS=782X4X27
+See Figure WDC-1 for jumper setting information.
+
+
+                         WD95024-A    21MB CHS=782X2X27
+
+
+                                   Page 96
+See Figure WDC-1 for jumper setting information.
+
+
+                         WD95028-A    21MB CHS=782X2X27
+See Figure WDC-1 for jumper setting information.
+
+
+                         WD95044-A    43MB CHS=782X4X27
+See Figure WDC-1 for jumper setting information.
+
+
+                         WD95048-A    43MB CHS=782X4X27
+See Figure WDC-1 for jumper setting information.
+
+
+                         WDAC140      42MB CHS=980X5X17
+See Figure WDC-1 for jumper setting information.
+
+
+                         WDAC160      62MB CHS=1024X7X17
+See Figure WDC-1 for jumper setting information.
+
+
+                         WDAC260      62MB CHS=1024X7X17
+See Figure WDC-1 for jumper setting information.
+
+
+                         WDAC280      85MB CHS=980X10X17
+See Figure WDC-1 for jumper setting information.
+
+
+                         WDAC1170    170MB CHS=1010X6X55
+See Figure WDC-1 for jumper setting information.
+
+
+                         WDAC1210    212MB CHS=989X12X35
+See Figure WDC-1 for jumper setting information.
+
+
+                         WDAC1270    270MB CHS=917X12X48
+See Figure WDC-1 for jumper setting information.
+
+
+                         WDAC1365    365MB CHS=708X16X63
+See Figure WDC-1 for jumper setting information.
+
+
+                         WDAC1425    425MB CHS=827X16X63
+See Figure WDC-1 for jumper setting information.
+
+
+                        WDAC1540    540MB CHS=1048X16X63
+See Figure WDC-1 for jumper setting information.
+
+
+
+
+                                   Page 97
+                         WDAC2120    125MB CHS=872X8X35
+See Figure WDC-1 for jumper setting information.
+
+
+                         WDAC2170    170MB CHS=1010X6X55
+See Figure WDC-1 for jumper setting information.
+
+
+                         WDAC2200    212MB CHS=989X12X35
+See Figure WDC-1 for jumper setting information.
+
+
+                         WDAC2250    250MB CHS=1010X9X55
+See Figure WDC-1 for jumper setting information.
+
+
+                        WDAC2340    340MB CHS=1010X12X55
+See Figure WDC-1 for jumper setting information.
+
+
+                         WDAC2420    420MB CHS=989X15X56
+See Figure WDC-1 for jumper setting information.
+
+
+                        WDAC2540    540MB CHS=1048X16X63
+See Figure WDC-1 for jumper setting information.
+
+
+                        WDAC2700    730MB CHS=1416X16X63
+See Figure WDC-1 for jumper setting information.
+
+
+                        WDAC2850    850MB CHS=1654X16X63
+See Figure WDC-1 for jumper setting information.
+
+
+                        WDAC21000   1.0GB CHS=2100X16X63
+See Figure WDC-1 for jumper setting information.
+
+
+                        WDAC31000   1.0GB CHS=2100X16X63
+See Figure WDC-1 for jumper setting information.
+
+
+                        WDAC31200   1.2GB CHS=2484X16X63
+See Figure WDC-1 for jumper setting information.
+
+
+                        WDAC31600   1.6GB CHS=3148X16X63
+See Figure WDC-1 for jumper setting information.
+
+
+                         WDAH260      62MB CHS=1024X7X17
+See Figure WDC-1 for jumper setting information.
+
+
+
+                                   Page 98
+
+                         WDAH280      85MB CHS=980X10X17
+See Figure WDC-1 for jumper setting information.
+
+
+                        WDAL2120    130MB CHS=1001X15X17
+See Figure WDC-1 for jumper setting information.
+
+
+                         WDAL2170    170MB CHS=980X10X34
+See Figure WDC-1 for jumper setting information.
+
+
+                         WDAL2200    200MB CHS=958X12X34
+See Figure WDC-1 for jumper setting information.
+
+
+                         WDAP4200    200MB CHS=987X12X35
+See Figure WDC-1 for jumper setting information.
+
+
+                           <<< WESTERN DIGITAL FIGURES
+The following are drive jumpering figures for Western Digital drives.
+
+
+                                  FIGURE WDC-1
+                      J8
+   5 3 1                                5 3 1
+   o o o    Single                      o Ş o    Dual
+   o o o    (Standard Installation)     o Ş o    (Slave)
+   6 4 2                                6 4 2
+
+   5 3 1                                5 3 1
+   Ş o o    Dual                        o Ş Ş    Dual (Slave)
+   Ş o o    (Master)                    o Ş Ş    with Conner CP342 or CP3022
+   6 4 2                                6 4 2
+
+               ÚÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+               ³     ³ Ş JUMPER ADDED ³
+               ³ KEY ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+               ³     ³ o JUMPER       ³
+               ³     ³ o PINS         ³
+               ÀÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+                                  Figure 1
+
+

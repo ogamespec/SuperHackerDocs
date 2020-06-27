@@ -1,0 +1,60 @@
+                  Scream Tracker file header.
+ษอออออออัออออออออัอออออออออออออออออออออออออออ
+บ # OF  ณ  FILE  ณ DESCRIPTION
+บ BYTES ณ OFFSET ณ
+วฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤ
+บ  20   ณ   00h  ณ Song or module name.
+บ   8   ณ   14h  ณ ST Header (Originally "!Scream!",but can be changed).
+บ   1   ณ   1Ch  ณ ESC (1Bh), End of header text part.
+บ   1   ณ   1Dh  ณ Toggles between song (01h) and module (02h).
+บ   2   ณ   1Eh  ณ Version # (For any reason, leave alone!).
+บ   1   ณ   20h  ณ Global tempo, Max 64.
+บ   1   ณ   21h  ณ Number of patterns to read, Max 64.
+บ   1   ณ   22h  ณ Global volume, Max 64.
+บ  13   ณ   23h  ณ Unused (Originally 65, but can be changed).
+ศอออออออฯออออออออฯออออออออออออออออออออออออออออออออออออออออออออ
+
+   The following part will be 31 times in file, because maximum
+number of  dif-
+ferent samples is 31. No  harm when different  samples use the
+same data area.
+
+ษอออออออัออออออออัอออออออออออออออออออออออออออออออออ
+บ # OF  ณ  FILE  ณ DESCRIPTION
+บ BYTES ณ OFFSET ณ
+วฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤลฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤ
+บ  12   ณ   30h  ณ Sample name (8+3 if song, 12 random symbols, if module).
+บ   1   ณ   3Ch  ณ Unused
+บ   1   ณ   3dh  ณ # Of instrument disk, where sample is loaded (song).
+บ   2   ณ   3Eh  ณ Sample beginning offset (Must be multiplied with 10h).
+บ   2   ณ   40h  ณ Sample real length.
+บ   2   ณ   20h  ณ LpBegin. (Refer ST Docs).
+บ   2   ณ   21h  ณ LpEnd. (Refer ST Docs).
+บ   1   ณ   22h  ณ Sample volume, Max 64.
+บ   1   ณ   23h  ณ Unused.
+บ   2   ณ   23h  ณ Sampling rate, usually 8750.
+บ   6   ณ   23h  ณ Unused.
+ศอออออออฯออออออออฯออออออออออออออออออออออออออออ
+
+   After sample directory there will be 128 bytes, reserved for
+pattern order.
+For futher  information, refer  ST docs. Pattern order  begins from
+offset 410h
+and ends at offset 48Fh.
+
+   After pattern order,  there will be  room for  64 patterns, 4x64
+notes each.
+Each note is coded  in 4 bytes. The  following part of this file
+is example of
+notes encoding on bit-to-bit level.
+
+
+ณXXXXXXXXณ ณXXXXXณณXXX  XXXXณณXXXXณ ณXXXXXXXXณ
+ภฤฤฤยฤฤฤฤู ภฤฤยฤฤูภฤฤฤยฤฤฤฤฤูภฤยฤฤู ภฤฤฤยฤฤฤฤู
+    ณ Note.   ณSample.ณ Volume.ณ        ณ Info byte.
+    ภฤฤฤฤฤฤ   ภฤฤฤฤฤฤ ภฤฤฤฤฤฤ  ณ        ภฤฤฤฤฤฤฤฤฤฤฤ
+                               ณ Command byte.
+                               ภฤฤฤฤฤฤฤฤฤฤฤฤฤฤ
+
+
+

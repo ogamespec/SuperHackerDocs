@@ -1,0 +1,389 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1251">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 9">
+<meta name=Originator content="Microsoft Word 9">
+<link rel=File-List href="./Глава%205%20RARP.files/filelist.xml">
+<title>Глава 5 RARP: обратный протокол определения адреса</title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>Misha</o:Author>
+  <o:LastAuthor>Misha</o:LastAuthor>
+  <o:Revision>1</o:Revision>
+  <o:TotalTime>1</o:TotalTime>
+  <o:Created>2001-04-30T08:02:00Z</o:Created>
+  <o:LastSaved>2001-04-30T08:03:00Z</o:LastSaved>
+  <o:Pages>4</o:Pages>
+  <o:Words>1561</o:Words>
+  <o:Characters>8902</o:Characters>
+  <o:Company>MGAI (TU)</o:Company>
+  <o:Lines>74</o:Lines>
+  <o:Paragraphs>17</o:Paragraphs>
+  <o:CharactersWithSpaces>10932</o:CharactersWithSpaces>
+  <o:Version>9.4402</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:DisplayHorizontalDrawingGridEvery>0</w:DisplayHorizontalDrawingGridEvery>
+  <w:DisplayVerticalDrawingGridEvery>0</w:DisplayVerticalDrawingGridEvery>
+  <w:UseMarginsForDrawingGridOrigin/>
+  <w:Compatibility>
+   <w:FootnoteLayoutLikeWW8/>
+   <w:ShapeLayoutLikeWW8/>
+   <w:AlignTablesRowByRow/>
+   <w:ForgetLastTabAlignment/>
+   <w:LayoutRawTableWidth/>
+   <w:LayoutTableRowsApart/>
+  </w:Compatibility>
+ </w:WordDocument>
+</xml><![endif]-->
+<style>
+<!--
+ /* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;
+	text-underline:single;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;
+	text-underline:single;}
+p
+	{margin-right:0cm;
+	mso-margin-top-alt:auto;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:72.0pt 90.0pt 72.0pt 90.0pt;
+	mso-header-margin:36.0pt;
+	mso-footer-margin:36.0pt;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+ /* List Definitions */
+@list l0
+	{mso-list-id:1220020706;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-1568925988 1691895392 1035632714 1057370656 2008334562 539407818 -1278692096 1043734196 1379449902 -1151035644;}
+ol
+	{margin-bottom:0cm;}
+ul
+	{margin-bottom:0cm;}
+-->
+</style>
+</head>
+
+<body lang=RU link=blue vlink=purple style='tab-interval:36.0pt'>
+
+<div class=Section1>
+
+<p><span style='font-size:13.5pt;font-family:Arial'>Глава 5 RARP: обратный
+протокол определения адреса<o:p></o:p></span></p>
+
+<p><b><u><span style='font-family:Arial'>Введение<o:p></o:p></span></u></b></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Когда загружается система с
+локальным диском, она обычно получает свой IP адрес из конфигурационного файла,
+который считывается с диска. Однако для систем, не имеющих диска, таких как X
+терминалы или бездисковые рабочие станции, требуются другой способ определения
+собственного IP адреса. </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Каждая система в сети имеет
+уникальный аппаратный адрес, который назначается производителем сетевого
+интерфейса (сетевой платы). Принцип работы RARP заключается в том, что
+бездисковая система может считать свой уникальный аппаратный адрес с
+интерфейсной платы и послать RARP запрос (широковещательный фрейм в сеть), где
+потребует кого-нибудь откликнуться и сообщить IP адрес (с помощью RARP
+отклика). </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Несмотря на то что
+концепция довольно проста, ее реализация как правило значительно сложнее чем
+ARP, который был описан в <a href="http://www.xspider.net.ru/tcpip/tcp04.html"
+tppabs="http://www.te.ru/CD1/tcp_ip/tcp04.html">предыдущей</a> главе.
+Официальная спецификация RARP находится в RFC 903 [Finlayson et al. 1984].</span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><b><u><span style='font-family:Arial'>Формат пакета RARP<o:p></o:p></span></u></b></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Формат пакета RARP
+практически идентичен пакету ARP (см. рисунок 4.3). Единственное отличие
+заключается в том, что поле тип фрейма (frame type) для запроса или отклика
+RARP установлено в 0x8035, а поле op имеет значение 3 для RARP запроса и
+значение 4 для RARP отклика. </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>RARP запрос является
+широковещательным, а RARP отклик обычно персональный.</span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><b><u><span style='font-family:Arial'>Примеры RARP<o:p></o:p></span></u></b></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>В нашей сети мы можем
+заставить хост sun загружаться из сети, вместо того чтобы загружаться с
+локального диска. Если мы запустили RARP сервер и tcpdump на хосте bsdi, то
+получим вывод, показанный на рисунке 5.1. Мы используем флаг -e, чтобы команда
+tcpdump показывала аппаратные адреса: </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:"Courier New"'>1&nbsp; 0.0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8:0:20:3:f6:42 ff:ff:ff:ff:ff:ff rarp 60: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+rarp who-is 8:0:20:3:f6:42 tell 8:0:20:3:f6:42<br>
+2&nbsp; 0.13 (0.13)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0:0:c0:6f:2d:40
+8:0:20:3:f6:42 rarp 42: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+rarp reply 8:0:20:3:f6:42 at sun<br>
+3&nbsp; 0.14 (0.01)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8:0:20:3:f6:42
+0:0:c0:6f:2d:40 ip 65: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+sun.26999&gt;bsdi.tftp: 23 RRQ &quot;8CFC0D21.SUN4C&quot;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Рисунок 5.1 Запрос и отклик
+RARP.</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Запрос RARP
+широковещательный (строка 1), а отклик RARP (строка 2) персональный. Вывод в
+строке 2, at sun, означает, что RARP отклик содержит IP адрес хоста sun
+(140.252.13.33). </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>В строке 3 мы видим, что
+как только sun получил свой IP адрес, он выдал TFTP запрос на чтение (RRQ)
+файла 8CFC0D21.SUN4C. (TFTP это простой протокол передачи файлов - Trivial File
+Transfer Protocol. Мы рассмотрим его более подробно в <a
+href="http://www.xspider.net.ru/tcpip/tcp15.html"
+tppabs="http://www.te.ru/CD1/tcp_ip/tcp15.html">главе 15</a>.) Восемь
+шестнадцатиричных цифр в имени файла это шестнадцатиричное представление IP
+адреса 140.252.13.33 хоста sun. Это IP адрес, который мы получили в отклике
+RARP. Оставшаяся часть имени файла, SUN4C, указывает на тип системы, которая
+загружается. </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>В строке 3 tcpdump
+сообщает, что это IP датаграмма длиной 65, а не UDP датаграмма (которая в
+действительности является ей), так как мы запустили tcpdump с флаго -e, чтобы
+получить в выводе аппаратные адреса. Еще один момент на, который необходимо
+обратить внимание на рисунке 5.1, заключается в том, что длина Ethernet фрейма
+в строке 2 меньше чем установленный минимум (который, как мы упоминали в
+разделе <a href="http://www.xspider.net.ru/tcpip/tcp04.html#t045000"
+tppabs="http://www.te.ru/CD1/tcp_ip/tcp04.html#t045000">&quot;Примеры ARP&quot;</a>
+главы 4, должен быть равен 60 байтам). Причина этого заключается в том, что мы
+запустили tcpdump на системе, которая посылает этот Ethernet фрейм (bsdi).
+Приложение, rarpd, пишет 42 байта в устройство пакетного фильтра BSD (BSD
+Packet Filter) (14 байт - Ethernet заголовок и 28 байт - отклик RARP), именно
+это и видит tcpdump. Однако драйвер устройства Ethernet дополняет этот короткий
+фрейм до минимального размера, необходимого для передачи (60 байт). Если бы мы запустили
+tcpdump на другом компьютере, длина составила бы 60 байт. </span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Также мы видим, что когда
+бездисковая система получает свой IP адрес в отклике RARP, она осуществляет
+TFTP запрос, чтобы прочитать загрузочный имидж. Сейчас мы не будем подробно
+рассматривать, как загружаются бездисковые системы. (В <a
+href="http://www.xspider.net.ru/tcpip/tcp16.html"
+tppabs="http://www.te.ru/CD1/tcp_ip/tcp16.html">главе 16</a> описывается
+последовательность загрузки бездисковых X терминалов с использованием RARP,
+BOOTP и TFTP.) </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>На рисунке 5.2 показаны
+пакеты, которые появляются в том случае, если в сети нет RARP сервера. Адрес
+назначения каждого пакета - широковещательный адрес Ethernet. Адрес Ethernet,
+следующий за who-is, это аппаратный адрес хоста которому требуется информация,
+а адрес Ethernet, следующий за tell, это аппаратный адрес отправителя. </span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Обратите внимание на
+частоту повторных передач. Первая повторная передача происходит через 6,55
+секунд, затем интервал увеличивается до 42,80 секунд, затем через 5,34 секунды,
+затем через 6,55 секунд и снова через 42,79 секунды. Если мы рассчитаем разницу
+между каждым тайм-аутом, мы заметим эффект удвоения: между 5,34 и 6,55 - 1,21
+секунды, между 6,55 и 8,97 - 2,42 секунды, между 8,97 и 13,80 - 4,83 секунды и
+так далее.</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:"Courier New"'>1&nbsp;&nbsp;&nbsp;
+0.0 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+8:0:20:3:f6:42 ff:ff:ff:ff:ff:ff rarp 60: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+rarp who-is 8:0:20:3:f6:42 tell 8:0:20:3:f6:42<br>
+2&nbsp;&nbsp;&nbsp; 6.55 ( 6.55)&nbsp;&nbsp;&nbsp; 8:0:20:3:f6:42
+ff:ff:ff:ff:ff:ff rarp 60: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+rarp who-is 8:0:20:3:f6:42 tell 8:0:20:3:f6:42<br>
+3&nbsp;&nbsp; 15.52 ( 8.97)&nbsp;&nbsp;&nbsp; 8:0:20:3:f6:42 ff:ff:ff:ff:ff:ff
+rarp 60: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+rarp who-is 8:0:20:3:f6:42 tell 8:0:20:3:f6:42<br>
+4&nbsp;&nbsp; 29.32 (13.80)&nbsp;&nbsp;&nbsp; 8:0:20:3:f6:42 ff:ff:ff:ff:ff:ff
+rarp 60: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+rarp who-is 8:0:20:3:f6:42 tell 8:0:20:3:f6:42<br>
+5&nbsp;&nbsp; 52.78 (23.46)&nbsp;&nbsp;&nbsp; 8:0:20:3:f6:42 ff:ff:ff:ff:ff:ff
+rarp 60: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+rarp who-is 8:0:20:3:f6:42 tell 8:0:20:3:f6:42<br>
+6&nbsp;&nbsp; 95.58 (42.80)&nbsp;&nbsp;&nbsp; 8:0:20:3:f6:42 ff:ff:ff:ff:ff:ff
+rarp 60: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+rarp who-is 8:0:20:3:f6:42 tell 8:0:20:3:f6:42<br>
+7&nbsp; 100.92 ( 5.34)&nbsp;&nbsp;&nbsp; 8:0:20:3:f6:42 ff:ff:ff:ff:ff:ff rarp
+60: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+rarp who-is 8:0:20:3:f6:42 tell 8:0:20:3:f6:42<br>
+8&nbsp; 107.47 ( 6.55)&nbsp;&nbsp;&nbsp; 8:0:20:3:f6:42 ff:ff:ff:ff:ff:ff rarp
+60: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+rarp who-is 8:0:20:3:f6:42 tell 8:0:20:3:f6:42<br>
+9&nbsp; 116.44 ( 8.97)&nbsp;&nbsp;&nbsp; 8:0:20:3:f6:42 ff:ff:ff:ff:ff:ff rarp
+60: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+rarp who-is 8:0:20:3:f6:42 tell 8:0:20:3:f6:42<br>
+10&nbsp; 130.24 (13.80)&nbsp;&nbsp;&nbsp; 8:0:20:3:f6:42 ff:ff:ff:ff:ff:ff rarp
+60: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+rarp who-is 8:0:20:3:f6:42 tell 8:0:20:3:f6:42<br>
+11&nbsp; 153.70 (23.46)&nbsp;&nbsp;&nbsp; 8:0:20:3:f6:42 ff:ff:ff:ff:ff:ff rarp
+60: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+rarp who-is 8:0:20:3:f6:42 tell 8:0:20:3:f6:42<br>
+12&nbsp; 196.49 (42.79)&nbsp;&nbsp;&nbsp; 8:0:20:3:f6:42 ff:ff:ff:ff:ff:ff rarp
+60: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+rarp who-is 8:0:20:3:f6:42 tell 8:0:20:3:f6:42<o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Рисунок 5.2 RARP запрос при
+отсутствии в сети RARP сервера.</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Когда тайм-аут достигает
+определенного предела (больше чем 42,80 секунды), он сбрасывается вновь в 5,34
+секунды. </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Подобное увеличение
+значения тайм-аута - это наилучший подход, так как каждый раз используется одно
+и то же значение. На рисунке 6.8 мы увидим неверный подход, с помощью которого
+осуществляются тайм-ауты и повторные передачи, а в <a
+href="http://www.xspider.net.ru/tcpip/tcp21.html"
+tppabs="http://www.te.ru/CD1/tcp_ip/tcp21.html">главе 21</a> мы рассмотрим
+метод используемый в TCP.</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><b><u><span style='font-family:Arial'>Реализация RARP сервера<o:p></o:p></span></u></b></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Тогда как концепция RARP
+довольно проста, реализация RARP сервера сильно зависит от системы и довольно
+сложна. Напротив, реализация ARP сервера проста и является, как правило, частью
+реализации ядра TCP/IP. Так как ядро знает собственные IP адреса и аппаратные
+адреса, при получении ARP запроса для одного из IP адресов оно просто формирует
+отклик с соответствующим аппаратным адресом.</span><span style='font-family:
+Arial'><o:p></o:p></span></p>
+
+<p><b><i><span style='font-family:Arial'>RARP серверы как пользовательские
+процессы<o:p></o:p></span></i></b></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Основная задача RARP
+сервера заключается в том, чтобы предоставить соответствие между аппаратными
+адресами и IP адресами для множества хостов (все бездисковые системы в сети).
+Необходимая информация содержится в дисковом файле (обычно /etc/ethers в UNIX
+системах). Так как ядро обычно не читает дисковые файлы, функция RARP сервера
+реализуется с использованием пользовательского процесса, который не является
+частью ядра TCP/IP. </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Далее, можно отметить, что
+RARP запросы передаются в качестве Ethernet фреймов со специфическим полем типа
+фрейма Ethernet (0x8035 на рисунке 2.1). Это означает, что RARP сервер должен
+обладать способностью отправлять и принимать Ethernet фреймы подобного типа. В <a
+href="http://www.xspider.net.ru/tcpip/tcp_A.html"
+tppabs="http://www.te.ru/CD1/tcp_ip/tcp_A.html">приложении А</a> мы опишем как
+для приема подобных фреймов используются BSD Packet Filter, Sun Network
+Interface Tap и SVR4 Data Link Provider Interface. Так как посылка и прием
+подобных фреймов зависит от системы, реализация RARP сервера также зависит от
+системы.</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><b><i><span style='font-family:Arial'>Несколько RARP серверов в сети<o:p></o:p></span></i></b></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Еще одна особенность заключается
+в том, что RARP запросы посылаются в виде широковещательных запросов
+аппаратного уровня, как показано на рисунке 5.2. Это означает, что они не
+перенаправляются маршрутизаторами. Чтобы позволить бездисковым системам
+загружаться, даже если RARP сервер выключен, в сети обычно существуют несколько
+RARP серверов (на одном и том же кабеле). </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>По мере того как количество
+серверов растет (чтобы повысить надежность), увеличивается сетевой траффик, так
+как каждый сервер посылает RARP отклик на каждый RARP запрос. Бездисковые
+системы, которые посылают RARP запросы, обычно используют первый полученный ими
+RARP отклик. (Мы никогда не имели подобных проблем с ARP, потому что только
+один хост посылает ARP отклик.) Более того, существует вероятность, что несколько
+RARP серверов отправят отклики одновременно, увеличивая тем самым количество
+коллизий в Ethernet.</span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><b><u><span style='font-family:Arial'>Краткие выводы<o:p></o:p></span></u></b></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>RARP используется
+большинством бездисковых систем при загрузке, для получения свох IP адресов.
+Формат пакета RARP практически идентичен пакету ARP. Запрос RARP
+широковещательный, в нем содержится аппаратный адрес отправителя, при этом он
+спрашивает кого-либо послать ему его IP адрес. Отклик обычно персональный. </span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Проблемы с RARP заключаются
+в том, что он использует широковещательные запросы на канальном уровне, поэтому
+большинство маршрутизаторов не могут перенаправлять RARP запросы; а также в
+том, что передается минимум необходимой информации: только IP адрес системы. В <a
+href="http://www.xspider.net.ru/tcpip/tcp16.html"
+tppabs="http://www.te.ru/CD1/tcp_ip/tcp16.html">главе 16</a> мы увидим, что
+BOOTP сообщает значительно больше информации необходимой при загрузке
+бездисковых систем: IP адрес, имя хоста, с которого происходит загрузка, и так
+далее. </span><span style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-size:10.0pt;font-family:Arial'>Несмотря на то что
+концепция RARP довольно проста, реализация RARP сервера зависит от системы.
+Также надо отметить, что не все TCP/IP реализации предоставляют RARP сервер.</span><span
+style='font-family:Arial'><o:p></o:p></span></p>
+
+<p><span style='font-family:Arial'>&nbsp;<o:p></o:p></span></p>
+
+<p><b><i><span style='font-family:Arial'>Упражнения</span></i></b><span
+style='font-size:7.5pt;font-family:Arial'> <o:p></o:p></span></p>
+
+<ol start=1 type=1>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l0 level1 lfo1;tab-stops:list 36.0pt'><span style='font-family:
+     Arial'>Требуется ли для RARP отдельное поле типа фрейма (frame type)?
+     Может ли быть использовано одно и то же значение 0x0806 для ARP и RARP? <o:p></o:p></span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l0 level1 lfo1;tab-stops:list 36.0pt'><span style='font-family:
+     Arial'>Если в сети находится несколько RARP серверов, как они могут
+     сделать так, чтобы предотвратить коллизии своих ответов?</span><span
+     style='font-size:7.5pt;font-family:Arial'> <o:p></o:p></span></li>
+</ol>
+
+<p class=MsoNormal><![if !supportEmptyParas]>&nbsp;<![endif]><o:p></o:p></p>
+
+</div>
+
+</body>
+
+</html>

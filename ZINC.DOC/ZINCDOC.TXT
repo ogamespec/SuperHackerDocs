@@ -1,0 +1,1332 @@
+Разрабатывается Пряженцевым Павлом (Pavel Pryazhentsev 2:5020/41.2), не
+имеющем (к его большому сожалению) возможности преобрести фирменный продукт
+фирмы Zinc Software Incorporated.
+
+Черновики!!!!  for Zinc 2.0
+
+примечание:
+ссылки на members могут указываться с тропинкой классов, разделенных ".", как в
+старой Сишке (как будто доступ до элемента структуры)
+
+символ "(-" означает содержит!!!
+
+
+_______________________________________________________________________________________________________
+
+0. Структуры и нижние классы
+
+
+0.1
+
+struct UI_PALETTE
+	{
+		// Fields described in UI_PALETTE reference chapter.
+		// --- Text mode ---
+		UCHAR fillCharacter;		// Fill character.
+		UCHAR colorAttribute;		// Color attribute.
+		UCHAR monoAttribute;		// Mono attribute.
+
+		// --- Graphics mode ---
+		UCHAR fillPattern;				// Fill pattern.
+		UCHAR colorForeground;			// EGA/VGA colors.
+		UCHAR colorBackground;
+		UCHAR bwForeground;				// Black & White colors (2 color).
+		UCHAR bwBackground;
+		UCHAR grayScaleForeground;		// Monochrome colors (3+ color).
+		UCHAR grayScaleBackground;
+	};
+
+Содержит информацию  о цветостной палитре и заполнении
+
+ fillCharacter - символ заполнения для текстового режима.
+
+ colorAttribute - атрибут символа заполнения
+
+ monoAttribute - атрибут для monochrome display
+
+ fillPattern - заполнение для графики, используется например в UI_DOS_BGI_DISPLAY::UI_DOS_BGI_DISPLAY
+	       как setfillstyle(_backgroundPalette->fillPattern,...)
+
+ colorForeground - передний цвет при кол-ве цветов ==15
+
+ colorBackground - задний цвет при кол-ве цветов ==15
+
+ bwForeground - передний цвет при кол-ве цветов ==1
+
+ bwBackground - задний цвет при кол-ве цветов ==1
+
+ grayScaleForeground - передний цвет при кол-ве цветов !=1 && !=15
+
+ grayScaleBackground - задний цвет при кол-ве цветов !=1 && !=15
+
+
+_____________________________________________________
+0.2
+
+struct UI_EVENT_MAP
+ {
+ int windowID;
+ int logicalValue;
+ int eventType;
+ USHORT rawCode;
+}
+
+Содержит информацию о преобразовании (трансляции) event'а
+
+ windowID - идентификатор (тип) окна (используются ID_WINDOW_OBJECT,ID_STRING,ID_TEXT,ID_WINDOW,
+	    ID_WINDOW_MANAGER,ID_END),ID_END означает конец таблицы.
+
+ logicalValue - логический event, получаемый в результате трансляции, например (L_SELECT,L_BEGIN_SELECT,L_LEFT,
+		S_REDISPLAY и т.д.).
+
+ eventType - тип event'а :E_KEY или E_MOUSE.
+
+ rawCode - "железный" event (например ENTER,M_LEFT,F12,GRAY_LEFT_ARROW ...)
+
+______________________________________________________
+0.3
+
+struct EXPORT UI_PALETTE
+{
+	int hatchStyle;				// Hatch style (HS_NONE for no hatch).
+	DWORD colorForeground;		// Foreground EGA/VGA colors.
+	DWORD colorBackground;		// Background EGA/VGA colors.
+};
+
+Содержит информацию о (?) (предположительно о цветах UI_WINDOW_OBJECT'а)
+ hatchStyle - тип штриховки.
+ colorForeground - | передний/задний цвета
+ colorBackground - |
+
+____________________________________________________________________________
+0.4
+
+struct EXPORT UI_PALETTE_MAP
+{
+	// Fields described in UI_PALETTE_MAP reference chapter.
+	int windowID;
+	int logicalValue;
+	UI_PALETTE palette;
+};
+
+(?)
+Ставит соответствие между типом объекта (окна), logicalValue и палитрой.
+windowID может быть например:ID_WINDOW_OBJECT,ID_ICON,ID_SCROLL_BAR  ... ,ID_END-конец таблицы
+logicalValue может быть :PM_ANY,PM_CURRENT,PM_SELECTED,PM_NON_SELECTABLE.
+
+
+________________________________________________________________________________________________
+0.5
+
+struct EXPORT UI_SEARCH_INFO
+{
+	// Fields described in UI_SEARCH_ELEMENT reference chapter.
+	USHORT type, numberID;
+	char stringID[32];
+	long offset;
+	USHORT size;
+};
+
+(?)
+используется в Store
+type бывает ID_BORDER (тип объекта)
+stringID бывает "NUMID_BORDER"
+offset (?)
+size (?)
+________________________________________________________________________________________________
+1.DEVICE:
+
+1.1 UI_BIOS_KEYBOARD
+
+class UI_BIOS_KEYBOARD : public UI_DEVICE
+
+|-	     class EXPORT UI_DEVICE : public UI_ELEMENT
+|
+||-		class EXPORT UI_ELEMENT
+||		{
+||		public:
+||			// Members described in UI_ELEMENT reference chapter.
+||			UI_ELEMENT(void) : previous(NULL), next(NULL) { }
+||			virtual ~UI_ELEMENT(void) { }
+||			UI_ELEMENT *Next(void) { return (next); }
+||			UI_ELEMENT *Previous(void) { return (previous); }
+||
+||		protected:
+||			// Members described in UI_ELEMENT reference chapter.
+||			friend class EXPORT UI_LIST;
+||
+||			UI_ELEMENT *previous, *next;
+||-		};
+|
+|	     {
+|			friend class EXPORT UI_EVENT_MANAGER;
+|	public:
+|	      // Members described in UI_DEVICE reference chapter.
+|		static int altPressed;
+|		int installed;
+|
+|		virtual ~UI_DEVICE(void) { }
+|		virtual int Event(const UI_EVENT &event) = 0;
+|
+|		// Members described in UI_ELEMENT reference chapter.
+|		UI_DEVICE *Next(void) { return((UI_DEVICE *)next); }
+|		UI_DEVICE *Previous(void) { return((UI_DEVICE *)previous); }
+|
+|	protected:
+|		// Members described in UI_DEVICE reference chapter.
+|		int type;
+|		USHORT state;
+|		USHORT enabled;
+|		UI_DISPLAY *display;
+|		UI_EVENT_MANAGER *eventManager;
+|
+|		UI_DEVICE(int type, USHORT initialState);
+|		virtual void Poll(void) = 0;
+|
+|	private:
+|		// Private UI_DEVICE members are not documented.
+|		static int CompareFunction(void *device1, void *device2);
+|-	};
+
+{
+public:
+	// Members described in UI_BIOS_KEYBOARD reference chapter.
+	static int breakHandlerSet;
+
+	UI_BIOS_KEYBOARD(USHORT initialState = D_ON);
+	virtual ~UI_BIOS_KEYBOARD(void);
+	virtual int Event(const UI_EVENT &event);
+
+protected:
+	// Members described in UI_BIOS_KEYBOARD reference chapter.
+	int enhancedBIOS;
+	USHORT breakState;
+
+	virtual void Poll(void);
+};
+
+Таким образом объекты класса UI_BIOS_KEYBOARD содержат следующие члены:
+( только данные )
+
+ static breakHandlerSet            |
+ enhancedBIOS                      |  UI_BIOS_KEYBOARD
+ breakState                        |
+
+ static altPressed                 |
+ installed                         |
+ type                              |
+ state                             | UI_DEVICE
+ enabled                           |
+ UI_DISPLAY *display               |
+ UI_EVENT_MANAGER *eventManager    |
+
+ UI_ELEMENT *previous              | UI_ELEMENT
+ UI_ELEMENT *next                  |
+
+Где:
+ breakHandlerSet - флаг установленности обработчика  break
+		   TRUE -установлен
+		   FALSE- не установлен ( первоночально до main !)
+ enhancedBIOS    - флаг расширенного биоса
+		   0x00 - нет
+		   0x10 - расширеный
+		   устанавливается в соответствии с возвратом функции
+		   CheckEnhancedBios() из KEYBOARD.CPP
+ breakState      - статус break , устанавливается в конструкторе UI_BIOS_KEYBOARD
+		   в значение _DL после INT 21 c _AX=0x3300 ( 0x00 - off 0x01 -on)
+
+ altPressed      - статус alt key может быть:
+		   ALT_PRESSED_AND_NO_EVENTS_YET - нажат alt только (?)
+		    в этом случае ф. UI_BIOS_KEYBOARD::Poll (KEYBORD.CPP) помещает в очередь
+		    event'ов event с event.type=S_ALT_KEY; и остальными нулями.
+		   ALT_PRESSED_AND_EVENTS_RECEIVED - нажат alt и принят event (здесь - кнопка)
+		    в этом случае ф. UI_BIOS_KEYBOARD::Poll (KEYBORD.CPP) помещает в очередь
+		    event'ов event с event.type=E_KEY; и event.rawCode=_AX после INT 16 (_AH=0x01 - CHECK FOR KEYSTROKE)
+		    event.key.valye=ASCII character event.key.shiftState= Addr 417 BIOS area (keyboard status bits)
+		   ALT_NOT_PRESSED - alt не нажат
+
+ installed        - флаг инсталяции device
+		    FALSE - не установлен ( присваивается в UI_DEVICE::UI_DEVICE (DEVICE.CPP))
+		    TRUE  - устаановлен ( присваивается в UI_BIOS_KEYBOARD::UI_BIOS_KEYBOARD)
+ type             - тип воспринимаемых event (?) (тип device) устанавливается в E_KEY посредством
+		    вызова UI_DEVICE(E_KEY,initialstate) в UI_BIOS_KEYBOARD::UI_BIOS_KEYBOARD.
+
+ state            - state device устанавливается посредством вызова UI_BIOS_KEYBOARD::UI_BIOS_KEYBOARD
+		    без параметров. Может быть D_ON, D_OFF.
+ enabled          - флаг разрешения может быть
+		    TRUE - разрешено класть event'ы в очередь в UI_BIOS_KEYBOARD::Poll посредством
+		    вызова eventManager-Put(event,Q_END)
+		    FALSE- запрещено
+
+ UI_DISPLAY *display               связка с display и eventManager, инициализируются в
+ UI_EVENT_MANAGER *eventManager	   UI_EVENT_MANAGER::Add (EVENT.CPP)
+
+
+ UI_ELEMENT *previous              связка с другими device (например UI_MS_MOUSE), инициализируются
+ UI_ELEMENT *next                  в UI_EVENT_MANAGER::Add посредством вызова UI_LIST::Add(device)
+
+
+Member function:
+
+ Poll() (KEYBOARD.CPP) - ф. обработки кнопок (регистрации event'ов), обрабатывает alt и
+			 генерит events добавляя их в очередь по eventManager->Put(event,Q_END).
+
+ Event(const UI_EVENT &event) - обрабатывает передаваемые event только 2-х типов (из event.rawCode):
+				D_OFF,D_ON  при этом устанавливает state=event.rawCode и enable соответственно
+				в FALSE и TRUE.
+
+____________________________________________________________________________________________________________________
+
+1.2. UI_MS_MOUSE class
+
+Mouse работает аасинхронно посредством установки ф. MouseISR, которая производит
+обрааботку mouse ,формирует event и пихает его в очередь.
+
+class UI_MS_MOUSE : public UI_DEVICE
+
+|-	     class EXPORT UI_DEVICE : public UI_ELEMENT
+|
+||-		class EXPORT UI_ELEMENT
+||		{
+||		public:
+||			// Members described in UI_ELEMENT reference chapter.
+||			UI_ELEMENT(void) : previous(NULL), next(NULL) { }
+||			virtual ~UI_ELEMENT(void) { }
+||			UI_ELEMENT *Next(void) { return (next); }
+||			UI_ELEMENT *Previous(void) { return (previous); }
+||
+||		protected:
+||			// Members described in UI_ELEMENT reference chapter.
+||			friend class EXPORT UI_LIST;
+||
+||			UI_ELEMENT *previous, *next;
+||-		};
+|
+|	     {
+|			friend class EXPORT UI_EVENT_MANAGER;
+|	public:
+|	      // Members described in UI_DEVICE reference chapter.
+|		static int altPressed;
+|		int installed;
+|
+|		virtual ~UI_DEVICE(void) { }
+|		virtual int Event(const UI_EVENT &event) = 0;
+|
+|		// Members described in UI_ELEMENT reference chapter.
+|		UI_DEVICE *Next(void) { return((UI_DEVICE *)next); }
+|		UI_DEVICE *Previous(void) { return((UI_DEVICE *)previous); }
+|
+|	protected:
+|		// Members described in UI_DEVICE reference chapter.
+|		int type;
+|		USHORT state;
+|		USHORT enabled;
+|		UI_DISPLAY *display;
+|		UI_EVENT_MANAGER *eventManager;
+|
+|		UI_DEVICE(int type, USHORT initialState);
+|		virtual void Poll(void) = 0;
+|
+|	private:
+|		// Private UI_DEVICE members are not documented.
+|		static int CompareFunction(void *device1, void *device2);
+|-	};
+
+
+
+{
+public:
+	// Members described in UI_MS_MOUSE reference chapter.
+	UI_MS_MOUSE(USHORT initialState = DM_VIEW);
+	virtual ~UI_MS_MOUSE(void);
+	virtual int Event(const UI_EVENT &event);
+	void SetSensitivity(int horizontal, int vertical, int doubleSpeed);
+
+protected:
+	// Members described in UI_MS_MOUSE reference chapter.
+	UI_MOUSE_POINTER *pointer;
+
+	virtual void Poll(void);
+
+private:
+	// Private UI_MS_MOUSE members are not documented.
+	int mouseCellWidth;
+	int mouseCellHeight;
+	int column;
+	int line;
+
+	void Display(void);
+};
+
+
+Таким образом объекты класса UI_MS_MOUSE содержат следующие члены:
+( только данные )
+
+ mouseCellWidth                     |
+ mouseCellHeight                    |  UI_MS_MOUSE
+ column                             |
+ line				    |
+ UI_MOUSE_POINTER *pointer          |
+
+
+ static altPressed                  |
+ installed                          |
+ type                               |
+ state                              | UI_DEVICE
+ enabled                            |
+ UI_DISPLAY *display                |
+ UI_EVENT_MANAGER *eventManager     |
+
+ UI_ELEMENT *previous               | UI_ELEMENT
+ UI_ELEMENT *next                   |
+
+ _________________________________________________________________________
+
+ UI_EVENT_MANAGER *_eventManagerPtr |
+ UI_EVENT _mouseEvent		    |
+ _mouseCellWidth		    |
+ _mouseCellHeight		    | используемые глобали (MOUSE.CPP)
+ _mouseTime			    |
+ _mouseEnabled                      |
+ _oldButtonState                    |
+ _processing                        |
+ struct _oldMouseISR                |
+ UI_MOUSE_POINTER *_pointerTable[]  | <- (G_MOUSE.CPP)
+
+
+Где:
+
+ mouseCellWidth - (и _mouseCellWidth) размер mouse иконки горизонтально
+		  если текстовый режим (display->isText) то 1
+		  если графика:
+		  display->columns=40
+				      16
+				  !=40
+				      640/display->columns
+		  т.е. размер горизонтальный в пикселах.
+ mouseCellHeight- (и _mouseCellHeight) размер mouse иконки вертикально
+		   =8 (?)
+
+    устанавливаются в UI_MS_MOUSE::Event (MOUSE.CPP) (только _*)
+
+!!!!!!!!!!!!!      WARNING!!!!! не ясно !!!! не соответсвует с размерами
+		   иконок в _pointerTable[]
+
+ column,line  - координаты mouse, устанавливаются (и вооще используются только)
+		в UI_MS_MOUSE::Event при event.rawCode==D_HIDE, а при event.rawCode==D_SHOW
+		используются для вычислений regions.
+
+ UI_MOUSE_POINTER *pointer-
+    struct UI_MOUSE_POINTER
+	{
+		USHORT logicalType;
+		USHORT textScreenMask;
+		USHORT textCursorMask;
+		USHORT graphicsCursorHorizontal;
+		USHORT graphicsCursorVertical;
+		USHORT graphicsCursorMask[32];
+	};
+
+	 указатель на структуру UI_MOUSE_POINTER содержащую mouse иконку
+	 устанавливается в UI_MS_MOUSE::UI_MS_MOUSE на элемент массива структур
+	 _pointerTable[], имеющий _pointerTable[]->logicalType==DM_VIEW.
+
+ altPressed- аналогично UI_BIOS_KEYBORD
+
+ installed - аналогично UI_BIOS_KEYBORD, устанавливается в UI_MS_MOUSE::UI_MS_MOUSE.
+
+ type- аналогично UI_BIOS_KEYBORD , устанавл. в E_MOUSE.
+
+ state- аналогично UI_BIOS_KEYBORD, изнаачально DM_VIEW.
+
+ enabled- аналогично UI_BIOS_KEYBORD, используется совместно с _mouseEnabled и позволяет
+	  или не позволяет ставить event'ы в очередь в MouseISR (MOUSE.CPP)
+
+ UI_DISPLAY *display                |
+ UI_EVENT_MANAGER *eventManager     |
+				    | Аналогично UI_BIOS_KEYBOARD
+ UI_ELEMENT *previous               |
+ UI_ELEMENT *next                   |
+
+	      Глобали
+
+ UI_EVENT_MANAGER *_eventManagerPtr - указатель на текущий UI_EVENT_MANAGER
+				      устанавливаается в eventManager текущего
+				      обьекта класса UI_MS_MOUSE в ф. Event при
+				      event.rawCode==D_INITIALIZE
+ UI_EVENT _mouseEvent - содержит текущий event для mouse и устанавливается в ф. MouseISR
+
+ _mouseCellWidth - аналогично mouseCellWidth и кажется используется вместо него
+
+ _mouseCellHeight - аналогично mouseCellHeight и кажется используется вместо него
+
+ _mouseTime - timer tick counter, устанавливается в UI_MS_MOUSE::MouseISR в значение
+	      из BIOS area 0:046c
+
+ _mouseEnabled - аналогично UI_MS_MOUSE.UI_DEVICE.enabled устанавливается в UI_MS_MOUSE::Event
+		 при event.rawCode D_ON | D_OFF.
+
+ _oldButtonState - предыдущее состояние button, используется в MouseISR.
+
+ _processing - флаг по которому определяется вложенность вызовов MouseISR.
+
+ struct _oldMouseISR - сохраненный адрес старого обработчика mouse.
+
+ UI_MOUSE_POINTER *_pointerTable[] - массив структур, содержащих в том числе и mouse иконки.
+
+
+Функции:
+
+ virtual int Event(const UI_EVENT &event) -
+		евент ф. обрабатывает следующие евенты
+		(event.rawCode):
+		D_INITIALIZE -
+		  установка MouseISR,установка _mouseCellWidth и _mouseCellHeigh,
+		  вызов Display();
+		D_HIDE -
+		  определяет перемещалась ли mouse и  если да получение состояния mouse
+		  даалее D_SHOW;
+		D_SHOW -
+		  определение положения mouse относительно event.region и если вне
+		  выход return(0), если нет установка state=(event.rawCode==D_SHOW)?D_ON:D_OFF;
+		D_POSITION -
+		  позиционирование mouse;
+		D_OFF,
+		D_ON-
+		  установка _mouseEnabled=enabled=(event.rawCode==D_OFF)?FALSE:TRUE;
+		D_RESTORE -
+		  восстановление старого обрааботчикаа mouse;
+		DM_USER_DEFFINED -
+		  установка указателя на структуру mouse иконки (UI_MS_MOUSE::pointer)
+		  в (UI_MOUSE_POINTER *)event.data;
+		default -
+		  установка установка указателя на структуру mouse иконки (UI_MS_MOUSE::pointer)
+		  в _pointerTable[i] у которого _pointerTable[i]->logicalType==event.rawCode.
+
+		в конце анализ измененности UI_MS_MOUSE::pointer и если изменялся вызов Display(),
+		и анализ измененности UI_MS_MOUSE.UI_DEVICE::state и гашение/высвечивание mouse через
+		INT 33 (ф. 1,2).
+
+ void SetSensitivity(int horizontal, int vertical, int doubleSpeed) -
+		установка чуствительности mouse.
+
+ virtual void Poll(void) -
+		пустая ф.
+
+ void Display(void) -
+		установка mouse иконки посредством INT 33 (ф. 0x09,0x0a).
+
+
+
+____________________________________________________________________________________________________________________
+
+1.2. UI_DOS_BGI_DISPLAY class
+
+class UI_DOS_BGI_DISPLAY : public UI_DISPLAY
+
+|-	class EXPORT UI_DISPLAY : public UI_REGION_LIST
+|
+||-		class EXPORT UI_REGION_LIST : public UI_LIST
+||
+|||-			class EXPORT UI_LIST
+|||			{
+|||			public:
+|||				// Members described in UI_LIST reference chapter.
+|||				UI_LIST(int (*_compareFunction)(void *element1, void *element2) = NULL) :
+|||					first(NULL), last(NULL), current(NULL), compareFunction(_compareFunction) { }
+|||				virtual ~UI_LIST(void) { Destroy(); }
+|||				UI_ELEMENT *Add(UI_ELEMENT *newElement);
+|||				UI_ELEMENT *Add(UI_ELEMENT *element, UI_ELEMENT *newElement);
+|||				int Count(void);
+|||				UI_ELEMENT *Current(void) { return (current); }
+|||				void Destroy(void);
+|||				UI_ELEMENT *First(void) { return (first); }
+|||				UI_ELEMENT *Get(int index);
+|||				UI_ELEMENT *Get(int (*findFunction)(void *element1, void *matchData), void *matchData);
+|||				int Index(UI_ELEMENT const *element);
+|||				UI_ELEMENT *Last(void) { return (last); }
+|||				void Sort(void);
+|||				UI_ELEMENT *Subtract(UI_ELEMENT *element);
+|||				UI_LIST &operator+(UI_ELEMENT *element) { Add(element); return (*this); }
+|||				UI_LIST &operator-(UI_ELEMENT *element) { Subtract(element); return (*this); };
+|||
+|||			protected:
+|||				// Members described in UI_LIST reference chapter.
+|||				friend class EXPORT UI_LIST_BLOCK;
+|||
+|||				UI_ELEMENT *first, *last, *current;
+|||				int (*compareFunction)(void *element1, void *element2);
+|||-			};
+||
+||
+||		{
+||		public:
+||			// Members described in UI_REGION_LIST reference chapter.
+||			void Split(SCREENID screenID, const UI_REGION &region);
+||
+||			// Members described in UI_LIST reference chapter.
+||			UI_REGION_ELEMENT *First(void) { return((UI_REGION_ELEMENT *)first); }
+||			UI_REGION_ELEMENT *Last(void) { return((UI_REGION_ELEMENT *)last); }
+||-		};
+|
+| 	{
+| 	public:
+| 		// Members described in UI_DISPLAY reference chapter.
+|		int installed;
+|		const int isText;
+|		const int cellWidth;
+|		const int cellHeight;
+|		int	columns;
+|		int	lines;
+|		USHORT onCursorValue;
+|		USHORT offCursorValue;
+|		UI_EVENT_MANAGER *eventManager;
+|
+|		virtual ~UI_DISPLAY(void);
+|		virtual void Bitmap(SCREENID screenID, int column, int line,
+|			int bitmapWidth, int bitmapHeight, const UCHAR *bitmapArray,
+|			const UI_PALETTE *palette = NULL, const UI_REGION *clipRegion = NULL) = 0;
+|		virtual void Ellipse(SCREENID screenID, int column, int line,
+|			int startAngle, int endAngle, int xRadius, int yRadius,
+|			const UI_PALETTE *palette, int fill = FALSE, int xor = FALSE,
+|			const UI_REGION *clipRegion = NULL) = 0;
+|		virtual void Line(SCREENID screenID, int column1, int line1, int column2,
+|			int line2, const UI_PALETTE *palette, int width = 1, int xor = FALSE,
+|			const UI_REGION *clipRegion = NULL) = 0;
+|		virtual void Polygon(SCREENID screenID, int numPoints, const int *polygonPoints,
+|			const UI_PALETTE *palette, int fill = FALSE, int xor = FALSE,
+|			const UI_REGION *clipRegion = NULL) = 0;
+|		virtual void Rectangle(SCREENID screenID, const UI_REGION &region,
+|			const UI_PALETTE *palette, int width = 1, int fill = FALSE,
+|			int xor = FALSE, const UI_REGION *clipRegion = NULL)
+|			{ Rectangle(screenID, region.left, region.top, region.right,
+|			  region.bottom, palette, width, fill, xor, clipRegion); }
+|		virtual void Rectangle(SCREENID screenID, int left, int top, int right,
+|			int bottom, const UI_PALETTE *palette, int width = 1, int fill = FALSE,
+|			int xor = FALSE, const UI_REGION *clipRegion = NULL) = 0;
+|		virtual void RectangleXORDiff(const UI_REGION &oldRegion, const UI_REGION &newRegion) = 0;
+|		virtual void RegionConvert(UI_REGION &region, USHORT *oldFlags, USHORT newFlags) = 0;
+|		virtual void RegionDefine(SCREENID screenID, const UI_REGION &region)
+|			{ RegionDefine(screenID, region.left, region.top, region.right, region.bottom); }
+|		virtual void RegionDefine(SCREENID screenID, int left, int top, int right, int bottom);
+|		virtual void RegionMove(const UI_REGION &oldRegion, int newColumn, int newLine,
+|			SCREENID oldScreenID = ID_SCREEN, SCREENID newScreenID = ID_SCREEN) = 0;
+|		virtual void Text(SCREENID screenID, int left, int top, const char *text,
+|			const UI_PALETTE *palette, int length = -1, int fill = TRUE,
+|			int xor = FALSE, const UI_REGION *clipRegion = NULL) = 0;
+|		virtual int TextHeight(const char *string, SCREENID screenID = ID_SCREEN) = 0;
+|		virtual int TextWidth(const char *string, SCREENID screenID = ID_SCREEN) = 0;
+|
+|	protected:
+|		// Members described in UI_DISPLAY reference chapter.
+|		UI_DISPLAY(int isText, int cellWidth, int cellHeight);
+|-	};
+
+{
+public:
+	// Members described in UI_DOS_BGI_DISPLAY reference chapter.
+	UI_DOS_BGI_DISPLAY(int driver = 0, int mode = 0);
+	virtual ~UI_DOS_BGI_DISPLAY(void);
+	virtual void Bitmap(SCREENID screenID, int column, int line,
+		int bitmapWidth, int bitmapHeight, const UCHAR *bitmapArray,
+		const UI_PALETTE *palette = NULL, const UI_REGION *clipRegion = NULL);
+	virtual void Ellipse(SCREENID screenID, int column, int line,
+		int startAngle, int endAngle, int xRadius, int yRadius,
+		const UI_PALETTE *palette, int fill = FALSE, int xor = FALSE,
+		const UI_REGION *clipRegion = NULL);
+	virtual void Line(SCREENID screenID, int column1, int line1, int column2,
+		int line2, const UI_PALETTE *palette, int width = 1, int xor = FALSE,
+		const UI_REGION *clipRegion = NULL);
+	virtual void Polygon(SCREENID screenID, int numPoints, const int *polygonPoints,
+		const UI_PALETTE *palette, int fill = FALSE, int xor = FALSE,
+		const UI_REGION *clipRegion = NULL);
+	virtual void Rectangle(SCREENID screenID, int left, int top, int right,
+		int bottom, const UI_PALETTE *palette, int width = 1, int fill = FALSE,
+		int xor = FALSE, const UI_REGION *clipRegion = NULL);
+	virtual void RectangleXORDiff(const UI_REGION &oldRegion, const UI_REGION &newRegion);
+	virtual void RegionConvert(UI_REGION &region, USHORT *oldFlags, USHORT newFlags);
+	virtual void RegionMove(const UI_REGION &oldRegion, int newColumn, int newLine,
+		SCREENID oldScreenID = ID_SCREEN, SCREENID newScreenID = ID_SCREEN);
+	virtual void Text(SCREENID screenID, int left, int top, const char *text,
+		const UI_PALETTE *palette, int length = -1, int fill = TRUE,
+		int xor = FALSE, const UI_REGION *clipRegion = NULL);
+	virtual int TextHeight(const char *string, SCREENID screenID = 0);
+	virtual int TextWidth(const char *string, SCREENID screenID = 0);
+
+protected:
+	// Members described in UI_DOS_BGI_DISPLAY reference chapter.
+	int maxColor;
+
+	int MapColor(const UI_PALETTE *palette, int isForeground);
+};
+
+
+Таким образом объекты класса UI_DOS_BGI_DISPLAY содержат следующие члены:
+( только данные )
+
+
+ int maxColor				| UI_DOS_BGI_DISPLAY
+
+					|
+ int installed                          |
+ const int isText                       |
+ const int cellWidth                    |
+ const int cellHeight                   |
+ int columns                            | UI_DISPLAY
+ int lines                              |
+ USHORT onCursorValue                   |
+ USHORT offCursorValue                  |
+ UI_EVENT_MANAGER *eventManager         |
+
+
+					| UI_RELION_LIST
+
+ friend class UI_LIST_BLOCK		|
+ UI_ELEMENT *first			| UI_LIST
+ UI_ELEMENT *last			|
+ UI_ELEMENT *current			|
+
+ UI_PALETTE *_backgroundPalette         | глобали
+ UI_PALETTE *_xorPalette                |
+ char fillLine[256]			| служебная используется в UI_DOS_BGI_DISPLAY::Text
+
+
+Где:
+
+ maxColor    - максимаальное кол-во цветов, устанавливается в UI_DOS_BGI_DISPLAY::UI_DOS_BGI_DISPLAY
+	       и равно getmaxcolor()
+
+ installed   - флаг инсталированности, устанавливается в UI_DOS_BGI_DISPLAY.UI_DISPLAY::UI_DISPLAY
+	       в FALSE а затем в UI_DOS_BGI_DISPLAY::UI_DOS_BGI_DISPLAY в TRUE
+
+ isText      - флаг текстового/графического режима, в UI_DOS_BGI_DISPLAY::UI_DOS_BGI_DISPLAY устанавливается
+	       в FALSE
+
+ cellWidth   - ширина символа в пикселах, в UI_DOS_BGI_DISPLAY::UI_DOS_BGI_DISPLAY устанавливается =8
+
+ cellHeight  - высота символа в пикселах, в UI_DOS_BGI_DISPLAY::UI_DOS_BGI_DISPLAY устанавливается =14
+
+ columns     - кол-во пикселов горизонтально =getmaxx()+1
+
+ lines       - кол-во пикселов вертикаально =getmaxy()+1
+
+ onCursorValue  | кажется не используются (?)
+ offCursorValue |
+
+ friend class UI_LIST_BLOCK - используется для организации списков (списка) UI_REGION_ELEMENT обьектов
+
+ UI_ELEMENT *first   |
+ UI_ELEMENT *last    | указатели для работы со списком UI_REGION_ELEMENT обьектов
+ UI_ELEMENT *current |
+
+
+ UI_PALETTE *_backgroundPalette - указатель на палитру
+
+	struct UI_PALETTE
+	{
+		// Fields described in UI_PALETTE reference chapter.
+		// --- Text mode ---
+		UCHAR fillCharacter;		// Fill character.
+		UCHAR colorAttribute;		// Color attribute.
+		UCHAR monoAttribute;		// Mono attribute.
+
+		// --- Graphics mode ---
+		UCHAR fillPattern;				// Fill pattern.
+		UCHAR colorForeground;			// EGA/VGA colors.
+		UCHAR colorBackground;
+		UCHAR bwForeground;				// Black & White colors (2 color).
+		UCHAR bwBackground;
+		UCHAR grayScaleForeground;		// Monochrome colors (3+ color).
+		UCHAR grayScaleBackground;
+	};
+
+
+
+Функции:
+
+ UI_DOS_BGI_DISPLAY - конструктор, загружает BGI драйвер и инициализирует переменные,
+		      устанавливает settextstyle(DEFAULT_FONT,HORIZ_DIR,1), settextjustify(LEFT_TEXT,TOP_TEXT),
+		      setfillstyle(_backgroundPallete->fillPattern,MapColor(_backgroundPallete,FALSE),
+		      setviewport(0,0,columns-1,lines-1),bar(0,0,columns-1,lines-1) и
+		      добавляет UI_REGION_ELEMENT обьект (размером 0,0,colums-1,lines-1) к списку.
+
+ Понятие: регион объекта  - означает минимальный прямоугольник  включающий весь объект.
+ Далее все функции работают со списком регионов ( может быть в данном случае стоит относиться к ним  как к
+ окнам) и используют только регионы с screenID == формальному параметру screenID. Используетса та часть
+ региона которая является пересечением его с регионом объекта (Bitmap,Line,Ellipse ...)
+ Дополнительно перед выводом  на дисплей  гасятся все device в областигде  будет  осуществляться  вывод
+ посредством вызова eventManager->DeviceHide(region),  а после окончания вывода  восстанавливаются
+ посредством вызова eventManager->DeviceShow(region).
+ Для всех функций:
+  если clipRegion != NULL то используется часть региона обьекта являющаяся пересечением с clipRegion.
+
+  если xor != 0 устанавливается режим записи setwritemode(XOR_PUT) (по выходе из ф.  устанавливается
+  setwrite(COPY_PUT)).
+
+  если fill != используется заполнение с fillstyle(palette->fillPattern,MapColor(palette,FALSE).
+
+Итак:
+
+virtual void Bitmap(SCREENID screenID, int column, int line,
+	     int bitmapWidth, int bitmapHeight, const UCHAR *bitmapArray,
+	     const UI_PALETTE *palette = NULL, const UI_REGION *clipRegion = NULL);
+	- заполняет регион объекта содержимым *bitmapArray, где column,line верхнелевая точка региона объекта,
+	  bitmapWidth,bitmapHeight соответствующие размерности массива bitmapArray.
+	  bitmapArray представляет собой массив целых, каждый элемент которого однозначно определяет величину
+	  соответствующего пиксела.
+
+virtual void Ellipse(SCREENID screenID, int column, int line,
+	int startAngle, int endAngle, int xRadius, int yRadius,
+	const UI_PALETTE *palette, int fill = FALSE, int xor = FALSE,
+	const UI_REGION *clipRegion = NULL);
+	- построение эллипса (или круга в случае  startAngle=0, endAngle=360) цветом переднего цвета из
+	  palette с заполнением  или без.
+
+virtual void Line(SCREENID screenID, int column1, int line1, int column2,
+		int line2, const UI_PALETTE *palette, int width = 1, int xor = FALSE,
+		const UI_REGION *clipRegion = NULL);
+	- построение линии цветом переднего цвета из palette.
+
+int MapColor(const UI_PALETTE *palette, int isForeground);
+	- возвращяет при isForeground==TRUE передний цвет, иначе задний цвет из palette.
+	  При этом в случае если максимальное кол-во цветов на дисплее ==15 используются colorForeground/colorBackground
+	  из palette, если ==1 то bwForeground/bwBackground, а если !=1 и !=15 то grayScaleForeground/grayScaleBackground.
+
+virtual void Polygon(SCREENID screenID, int numPoints, const int *polygonPoints,
+		const UI_PALETTE *palette, int fill = FALSE, int xor = FALSE,
+		const UI_REGION *clipRegion = NULL);
+	- построение полигона (заполненого/незаполненого) на основании координат из массива *polygonPoints (размером numPoints),
+	  передним цветом из palette.Координаты точек в *polygonPoints распологаются след. образом - x1,y1,x2,y2,...,xi,yi.
+
+
+virtual void Rectangle(SCREENID screenID, int left, int top, int right,
+		int bottom, const UI_PALETTE *palette, int width = 1, int fill = FALSE,
+		int xor = FALSE, const UI_REGION *clipRegion = NULL);
+	- построение прямоугольника (заполненого/незаполненого) передним цветом из palette.
+
+virtual void RectangleXORDiff(const UI_REGION &oldRegion, const UI_REGION &newRegion);
+	-  построение ( по режиму setwritemode(XOR_PUT)) и с использованием переднего цвета из глобальной
+	   _xorPalette 2х регионов-oldRegion, newRegion. Предварительно гасятся все device в регеоне, являющимся объединением
+	   этих  регионов.
+	   Внимание! данная функйия выполняется для любых регионов не зависимо от их screenID и не  использует клиппинг!
+	   (т.е. клиппинг устанавливается на весь экран).
+
+virtual void RegionConvert(UI_REGION &region, USHORT *oldFlags, USHORT newFlags);
+	- если oldFlags == newFlags - выход.В противном случае осуществляется перевод координат region из  текстовых в
+	  графические и oldFlags |= newFlags.
+
+virtual void RegionMove(const UI_REGION &oldRegion, int newColumn, int newLine,
+		SCREENID oldScreenID = ID_SCREEN, SCREENID newScreenID = ID_SCREEN);
+	- перемещает oldRegion, в позицию int newColumn, int newLine,с использованием getimage/putimage.
+	  oldScreenID , newScreenID - не используются.
+	  Внимание! данная функйия выполняется для любых регионов не зависимо от их screenID и не использует клиппинг!
+	  (т.е. клиппинг вообще не устанавливается).
+
+virtual void Text(SCREENID screenID, int left, int top, const char *text,
+		const UI_PALETTE *palette, int length = -1, int fill = TRUE,
+		int xor = FALSE, const UI_REGION *clipRegion = NULL);
+	- вывод текста из text по координатам int left, int top с использованиемм переднего цвета
+	  из palette и следующих режимов: settextstyle(DEFAULT_FONT,HORIZ_DIR,1), settextjustify(LEFT_TEXT,TOP_TEXT).
+
+virtual int TextHeight(const char *string, SCREENID screenID = 0);
+	- получение высоты  шрифта по textheight(..);
+
+virtual int TextWidth(const char *string, SCREENID screenID = 0);
+	- получение щирины строки  string по textwidth(..).
+
+
+_____________________________________________________________________________________________________________
+1.3. UI_EVENT_MANAGER class
+
+class EXPORT UI_EVENT_MANAGER : public UI_LIST
+
+|-			class EXPORT UI_LIST
+|			{
+|			public:
+|				// Members described in UI_LIST reference chapter.
+|				UI_LIST(int (*_compareFunction)(void *element1, void *element2) = NULL) :
+|					first(NULL), last(NULL), current(NULL), compareFunction(_compareFunction) { }
+|				virtual ~UI_LIST(void) { Destroy(); }
+|				UI_ELEMENT *Add(UI_ELEMENT *newElement);
+|				UI_ELEMENT *Add(UI_ELEMENT *element, UI_ELEMENT *newElement);
+|				int Count(void);
+|				UI_ELEMENT *Current(void) { return (current); }
+|				void Destroy(void);
+|				UI_ELEMENT *First(void) { return (first); }
+|				UI_ELEMENT *Get(int index);
+|				UI_ELEMENT *Get(int (*findFunction)(void *element1, void *matchData), void *matchData);
+|				int Index(UI_ELEMENT const *element);
+|				UI_ELEMENT *Last(void) { return (last); }
+|				void Sort(void);
+|				UI_ELEMENT *Subtract(UI_ELEMENT *element);
+|				UI_LIST &operator+(UI_ELEMENT *element) { Add(element); return (*this); }
+|				UI_LIST &operator-(UI_ELEMENT *element) { Subtract(element); return (*this); };
+|
+|			protected:
+|				// Members described in UI_LIST reference chapter.
+|				friend class EXPORT UI_LIST_BLOCK;
+|
+|				UI_ELEMENT *first, *last, *current;
+|				int (*compareFunction)(void *element1, void *element2);
+|-			};
+
+{
+public:
+	// Public members described in UI_EVENT_MANAGER reference chapter.
+	UI_EVENT_MANAGER(int noOfElements, UI_DISPLAY *display);
+	void DevicesHide(const UI_REGION &region);
+	void DevicesShow(const UI_REGION &region);
+	void DevicePosition(int deviceType, int column, int line);
+	int DeviceState(int deviceType, USHORT deviceState);
+	int Event(const UI_EVENT &event);
+	int Get(UI_EVENT &event, USHORT flags = Q_NORMAL);
+	void Put(const UI_EVENT &event, USHORT flags = Q_END);
+
+	// Public members described in UI_LIST reference chapter.
+	void Add(UI_DEVICE *device);
+	UI_DEVICE *First(void) { return((UI_DEVICE *)first); }
+	UI_DEVICE *Last(void) { return((UI_DEVICE *)last); }
+	void Subtract(UI_DEVICE *device);
+	UI_EVENT_MANAGER &operator+(UI_DEVICE *device) { Add(device); return(*this); }
+	UI_EVENT_MANAGER &operator-(UI_DEVICE *device) { Subtract(device); return(*this); }
+
+protected:
+	// Protected members described in UI_EVENT_MANAGER reference chapter.
+	static int CompareFunction(void *device1, void *device2);
+
+	UI_DISPLAY *display;
+	UI_QUEUE_BLOCK queueBlock;
+	int level;
+};
+
+
+Таким образом объекты класса UI_EVENT_MANAGER содержат следующие члены:
+( только данные )
+
+UI_DISPLAY *display		|
+UI_QUEUE_BLOCK queueBlock	| UI_EVENT_MANAGER
+int  level			|
+
+Где:
+
+ UI_DISPLAY *display - указатель на текущий диспейный "драйвер"
+ UI_QUEUE_BLOCK queueBlock -связанный список event'ов (очередь)
+
+
+
+Функции:
+
+UI_EVENT_MANAGER(int noOfElements, UI_DISPLAY *display);
+      - конструктор класса.Инициализирует UI_EVENT_MANAGER::queueBlock=_noOfElements,
+	UI_EVENT_MANAGER::display=display и вызывает конструктор UI_LIST(UI_DEVICE::CompareFunction).
+
+void DevicesHide(const UI_REGION &region);
+      - гашение (замораживание) всех device (с поммощю перебора по всем device) посредством вызова
+	device->Event(event), при event.type=E_DEVICE и event.rawCode=D_HIDE, event.region=region.
+
+void DevicesShow(const UI_REGION &region);
+      - освобождение (размораживание) всех device (с поммощю перебора по всем device) посредством вызова
+	device->Event(event), при event.type=E_DEVICE и event.rawCode=D_SHOW, event.region=region.
+
+void DevicePosition(int deviceType, int column, int line);
+      - позиционирование device'сов посредством вызова UI_EVENT_MANAGER::Event(event), при event.type=deviceType,
+	event.rawCode=D_POSITION, event.position.column=column, event.position.line=line.
+
+int DeviceState(int deviceType, USHORT deviceState);
+      - установка состояния device посредством выызова UI_EVENT_MANAGER::Event(event), при event.type=deviceType,
+	и event.rawCode=deviceState. Возвращает статус, возвернутый UI_EVENT_MANAGER::Event(..).
+
+int Event(const UI_EVENT &event);
+      - обработчик event'а для класса UI_EVENT_MANAGER.Выполняет обработку event'а S_RESET_DISPLAY, причем
+	когда event.type==S_RESET_DISPLAY и ,
+	если event.data==NULL то выполняется восстановление всех device'ов посредством вызова device->Event(tEvent),
+	     где  tEvent.type=E_DEVICE и tEvent.rawCode=D_RESTORE.
+	если event.data!=NULL то event.data считается указателем на UI_DISPLAY и производится перестройка очереди device'сов
+	     с использованием  UI_EVENT_MANAGER::Add(..).
+	   и возвращается D_OFF.
+	в случае event.typ!=S_RESET_DISPLAY для всех device (если event.type==E_DEVICE или для device с device->type==event.type)
+	вызывается device->Event(event),и возвращается возвернутый status
+
+
+int Get(UI_EVENT &event, USHORT flags = Q_NORMAL);
+      - получение event'а.
+	в случае flags (- Q_NO_POLL для всех device вызывается device->Poll();
+	далее производится выборка event из очереди, причем если flags (- Q_END то с конца очереди,
+	 в противном случае- с начала очереди.
+	если flags (- Q_NO_DESTROY- после выборки производится удаление event из очереди посредством
+	 вызова UI_EVENT_MANAGER::queueBlock.Substract((UI_ELEMENT*)element) (где element- элемент очереди полученный
+	 ранее по UI_EVENT_MANAGER::queueBlock.Last()/.First() ).
+	В случае отсутствия event в очереди и flags (- Q_NO_BLOCK производится выход с возвратом -2.
+	Все это исполняется в цикле до тех пор пока нет event'а (за исключением случая, когда flags (- Q_NO_BLOCK)
+	Нормальный выход- возвращяется event и 0.
+
+void Put(const UI_EVENT &event, USHORT flags = Q_END);
+	- помещает event обратно в очередь, причем в зависимости от flags (Q_END или нет)
+	  соответственно в конец или в начало очереди.
+	  При этом element->event (возвращаеммый (UI_QUEUE_ELEMENT *)UI_EVENT_MANAGER::queueBlock.Add(..) ) устанавливается в event.
+
+
+void Subtract(UI_DEVICE *device);
+	- вычитание device из списка (по UI_LIST::Subtract(device)), с предварительнымм сбросом device
+	  посредством device->Event(event), где event.type=device->type и event.rawCode=D_RESTORE.
+
+void Add(UI_DEVICE *device);
+	- добавление device в список посредством UI_LIST::Add(device), а так-же настройка device->display=UI_EVENT_MANAGER::display,
+	  device->eventManager=this.
+	  И наконец инициализация device посредством device->Event(event), где event.type=device->type и  event.rawCode=D_INITIALIZE.
+
+
+
+_____________________________________________________________________________________________________________
+1.4. UI_WINDOW_OBJECT class
+
+class EXPORT UI_WINDOW_OBJECT : public UI_ELEMENT
+
+|-		class EXPORT UI_ELEMENT
+|		{
+|		public:
+|			// Members described in UI_ELEMENT reference chapter.
+|			UI_ELEMENT(void) : previous(NULL), next(NULL) { }
+|			virtual ~UI_ELEMENT(void) { }
+|			UI_ELEMENT *Next(void) { return (next); }
+|			UI_ELEMENT *Previous(void) { return (previous); }
+|
+|		protected:
+|			// Members described in UI_ELEMENT reference chapter.
+|			friend class EXPORT UI_LIST;
+|
+|			UI_ELEMENT *previous, *next;
+|-		};
+{
+	friend class EXPORT UI_WINDOW_MANAGER;
+	friend class EXPORT UIW_WINDOW;
+
+public:
+	// Public members described in UI_WINDOW_OBJECT reference chapter.
+	static UI_EVENT_MAP *eventMapTable;
+	UI_PALETTE_MAP *paletteMapTable;
+
+	USHORT woFlags, woAdvancedFlags, woStatus, woAdvancedStatus;
+	UI_REGION true, relative;
+	UI_WINDOW_OBJECT *parent;
+	UI_DISPLAY *display;
+	UI_EVENT_MANAGER *eventManager;
+	UI_WINDOW_MANAGER *windowManager;
+	UI_PALETTE *lastPalette;
+	int (*Validate)(void *object, int ccode);
+	USHORT helpContext;
+	UCHAR hotKey;
+	void *userObject;
+	USHORT userFlags;
+
+	UI_WINDOW_OBJECT(int left, int top, int width, int height,
+		USHORT _woFlags, USHORT _woAdvancedFlags);
+	virtual ~UI_WINDOW_OBJECT(void);
+
+	virtual int Event(const UI_EVENT &event);
+	virtual void *Information(INFORMATION_REQUEST request, void *data);
+	void InformationSet(SCREENID _screenID, UI_DISPLAY *_display,
+		UI_EVENT_MANAGER *_eventManager, UI_WINDOW_MANAGER *_windowManager,
+		UI_PALETTE_MAP *_paletteMapTable, UI_WINDOW_OBJECT *_parent);
+	int Inherited(USHORT matchID)
+		{ return(matchID == windowID[0] || matchID == windowID[1] ||
+			matchID == windowID[2] || matchID == windowID[3] ||
+			matchID == windowID[4]); }
+	USHORT NumberID(USHORT numberID = 0);
+	int Overlap(const UI_REGION &region);
+	int Overlap(const UI_POSITION &position)
+		{ return(position.column >= true.left &&
+		  position.column <= true.right && position.line >= true.top &&
+		  position.line <= true.bottom); }
+	void Redisplay(int fromRoot);
+	void RegionMax(int leftTop);
+	int Touching(const UI_POSITION &position)
+		{ return(position.column == true.left ||
+		  position.column == true.right || position.line == true.top ||
+		  position.line == true.bottom); }
+	void WindowID(int position, int id) { windowID[position] = id; }
+	char *StringID(const char *stringID = NULL);
+
+#ifdef ZIL_DESIGNER
+	virtual int Editor(const UI_EVENT &event);
+#endif
+#ifdef ZIL_LOAD
+	UI_WINDOW_OBJECT(const char *name, UI_STORAGE *file = NULL, USHORT loadFlags = L_NO_FLAGS);
+#endif
+#ifdef ZIL_STORE
+	virtual void Store(const char *name, UI_STORAGE *file = NULL, USHORT storeFlags = S_NO_FLAGS);
+#endif
+
+	// Public members described in UI_ELEMENT reference chapter.
+	UI_WINDOW_OBJECT *Next(void) { return((UI_WINDOW_OBJECT *)next); }
+	UI_WINDOW_OBJECT *Previous(void) { return((UI_WINDOW_OBJECT *)previous); }
+
+#ifdef ZIL_MSWINDOWS
+	// MS Windows specific members.
+	DWORD MSWindowsStyle;
+	HWND hWnd;
+	HMENU hMenu;
+#endif
+
+protected:
+	// Protected members described in UI_WINDOW_OBJECT reference chapter.
+	SCREENID screenID;
+	int windowID[5];
+	UI_SEARCH_INFO search;
+
+	USHORT markColumn;					// Column where mouse mark initiated.
+	static char *pasteBuffer;			// There is only one global paste buffer.
+	static int pasteLength;
+	static USHORT repeatRate;
+
+	void Border(int ccode, UI_REGION &region, const UI_PALETTE *palette);
+	int LogicalEvent(const UI_EVENT &event, int currentID)
+		{ return (MapEvent(eventMapTable, event, currentID, windowID[0],
+		  windowID[1], windowID[2], windowID[3], windowID[4])); }
+	UI_PALETTE *LogicalPalette(int ccode);
+	int NeedsUpdate(const UI_EVENT &event, int ccode);
+	int NeedsValidation(void);
+	void Shadow(UI_REGION &region, int depth);
+	void Text(char *string, int depth, int ccode, const UI_PALETTE *palette);
+};
+
+Таким образом объекты класса UI_EVENT_MANAGER содержат следующие члены:
+( только данные )
+
+static UI_EVENT_MAP *eventMapTable		|
+UI_PALETTE_MAP *paletteMapTable                 |
+USHORT woFlags                                  |
+USHORT woAdvancedFlags                          |
+USHORT woStatus                                 |
+USHORT woAdvancedStatus                         |
+UI_REGION true, relative                        |
+UI_WINDOW_OBJECT *parent                        |
+UI_DISPLAY *display                             |
+UI_EVENT_MANAGER *eventManager                  |
+UI_WINDOW_MANAGER *windowManager                |
+UI_PALETTE *lastPalette                         |
+int (*Validate)(void *object, int ccode)        |
+USHORT helpContext                              |
+UCHAR hotKey                                    | UI_WINDOW_OBJECT
+void *userObject                                |
+USHORT userFlags                                |
+						|
+#ifdef ZIL_MSWINDOWS                            |
+	// MS Windows specific members.         |
+	DWORD MSWindowsStyle;                   |
+	HWND hWnd;                              |
+	HMENU hMenu;                            |
+#endif                                          |
+						|
+SCREENID screenID;                              |
+int windowID[5];                                |
+UI_SEARCH_INFO search;                          |
+USHORT markColumn;				|	// Column where mouse mark initiated.
+static char *pasteBuffer;			|// There is only one global paste buffer.
+static int pasteLength;                         |
+static USHORT repeatRate;                       |
+
+
+Где:
+ eventMapTable - таблица преобразования event'ов
+ paletteMapTable - палитра объекта
+ woFlags,woAdvancedFlags - флаги объекта
+ woStatus,woAdvancedStatus - статус объекта
+ true,relative - действительный (абсолютный (?)) и относительный регионы, содержащие объект.
+ parent - указатель на связанныый с данным объектом объект.
+ display - указатель на display manager.
+ eventManager - указатель на event manager.
+ windowManager - указатель на window manager.
+ lastPalette - указатель на палитру (какую (?))
+ Validate - указатель на функцию проверки (?) в windows manager'е используется только для  проверки на ==0 (и не вызывается),
+	    а используется в более высоких классах.
+
+ helpContext - используется для управления help системмой.
+ hotKey - hotKey.
+ userObject - дополнительный указатель на произвольные данные (?)
+ userFlags - дополнительные флаги.
+
+ screenID - идентификатор окна.
+ windowID[15] - массив типов окон (ID_STRING,ID_ICON ...), используется при  преобразовании event'ов и палитр.
+ search (?)
+ markColumn (?)
+ pasteBuffer - указатель на буфер сохранения.
+ pasteLength - длинна буфера сохранения.
+ repeatRate - (?) кажется интервал в double click.
+
+
+_____________________________________________________________________________________________________________
+1.5. UI_WINDOW_MANAGER class
+
+class EXPORT UI_WINDOW_MANAGER : public UI_LIST
+
+|-			class EXPORT UI_LIST
+|			{
+|			public:
+|				// Members described in UI_LIST reference chapter.
+|				UI_LIST(int (*_compareFunction)(void *element1, void *element2) = NULL) :
+|					first(NULL), last(NULL), current(NULL), compareFunction(_compareFunction) { }
+|				virtual ~UI_LIST(void) { Destroy(); }
+|				UI_ELEMENT *Add(UI_ELEMENT *newElement);
+|				UI_ELEMENT *Add(UI_ELEMENT *element, UI_ELEMENT *newElement);
+|				int Count(void);
+|				UI_ELEMENT *Current(void) { return (current); }
+|				void Destroy(void);
+|				UI_ELEMENT *First(void) { return (first); }
+|				UI_ELEMENT *Get(int index);
+|				UI_ELEMENT *Get(int (*findFunction)(void *element1, void *matchData), void *matchData);
+|				int Index(UI_ELEMENT const *element);
+|				UI_ELEMENT *Last(void) { return (last); }
+|				void Sort(void);
+|				UI_ELEMENT *Subtract(UI_ELEMENT *element);
+|				UI_LIST &operator+(UI_ELEMENT *element) { Add(element); return (*this); }
+|				UI_LIST &operator-(UI_ELEMENT *element) { Subtract(element); return (*this); };
+|
+|			protected:
+|				// Members described in UI_LIST reference chapter.
+|				friend class EXPORT UI_LIST_BLOCK;
+|
+|				UI_ELEMENT *first, *last, *current;
+|				int (*compareFunction)(void *element1, void *element2);
+|-			};
+
+
+{
+	friend class EXPORT UI_ERROR_SYSTEM;
+	friend class EXPORT UI_HELP_SYSTEM;
+
+public:
+	// Members described in UI_WINDOW_MANAGER reference chapter.
+	static UI_EVENT_MAP *eventMapTable;
+
+	UI_WINDOW_MANAGER(UI_DISPLAY *display, UI_EVENT_MANAGER *eventManager,
+		int (*exitFunction)(UI_DISPLAY *display,
+			UI_EVENT_MANAGER *eventManager, UI_WINDOW_MANAGER *windowManager) = NULL);
+	virtual ~UI_WINDOW_MANAGER(void);
+	virtual int Event(const UI_EVENT &event);
+	UI_WINDOW_OBJECT *Get(const char *name)
+		{ return((UI_WINDOW_OBJECT *)UI_LIST::Get(UI_WINDOW_MANAGER::FindStringID, name)); }
+	UI_WINDOW_OBJECT *Get(USHORT numberID)
+		{ return((UI_WINDOW_OBJECT *)UI_LIST::Get(UI_WINDOW_MANAGER::FindNumberID, &numberID)); }
+	int Index(UI_ELEMENT *object) { return(UI_LIST::Index(object)); }
+
+	// Members described in UI_LIST reference chapter.
+	void Add(UI_WINDOW_OBJECT *object);
+	UI_WINDOW_OBJECT *First(void) { return((UI_WINDOW_OBJECT *)first); }
+	UI_WINDOW_OBJECT *Last(void) { return((UI_WINDOW_OBJECT *)last); }
+	void Subtract(UI_WINDOW_OBJECT *object);
+	UI_WINDOW_MANAGER &operator + (UI_WINDOW_OBJECT *object) { Add(object); return(*this); }
+	UI_WINDOW_MANAGER &operator - (UI_WINDOW_OBJECT *object) { Subtract(object); return(*this); };
+
+protected:
+	static SCREENID screenID;
+	UI_DISPLAY *display;
+	UI_EVENT_MANAGER *eventManager;
+	UI_WINDOW_OBJECT *errorObject;
+	int (*exitFunction)(UI_DISPLAY *display, UI_EVENT_MANAGER *eventManager, UI_WINDOW_MANAGER *windowManager);
+
+	static int FindNumberID(void *object, void *matchName);
+	static int FindStringID(void *object, void *matchName);
+	void Erase(UI_WINDOW_OBJECT *object, const UI_REGION *newRegion);
+	void Modify(UI_WINDOW_OBJECT *object, const UI_EVENT &event);
+	void ToFront(UI_WINDOW_OBJECT *object, int refreshOld, int newWindow);
+};
+
+
+Таким образом объекты класса UI_EVENT_MANAGER содержат следующие члены:
+( только данные )
+
+
+static UI_EVENT_MAP *eventMapTable		|
+static SCREENID screenID;               	|
+UI_DISPLAY *display;                            |
+UI_EVENT_MANAGER *eventManager;                 |
+UI_WINDOW_OBJECT *errorObject;                  | UI_WINDOW_MANAGER
+						|
+int (*exitFunction)(UI_DISPLAY *display,        |
+ UI_EVENT_MANAGER *eventManager,                |
+ UI_WINDOW_MANAGER *windowManager);             |
+
+
+Где:
+
+ eventMapTable - таблица перекодировки evvent'ов
+ screenID - идентификатор окна
+ display - указатель на текущий display manager
+ eventManager - указатель на текущий event manager
+ errorObject - указатель на окно для выдачи  сообщения об ошибке
+ exitFunction - функция завершения (?)
+
+
+Функции:
+
+UI_WINDOW_MANAGER(UI_DISPLAY *display, UI_EVENT_MANAGER *eventManager,
+	int (*exitFunction)(UI_DISPLAY *display,
+		UI_EVENT_MANAGER *eventManager, UI_WINDOW_MANAGER *windowManager) = NULL);
+      - конструктор класса.
+
+virtual int Event(const UI_EVENT &event);
+      - обработчик event'а.Для обработки используется код (ccode),возвращяемый ф. EventMapTable, использующей
+	на входе в качестве event'а event и в качестве идентификатора объекта ID_WINDOW_MANAGER.
+	До обработки полученого event'а поризводится проверка на существование первого объекта (окна)
+	(другими словами на существование хотябы одного окна)и при отсутствии такового и при
+	ccode == L_EXIT осуществляется выход с возвратом L_EXIT.Так-же при отсутствии первого объекта
+	и ccode != S_REDISPLAY && ccode != L_EXIT_FUNCTION осуществляется выход с возвратом S_NO_OBJECT.
+	Для ccode обрабатываются следующие event'ы:
+	 S_RESET_DISPLAY - уничтожаются все объекты с установленным в woAdvancedFlags WOAF_TEMPORARY
+	    за исключением объектов, имеющих установленный в woAdvancedFlags WOAF_NO_DESTROY.
+	    Затем производится установка display в значение (UI_DISPLAY *)event.data (если event.data не пусто,
+	    иначе выход совсем), и сборка списка UI_WINDOW_OBJECT'ов посредством перебора всех, и функции
+	    UI_WINDOW_MANAGER::Add(object).
+	 L_MOVE,
+	 L_SIZE - вызывается Modify(object,tEvent) с предварительной установкой tEvent.
+	    Для L_MOVE tEvent.type=S_MOVE
+		       tEvent.position.column=object->true.left
+		       tEvent.position.line=object->true.top
+		L_SIZE tEvent.type=S_SIZE
+		       tEvent.rawCode=M_RIGHT_CHANGE | M_BOTTOM_CHANGE
+		       tEvent.position.column=object->true.left
+		       tEvent.position.line=object->true.top
+
+	 S_MOVE,
+	 S_SIZE,
+	 S_CHANGE - вызывается Modify(object,tEvent) с предварительной установкой tEvent.
+	    Для S_MOVE && event.rawCode == 0xFFFF
+		       tEvent.position.column=object->true.left
+		       tEvent.position.line=object->true.top
+		S_SIZE && event.rawCode == 0xFFFF
+		       tEvent.position.column=object->true.left
+		       tEvent.position.line=object->true.top
+		       tEvent.rawCode=M_RIGHT_CHANGE | M_BOTTOM_CHANGE
+	 S_MAXIMIZE,
+	 S_MINIMIZE - вызывается Event первого объекта в списке с текущим event.
+
+	 S_CLOSE,
+	 S_CLOSE_TEMPORARY - производится стирание всех temporary объектов (окон), у которых
+		не стоит флаг WOAF_NO_DESTROY.Затем производится удаление из списка
+		текущего объекта (если не стоит WOAF_LOCKED (иначе выход)) и вообще полное его удаление
+		по delete object (если не стоит WOAF_NO_DESTROY), и затем установка ccode
+		в S_CLOSE если есть первый объект (по First()), иначе в S_NO_OBJECT.
+
+	 S_CLEAR - для всех объектов в списке произвадится удаление из списка (если не стоит (у объекта) WOAF_LOCKED,
+		и удаление по delete object (если не стоит WOAF_LOCKED | WOAF_NO_DESTROY). Внимание!!! далее переход к обработке
+		S_CASCADE.
+
+	 S_CASCADE - сначала удаляются все temporary объекты (с установленным WOAF_TEMPORARY), у которых не установлены
+		WOAF_NO_DESTROY. Затем для всех объектов (кроме имеющих флаг WOAS_MINIMIZED) производится перевычисление
+		координат для "каскадинга" и вызывается объектный event(tEvent) , причем tEvent.type=S_MOVE.
+		Внимание!!!!! далее переход к обработке S_REDISPLAY.
+
+	 S_REDISPLAY - сначала удаляются все temporary объекты (с установленным WOAF_TEMPORARY), у которых не установлены
+		WOAF_NO_DESTROY. Затем гасится курсор посредством вызова  eventManager->DeviceState(E_CURSOR,D_OFF), перевыводится
+		задний план дисплея. После чего перевыводятся все объекты (кроме имеющих WOAF_MULTIPLE_REGIONS)
+		посредством вызова object->Event(tEvent) c tEvent->type=S_CREATE, затем устанавливается регион дисплея
+		с помощью display->RegionDefine(object->screenID,object->true), tEvent.type= S_DISPLAY_INACTIVE (для первого объекта
+		S_CURRENT). Для объектов с WOAF_MULTIPLE_REGIONS второй вызов object->Event(tEvent) производится с
+		tEvent.type=S_DEFINE_REGION.
+
+
+
+
+
+

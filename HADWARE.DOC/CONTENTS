@@ -1,0 +1,378 @@
+									-I-
+
+   **  Programmer's  Technical	Reference  for	MSDOS  and  the  IBM  PC **
+컴컴컴컴컴컴컴컴컴컴컴컴캑 Registered User Version 쳐컴컴컴컴컴컴컴컴컴컴컴컴컴
+		 Copyright (c) 1987, 1988, 1989 Dave Williams
+
+
+			       TABLE OF CONTENTS
+
+CHAPTER 1	DOS and the PC						  Pg.  1
+
+Some History ..................................................... 1**1   Pg.  1
+What is DOS? ..................................................... 1**2   Pg.  2
+Other Operating Systems .......................................... 1**3   Pg.  "
+Specific Versions of MS/PC-DOS ................................... 1**4   Pg.  3
+The Operating System Heirarchy ................................... 1**5   Pg.  5
+DOS Structure .................................................... 1**6   Pg.  6
+DOS Initialization ............................................... 1**7   Pg.  8
+
+CHAPTER 2	Low Memory and Absolute Addresses			  Pg. 10
+
+Introduction ..................................................... 2**1   Pg. 10
+System Memory Map ................................................ 2**2   Pg. 11
+PC Port Assignment ............................................... 2**3   Pg. 13
+Reserved Memory Locations ........................................ 2**4   Pg. 16
+	Interrupt Vector Table ...................................   "	  Pg.  "
+	BIOS Data Area ...........................................   "	  Pg.  "
+	DOS Data Area ............................................   "	  Pg.  "
+	BASIC Data Area ..........................................   "	  Pg.  "
+	EGA Signature ............................................   "	  Pg.  "
+	Model and BIOS ID ........................................   "	  Pg.  "
+The IBM PC System Interrupts (Overview) .......................... 2**5   Pg. 22
+	Quick Chart 00h-0FFh .....................................   "	  Pg.  "
+The IBM-PC System Interrupts (in detail) ......................... 2**6   Pg. 25
+	00h-0Fh ..................................................   "	  Pg.  "
+
+CHAPTER 3	The IBM ROM BIOS					  Pg. 31
+
+Calling the ROM BIOS ............................................. 3**1   Pg. 31
+Interrupt 10h  Video Services .................................... 3**2   Pg. 32
+Interrupt 11h  Equipment Check ................................... 3**3   Pg. 33
+Interrupt 12h  Memory Size ....................................... 3**4   Pg. 34
+Interrupt 13h  Disk Functions .................................... 3**5   Pg.  "
+Interrupt 14h  Initialize and Access Serial Port ................. 3**6   Pg.  "
+	       FOSSIL Drivers .................................... 3**7   Pg. 37
+Interrupt 15h  Cassette I/O ...................................... 3**8   Pg. 43
+Interrupt 16h  Keyboard I/O ...................................... 3**9   Pg. 58
+Interrupt 17h  Printer ........................................... 3**10  Pg. 64
+Interrupt 18h  ROM BASIC ......................................... 3**11  Pg. 65
+Interrupt 19h  Bootstrap Loader .................................. 3**12  Pg. 66
+Interrupt 1Ah  Time of Day ....................................... 3**13  Pg. 67
+Interrupt 1Bh  Control-Break ..................................... 3**14  Pg. 69
+Interrupt 1Ch  Timer Tick ........................................ 3**15  Pg.  "
+Interrupt 1Dh  Vector of Video Initialization Parameters ......... 3**16  Pg. 70
+Interrupt 1Eh  Vector of Diskette Controller Parameters .......... 3**17  Pg.  "
+Interrupt 1Fh  Ptr to Graphics Character Extensions (Graphics Set) 3**18  Pg. 71
+
+									-II-
+
+CHAPTER 4	DOS Function Requests					  Pg. 72
+
+								   4**0   Pg. 72
+DOS Registers .................................................... 4**1   Pg. 73
+DOS Stacks ....................................................... 4**2   Pg. 74
+DOS Interrupts ................................................... 4**3   Pg.  "
+Interrupt 20h  Terminate Current Program ......................... 4**4   Pg. 75
+DOS Services (quick list) ........................................ 4**5   Pg.  "
+Calling the DOS Services ......................................... 4**6   Pg. 78
+Version Specific Information ..................................... 4**7   Pg. 79
+DOS Services in Detail ........................................... 4**8   Pg. 80
+
+CHAPTER 5	Interrupts 22h through 0FFh				  Pg.131
+
+Interrupt 22h	Terminate Address ................................ 5**1   Pg.132
+Interrupt 23h	Ctrl-Break Exit Address .......................... 5**2   Pg.  "
+Interrupt 24h	Critical Error Handler ........................... 5**3   Pg.133
+Interrupt 25h	Absolute Disk Read ............................... 5**4   Pg.136
+Interrupt 26h	Absolute Disk Write .............................. 5**5   Pg.  "
+Interrupt 27h	Terminate And Stay Resident ...................... 5**6   Pg.137
+Interrupt 28h	(not documented by Microsoft) .................... 5**7   Pg.138
+Interrupt 29h	(not documented by Microsoft) .................... 5**8   Pg.139
+Interrupt 2Ah	Microsoft Networks - Session Layer Interrupt ..... 5**9   Pg.  "
+Interrupt 2Bh	Unknown .......................................... 5**10  Pg.  "
+Interrupt 2Ch	Unknown .......................................... 5**11  Pg.  "
+Interrupt 2Dh	Unknown .......................................... 5**12  Pg.  "
+Interrupt 2Eh	Alternate EXEC (DOS 2.0+) ........................ 5**13  Pg.  "
+Interrupt 2Fh	Multiplex Interrupt .............................. 5**14  Pg.142
+Interrupt 30h	FAR jump instruction for CP/M-style calls ........ 5**15  Pg.143
+Interrupt 31h	Unknown .......................................... 5**16  Pg.  "
+Interrupt 32h	Unknown .......................................... 5**17  Pg.  "
+Interrupt 33h	Used by Microsoft Mouse Driver Function Calls .... 5**18  Pg.  "
+Interrupt 34h	Turbo C/Microsoft - Floating Point emulation ..... 5**19  Pg.  "
+Interrupt 35h	Turbo C/Microsoft - Floating Point emulation ..... 5**20  Pg.  "
+Interrupt 36h	Turbo C/Microsoft - Floating Point emulation ..... 5**21  Pg.  "
+Interrupt 37h	Turbo C/Microsoft - Floating Point emulation ..... 5**22  Pg.  "
+Interrupt 38h	Turbo C/Microsoft - Floating Point emulation ..... 5**23  Pg.  "
+Interrupt 39h	Turbo C/Microsoft - Floating Point emulation ..... 5**24  Pg.  "
+Interrupt 3Ah	Turbo C/Microsoft - Floating Point emulation ..... 5**25  Pg.  "
+Interrupt 3Bh	Turbo C/Microsoft - Floating Point emulation ..... 5**26  Pg.163
+Interrupt 3Ch	Turbo C/Microsoft - Floating Point emulation ..... 5**27  Pg.  "
+Interrupt 3Dh	Turbo C/Microsoft - Floating Point emulation ..... 5**28  Pg.  "
+Interrupt 3Eh	Turbo C/Microsoft - Floating Point emulation ..... 5**29  Pg.  "
+Interrupt 3Fh	Overlay manager interrupt (Microsoft LINK.EXE) ... 5**30  Pg.  "
+Interrupt 40h	Hard Disk BIOS ................................... 5**31  Pg.  "
+Interrupt 41h	Hard Disk Parameters ............................. 5**32  Pg.  "
+Interrupt 42h	Pointer to screen BIOS entry ..................... 5**33  Pg.164
+Interrupt 43h	Pointer to EGA graphics character table .......... 5**34  Pg.  "
+Interrupt 44h	Pointer to graphics character table .............. 5**35  Pg.  "
+Interrupt 45h	Reserved by IBM  (not initialized) ............... 5**36  Pg.  "
+Interrupt 46h	Pointer to second hard disk parameter block ...... 5**37  Pg.  "
+Interrupt 47h	Reserved by IBM  (not initialized) ............... 5**38  Pg.  "
+Interrupt 48h	Cordless Keyboard Translation .................... 5**39  Pg.  "
+Interrupt 49h	Non-keyboard Scan Code
+		Translation Table Address (PCjr) ................. 5**40  Pg.165
+Interrupt 4Ah	Real-Time Clock Alarm (Convertible, PS/2) ........ 5**41  Pg.166
+Interrupt 4Bh	Reserved by IBM  (not initialized) ............... 5**42  Pg.  "
+Interrupt 4Ch	Reserved by IBM  (not initialized) ............... 5**43  Pg.  "
+Interrupt 4Dh	Reserved by IBM  (not initialized) ............... 5**44  Pg.  "
+Interrupt 4Eh	Reserved by IBM  (not initialized) ............... 5**45  Pg.  "
+Interrupt 4Fh	Reserved by IBM  (not initialized) ............... 5**46  Pg.  "
+Interrupt 50-57 IRQ0-IRQ7 Relocation ............................. 5**47  Pg.  "
+Interrupt 58h	Reserved by IBM  (not initialized) ............... 5**48  Pg.  "
+
+									-III-
+
+Interrupt 59h	Reserved by IBM  (not initialized) ............... 5**49  Pg.  "
+Interrupt 5Ah	Reserved by IBM  (not initialized)  .............. 5**50  Pg.167
+Interrupt 5Bh	Reserved by IBM  (not initialized) ............... 5**51  Pg.  "
+Interrupt 5Ah	Cluster Adapter BIOS entry address ............... 5**52  Pg.  "
+Interrupt 5Bh	Reserved by IBM  (not initialized) ............... 5**53  Pg.  "
+Interrupt 5Ch	NETBIOS interface entry port, TOPS ............... 5**54  Pg.  "
+Interrupt 5Dh	Reserved by IBM  (not initialized) ............... 5**55  Pg.  "
+Interrupt 5Eh	Reserved by IBM  (not initialized) ............... 5**56  Pg.  "
+Interrupt 5Fh	Reserved by IBM  (not initialized) ............... 5**57  Pg.  "
+Interrupt 60h-67h  User Program Interrupts ....................... 5**58  Pg.  "
+Interrupt 68h	Not Used  (not initialized) ...................... 5**59  Pg.168
+Interrupt 69h	Not Used  (not initialized) ...................... 5**60  Pg.  "
+Interrupt 6Ah	Not Used  (not initialized) ...................... 5**61  Pg.  "
+Interrupt 6Bh	Not Used  (not initialized) ...................... 5**62  Pg.  "
+Interrupt 6Ch	System Resume Vector (Convertible) ............... 5**63  Pg.  "
+Interrupt 6Dh	Not Used  (not initialized) ...................... 5**64  Pg.169
+Interrupt 6Eh	Not Used  (not initialized) ...................... 5**65  Pg.  "
+Interrupt 6Fh	10-Net API ....................................... 5**66  Pg.  "
+Interrupt 70h	IRQ 8, Real Time Clock Interrupt (AT,XT/286,PS/2)  5**67  Pg.  "
+Interrupt 71h	IRQ 9, Redirected to IRQ 8 (AT, XT/286, PS/2) .... 5**68  Pg.  "
+Interrupt 72h	IRQ 10	(AT, XT/286, PS/2)  Reserved ............. 5**69  Pg.  "
+Interrupt 73h	IRQ 11	(AT, XT/286, PS/2)  Reserved ............. 5**70  Pg.  "
+Interrupt 74h	IRQ 12	Mouse Interrupt (PS/2) ................... 5**71  Pg.  "
+Interrupt 75h	IRQ 13, Coprocessor Error (AT) ................... 5**72  Pg.170
+Interrupt 76h	IRQ 14, Hard Disk Controller (AT, XT/286, PS/2) .. 5**73  Pg.  "
+Interrupt 77h	IRQ 15 (AT, XT/286, PS/2)  Reserved .............. 5**74  Pg.  "
+Interrupt 78h	Not Used ......................................... 5**75  Pg.  "
+Interrupt 79h	Not Used ......................................... 5**76  Pg.  "
+Interrupt 7Ah	Reserved ......................................... 5**77  Pg.  "
+Interrupt 7Bh-7Eh  Not Used by IBM ............................... 5**78  Pg.  "
+Interrupt 7Ch	REXX-PC API ...................................... 5**79  Pg.171
+Interrupt 7Fh	IBM 8514/A Graphics Adapter API .................. 5**80  Pg.174
+Interrupt 80h-85h  Reserved by BASIC ............................. 5**81  Pg.  "
+Interrupt 86h	Int 18 when relocated by NETBIOS ................. 5**82  Pg.  "
+Interrupt 86h-0F0h Used by BASIC when BASIC interpreter is running 5**83  Pg.  "
+Interrupt 0A4h	Right Hand Man API ............................... 5**84  Pg.  "
+Interrupt  0E0h Digital Research CP/M-86 function calls .......... 5**85  Pg.  "
+Interrupt  0E1h PC Cluster Disk Server Information ............... 5**86  Pg.  "
+Interrupt  0E2h PC Cluster Program ............................... 5**87  Pg.175
+Interrupt 0E4h	Logitech Modula-2 v2.0	 Monitor Entry ........... 5**88  Pg.  "
+Interrupt 0EFh	GEM interface (Digital Research) ................. 5**89  Pg.  "
+Interrupt 0F0h	unknown .......................................... 5**90  Pg.  "
+Interrupts 0F1h-0FFh  (absolute addresses 3C4h-3FFh) ............. 5**91  Pg.  "
+Interrupt 0F8h	Set Shell Interrupt (OEM) ........................ 5**92  Pg.  "
+Interrupt 0F9h	Reserved ......................................... 5**93  Pg.  "
+Interrupt 0FAh	USART ready (RS-232C) ............................ 5**94  Pg.  "
+Interrupt 0FBh	USART RS ready (keyboard) ........................ 5**95  Pg.176
+Interrupt 0FCh	Unknown .......................................... 5**96  Pg.  "
+Interrupt 0FDh	reserved for user interrupt ...................... 5**97  Pg.  "
+Interrupt 0FEh	reserved by IBM .................................. 5**98  Pg.  "
+Interrupt 0FFh	reserved by IBM .................................. 5**99  Pg.  "
+
+CHAPTER 6	DOS Control Blocks and Work Areas			  Pg.177
+
+DOS Address Space ................................................ 6**1   Pg.177
+Storage Blocks ................................................... 6**2   Pg.  "
+Disk Transfer Area (DTA) ......................................... 6**3   Pg.178
+Program Segment Prefix ........................................... 6**4   Pg.179
+Memory Control Blocks ............................................ 6**5   Pg.182
+DOS Program Segment .............................................. 6**6   Pg.185
+
+									-IV-
+
+CHAPTER 7	DOS File Information					  Pg.188
+
+File Management Functions ........................................ 7**1   Pg.188
+FCB Function Calls ............................................... 7**2   Pg.189
+Handle Function Calls ............................................ 7**3   Pg.  "
+Special File Handles ............................................. 7**4   Pg.190
+Raw and Cooked File I/O .......................................... 7**5   Pg.191
+Number of Open Files Allowed  .................................... 7**6   Pg.193
+Restrictions on FCB Usage ........................................ 7**7   Pg.  "
+Restrictions on Handle usage ..................................... 7**8   Pg.  "
+Allocating Space to a File ....................................... 7**9   Pg.  "
+MSDOS / PCDOS Differences ........................................ 7**10  Pg.194
+.COM File Structure .............................................. 7**11  Pg.  "
+.EXE File Structure .............................................. 7**12  Pg.  "
+The Relocation Table ............................................. 7**13  Pg.196
+"NEW" .EXE Format (Microsoft Windows and OS/2) ................... 7**14  Pg.  "
+Standard File Control Block ...................................... 7**15  Pg.197
+Extended File Control Block ...................................... 7**16  Pg.198
+Disk Transfer Area ............................................... 7**17  Pg.199
+
+CHAPTER 8	DOS Disk Information					  Pg.200
+
+The DOS Area ..................................................... 8**1   Pg.201
+The Boot Record .................................................. 8**2   Pg.  "
+DOS File Allocation Table (FAT) .................................. 8**3   Pg.203
+	Media Descriptor Byte .................................... 8**4   Pg.  "
+	12 Bit FATs .............................................. 8**5   Pg.204
+	16 Bit FATs .............................................. 8**6   Pg.205
+	32 Bit FATs .............................................. 8**7   Pg.  "
+DOS Disk Directory ............................................... 8**8   Pg.  "
+The Data Area .................................................... 8**9   Pg.207
+Floppy Disk Types ................................................ 8**10  Pg.208
+Hard Disk Layout ................................................. 8**11  Pg.209
+System Initialization ............................................ 8**12  Pg.  "
+Boot Record/Partition Table ...................................... 8**13  Pg.210
+Hard Disk Technical Information .................................. 8**14  Pg.213
+Determining Hard Disk File Allocation ............................ 8**15  Pg.  "
+BIOS Disk Functions .............................................. 8**16  Pg.  "
+
+CHAPTER 9	Installable Device Drivers				  Pg.225
+
+Device Driver Format ............................................. 9**1   Pg.225
+Types of Devices ................................................. 9**2   Pg.226
+	Creating a Device Driver ................................. 9**3   Pg.  "
+	Structure of a Device Driver ............................. 9**4   Pg.227
+Device Header .................................................... 9**5   Pg.  "
+	Pointer to Next Device Header Field ...................... 9**6   Pg.  "
+	Attribute Field .......................................... 9**7   Pg.228
+	Pointer to Strategy Routines ............................. 9**8   Pg.229
+	Pointer to Interrupt Routines ............................ 9**9   Pg.  "
+	Name/Unit Field .......................................... 9**10  Pg.230
+Installing Device Drivers ........................................ 9**11  Pg.  "
+	Installing Character Devices ............................. 9**12  Pg.  "
+	Installing Block Devices ................................. 9**13  Pg.231
+Request Header ................................................... 9**14  Pg.  "
+	Request Header Length Field .............................. 9**15  Pg.232
+	Unit Code Field .......................................... 9**16  Pg.  "
+	Command Code Field ....................................... 9**17  Pg.  "
+	Status Field ............................................. 9**18  Pg.233
+	Reserved for DOS ......................................... 9**19  Pg.234
+
+									-V-
+
+Device Driver Functions .......................................... 9**20  Pg.234
+	INIT ..................................................... 9**21  Pg.  "
+	MEDIA CHECK .............................................. 9**22  Pg.235
+	Media Descriptor ......................................... 9**23  Pg.236
+	BUILD BPB (BIOS Parameter Block) ......................... 9**24  Pg.  "
+	INPUT / OUTPUT (IOCTL) ................................... 9**25  Pg.237
+	NONDESTRUCTIVE INPUT NO WAIT ............................. 9**26  Pg.238
+	STATUS ................................................... 9**27  Pg.239
+	FLUSH INPUT BUFFERS ...................................... 9**28  Pg.  "
+	FLUSH OUTPUT BUFFERS ..................................... 9**29  Pg.  "
+	OPEN or CLOSE (DOS 3.0+) ................................. 9**30  Pg.240
+	REMOVEABLE MEDIA (DOS 3.0+) .............................. 9**31  Pg.  "
+The CLOCK$ Device ................................................ 9**32  Pg.  "
+
+CHAPTER 10	Lotus/Intel/Microsoft Expanded Memory Specification	  Pg.241
+
+History .......................................................... 10**1  Pg.241
+Uses of Expanded Memory .......................................... 10**2  Pg.  "
+DOS and Expanded Memory .......................................... 10**3  Pg.242
+Different Memory Types ........................................... 10**4  Pg.  "
+AST/Quadram/Ashton-Tate Enhanced EMM ............................. 10**5  Pg.243
+EMS Address Space Map ............................................ 10**6  Pg.244
+Writing Programs That Use Expanded Memory ........................ 10**7  Pg.245
+Page Frames ...................................................... 10**8  Pg.246
+Calling the Manager .............................................. 10**9  Pg.  "
+Detecting EMS .................................................... 10**10 Pg.247
+Terminate and Stay Resident (TSR) Program Cooperation ............ 10**11 Pg.249
+Expanded Memory Services Quick List .............................. 10**12 Pg.  "
+Expanded Memory Services ......................................... 10**13 Pg.250
+	LIM 3.2 Specification .................................... 10**14 Pg.  "
+	LIM 4.0 Specification .................................... 10**15 Pg.255
+	AQA EEMS 3.2 Specification ............................... 10**16 Pg.264
+	VCPI API 1.0 ............................................. 10**17 Pg.265
+Expanded Memory Manager Error Codes .............................. 10**18 Pg.266
+
+CHAPTER 11	Conversion Between Operating Systems			  Pg.268
+
+Overview ......................................................... 11**1  Pg.268
+Special Considerations ........................................... 11**2  Pg.269
+Example Operating Systems ........................................ 11**3  Pg.  "
+Atari ST ......................................................... 11**4  Pg.270
+CP/M ............................................................. 11**5  Pg.271
+MacOS ............................................................ 11**6  Pg.  "
+AmigaDOS ......................................................... 11**7  Pg.  "
+OS/2 ............................................................. 11**8  Pg.  "
+UNIX ............................................................. 11**9  Pg.273
+
+CHAPTER 12	Microsoft Windows API					  Pg.274
+
+Overview ......................................................... 12**1  Pg.274
+Programming Windows .............................................. 12**2  Pg.275
+Versions ......................................................... 12**3  Pg.  "
+Functions ........................................................ 12**4  Pg.  "
+Error Codes ...................................................... 12**5  Pg.363
+Startup Toggles .................................................. 12**6  Pg.364
+Windows Icon File Format ......................................... 12**7  Pg.370
+
+CHAPTER 13	Network Interfacing					  Pg.371
+
+FTP Driver - PC/TCP Packet Driver Specification .................. 13**1  Pg.371
+10-Net Network ................................................... 13**2  Pg.374
+LANtastic LANOS API .............................................. 13**3  Pg.385
+Novell NetWare 2.11 API .......................................... 13**4  Pg.395
+APPC/PC .......................................................... 13**5  Pg.408
+
+									-VI-
+
+CHAPTER 14	Mouse Programming					  Pg.417
+
+General Information .............................................. 14**1  Pg.417
+Register Usage ................................................... 14**2  Pg.418
+Interrupt 33h Function Requests .................................. 14**3  Pg.  "
+Interrupt 10h Function Requests .................................. 14**4  Pg.429
+
+CHAPTER 15	Register-Level Programming				  Pg.430
+
+8555 Peripheral Interface ........................................ 15**1  Pg.430
+8259 Interrupt Controller ........................................ 15**2  Pg.431
+AT CMOS RAM Configuration ........................................ 15**3  Pg.433
+
+CHAPTER 16	Video Programming					  Pg.435
+
+Quick List of BIOS Interrupt 10h Functions ....................... 16**1  Pg.435
+BIOS Interrupt 10h Functions in Detail ........................... 16**2  Pg.436
+
+
+ A P P E N D I C E S
+
+APPENDIX  1	Keyboard scan code chart				  Pg.465
+
+APPENDIX  2	ASCII character chart					  Pg.471
+
+APPENDIX  3	IBM PC character set					  Pg.475
+
+APPENDIX  4	IBM PC error code listing				  Pg.477
+
+APPENDIX  5	Addresses of various manufacturers			  Pg.487
+
+APPENDIX  6	Hard disk information					  Pg.500
+
+APPENDIX  7	Floppy drive information				  Pg.520
+
+APPENDIX  8	Pinouts of various connectors on the IBM PC		  Pg.527
+
+APPENDIX  9	Sizes of various drivers installed in CONFIG.SYS	  Pg.545
+
+APPENDIX  10	Common modem instruction sets				  Pg.547
+
+APPENDIX  11	Glossary of computer terminology			  Pg.553
+
+APPENDIX  12	Various busses used in MSDOS machines			  Pg.584
+
+APPENDIX  13	Common filename extensions				  Pg.586
+
+APPENDIX  14	Clock speeds of various expansion cards 		  Pg.589
+
+APPENDIX  15	Header formats used by various archive utilities	  Pg.592
+
+APPENDIX  16	Miscellaneous Hardware Information			  Pg.603
+
+APPENDIX  17	HP LaserJet setup codes 				  Pg.606
+
+APPENDIX  18	ANSI.SYS						  Pg.609
+
+APPENDIX  19	DEC VT100 escape sequences				  Pg.620
+
+APPENDIX  20	Glossary of DOS Commands				  Pg.623

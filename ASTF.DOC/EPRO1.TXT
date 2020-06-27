@@ -1,0 +1,35 @@
+
+			AstroFORTH+
+		software development system
+
+
+     The AstroFORTH  system  is  an  implementation  of  the
+FORTH-83 language  standard for personal computers, equipped
+with the  i8086/i8088 microprocessors. The AstroFORTH system
+may  be  used  to  design  software  of  different  kinds  -
+operating  systems,  workstations  intellectual  interfaces,
+interactive   information    management   systems,   on-line
+tutorials, computer games etc.
+     The AstroFORTH+  system contains  AstroFORTH system and
+following software packages, providing users with additional
+facilities:
+
+    -  graphic package	for high-resolution graphic (640x200
+     dots, 2 colors, for CGA and EGA);
+    - graphic package for medium-resolution graphic (320x200
+     dots, 4 colors, for CGA and EGA);
+    -  graphic package	for low-resolution  graphic (160x100
+     dots, 16 colors, for CGA only);
+    -  graphic package	for high-resolution graphic (640x350
+     dots, 16 colors, for EGA only);
+   - package for background melodies generation;
+   - float point  arithmetic package  using i8087  numerical
+     coprocessor;
+    -  float point arithmetic package using main i8086/i8088
+     processor for emulation;
+    -  package for  automatic design  of user "menu" systems
+     supporting keyboard and mouse interfaces;
+   - package for FORTH-definitions decompilation and storing
+     obtained FORTH texts in screen files.
+
+

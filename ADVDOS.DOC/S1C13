@@ -1,0 +1,710 @@
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+Chapter 13  Interrupt Handlers
+
+  Interrupts are signals that cause the computer's central processing unit
+  to suspend what it is doing and transfer to a program called an interrupt
+  handler. Special hardware mechanisms that are designed for maximum speed
+  force the transfer. The interrupt handler determines the cause of the
+  interrupt, takes the appropriate action, and then returns control to the
+  original process that was suspended.
+
+  Interrupts are typically caused by events external to the central
+  processor that require immediate attention, such as the following:
+
+  ş  Completion of an I/O operation
+
+  ş  Detection of a hardware failure
+
+  ş  "Catastrophes" (power failures, for example)
+
+  In order to service interrupts more efficiently, most modern processors
+  support multiple interrupt types, or levels. Each type usually has a
+  reserved location in memory, called an interrupt vector, that specifies
+  where the interrupt-handler program for that interrupt type is located.
+  This design speeds processing of an interrupt because the computer can
+  transfer control directly to the appropriate routine; it does not need a
+  central routine that wastes precious machine cycles determining the cause
+  of the interrupt. The concept of interrupt types also allows interrupts to
+  be prioritized, so that if several interrupts occur simultaneously, the
+  most important one can be processed first.
+
+  CPUs that support interrupts must also have the capability to block
+  interrupts while they are executing critical sections of code. Sometimes
+  the CPU can block interrupt levels selectively, but more frequently the
+  effect is global. While an interrupt is being serviced, the CPU masks all
+  other interrupts of the same or lower priority until the active handler
+  has completed its execution; similarly, it can preempt the execution of a
+  handler if a different interrupt with higher priority requires service.
+  Some CPUs can even draw a distinction between selectively masking
+  interrupts (they are recognized, but their processing is deferred) and
+  simply disabling them (the interrupt is thrown away).
+
+  The creation of interrupt handlers has traditionally been considered one
+  of the most arcane of programming tasks, suitable only for the elite cadre
+  of system hackers. In reality, writing an interrupt handler is, in itself,
+  straightforward. Although the exact procedure must, of course, be
+  customized for the characteristics of the particular CPU and operating
+  system, the guidelines on the following page are applicable to almost any
+  computer system.
+
+  A program preparing to handle interrupts must do the following:
+
+  1.  Disable interrupts, if they were previously enabled, to prevent them
+      from occurring while interrupt vectors are being modified.
+
+  2.  Initialize the vector for the interrupt of interest to point to the
+      program's interrupt handler.
+
+  3.  Ensure that, if interrupts were previously disabled, all other vectors
+      point to some valid handler routine.
+
+  4.  Enable interrupts again.
+
+  The interrupt handler itself must follow a simple but rigid sequence of
+  steps:
+
+  1.  Save the system context (registers, flags, and anything else that the
+      handler will modify and that wasn't saved automatically by the CPU).
+
+  2.  Block any interrupts that might cause interference if they were
+      allowed to occur during this handler's processing. (This is often done
+      automatically by the computer hardware.)
+
+  3.  Enable any interrupts that should still be allowed to occur during
+      this handler's processing.
+
+  4.  Determine the cause of the interrupt.
+
+  5.  Take the appropriate action for the interrupt: receive and store data
+      from the serial port, set a flag to indicate the completion of a
+      disk-sector transfer, and so forth.
+
+  6.  Restore the system context.
+
+  7.  Reenable any interrupt levels that were blocked during this handler's
+      execution.
+
+  8.  Resume execution of the interrupted process.
+
+  As in writing any other program, the key to success in writing an
+  interrupt handler is to program defensively and cover all the bases. The
+  main reason interrupt handlers have acquired such a mystical reputation is
+  that they are so difficult to debug when they contain obscure errors.
+  Because interrupts can occur asynchronouslyÄÄthat is, because they can be
+  caused by external events without regard to the state of the currently
+  executing processÄÄbugs in interrupt handlers can cause the system as a
+  whole to behave quite unpredictably.
+
+
+Interrupts and the Intel 80x86 Family
+
+  The Intel 80x86 family of microprocessors supports 256 levels of
+  prioritized interrupts, which can be triggered by three types of events:
+
+  ş  Internal hardware interrupts
+
+  ş  External hardware interrupts
+
+  ş  Software interrupts
+
+Internal Hardware Interrupts
+
+  Internal hardware interrupts, sometimes called faults, are generated by
+  certain events encountered during program execution, such as an attempt to
+  divide by zero. The assignment of such events to certain interrupt numbers
+  is wired into the processor and is not modifiable (Figure 13-1).
+
+
+  Interrupt  Vector    Interrupt            8086/88    80286     80386
+  level      address   trigger
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  00H        00HÄ03H   Divide-by-zero       x          x         x
+  01H        04HÄ07H   Single step          x          x         x
+  02H        08HÄ0BH   Nonmaskable          x          x         x
+                       interrupt (NMI)
+  03H        0CHÄ0FH   Breakpoint           x          x         x
+  04H        10HÄ13H   Overflow             x          x         x
+  05H        14HÄ17H   BOUND exceeded                  x         x
+  06H        18HÄ1BH   Invalid opcode                  x         x
+  07H        1CHÄ1FH   Processor extension             x         x
+                       not available
+  08H        20HÄ23H   Double fault                    x         x
+  09H        24HÄ27H   Segment overrun                 x         x
+  0AH        28HÄ2BH   Invalid task-state              x         x
+                       segment
+  0BH        2CHÄ2FH   Segment not present             x         x
+  0CH        30HÄ33H   Stack segment                   x         x
+                       overrun
+  0DH        34HÄ37H   General protection              x         x
+                       fault
+  0EH        38HÄ3BH   Page fault                                x
+  0FH        3CHÄ3FH   Reserved
+  10H        40HÄ43H   Numeric coprocessor             x         x
+                       error
+  11HÄ1FH    44HÄ7FH   Reserved
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+  Figure 13-1.  Internal interrupts (faults) on the Intel 8086/88, 80286,
+  and 80386 microprocessors.
+
+External Hardware Interrupts
+
+  External hardware interrupts are triggered by peripheral device
+  controllers or by coprocessors such as the 8087/80287. These can be tied
+  to either the CPU's nonmaskable-interrupt (NMI) pin or its
+  maskable-interrupt (INTR) pin. The NMI line is usually reserved for
+  interrupts caused by such catastrophic events as a memory parity error or
+  a power failure.
+
+  Instead of being wired directly to the CPU, the interrupts from external
+  devices can be channeled through a device called the Intel 8259A
+  Programmable Interrupt Controller (PIC). The CPU controls the PIC through
+  a set of I/O ports, and the PIC, in turn, signals the CPU through the INTR
+  pin. The PIC allows the interrupts from specific devices to be enabled and
+  disabled, and their priorities to be adjusted, under program control.
+
+  A single PIC can handle only eight levels of interrupts. However, PICs can
+  be cascaded together in a treelike structure to handle as many levels as
+  desired. For example, 80286- and 80386-based machines with a
+  PC/AT-compatible architecture use two PICs wired together to obtain 16
+  individually configurable levels of interrupts.
+
+  INTR interrupts can be globally enabled and disabled with the CPU's STI
+  and CLI instructions. As you would expect, these instructions have no
+  effect on interrupts received on the CPU's NMI pin.
+
+  The manufacturer of the computer system and/or the manufacturer of the
+  peripheral device assigns external devices to specific 8259A PIC interrupt
+  levels. These assignments are realized as physical electrical connections
+  and cannot be modified by software.
+
+Software Interrupts
+
+  Any program can trigger software interrupts synchronously simply by
+  executing an INT instruction. MS-DOS uses Interrupts 20H through 3FH to
+  communicate with its modules and with application programs. (For instance,
+  the MS-DOS function dispatcher is reached by executing an Int 21H.) The
+  IBM PC ROM BIOS and application software use other interrupts, with either
+  higher or lower numbers, for various purposes (Figure 13-2). These
+  assignments are simply conventions and are not wired into the hardware in
+  any way.
+
+
+  Interrupt          Usage                                Machine
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  00H                Divide-by-zero                       PC, AT, PS/2
+  01H                Single step                          PC, AT, PS/2
+  02H                NMI                                  PC, AT, PS/2
+  03H                Breakpoint                           PC, AT, PS/2
+  04H                Overflow                             PC, AT, PS/2
+  05H                ROM BIOS PrintScreen                 PC, AT, PS/2
+                     BOUND exceeded                       AT, PS/2
+  06H                Reserved                             PC
+                     Invalid opcode                       AT, PS/2
+  07H                Reserved                             PC
+                     80287/80387 not present              AT, PS/2
+  08H                IRQ0 timer tick                      PC, AT, PS/2
+                     Double fault                         AT, PS/2
+  09H                IRQ1 keyboard                        PC, AT, PS/2
+                     80287/80387 segment overrun          AT, PS/2
+  0AH                IRQ2 reserved                        PC
+                     IRQ2 cascade from slave 8259A PIC    AT, PS/2
+                     Invalid task-state segment (TSS)     AT, PS/2
+  0BH                IRQ3 serial communications (COM2)    PC, AT, PS/2
+                     Segment not present                  AT, PS/2
+  0CH                IRQ4 serial communications (COM1)    PC, AT, PS/2
+                     Stack segment overflow               AT, PS/2
+  0DH                IRQ5 fixed disk                      PC
+                     IRQ5 parallel printer (LPT2)         AT
+                     Reserved                             PS/2
+                     General protection fault             AT, PS/2
+  0EH                IRQ6 floppy disk                     PC, AT, PS/2
+                     Page fault                           AT, PS/2
+  0FH                IRQ7 parallel printer (LPT1)         PC, AT, PS/2
+  10H                ROM BIOS video driver                PC, AT, PS/2
+                     Numeric coprocessor fault            AT, PS/2
+  11H                ROM BIOS equipment check             PC, AT, PS/2
+  12H                ROM BIOS conventional-memory size    PC, AT, PS/2
+  13H                ROM BIOS disk driver                 PC, AT, PS/2
+  14H                ROM BIOS communications driver       PC, AT, PS/2
+  15H                ROM BIOS cassette driver             PC
+                     ROM BIOS I/O system extensions       AT, PS/2
+  16H                ROM BIOS keyboard driver             PC, AT, PS/2
+  17H                ROM BIOS printer driver              PC, AT, PS/2
+  18H                ROM BASIC                            PC, AT, PS/2
+  19H                ROM BIOS bootstrap                   PC, AT, PS/2
+  1AH                ROM BIOS time of day                 AT, PS/2
+  1BH                ROM BIOS Ctrl-Break                  PC, AT, PS/2
+  1CH                ROM BIOS timer tick                  PC, AT, PS/2
+  1DH                ROM BIOS video parameter table       PC, AT, PS/2
+  1EH                ROM BIOS floppy-disk parameters      PC, AT, PS/2
+  1FH                ROM BIOS font (characters 80HÄFFH)   PC, AT, PS/2
+  20H                MS-DOS terminate process
+  21H                MS-DOS function dispatcher
+  22H                MS-DOS terminate address
+  23H                MS-DOS Ctrl-C handler address
+  24H                MS-DOS critical-error handler
+                     address
+  25H                MS-DOS absolute disk read
+  26H                MS-DOS absolute disk write
+  27H                MS-DOS terminate and stay resident
+  28H                MS-DOS idle interrupt
+  29H                MS-DOS reserved
+  2AH                MS-DOS network redirector
+  2BHÄ2EH            MS-DOS reserved
+  2FH                MS-DOS multiplex interrupt
+  30HÄ3FH            MS-DOS reserved
+  40H                ROM BIOS floppy-disk driver (if      PC, AT, PS/2
+                     fixed disk installed)
+  41H                ROM BIOS fixed-disk parameters       PC
+                     ROM BIOS fixed-disk parameters       AT, PS/2
+                     (drive 0)
+  42H                ROM BIOS default video driver (if    PC, AT, PS/2
+                     EGA installed)
+  43H                EGA, MCGA, VGA character table       PC, AT, PS/2
+  44H                ROM BIOS font (characters 00HÄ7FH)   PCjr
+  46H                ROM BIOS fixed-disk parameters       AT, PS/2
+                     (drive 1)
+  4AH                ROM BIOS alarm handler               AT, PS/2
+  5AH                Cluster adapter                      PC, AT
+  5BH                Used by cluster program              PC, AT
+  60HÄ66H            User interrupts                      PC, AT, PS/2
+  67H                LIM EMS driver                       PC, AT, PS/2
+  68HÄ6FH            Unassigned
+  70H                IRQ8 CMOS real-time clock            AT, PS/2
+  71H                IRQ9 software diverted to IRQ2       AT, PS/2
+  72H                IRQ10 reserved                       AT, PS/2
+  73H                IRQ11 reserved                       AT, PS/2
+  74H                IRQ12 reserved                       AT
+                     IRQ12 mouse                          PS/2
+  75H                IRQ13 numeric coprocessor            AT, PS/2
+  76H                IRQ14 fixed-disk controller          AT, PS/2
+  77H                IRQ15 reserved                       AT, PS/2
+  78HÄ7FH            Unassigned
+  80HÄF0H            BASIC                                PC, AT, PS/2
+  F1HÄFFH            Not used                             PC, AT, PS/2
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+  Figure 13-2.  Interrupts with special significance on the IBM PC, PC/AT,
+  and PS/2 and compatible computers. Note that the IBM ROM BIOS uses several
+  interrupts in the range 00HÄ1FH, even though they were reserved by Intel
+  for CPU faults. IRQ numbers refer to Intel 8259A PIC priority levels.
+
+The Interrupt-Vector Table
+
+  The bottom 1024 bytes of system memory are called the interrupt-vector
+  table. Each 4-byte position in the table corresponds to an interrupt type
+  (0 through 0FFH) and contains the segment and offset of the interrupt
+  handler for that level. Interrupts 0 through 1FH (the lowest levels) are
+  used for internal hardware interrupts; MS-DOS uses Interrupts 20H through
+  3FH; all the other interrupts are available for use by either external
+  hardware devices or system drivers and application software.
+
+  When an 8259A PIC or other device interrupts the CPU by means of the INTR
+  pin, it must also place the interrupt type as an 8-bit number (0 through
+  0FFH) on the system bus, where the CPU can find it. The CPU then
+  multiplies this number by 4 to find the memory address of the interrupt
+  vector to be used.
+
+Servicing an Interrupt
+
+  When the CPU senses an interrupt, it pushes the program status word (which
+  defines the various CPU flags), the code segment (CS) register, and the
+  instruction pointer (IP) onto the machine stack and disables the interrupt
+  system. It then uses the 8-bit number that was jammed onto the system bus
+  by the interrupting device to fetch the address of the handler from the
+  vector table and resumes execution at that address.
+
+  Usually the handler immediately reenables the interrupt system (to allow
+  higher-priority interrupts to occur), saves any registers it is going to
+  use, and then processes the interrupt as quickly as possible. Some
+  external devices also require a special acknowledgment signal so that they
+  will know the interrupt has been recognized.
+
+  If the interrupt was funneled through an 8259A PIC, the handler must send
+  a special code called end of interrupt (EOI) to the PIC through its
+  control port to tell it when interrupt processing is completed. (The EOI
+  has no effect on the CPU itself.) Finally, the handler executes the
+  special IRET (INTERRUPT RETURN) instruction that restores the original
+  state of the CPU flags, the CS register, and the instruction pointer
+  (Figure 13-3).
+
+  Whether an interrupt was triggered by an external device or forced by
+  software execution of an INT instruction, there is no discernible
+  difference in the system state at the time the interrupt handler receives
+  control. This fact is convenient when you are writing and testing external
+  interrupt handlers because you can debug them to a large extent simply by
+  invoking them with software drivers.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  pic_ctl         equ  20h                     ; control port for 8259A
+                                               ; interrupt controller
+                  .
+                  .
+                  .
+                  sti                          ; turn interrupts back on,
+                  push  ax                     ; save registers
+                  push  bx
+                  push  cx
+                  push  dx
+                  push  si
+                  push  di
+                  push  bp
+                  push  ds
+                  push  es
+
+                  mov   ax,cs                  ; make local data addressable
+                  mov   ds,ax
+                  .                            ; do some stuff appropriate
+                  .                            ; for this interrupt here
+                  .
+                  mov   al,20h                 ; send EOI to 8259A PIC
+                  mov   dx,pic_ctl
+                  out   dx,al
+
+                  pop   es                     ; restore registers
+                  pop   ds
+                  pop   bp
+                  pop   di
+                  pop   si
+                  pop   dx
+                  pop   cx
+                  pop   bx
+                  pop   ax
+                  iret                         ; resume previous processing
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 13-3.  Typical handler for hardware interrupts on the 80x86 family
+  of microprocessors. In real life, the interrupt handler would need to save
+  and restore only the registers that it actually modified. Also, if the
+  handler made extensive use of the machine stack, it would need to save and
+  restore the SS and SP registers of the interrupted process and use its own
+  local stack.
+
+
+Interrupt Handlers and MS-DOS
+
+  The introduction of an interrupt handler into your program brings with it
+  considerable hardware dependence. It goes without saying (but I am saying
+  it again here anyway) that you should avoid such hardware dependence in
+  MS-DOS applications whenever possible, to ensure that your programs will
+  be portable to any machine running current versions of MS-DOS and that
+  they will run properly under future versions of the operating system.
+
+  Valid reasons do exist, however, for writing your own interrupt handler
+  for use under MS-DOS:
+
+  ş  To supersede the MS-DOS default handler for an internal hardware
+     interrupt (such as divide-by-zero, BOUND exceeded, and so forth).
+
+  ş  To supersede the MS-DOS default handler for a defined system exception,
+     such as the critical-error handler or Ctrl-C handler.
+
+  ş  To chain your own interrupt handler onto the default system handler for
+     a hardware device, so that both the system's actions and your own will
+     occur on an interrupt. (A typical example of this is the "clock-tick"
+     interrupt.)
+
+  ş  To service interrupts not supported by the default MS-DOS device
+     drivers (such as the serial communications port, which can be used at
+     much higher speeds with interrupts than with polling).
+
+  ş  To provide a path of communication between a program that terminates
+     and stays resident and other application software.
+
+  MS-DOS provides the following facilities to enable you to install
+  well-behaved interrupt handlers in a manner that does not interfere with
+  operating-system functions or other interrupt handlers:
+
+  Function                             Action
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  Int 21H Function 25H                Set interrupt vector.
+  Int 21H Function 35H                Get interrupt vector.
+  Int 21H Function 31H                Terminate and stay resident.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  These functions allow you to examine or modify the contents of the system
+  interrupt-vector table and to reserve memory for the use of a handler
+  without running afoul of other processes in the system or causing memory
+  use conflicts. Section 2 of this book, "MS-DOS Functions Reference,"
+  describes each of these functions in detail, with programming examples.
+
+  Handlers for external hardware interrupts under MS-DOS must operate under
+  some fairly severe restrictions:
+
+  ş  Because the current versions of MS-DOS are not reentrant, a hardware
+     interrupt handler should never call the MS-DOS functions during the
+     actual interrupt processing.
+
+  ş  The handler must reenable interrupts as soon as it gets control, to
+     avoid crippling other devices or destroying the accuracy of the system
+     clock.
+
+  ş  A program should access the 8259A PIC with great care. The program
+     should not access the PIC unless that program is known to be the only
+     process in the system concerned with that particular interrupt level.
+     And it is vital that the handler issue an end-of-interrupt code to the
+     8259A PIC before performing the IRET; otherwise, the processing of
+     further interrupts for that priority level or lower priority levels
+     will be blocked.
+
+  Restrictions on handlers that replace the MS-DOS default handlers for
+  internal hardware interrupts or system exceptions (such as Ctrl-C or
+  critical errors) are not quite so stringent, but you must still program
+  the handlers with extreme care to avoid destroying system tables or
+  leaving the operating system in an unstable state.
+
+  The following are a few rules to keep in mind when you are writing an
+  interrupt driver:
+
+  ş  Use Int 21H Function 25H (Set Interrupt Vector) to modify the
+     interrupt vector; do not write directly to the interrupt-vector table.
+
+  ş  If your program is not the only process in the system that uses this
+     interrupt level, chain back to the previous handler after performing
+     your own processing on an interrupt.
+
+  ş  If your program is not going to stay resident, fetch and save the
+     current contents of the interrupt vector before modifying it and then
+     restore the original contents when your program exits.
+
+  ş  If your program is going to stay resident, use one of the terminate-
+     and-stay-resident functions (preferably Int 21H Function 31H) to
+     reserve the proper amount of memory for your handler.
+
+  ş  If you are going to process hardware interrupts, keep the time that
+     interrupts are disabled and the total length of the service routine to
+     an absolute minimum. Remember that even after interrupts are reenabled
+     with an STI instruction, interrupts of the same or lower priority
+     remain blocked if the interrupt was received through the 8259A PIC.
+
+
+ZERODIV, an Example Interrupt Handler
+
+  The listing ZERODIV.ASM (Figure 13-4) illustrates some of the principles
+  and guidelines on the previous pages. It is an interrupt handler for the
+  divide-by-zero internal interrupt (type 0). ZERODIV is loaded as a .COM
+  file (usually by a command in the system's AUTOEXEC file) but makes itself
+  permanently resident in memory as long as the system is running.
+
+  The ZERODIV program has two major portions: the initialization portion and
+  the interrupt handler.
+
+  The initialization procedure (called init in the program listing) is
+  executed only once, when the ZERODIV program is executed from the MS-DOS
+  level. The init procedure takes over the type 0 interrupt vector, prints a
+  sign-on message, then performs a terminate-and-stay-resident exit to
+  MS-DOS. This special exit reserves the memory occupied by the ZERODIV
+  program, so that it is not overwritten by subsequent application programs.
+
+  The interrupt handler (called zdiv in the program listing) receives
+  control when a divide-by-zero interrupt occurs. The handler preserves all
+  registers and then prints a message to the user asking whether to continue
+  or to abort the program. We can use the MS-DOS console I/O functions
+  within this particular interrupt handler because we can safely presume
+  that the application was in control when the interrupt occurred; thus,
+  there should be no chance of accidentally making overlapping calls upon
+  the operating system.
+
+  If the user enters a C to continue, the handler simply restores all the
+  registers and performs an IRET (INTERRUPT RETURN) to return control to the
+  application. (Of course, the results of the divide operation will be
+  useless.) If the user enters Q to quit, the handler exits to MS-DOS. Int
+  21H Function 4CH is particularly convenient in this case because it
+  allows the program to pass a return code and at the same time is the only
+  termination function that does not rely on the contents of any of the
+  segment registers.
+
+  For an example of an interrupt handler for external (communications port)
+  interrupts, see the TALK terminal-emulator program in Chapter 7. You may
+  also want to look again at the discussions of Ctrl-C and critical-error
+  exception handlers in Chapters 5 and 8.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+           name      zdivide
+           page      55,132
+           title     ZERODIV--Divide-by-zero handler
+
+  ;
+  ; ZERODIV.ASM--Terminate-and-stay-resident handler
+  ;              for divide-by-zero interrupts
+  ;
+  ; Copyright 1988 Ray Duncan
+  ;
+  ; Build:        C>MASM ZERODIV;
+  ;               C>LINK ZERODIV;
+  ;               C>EXE2BIN ZERODIV.EXE ZERODIV.COM
+  ;               C>DEL ZERODIV.EXE
+  ;
+  ; Usage:        C>ZERODIV
+  ;
+
+  cr      equ     0dh             ; ASCII carriage return
+  lf      equ     0ah             ; ASCII linefeed
+  beep    equ     07h             ; ASCII bell code
+  backsp  equ     08h             ; ASCII backspace code
+
+  _TEXT   segment word public 'CODE'
+
+          org     100H
+
+          assume  cs:_TEXT,ds:_TEXT,es:_TEXT,ss:_TEXT
+
+  init    proc    near            ; entry point at load time
+
+                                  ; capture vector for
+                                  ; interrupt zero...
+          mov     dx,offset zdiv  ; DS:DX = handler address
+          mov     ax,2500h        ; function 25h = set vector
+                                  ; interrupt type = 0
+          int     21h             ; transfer to MS-DOS
+
+                                  ; print sign-on message
+          mov     dx,offset msg1  ; DS:DX = message address
+          mov     ah,9            ; function 09h = display string
+          int     21h             ; transfer to MS-DOS
+
+                                  ; DX = paragraphs to reserve
+          mov     dx,((offset pgm_len+15)/16)+10h
+          mov     ax,3100h        ; function 31h = terminate and
+                                  ; stay resident
+          int     21h             ; transfer to MS-DOS
+
+  init    endp
+
+
+  zdiv    proc    far             ; this is the divide-by-
+                                  ; zero interrupt handler
+
+          sti                     ; enable interrupts
+
+          push    ax              ; save registers
+          push    bx
+          push    cx
+          push    dx
+          push    s 
+          push    di
+          push    bp
+          push    ds
+          push    es
+
+          mov     ax,cs           ; make data addressable
+          mov     ds,ax
+
+                                  ; display message
+                                  ; "Continue or Quit?"
+          mov     dx,offset msg2  ; DS:DX = message address
+          mov     ah,9            ; function 09h = display string
+          int     21h             ; transfer to MS-DOS
+
+  zdiv1:  mov     ah,1            ; function 01h = read keyboard
+          int     21h             ; transfer to MS-DOS
+
+          or      al,20h          ; fold char to lowercase
+
+          cmp     al,'c'          ; is it C or Q?
+          je      zdiv3           ; jump, it's a C
+
+          cmp     al,'q'
+          je      zdiv2           ; jump, it's a Q
+
+                                  ; illegal entry, send beep
+                                  ; and erase the character
+          mov     dx,offset msg3  ; DS:DX = message address
+          mov     ah,9            ; function 09h = display string
+          int     21h             ; transfer to MS-DOS
+
+          jmp     zdiv1           ; try again
+
+  zdiv2:                          ; user chose "Quit"
+          mov     ax,4cffh        ; terminate current program
+          int     21h             ; with return code = 255
+
+  zdiv3:                          ; user chose "Continue"
+                                  ; send CR-LF pair
+          mov     dx,offset msg4  ; DS:DX = message address
+          mov     ah,9            ; function 09h = print string
+          int     21h             ; transfer to MS-DOS
+
+                                  ; what CPU type is this?
+          xor     ax,ax           ; to find out, we'll put
+          push    ax              ; zero in the CPU flags
+          popf                    ; and see what happens
+          pushf
+          pop     ax
+          and     ax,0f000h       ; 8086/8088 forces
+          cmp     ax,0f000h       ; bits 12-15 true
+          je      zdiv5           ; jump if 8086/8088
+
+                                  ; otherwise we must adjust
+                                  ; return address to bypass
+                                  ; the divide instruction...
+          mov     bp,sp           ; make stack addressable
+
+          lds     bx,[bp+18]      ; get address of the
+                                  ; faulting instruction
+
+          mov     bl,[bx+1]       ; get addressing byte
+          and     bx,0c7h         ; isolate mod & r/m fields
+
+          cmp     bl,6            ; mod 0, r/m 6 = direct
+          jne     zdiv4           ; not direct, jump
+
+          add     word ptr [bp+18],4
+          jmp     zdiv5
+
+  zdiv4:  mov     cl,6            ; otherwise isolate mod
+          shr     bx,cl           ; field and get instruction
+          mov     bl,cs:[bx+itab] ; size from table
+          add     [bp+18],bx
+
+  zdiv5:  pop     es              ; restore registers
+          pop     ds
+          pop     bp
+          pop     di
+          pop     si
+          pop     dx
+          pop     cx
+          pop     bx
+          pop     ax
+          iret                    ; return from interrupt
+
+  zdiv    endp
+
+
+  msg1    db      cr,lf           ; load-time sign-on message
+          db      'Divide by Zero Interrupt '
+          db      'Handler installed.'
+          db      cr,lf,'$'
+
+  msg2    db      cr,lf,lf        ; interrupt-time message
+          db      'Divide by Zero detected: '
+          db      cr,lf,'Continue or Quit (C/Q) ? '
+          db      '$'
+
+  msg3    db      beep            ; used if bad entry
+          db      backsp,' ',backsp,'$'
+
+  msg4    db      cr,lf,'$'       ; carriage return-linefeed
+
+                                  ; instruction size table
+  itab    db      2               ; mod = 0
+          db      3               ; mod = 1
+          db      4               ; mod = 2
+          db      2               ; mod = 3
+
+  pgm_len equ     $-init          ; program length
+
+  _TEXT   ends
+
+          end     init
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 13-4.  A simple example of an interrrupt handler for use within the
+  MS-DOS environment. ZERODIV makes itself permanently resident in memory
+  and handles the CPU's internal divide-by-zero interrupt.
+
+
+

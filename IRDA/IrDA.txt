@@ -1,0 +1,43 @@
+The Infrared Data Association (IrDA) defines physical specifications communications protocol standards for the short-range exchange of data over infrared light, for uses such as personal area networks (PANs).
+
+IrPHY
+The mandatory IrPHY (Infrared Physical Layer Specification) is the lowest layer of the IrDA specifications. The most important specifications are:
+-Range (Standard: 1 m, low-power to low power: 0.2 m, Standard to low power: 0.3 m)
+-Angle (minimum cone +-15ø)
+-Speed (2.4 kbit/s to 16 Mbit/s)
+-Modulation (Base band, no carrier)
+-Infrared window
+IrDA transceivers communicate with infrared pulses in a cone that extends minimum 15 degrees half angle off center. The IrDA physical specifications require that a minimum irradiance be maintained so that a signal is visible up to a meter away. Similarly, the specifications require that a maximum irradiance not be exceeded so that a receiver is not overwhelmed with brightness when a device comes close. In practice, there are some devices on the market that do not reach one meter, while other devices may reach up to several meters. There are also devices that do not tolerate extreme closeness. The typical sweet spot for IrDA communications is from 5 cm to 60 cm away from a transceiver, in the center of the cone. IrDA data communications operate in half-duplex mode because while transmitting, a device's receiver is blinded by the light of its own transmitter, and thus, full-duplex communication is not feasible. The two devices that communicate simulate full duplex communication by quickly turning the link around. The primary device controls the timing of the link, but both sides are bound to certain hard constraints and are encouraged to turn the link around as fast as possible. Transmission rates fall into three broad categories: SIR, MIR, and FIR. Serial Infrared (SIR) speeds cover those transmission speeds normally supported by an RS-232 port (9600 bit/s, 19.2 kbit/s, 38.4 kbit/s, 57.6 kbit/s, 115.2 kbit/s). Since the lowest common denominator for all devices is 9600 bit/s, all discovery and negotiation is performed at this baud rate. MIR (Medium Infrared) is not an official term, but is sometimes used to refer to speeds of 0.576 Mbit/s and 1.152 Mbit/s. Fast Infrared (FIR) is deemed an obsolete term by the IrDA physical specification, but is nonetheless in common usage to denote transmission at 4 Mbit/s. "FIR" is sometimes used to refer to all speeds above SIR. However, different encoding approaches are used by MIR and FIR, and different approaches are used to frame MIR and FIR packets. For that reason, these unofficial terms have sprung up to differentiate these two approaches. The future holds faster transmission speeds (currently referred to as Very Fast Infrared, or VFIR) which will support speeds up to 16 Mbit/s. There are (VFIR) infrared transceivers available such as the TFDU8108 operating from 9.6 kbit/s to 16 Mbit/s. The UFIR (Ultra Fast Infrared) protocol is also in development. It will support speeds up to 100 Mbit/s.
+
+IrLAP
+The mandatory IrLAP (Infrared Link Access Protocol) is the second layer of the IrDA specifications. It lies on top of the IrPHY layer and below the IrLMP layer. It represents the Data Link Layer of the OSI model. The most important specifications are:
+-Access control
+-Discovery of potential communication partners
+-Establishing of a reliable bidirectional connection
+-Negotiation of the Primary/Secondary device roles
+On the IrLAP layer the communicating devices are divided into a Primary Device and one or more Secondary Devices. The Primary Device controls the Secondary Devices. Only if the Primary Device requests a Secondary Device to send it is allowed to do so.
+
+IrLMP
+The mandatory IrLMP (Infrared Link Management Protocol) is the third layer of the IrDA specifications. It can be broken down into two parts. First, the LM-MUX (Link Management Multiplexer) which lies on top of the IrLAP layer. Its most important achievements are:
+-Provides multiple logical channels
+-Allows change of Primary/Secondary devices
+Second, the LM-IAS (Link Management Information Access Service), which provides a list, where service providers can register their services so other devices can access these services via querying the LM-IAS.
+
+Tiny TP
+The optional Tiny TP (Tiny Transport Protocol) lies on top of the IrLMP layer. It provides:
+-Transportation of large messages by SAR (Segmentation and Reassembly)
+-Flow control by giving credits to every logical channel
+
+IrCOMM
+The optional IrCOMM (Infrared Communications Protocol) lets the infrared device act like either a serial or parallel port. It lies on top of the IrLMP layer.
+
+IrOBEX
+The optional IrOBEX (Infrared Object Exchange) provides the exchange of arbitrary data objects (e.g. vCard, vCalendar or even applications) between infrared devices. It lies on top of the Tiny TP protocol, so Tiny TP is mandatory for IrOBEX to work.
+
+
+IrLAN
+The optional IrLAN (Infrared Local Area Network) provides the possibility to connect an infrared device to a local area network. There are three possible methods:
+-Access Point
+-Peer to Peer
+-Hosted
+As IrLAN lies on top of the Tiny TP protocol, the Tiny TP protocol must be implemented for IrLAN to work.

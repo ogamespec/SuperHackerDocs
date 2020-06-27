@@ -1,0 +1,852 @@
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+Chapter 6  Video Display
+
+  The visual presentation of an application program is one of its most
+  important elements. Users frequently base their conclusions about a
+  program's performance and "polish" on the speed and attractiveness of its
+  displays. Therefore, a feel for the computer system's display facilities
+  and capabilities at all levels, from MS-DOS down to the bare hardware, is
+  important to you as a programmer.
+
+
+Video Display Adapters
+
+  The video display adapters found in IBM PCÄcompatible computers have a
+  hybrid interface to the central processor. The overall display
+  characteristics, such as vertical and horizontal resolution, background
+  color, and palette, are controlled by values written to I/O ports whose
+  addresses are hardwired on the adapter, whereas the appearance of each
+  individual character or graphics pixel on the display is controlled by a
+  specific location within an area of memory called the regen buffer or
+  refresh buffer. Both the CPU and the video controller access this memory;
+  the software updates the display by simply writing character codes or bit
+  patterns directly into the regen buffer. (This is called memory-mapped
+  I/O.)
+
+  The following adapters are in common use as this book is being written:
+
+  ş  Monochrome/Printer Display Adapter (MDA). Introduced with the original
+     IBM PC in 1981, this adapter supports 80-by-25 text display on a green
+     (monochrome) screen and has no graphics capabilities at all.
+
+  ş  Color/Graphics Adapter (CGA). Also introduced by IBM in 1981, this
+     adapter supports 40-by-25 and 80-by-25 text modes and 320-by-200,
+     4-color or 640-by-200, 2-color graphics (all-points-addressable, or
+     APA) modes on composite or digital RGB monitors.
+
+  ş  Enhanced Graphics Adapter (EGA). Introduced by IBM in 1985 and upwardly
+     compatible from the CGA, this adapter adds support for 640-by-350,
+     16-color graphics modes on digital RGB monitors. It also supports an
+     MDA-compatible text mode.
+
+  ş  Multi-Color Graphics Array (MCGA). Introduced by IBM in 1987 with the
+     Personal System/2 (PS/2) models 25 and 30, this adapter is partially
+     compatible with the CGA and EGA and supports 640-by-480, 2-color or
+     320-by-200, 256-color graphics on analog RGB monitors.
+
+  ş  Video Graphics Array (VGA). Introduced by IBM in 1987 with the PS/2
+     models 50, 60, and 80, this adapter is upwardly compatible from the EGA
+     and supports 640-by-480, 16-color or 320-by-200, 256-color graphics on
+     analog RGB monitors. It also supports an MDA-compatible text mode.
+
+  ş  Hercules Graphics Card, Graphics CardPlus, and InColor Cards. These are
+     upwardly compatible from the MDA for text display but offer graphics
+     capabilities that are incompatible with all of the IBM adapters.
+
+  The locations of the regen buffers for the various IBM PCÄcompatible
+  adapters are shown in Figure 6-1.
+
+         ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+         ³                       ROM BIOS                        ³
+  FE000H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+         ³          System ROM, Stand-alone BASIC, etc.          ³
+  F4000H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+         ³             Reserved for BIOS extensions              ³
+         ³             (hard-disk controller, etc.)              ³
+  C0000H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+         ³                       Reserved                        ³
+  BC000H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+         ³    16 KB regen buffer for CGA, EGA, MCGA, and VGA     ³
+         ³       in text modes and 200-line graphics modes       ³
+  B8000H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+         ³                       Reserved                        ³
+  B1000H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+         ³         4 KB Monochrome Adapter regen buffer          ³
+  B0000H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+         ³       Regen buffer area for EGA, MCGA, and VGA        ³
+         ³        in 350-line or 480-line graphics modes         ³
+  A0000H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+         ³             Transient part of COMMAND.COM             ³
+         ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+         ³                Transient program area                 ³
+  varies ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+         ³                MS-DOS and its buffers,                ³
+         ³              tables, and device drivers               ³
+  00400H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+         ³                   Interrupt vectors                   ³
+  00000H ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+  Figure 6-1.  Memory diagram of an IBM PCÄcompatible personal computer,
+  showing the locations of the regen buffers for various adapters.
+
+
+Support Considerations
+
+  MS-DOS offers several functions to transfer text to the display. Version 1
+  supported only Teletype-like output capabilities; version 2 added an
+  optional ANSI console driver to allow the programmer to clear the screen,
+  position the cursor, and select colors and attributes with standard escape
+  sequences embedded in the output. Programs that use only the MS-DOS
+  functions will operate properly on any computer system that runs MS-DOS,
+  regardless of the level of IBM hardware compatibility.
+
+  On IBM PCÄcompatible machines, the ROM BIOS contains a video driver that
+  programs can invoke directly, bypassing MS-DOS. The ROM BIOS functions
+  allow a program to write text or individual pixels to the screen or to
+  select display modes, video pages, palette, and foreground and background
+  colors. These functions are relatively efficient (compared with the MS-DOS
+  functions, at least), although the graphics support is primitive.
+
+  Unfortunately, the display functions of both MS-DOS and the ROM BIOS were
+  designed around the model of a cursor-addressable terminal and therefore
+  do not fully exploit the capabilities of the memory-mapped, high-bandwidth
+  display adapters used on IBM PCÄcompatible machines. As a result, nearly
+  every popular interactive application with full-screen displays or
+  graphics capability ignores both MS-DOS and the ROM BIOS and writes
+  directly to the video controller's registers and regen buffer.
+
+  Programs that control the hardware directly are sometimes called
+  "ill-behaved," because they are performing operations that are normally
+  reserved for operating-system device drivers. These programs are a severe
+  management problem in multitasking real-mode environments such as DesqView
+  and Microsoft Windows, and they are the main reason why such environments
+  are not used more widely. It could be argued, however, that the blame for
+  such problematic behavior lies not with the application programs but with
+  the failure of MS-DOS and the ROM BIOSÄÄeven six years after the first
+  appearance of the IBM PCÄÄto provide display functions of adequate range
+  and power.
+
+
+MS-DOS Display Functions
+
+  Under MS-DOS versions 2.0 and later, the preferred method for sending text
+  to the display is to use handle-based Int 21H Function 40H (Write File or
+  Device). When an application program receives control, MS-DOS has already
+  assigned it handles for the standard output (1) and standard error (2)
+  devices, and these handles can be used immediately. For example, the
+  sequence at the top of the following page writes the message hello to the
+  display using the standard output handle.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  msg     db      'hello'     ; message to display
+  msg_len equ     $-msg       ; length of message
+          .
+          .
+          .
+          mov     ah,40h      ; function 40h = write file or device
+          mov     bx,1        ; BX = standard output handle
+          mov     cx,msg_len  ; CX = message length
+          mov     dx,seg msg  ; DS:DX = address of message
+          mov     ds,dx
+          mov     dx,offset msg
+          int     21h         ; transfer to MS-DOS
+          jc      error       ; jump if error detected
+          .
+          .
+          .
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  If there is no error, the function returns the carry flag cleared and the
+  number of characters actually transferred in register AX. Unless a Ctrl-Z
+  is embedded in the text or the standard output is redirected to a disk
+  file and the disk is full, this number should equal the number of
+  characters requested.
+
+  As in the case of keyboard input, the user's ability to specify
+  command-line redirection parameters that are invisible to the application
+  means that if you use the predefined standard output handle, you can't
+  always be sure where your output is going. However, to ensure that your
+  output actually goes to the display, you can use the predefined standard
+  error handle, which is always opened to the CON (logical console) device
+  and is not redirectable.
+
+  As an alternative to the standard output and standard error handles, you
+  can bypass any output redirection and open a separate channel to CON,
+  using the handle obtained from that open operation for character output.
+  For example, the following code opens the console display for output and
+  then writes the string hello to it:
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  fname   db      'CON',0      ; name of CON device
+  handle  dw      0            ; handle for CON device
+  msg     db      'hello'      ; message to display
+  msg_len equ     $-msg        ; length of message
+          .
+          .
+          .
+          mov     ax,3d02h     ; AH = function 3dh = open
+                               ; AL = mode = read/write
+          mov     dx,seg fname ; DS:DX = device name
+          mov     ds,dx
+          mov     dx,offset fname
+          int     21h          ; transfer to MS-DOS
+          jc      error        ; jump if open failed
+          mov     handle,ax    ; save handle for CON
+          .
+          .
+          .
+          mov     ah,40h       ; function 40h = write
+          mov     cx,msg_len   ; CX = message length
+          mov     dx,seg msg   ; DS:DX = address of message
+          mov     ds,dx
+          mov     dx,offset msg
+          mov     bx,handle    ; BX = CON device handle
+          int     21h          ; transfer to MS-DOS
+          jc      error        ; jump if error detected
+          .
+          .
+          .
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  As with the keyboard input functions, MS-DOS also supports traditional
+  display functions that are upwardly compatible from the corresponding CP/M
+  output calls:
+
+  ş  Int 21H Function 02H sends the character in the DL register to the
+     standard output device. It is sensitive to Ctrl-C interrupts, and it
+     handles carriage returns, linefeeds, bell codes, and backspaces
+     appropriately.
+
+  ş  Int 21H Function 06H transfers the character in the DL register to the
+     standard output device, but it is not sensitive to Ctrl-C interrupts.
+     You must take care when using this function, because it can also be
+     used for input and for status requests.
+
+  ş  Int 21H Function 09H sends a string to the standard output device. The
+     string is terminated by the $ character.
+
+  With MS-DOS version 2 or later, these three traditional functions are
+  converted internally to handle-based writes to the standard output and
+  thus are susceptible to output redirection.
+
+  The sequence at the top of the following page sounds a warning beep by
+  sending an ASCII bell code (07H) to the display driver using the
+  traditional character-output call Int 21H Function 02H.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+          .
+          .
+          .
+          mov     dl,7        ; 07h = ASCII bell code
+          mov     ah,2        ; function 02h = display character
+          int     21h         ; transfer to MS-DOS
+          .
+          .
+          .
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  The following sequence uses the traditional string-output call Int 21H
+  Function 09H to display a string:
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  msg     db      'hello$'
+          .
+          .
+          .
+          mov     dx,seg msg  ; DS:DX = message address
+          mov     ds,dx
+          mov     dx,offset msg
+          mov     ah,9        ; function 09h = write string
+          int     21h         ; transfer to MS-DOS
+          .
+          .
+          .
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Note that MS-DOS detects the $ character as a terminator and does not
+  display it on the screen.
+
+Screen Control with MS-DOS Functions
+
+  With version 2.0 or later, if MS-DOS loads the optional device driver
+  ANSI.SYS in response to a DEVICE directive in the CONFIG.SYS file,
+  programs can clear the screen, control the cursor position, and select
+  foreground and background colors by embedding escape sequences in the text
+  output. Escape sequences are so called because they begin with an escape
+  character (1BH), which alerts the driver to intercept and interpret the
+  subsequent characters in the sequence. When the ANSI driver is not loaded,
+  MS-DOS simply passes the escape sequence to the display like any other
+  text, usually resulting in a chaotic screen.
+
+  The escape sequences that can be used with the ANSI driver for screen
+  control are a subset of those defined in the ANSI 3.64Ä1979 Standard.
+  These standard sequences are summarized in Figure 6-2. Note that case is
+  significant for the last character in an escape sequence and that numbers
+  must always be represented as ASCII digit strings, not as their binary
+  values. (A separate set of escape sequences supported by ANSI.SYS, but not
+  compatible with the ANSI standard, may be used for reprogramming and
+  remapping the keyboard.)
+
+
+  Escape sequence    Meaning
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  Esc[2J             Clear screen; place cursor in upper left corner (home
+                     position).
+  Esc[K              Clear from cursor to end of line.
+  Esc[row;colH       Position cursor. (Row is the y coordinate in the range
+                     1Ä25 and col is the x coordinate in the range 1Ä80 for
+                     80-by-25 text display modes.) Escape sequences
+                     terminated with the letter f instead of H have the same
+                     effect.
+  Esc[nA             Move cursor up n rows.
+  Esc[nB             Move cursor down n rows.
+  Esc[nC             Move cursor right n columns.
+  Esc[nD             Move cursor left n columns.
+  Esc[s              Save current cursor position.
+  Esc[u              Restore cursor to saved position.
+  Esc[6n             Return current cursor position on the standard input
+                     handle in the format Esc[row;colR.
+  Esc[nm             Select character attributes:
+                      0 = no special attributes
+                      1 = high intensity
+                      2 = low intensity
+                      3 = italic
+                      4 = underline
+                      5 = blink
+                      6 = rapid blink
+                      7 = reverse video
+                      8 = concealed text (no display)
+                     30 = foreground black
+                     31 = foreground red
+                     32 = foreground green
+                     33 = foreground yellow
+                     34 = foreground blue
+                     35 = foreground magenta
+                     36 = foreground cyan
+                     37 = foreground white
+                     40 = background black
+                     41 = background red
+                     42 = background green
+                     43 = background yellow
+                     44 = background blue
+                     45 = background magenta
+                     46 = background cyan
+                     47 = background white
+  Esc[=nh            Select display mode:
+                      0 = 40-by-25, 16-color text (color burst off)
+                      1 = 40-by-25, 16-color text
+                      2 = 80-by-25, 16-color text (color burst off)
+                      3 = 80-by-25, 16-color text
+                      4 = 320-by-200, 4-color graphics
+                      5 = 320-by-200, 4-color graphics (color burst off)
+                      6 = 620-by-200, 2-color graphics
+                     14 = 640-by-200, 16-color graphics (EGA and VGA,
+                     MS-DOS 4.0)
+                     15 = 640-by-350, 2-color graphics (EGA and VGA,
+                     MS-DOS 4.0)
+                     16 = 640-by-350, 16-color graphics (EGA and VGA,
+                     MS-DOS 4.0)
+                     17 = 640-by-480, 2-color graphics (MCGA and VGA,
+                     MS-DOS 4.0)
+                     18 = 640-by-480, 16-color graphics (VGA, MS-DOS 4.0)
+                     19 = 320-by-200, 256-color graphics (MCGA and VGA,
+                     MS-DOS 4.0)
+                     Escape sequences terminated with l instead of h have
+                     the same effect.
+  Esc[=7h            Enable line wrap.
+  Esc[=7l            Disable line wrap.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+  Figure 6-2.  The ANSI escape sequences supported by the MS-DOS ANSI.SYS
+  driver. Programs running under MS-DOS 2.0 or later may use these
+  functions, if ANSI.SYS is loaded, to control the appearance of the display
+  in a hardware-independent manner. The symbol Esc indicates an ASCII escape
+  codeÄÄa character with the value 1BH. Note that cursor positions in ANSI
+  escape sequences are one-based, unlike the cursor coordinates used by the
+  IBM ROM BIOS, which are zero-based. Numbers embedded in an escape sequence
+  must always be represented as a string of ASCII digits, not as their
+  binary values.
+
+Binary Output Mode
+
+  Under MS-DOS version 2 or later, you can substantially increase display
+  speeds for well-behaved application programs without sacrificing hardware
+  independence by selecting binary (raw) mode for the standard output. In
+  binary mode, MS-DOS does not check between each character it transfers to
+  the output device for a Ctrl-C waiting at the keyboard, nor does it filter
+  the output string for certain characters such as Ctrl-Z.
+
+  Bit 5 in the device information word associated with a device handle
+  controls binary mode. Programs access the device information word by using
+  Subfunctions 00H and 01H of the MS-DOS IOCTL function (I/O Control, Int
+  21H Function 44H). For example, the sequence on the following page places
+  the standard output handle into binary mode.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+                              ; get device information...
+          mov     bx,1        ; standard output handle
+          mov     ax,4400h    ; function 44h subfunction 00h
+          int     21h         ; transfer to MS-DOS
+
+          mov     dh,0        ; set upper byte of DX = 0
+          or      dl,20h      ; set binary mode bit in DL
+
+                              ; write device information...
+                              ; (BX still has handle)
+          mov     ax,4401h    ; function 44h subfunction 01h
+          int     21h         ; transfer to MS-DOS
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Note that if a program changes the mode of any of the standard handles, it
+  should restore those handles to ASCII (cooked) mode before it exits.
+  Otherwise, subsequent application programs may behave in unexpected ways.
+  For more detailed information on the IOCTL function, see Section II of
+  this book, "MS-DOS Functions Reference."
+
+
+The ROM BIOS Display Functions
+
+  You can somewhat improve the display performance of programs that are
+  intended for use only on IBM PCÄcompatible machines by using the ROM BIOS
+  video driver instead of the MS-DOS output functions. Accessed by means of
+  Int 10H, the ROM BIOS driver supports the following functions for all of
+  the currently available IBM display adapters:
+
+
+  Function           Action
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  Display mode control
+  00H               Set display mode.
+  0FH               Get display mode.
+
+  Cursor control
+  01H               Set cursor size.
+  02H               Set cursor position.
+  03H               Get cursor position and size.
+
+  Writing to the display
+  09H               Write character and attribute at cursor.
+  0AH               Write character-only at cursor.
+  0EH               Write character in teletype mode.
+
+  Reading from the display
+  08H               Read character and attribute at cursor.
+
+  Graphics support
+  0CH               Write pixel.
+  0DH               Read pixel.
+
+  Scroll or clear display
+  06H               Scroll up or initialize window.
+  07H               Scroll down or initialize window.
+
+  Miscellaneous
+  04H               Read light pen.
+  05H               Select display page.
+  0BH               Select palette/set border color.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+  Additional ROM BIOS functions are available on the EGA, MCGA, VGA, and
+  PCjr to support the enhanced features of these adapters, such as
+  programmable palettes and character sets (fonts). Some of the functions
+  are valid only in certain display modes.
+
+  Each display mode is characterized by the number of colors it can display,
+  its vertical resolution, its horizontal resolution, and whether it
+  supports text or graphics memory mapping. The ROM BIOS identifies it with
+  a unique number. Section III of this book, "IBM ROM BIOS and Mouse
+  Functions Reference," documents all of the ROM BIOS Int 10H functions and
+  display modes.
+
+  As you can see from the preceding list, the ROM BIOS offers several
+  desirable capabilities that are not available from MS-DOS, including
+  initialization or scrolling of selected screen windows, modification of
+  the cursor shape, and reading back the character being displayed at an
+  arbitrary screen location. These functions can be used to isolate your
+  program from the hardware on any IBM PCÄcompatible adapter. However, the
+  ROM BIOS functions do not suffice for the needs of a high-performance,
+  interactive, full-screen program such as a word processor. They do not
+  support the rapid display of character strings at an arbitrary screen
+  position, and they do not implement graphics operations at the level
+  normally required by applications (for example, bit-block transfers and
+  rapid drawing of lines, circles, and filled polygons). And, of course,
+  they are of no use whatsoever in non-IBM display modes such as the
+  monochrome graphics mode of the Hercules Graphics Card.
+
+  Let's look at a simple example of a call to the ROM BIOS video driver. The
+  following sequence writes the string hello to the screen:
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  msg     db      'hello'
+  msg_len equ     $-msg
+          .
+          .
+          .
+          mov     si,seg msg  ; DS:SI = message address
+          mov     ds,si
+          mov     si,offset msg
+          mov     cx,msg_len  ; CX = message length
+          cld
+  next:   lodsb               ; get AL = next character
+          push    si          ; save message pointer
+          mov     ah,0eh      ; int 10h function 0eh = write
+                              ; character in teletype mode
+          mov     bh,0        ; assume video page 0
+          mov     bl,color    ; (use in graphics modes only)
+          int     10h         ; transfer to ROM BIOS
+          pop     si          ; restore message pointer
+          loop    next        ; loop until message done
+          .
+          .
+          .
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  (Note that the SI and DI registers are not necessarily preserved across a
+  call to a ROM BIOS video function.)
+
+
+Memory-mapped Display Techniques
+
+  Display performance is best when an application program takes over
+  complete control of the video adapter and the refresh buffer. Because the
+  display is memory-mapped, the speed at which characters can be put on the
+  screen is limited only by the CPU's ability to copy bytes from one
+  location in memory to another. The trade-off for this performance is that
+  such programs are highly sensitive to hardware compatibility and do not
+  always function properly on "clones" or even on new models of IBM video
+  adapters.
+
+Text Mode
+
+  Direct programming of the IBM PCÄcompatible video adapters in their text
+  display modes (sometimes also called alphanumeric display modes) is
+  straightforward. The character set is the same for all, and the cursor
+  home positionÄÄ(x,y) = (0,0)ÄÄis defined to be the upper left corner of
+  the screen (Figure 6-3). The MDA uses 4 KB of memory starting at segment
+  B000H as a regen buffer, and the various adapters with both text and
+  graphics capabilities (CGA, EGA, MCGA, and VGA) use 16 KB of memory
+  starting at segment B800H. (See Figure 6-1.) In the latter case, the 16
+  KB is divided into "pages" that can be independently updated and
+  displayed.
+
+   (0,0)ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿(79,0)
+        ³                                 ³
+        ³                                 ³
+        ³                                 ³
+        ³                                 ³
+        ³                                 ³
+        ³                                 ³
+        ³                                 ³
+  (0,24)ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ(79,24)
+
+  Figure 6-3.  Cursor addressing for 80-by-25 text display modes (IBM ROM
+  BIOS modes 2, 3, and 7).
+
+  Each character-display position is allotted 2 bytes in the regen buffer.
+  The first byte (even address) contains the ASCII code of the character,
+  which is translated by a special hardware character generator into a
+  dot-matrix pattern for the screen. The second byte (odd address) is the
+  attribute byte. Several bit fields in this byte control such features as
+  blinking, intensity (highlighting), and reverse video, depending on the
+  adapter type and display mode (Figures 6-4 and 6-5). Figure 6-6 shows a
+  hex and ASCII dump of part of the video map for the MDA.
+
+  Display                  Background              Foreground
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  No display (black)       000                     000
+  No display (white)
+VGA only
+      111                     111
+  Underline                000                     001
+  Normal video             000                     111
+  Reverse video            111                     000
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 6-4.  Attribute byte for 80-by-25 monochrome text display mode on
+  the MDA, Hercules cards, EGA, and VGA (IBM ROM BIOS mode 7).
+
+  Value              Color
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+   0                 Black
+   1                 Blue
+   2                 Green
+   3                 Cyan
+   4                 Red
+   5                 Magenta
+   6                 Brown
+   7                 White
+   8                 Gray
+   9                 Light blue
+  10                 Light green
+  11                 Light cyan
+  12                 Light red
+  13                 Light magenta
+  14                 Yellow
+  15                 Intense white
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 6-5.  Attribute byte for the 40-by-25 and 80-by-25 text display
+  modes on the CGA, EGA, MCGA, and VGA (IBM ROM BIOS modes 0Ä3). The table
+  of color values assumes default palette programming and that the B or I
+  bit controls intensity.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  B000:0000 3e 07 73 07 65 07 6c 07 65 07 63 07 74 07 20 07
+  B000:0010 74 07 65 07 6d 07 70 07 20 07 20 07 20 07 20 07
+  B000:0020 20 07 20 07 20 07 20 07 20 07 20 07 20 07 20 07
+  B000:0030 20 07 20 07 20 07 20 07 20 07 20 07 20 07 20 07
+  B000:0040 20 07 20 07 20 07 20 07 20 07 20 07 20 07 20 07
+  B000:0050 20 07 20 07 20 07 20 07 20 07 20 07 20 07 20 07
+  B000:0060 20 07 20 07 20 07 20 07 20 07 20 07 20 07 20 07
+  B000:0070 20 07 20 07 20 07 20 07 20 07 20 07 20 07 20 07
+  B000:0080 20 07 20 07 20 07 20 07 20 07 20 07 20 07 20 07
+  B000:0090 20 07 20 07 20 07 20 07 20 07 20 07 20 07 20 07
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 6-6.  Example dump of the first 160 bytes of the MDA's regen
+  buffer. These bytes correspond to the first visible line on the screen.
+  Note that ASCII character codes are stored in even bytes and their
+  respective character attributes in odd bytes; all the characters in this
+  example line have the attribute normal video.
+
+  You can calculate the memory offset of any character on the display as the
+  line number (y coordinate) times 80 characters per line times 2 bytes per
+  character, plus the column number (x coordinate) times 2 bytes per
+  character, plus (for the text/graphics adapters) the page number times the
+  size of the page (4 KB per page in 80-by-25 modes; 2 KB per page in
+  40-by-25 modes). In short, the formula for the offset of the
+  character-attribute pair for a given screen position (x,y) in 80-by-25
+  text modes is
+
+    offset = ((y * 50H + x) * 2) + (page * 1000H)
+
+  In 40-by-25 text modes, the formula is
+
+    offset = ((y * 50H + x) * 2) + (page * 0800H)
+
+  Of course, the segment register being used to address the video buffer
+  must be set appropriately, depending on the type of display adapter.
+
+  As a simple example, assume that the character to be displayed is in the
+  AL register, the desired attribute byte for the character is in the AH
+  register, the x coordinate (column) is in the BX register, and the y
+  coordinate (row) is in the CX register. The following code stores the
+  character and attribute byte into the MDA's video refresh buffer at the
+  proper location:
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+          push    ax          ; save char and attribute
+          mov     ax,160
+          mul     cx          ; DX:AX = Y * 160
+          shl     bx,1        ; multiply X by 2
+          add     bx,ax       ; BX = (Y*160) + (X*2)
+          mov     ax,0b000h   ; ES = segment of monochrome
+          mov     es,ax       ; adapter refresh buffer
+          pop     ax          ; restore char and attribute
+          mov     es:[bx],ax  ; write them to video buffer
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  More frequently, we wish to move entire strings into the refresh buffer,
+  starting at a given coordinate. In the next example, assume that the DS:SI
+  registers point to the source string, the ES:DI registers point to the
+  starting position in the video buffer (calculated as shown in the previous
+  example), the AH register contains the attribute byte to be assigned to
+  every character in the string, and the CX register contains the length of
+  the string. The following code moves the entire string into the refresh
+  buffer:
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  xfer:   lodsb               ; fetch next character
+          stosw               ; store char + attribute
+          loop    xfer        ; until all chars moved
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Of course, the video drivers written for actual application programs must
+  take into account many additional factors, such as checking for special
+  control codes (linefeeds, carriage returns, tabs), line wrap, and
+  scrolling.
+
+  Programs that write characters directly to the CGA regen buffer in text
+  modes must deal with an additional complicating factorÄÄthey must examine
+  the video controller's status port and access the refresh buffer only
+  during the horizontal retrace or vertical retrace intervals. (A retrace
+  interval is the period when the electron beam that illuminates the screen
+  phosphors is being repositioned to the start of a new scan line.)
+  Otherwise, the contention for memory between the CPU and the video
+  controller is manifest as unsightly "snow" on the display. (If you are
+  writing programs for any of the other IBM PCÄcompatible video adapters,
+  such as the MDA, EGA, MCGA, or VGA, you can ignore the retrace intervals;
+  snow is not a problem with these video controllers.)
+
+  A program can detect the occurrence of a retrace interval by monitoring
+  certain bits in the video controller's status register. For example,
+  assume that the offset for the desired character position has been
+  calculated as in the preceding example and placed in the BX register, the
+  segment for the CGA's refresh buffer is in the ES register, and an ASCII
+  character code to be displayed is in the CL register. The following code
+  waits for the beginning of a new horizontal retrace interval and then
+  writes the character into the buffer:
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+          mov     dx,03dah    ; DX = video controller's
+                              ; status port address
+          cli                 ; disable interrupts
+
+                              ; if retrace is already
+                              ; in progress, wait for
+                              ; it to end...
+  wait1:  in      al,dx       ; read status port
+          and     al,1        ; check if retrace bit on
+          jnz     wait1       ; yes, wait
+
+                              ; wait for new retrace
+                              ; interval to start...
+  wait2:  in      al,dx       ; read status port
+          and     al,1        ; retrace bit on yet?
+          jz      wait2       ; jump if not yet on
+
+          mov     es:[bx],cl  ; write character to
+                              ; the regen buffer
+          sti                 ; enable interrupts again
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  The first wait loop "synchronizes" the code to the beginning of a
+  horizontal retrace interval. If only the second wait loop were used (that
+  is, if a character were written when a retrace interval was already in
+  progress), the write would occasionally begin so close to the end of a
+  horizontal retrace "window" that it would partially miss the retrace,
+  resulting in scattered snow at the left edge of the display. Notice that
+  the code also disables interrupts during accesses to the video buffer, so
+  that service of a hardware interrupt won't disrupt the synchronization
+  process.
+
+  Because of the retrace-interval constraints just outlined, the rate at
+  which you can update the CGA in text modes is severely limited when the
+  updating is done one character at a time. You can obtain better results by
+  calculating all the relevant addresses and setting up the appropriate
+  registers, disabling the video controller by writing to register 3D8H,
+  moving the entire string to the buffer with a REP MOVSW operation, and
+  then reenabling the video controller. If the string is of reasonable
+  length, the user won't,even notice a flicker in the display. Of course,
+  this procedure introduces additional hardware dependence into your code
+  because it requires much greater knowledge of the 6845 controller.
+  Luckily, snow is not a problem in CGA graphics modes.
+
+Graphics Mode
+
+  Graphics-mode memory-mapped programming for IBM PCÄcompatible adapters is
+  considerably more complicated than text-mode programming. Each bit or
+  group of bits in the regen buffer corresponds to an addressable point, or
+  pixel, on the screen. The mapping of bits to pixels differs for each of
+  the available graphics modes, with their differences in resolution and
+  number of supported colors. The newer adapters (EGA, MCGA, and VGA) also
+  use the concept of bit planes, where bits of a pixel are segregated into
+  multiple banks of memory mapped at the same address; you must manipulate
+  these bit planes by a combination of memory-mapped I/O and port
+  addressing.
+
+  IBM-video-systems graphics programming is a subject large enough for a
+  book of its own, but we can use the 640-by-200, 2-color graphics display
+  mode of the CGA (which is also supported by all subsequent IBM
+  text/graphics adapters) to illustrate a few of the techniques involved.
+  This mode is simple to deal with because each pixel is represented by a
+  single bit. The pixels are assigned (x,y) coordinates in the range (0,0)
+  through (639,199), where x is the horizontal displacement, y is the
+  vertical displacement, and the home position (0,0) is the upper left
+  corner of the display. (See Figure 6-7.)
+
+    (0,0)ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿(639,0)
+         ³                                 ³
+         ³                                 ³
+         ³                                 ³
+         ³                                 ³
+         ³                                 ³
+         ³                                 ³
+         ³                                 ³
+  (0,199)ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ(639,199)
+
+  Figure 6-7.  Point addressing for 640-by-200, 2-color graphics modes on
+  the CGA, EGA, MCGA, and VGA (IBM ROM BIOS mode 6).
+
+  Each successive group of 80 bytes (640 bits) represents one horizontal
+  scan line. Within each byte, the bits map one-for-one onto pixels, with
+  the most significant bit corresponding to the leftmost displayed pixel of
+  a set of eight pixels and the least significant bit corresponding to the
+  rightmost displayed pixel of the set. The memory map is set up so that all
+  the even y coordinates are scanned as a set and all the odd y coordinates
+  are scanned as a set; this mapping is referred to as the memory interlace.
+
+  To find the regen buffer offset for a particular (x,y) coordinate, you
+  would use the following formula:
+
+    offset = ((y AND 1) * 2000H) + (y/2 * 50H) + (x/8)
+
+  The assembly-language implementation of this formula is as follows:
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+                              ; assume AX = Y, BX = X
+          shr     bx,1        ; divide X by 8
+          shr     bx,1
+          shr     bx,1
+          push    ax          ; save copy of Y
+          shr     ax,1        ; find (Y/2) * 50h
+          mov     cx,50h      ; with product in DX:AX
+          mul     cx
+          add     bx,ax       ; add product to X/8
+          pop     ax          ; add (Y AND 1) * 2000h
+          and     ax,1
+          jz      label1
+          add     bx,2000h
+  label1:                     ; now BX = offset into
+                              ; video buffer
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  After calculating the correct byte address, you can use the following
+  formula to calculate the bit position for a given pixel coordinate:
+
+    bit = 7 - (x MOD 8)
+
+  where bit 7 is the most significant bit and bit 0 is the least significant
+  bit. It is easiest to build an 8-byte table, or array of bit masks, and
+  use the operation X AND 7 to extract the appropriate entry from the table:
+
+  (X AND 7)          Bit mask          (X AND 7)          Bit mask
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  0                  80H               4                  08H
+  1                  40H               5                  04H
+  2                  20H               6                  02H
+  3                  10H               7                  01H
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  The assembly-language implementation of this second calculation is as
+  follows:
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  table   db      80h         ; X AND 7 = offset 0
+          db      40h         ; X AND 7 = offset 1
+          db      20h         ; X AND 7 = offset 2
+          db      10h         ; X AND 7 = offset 3
+          db      08h         ; X AND 7 = offset 4
+          db      04h         ; X AND 7 = offset 5
+          db      02h         ; X AND 7 = offset 6
+          db      01h         ; X AND 7 = offset 7
+          .
+          .
+          .
+                              ; assume BX = X coordinate
+          and     bx,7        ; isolate 0Ä7 offset
+          mov     al,[bx+table]
+                              ; now AL = mask from table
+          .
+          .
+          .
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  The program can then use the mask, together with the byte offset
+  previously calculated, to set or clear the appropriate bit in the video
+  controller's regen buffer.
+
+
+

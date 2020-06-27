@@ -1,0 +1,32 @@
+    The  program  INTHELP  converts  the  raw  Interrupt file into an input
+file  for  the  Object  Professional  MAKEHELP  program to create a POPHELP
+database.
+
+    The command line syntax is :
+  c:> INTHELP [inputfile-name] [outputfile-name]
+
+    The  square  brackets  mean  that  the  filenames  are optional. If you
+don't specify them,  the program will prompt you for the missing name(s).
+
+    From  the  5/91  list, it creates a 1.2M source file for MAKEHELP which
+then creates a help database of about 951K.
+
+Hint : run the MAKEHELP utility with the /q qualifier because some of
+       the topics cross-reference themselves (in the 5/91 list).
+       These topics are : - INT 10 / AX=4400
+                          - INT 67 / AX=4700
+                          - INT 67 / AX=0E07
+                          - INT 6A / AX=D000
+
+    The created help database has 3 levels of hierarchy and the correct
+connections, including cross-references.
+
+    There are two versions of this utility using the same command line
+conventions : INTHELP and FANCYHELP. The only difference between the two
+is the user-interface.
+
+Frank Van Camp
+Beekvelden  25
+2840      REET
+Belgium
+

@@ -1,0 +1,30 @@
+
+			AstroFORTH++
+		software development system
+
+
+     The AstroFORTH  system  is  an  implementation  of  the
+FORTH-83 language  standard for personal computers, equipped
+with the  i8086/i8088 microprocessors. The AstroFORTH system
+may  be  used  to  design  software  of  different  kinds  -
+operating  systems,  workstations  intellectual  interfaces,
+interactive   information    management   systems,   on-line
+tutorials, computer games etc.
+     The AstroFORTH+  system contains  AstroFORTH system,  a
+number of software packages, providing users with additional
+facilities (computer  graphic, melodies  generation,  float-
+point arithmetic etc.), instrumental and target compilers.
+     Instrumental compiler  is developped to design extended
+and non-standard  FORTH-systems.  Created  programs  support
+dictionary structure  and  may	use  all  FORTH-83  language
+standard facilities.
+     Target  compiler	is  developped	 to  design  compact
+programs, not supporting dictionary structure and using only
+basic  mechanisms   of	the   FORTH-83	language   standard.
+Programs, compiled  by target  compiler, may  use AstroFORTH
+enhancements, including  user window  interface and  some of
+AstroFORTH+  packages.	 Program  assembly  is	carryed  out
+automatically,	 created   program   contains	only   those
+definitions, which are used when executed.
+
+

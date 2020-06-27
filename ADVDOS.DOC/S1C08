@@ -1,0 +1,1735 @@
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+Chapter 8  File Management
+
+  The dual heritage of MS-DOSÄÄCP/M and UNIX/XENIXÄÄis perhaps most clearly
+  demonstrated in its file-management services. In general, MS-DOS provides
+  at least two distinct operating-system calls for each major file or record
+  operation. This chapter breaks this overlapping battery of functions into
+  two groups and explains the usage, advantages, and disadvantages of each.
+
+  I will refer to the set of file and record functions that are compatible
+  with CP/M as FCB functions. These functions rely on a data structure
+  called a file control block (hence, FCB) to maintain certain bookkeeping
+  information about open files. This structure resides in the application
+  program's memory space. The FCB functions allow the programmer to create,
+  open, close, and delete files and to read or write records of any size at
+  any record position within such files. These functions do not support the
+  hierarchical (treelike) file structure that was first introduced in MS-DOS
+  version 2.0, so they can be used only to access files in the current
+  subdirectory for a given disk drive.
+
+  I will refer to the set of file and record functions that provide
+  compatibility with UNIX/XENIX as the handle functions. These functions
+  allow the programmer to open or create files by passing MS-DOS a
+  null-terminated string that describes the file's location in the
+  hierarchical file structure (the drive and path), the file's name, and its
+  extension. If the open or create operation is successful, MS-DOS returns a
+  16-bit token, or handle, that is saved by the application program and used
+  to specify the file in subsequent operations.
+
+  When you use the handle functions, the operating system maintains the data
+  structures that contain bookkeeping information about the file inside its
+  own memory space, and these structures are not accessible to the
+  application program. The handle functions fully support the hierarchical
+  file structure, allowing the programmer to create, open, close, and delete
+  files in any subdirectory on any disk drive and to read or write records
+  of any size at any byte offset within such files.
+
+  Although we are discussing the FCB functions first in this chapter for
+  historical reasons, new MS-DOS applications should always be written using
+  the more powerful handle functions. Use of the FCB functions in new
+  programs should be avoided, unless compatibility with MS-DOS version 1.0
+  is needed.
+
+
+Using the FCB Functions
+
+  Understanding the structure of the file control block is the key to
+  success with the FCB family of file and record functions. An FCB is a
+  37-byte data structure allocated within the application program's memory
+  space; it is divided into many fields (Figure 8-1). Typically, the
+  program initializes an FCB with a drive code, a filename, and an extension
+  (conveniently accomplished with the parse-filename service, Int 21H
+  Function 29H) and then passes the address of the FCB to MS-DOS to open or
+  create the file. If the file is successfully opened or created, MS-DOS
+  fills in certain fields of the FCB with information from the file's entry
+  in the disk directory. This information includes the file's exact size in
+  bytes and the date and time the file was created or last updated. MS-DOS
+  also places certain other information within a reserved area of the FCB;
+  however, this area is used by the operating system for its own purposes
+  and varies among different versions of MS-DOS. Application programs should
+  never modify the reserved area.
+
+  For compatibility with CP/M, MS-DOS automatically sets the record-size
+  field of the FCB to 128 bytes. If the program does not want to use this
+  default record size, it must place the desired size (in bytes) into the
+  record-size field after the open or create operation. Subsequently, when
+  the program needs to read or write records from the file, it must pass the
+  address of the FCB to MS-DOS; MS-DOS, in turn, keeps the FCB updated with
+  information about the current position of the file pointer and the size of
+  the file. Data is always read to or written from the current disk transfer
+  area (DTA), whose address is set with Int 21H Function 1AH. If the
+  application program wants to perform random record access, it must set the
+  record number into the FCB before issuing each function call; when
+  sequential record access is being used, MS-DOS maintains the FCB and no
+  special intervention is needed from the application.
+
+  Byte offset
+  00H ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+      ³                 Drive identification                  ³ Note 1
+  01H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³                Filename (8 characters)                ³ Note 2
+  09H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³               Extension (3 characters)                ³ Note 2
+  0CH ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³                 Current block number                e ³ Note 9
+  0EH ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³                      Record size                      ³ Note 10
+  10H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³                  File size (4 bytes)                  ³ Notes 3, 6
+  14H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³                 Date created/updated                  ³ Note 7
+  16H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³                 Time created/updated                  ³ Note 8
+  18H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³                       Reserved                        ³
+  20H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³                 Current-record number                 ³ Note 9
+  21H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³           Relative-record number (4 bytes)            ³ Note 5
+      ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+  Figure 8-1.  Normal file control block. Total length is 37 bytes (25H
+  bytes). See notes on pages 133Ä34.
+
+  In general, MS-DOS functions that use FCBs accept the full address of the
+  FCB in the DS:DX register and pass back a return code in the AL register
+  (Figure 8-2). For file-management calls (open, close, create, and
+  delete), this return code is zero if the function was successful and 0FFH
+  (255) if the function failed. For the FCB-type record read and write
+  functions, the success code returned in the AL register is again zero, but
+  there are several failure codes. Under MS-DOS version 3.0 or later, more
+  detailed error reporting can be obtained by calling Int 21H Function 59H
+  (Get Extended Error Information) after a failed FCB function call.
+
+  When a program is loaded under MS-DOS, the operating system sets up two
+  FCBs in the program segment prefix, at offsets 005CH and 006CH. These are
+  often referred to as the default FCBs, and they are included to provide
+  upward compatibility from CP/M. MS-DOS parses the first two parameters in
+  the command line that invokes the program (excluding any redirection
+  directives) into the default FCBs, under the assumption that they may be
+  file specifications. The application must determine whether they really
+  are filenames or not. In addition, because the default FCBs overlap and
+  are not in a particularly convenient location (especially for .EXE
+  programs), they usually must be copied elsewhere in order to be used
+  safely. (See Chapter 3.)
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+                                               ; filename was previously
+                                               ; parsed into "my_fcb"
+                  mov   dx,seg my_fcb          ; DS:DX = address of
+                  mov   ds,dx                  ; file control block
+                  mov   dx,offset my_fcb
+                  mov   ah,0fh                 ; function 0fh = open
+                  int   21h
+                  or    al,al                  ; was open successful?
+                  jnz   error                  ; no, jump to error routine
+                  .
+                  .
+                  .
+  my_fcb          db    37 dup (0)             ; file control block
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 8-2.  A typical FCB file operation. This sequence of code attempts
+  to open the file whose name was previously parsed into the FCB named
+  my_fcb.
+
+  Note that the structures of FCBs under CP/M and MS-DOS are not identical.
+  However, the differences lie chiefly in the reserved areas of the FCBs
+  (which should not be manipulated by application programs in any case), so
+  well-behaved CP/M applications should be relatively easy to port into
+  MS-DOS. It seems, however, that few such applications exist. Many of the
+  tricks that were played by clever CP/M programmers to increase performance
+  or circumvent the limitations of that operating system can cause severe
+  problems under MS-DOS, particularly in networking environments. At any
+  rate, much better performance can be achieved by thoroughly rewriting the
+  CP/M applications to take advantage of the superior capabilities of
+  MS-DOS.
+
+  You can use a special FCB variant called an extended file control block to
+  create or access files with special attributes (such as hidden or
+  read-only files), volume labels, and subdirectories. An extended FCB has a
+  7-byte header followed by the 37-byte structure of a normal FCB (Figure
+  8-3). The first byte contains 0FFH, which could never be a legal drive
+  code and thus indicates to MS-DOS that an extended FCB is being used. The
+  next 5 bytes are reserved and are unused in current versions of MS-DOS.
+  The seventh byte contains the attribute of the special file type that is
+  being accessed. (Attribute bytes are discussed in more detail in Chapter
+  9.) Any MS-DOS function that uses a normal FCB can also use an extended
+  FCB.
+
+  The FCB file- and record-management functions may be gathered into the
+  following broad classifications:
+
+  Byte
+  offset
+  00H ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+      ³                         0FFH                          ³ Note 11
+  01H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³           Reserved (5 bytes, must be zero)            ³
+  06H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³                    Attribute byte                     ³ Note 12
+  07H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³                 Drive identification                  ³ Note 1
+  08H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³                Filename (8 characters)                ³ Note 2
+  10H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³               Extension (3 characters)                ³ Note 2
+  13H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³                 Current-block number                  ³ Note 9
+  15H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³                      Record size                      ³ Note 10
+  17H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³                  File size (4 bytes)                  ³ Notes 3, 6
+  1BH ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³                 Date created/updated                  ³ Note 7
+  1DH ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³                 Time created/updated                  ³ Note 8
+  1FH ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³                       Reserved                        ³
+  27H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³                 Current-record number                 ³ Note 9
+  28H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³           Relative-record number (4 bytes)            ³ Note 5
+      ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+  Figure 8-3.  Extended file control block. Total length is 44 bytes (2CH
+  bytes). See notes on pages 133Ä34.
+
+
+  Function                 Action
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  Common FCB file operations
+  0FH                     Open file.
+  10H                     Close file.
+  16H                     Create file.
+
+  Common FCB record operations
+  14H                     Perform sequential read.
+  15H                     Perform sequential write.
+  21H                     Perform random read.
+  22H                     Perform random write.
+  27H                     Perform random block read.
+  28H                     Perform random block write.
+
+  Other vital FCB operations
+  1AH                     Set disk transfer address.
+  29H                     Parse filename.
+
+  Less commonly used FCB file operations
+  13H                     Delete file.
+  17H                     Rename file.
+
+  Less commonly used FCB record operations
+  23H                     Obtain file size.
+  24H                     Set relative-record number.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+  Several of these functions have special properties. For example, Int 21H
+  Functions 27H (Random Block Read) and 28H (Random Block Write) allow
+  reading and writing of multiple records of any size and also update the
+  random-record field automatically (unlike Int 21H Functions 21H and
+  22H). Int 21H Function 28H can truncate a file to any desired size, and
+  Int 21H Function 17H used with an extended FCB can alter a volume label
+  or rename a subdirectory.
+
+  Section 2 of this book, "MS-DOS Functions Reference," gives detailed
+  specifications for each of the FCB file and record functions, along with
+  assembly-language examples. It is also instructive to compare the
+  preceding groups with the corresponding groups of handle-type functions
+  listed on pages 140Ä41.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  Notes for Figures 8-1 and 8-3
+    1.  The drive identification is a binary number: 00=default drive,
+        01=drive A:, 02=drive B:, and so on. If the application program
+        supplies the drive code as zero (default drive), MS-DOS fills in the
+        code for the actual current disk drive after a successful open or
+        create call.
+
+    2.  File and extension names must be left justified and padded with
+        blanks.
+
+    3.  The file size, date, time, and reserved fields should not be
+        modified by applications.
+
+    4.  All word fields are stored with the least significant byte at the
+        lower address.
+
+    5.  The relative-record field is treated as 4 bytes if the record size
+        is less than 64 bytes; otherwise, only the first 3 bytes of this
+        field are used.
+
+    6.  The file-size field is in the same format as in the directory, with
+        the less significant word at the lower address.
+
+    7.  The date field is mapped as in the directory. Viewed as a 16-bit
+        word (as it would appear in a register), the field is broken down as
+        follows:
+
+      F  E  D  C  B  A  9   8     7     6     5    4   3   2   1   0
+    ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+    ³        Year         ³        Month        ³         Day         ³
+    ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+    Bits              Contents
+    ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+    00HÄ04H           Day (1Ä31)
+    05HÄ08H           Month (1Ä12)
+    09HÄ0FH           Year, relative to 1980
+    ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+    8.  The time field is mapped as in the directory. Viewed as a 16-bit
+        word (as it would appear in a register), the field is broken down as
+        follows:
+
+      F   E   D   C   B   A   9   8   7   6   5   4   3   2   1   0
+    ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+    ³     Hours         ³        Minutes        ³ 2-second increments ³
+    ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+    Bits              Contents
+    ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+    00HÄ04H           2-second increments (0Ä29)
+    05HÄ0AH           Minutes (0Ä59)
+    0BHÄ0FH           Hours (0Ä23)
+    ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+    9.  The current-block and current-record numbers are used together on
+        sequential reads and writes. This simulates the behavior of CP/M.
+
+    10. The Int 21H open (0FH) and create (16H) functions set the
+        record-size field to 128 bytes, to provide compatibility with CP/M.
+        If you use another record size, you must fill it in after the open
+        or create operation.
+
+    11. An 0FFH (255) in the first byte of the structure signifies that it
+        is an extended file control block. You can use extended FCBs with
+        any of the functions that accept an ordinary FCB. (See also note
+        12.)
+
+    12. The attribute byte in an extended FCB allows access to files with
+        the special characteristics hidden, system, or read-only. You can
+        also use extended FCBs to read volume labels and the contents of
+        special subdirectory files.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+FCB File-Access Skeleton
+
+  The following is a typical program sequence to access a file using the
+  FCB, or traditional, functions (Figure 8-4):
+
+  1.  Zero out the prospective FCB.
+
+  2.  Obtain the filename from the user, from the default FCBs, or from the
+      command tail in the PSP.
+
+  3.  If the filename was not obtained from one of the default FCBs, parse
+      the filename into the new FCB using Int 21H Function 29H.
+
+  4.  Open the file (Int 21H Function 0FH) or, if writing new data only,
+      create the file or truncate any existing file of the same name to zero
+      length (Int 21H Function 16H).
+
+  5.  Set the record-size field in the FCB, unless you are using the default
+      record size. Recall that it is important to do this after a successful
+      open or create operation. (See Figure 8-5.)
+
+  6.  Set the relative-record field in the FCB if you are performing random
+      record I/O.
+
+  7.  Set the disk transfer area address using Int 21H Function 1AH, unless
+      the buffer address has not been changed since the last call to this
+      function. If the application never performs a set DTA, the DTA address
+      defaults to offset 0080H in the PSP.
+
+  8.  Request the needed read- or write-record operation (Int 21H Function
+      14HÄSequential Read, 15HÄSequential Write, 21HÄRandom Read,
+      22HÄRandom Write, 27HÄRandom Block Read, 28HÄRandom Block Write).
+
+  9.  If the program is not finished processing the file, go to step 6;
+      otherwise, close the file (Int 21H Function 10H). If the file was
+      used for reading only, you can skip the close operation under early
+      versions of MS-DOS. However, this shortcut can cause problems under
+      MS-DOS versions 3.0 and later, especially when the files are being
+      accessed across a network.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  recsize      equ   1024                   ; file record size
+               .
+               .
+               .
+               mov   ah,29h                 ; parse input filename
+               mov   al,1                   ; skip leading blanks
+               mov   si,offset fname1       ; address of filename
+               mov   di,offset fcb1         ; address of FCB
+               int   21h
+               or    al,al                  ; jump if name
+               jnz   name_err               ; was bad
+               .
+               .
+               .
+               mov   ah,29h                 ; parse output filename
+               mov   al,1                   ; skip leading blanks
+               mov   si,offset fname2       ; address of filename
+               mov   di,offset fcb2         ; address of FCB
+               int   21h
+               or    al,al                  ; jump if name
+               jnz   name_err               ; was bad
+               .
+               .
+               .
+               mov   ah,0fh                 ; open input file
+               mov   dx,offset fcb1
+               int   21h
+               or    al,al                  ; open successful?
+               jnz   no_file                ; no, jump
+               .
+               .
+               .
+               mov   ah,16h                 ; create and open
+               mov   dx,offset fcb2         ; output file
+               int   21h
+               or    al,al                  ; create successful?
+               jnz   disk_full              ; no, jump
+               .
+               .
+               .                            ; set record sizes
+               mov   word ptr fcb1+0eh,recsize
+               mov   word ptr fcb2+0eh,recsize
+               .
+               .
+               .
+               mov   ah,1ah                 ; set disk transfer
+               mov   dx,offset buffer       ; address for reads
+               int   21h                    ; and writes
+               .
+  next:        .                            ; process next record
+               .
+               mov   ah,14h                 ; sequential read from
+               mov   dx,offset fcb1         ; input file
+               int   21h
+               cmp   al,01                  ; check for end of file
+               je    file_end               ; jump if end of file
+               cmp   al,03
+               je    file_end               ; jump if end of file
+               or    al,al                  ; other read fault?
+               jnz   bad_read               ; jump if bad read
+               .
+               .
+               .
+               mov   ah,15h                 ; sequential write to
+               mov   dx,offset fcb2         ; output file
+               int   21h
+               or    al,al                  ; write successful?
+               jnz   bad_write              ; jump if write failed
+               .
+               .
+               .
+               jmp   next                   ; process next record
+               .
+  file_end:    .                            ; reached end of input
+               .
+               mov   ah,10h                 ; close input file
+               mov   dx,offset fcb1
+               int   21h
+               .
+               .
+               .
+               mov   ah,10h                 ; close output file
+               mov   dx,offset fcb2
+               int   21h
+               .
+               .
+               .
+               mov   ax,4c00h               ; exit with return
+               int   21h                    ; code of zero
+               .
+               .
+               .
+  fname1       db    'OLDFILE.DAT',0        ; name of input file
+  fname2       db    'NEWFILE.DAT',0        ; name of output file
+  fcb1         db    37 dup (0)             ; FCB for input file
+  fcb2         db    37 dup (0)             ; FCB for output file
+  buffer       db    recsize dup (?)        ; buffer for file I/O
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 8-4.  Skeleton of an assembly-language program that performs file
+  and record I/O using the FCB family of functions.
+
+  Byte Offset  FCB before open       FCB contents       FCB after open
+           ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+       00H ³         00         ³       Drive        ³         03         ³
+           ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+       01H ³         4D         ³                    ³         4D         ³
+       02H ³         59         ³                    ³         59         ³
+       03H ³         46         ³                    ³         46         ³
+       04H ³         49         ³      Filename      ³         49         ³
+       05H ³         4C         ³                    ³         4C         ³
+       06H ³         45         ³                    ³         45         ³
+       07H ³         20         ³                    ³         20         ³
+       08H ³         20         ³                    ³         20         ³
+           ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+       09H ³         44         ³                    ³         44         ³
+       0AH ³         41         ³     Extension      ³         41         ³
+       0BH ³         54         ³                    ³         54         ³
+           ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+       0CH ³         00         ³                    ³         00         ³
+       0DH ³         00         ³   Current block    ³         00         ³
+           ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+       0EH ³         00         ³                    ³         80         ³
+       0FH ³         00         ³    Record size     ³         00         ³
+           ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+       10H ³         00         ³                    ³         80         ³
+       11H ³         00         ³                    ³         3D         ³
+       12H ³         00         ³     File size      ³         00         ³
+       13H ³         00         ³                    ³         00         ³
+           ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+       14H ³         00         ³                    ³         43         ³
+       15H ³         00         ³     File date      ³         0B         ³
+           ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+       16H ³         00         ³                    ³         A1         ³
+       17H ³         00         ³     File time      ³         52         ³
+           ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+       18H ³         00         ³                    ³         03         ³
+       19H ³         00         ³                    ³         02         ³
+       1AH ³         00         ³                    ³         42         ³
+       1BH ³         00         ³                    ³         73         ³
+       1CH ³         00         ³      Reserved      ³         00         ³
+       1DH ³         00         ³                    ³         01         ³
+       1EH ³         00         ³                    ³         35         ³
+       1FH ³         00         ³                    ³         0F         ³
+           ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+       20H ³         00         ³   Current record   ³         00         ³
+           ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+       21H ³         00         ³                    ³         00         ³
+       22H ³         00         ³  Relative-record   ³         00         ³
+       23H ³         00         ³       number       ³         00         ³
+       24H ³         00         ³                    ³         00         ³
+           ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+  Figure 8-5.  A typical file control block before and after a successful
+  open call (Int 21H Function 0FH).
+
+Points to Remember
+
+  Here is a summary of the pros and cons of using the FCB-related file and
+  record functions in your programs.
+
+  Advantages:
+
+  ş  Under MS-DOS versions 1 and 2, the number of files that can be open
+     concurrently when using FCBs is unlimited. (This is not true under
+     MS-DOS versions 3.0 and later, especially if networking software is
+     running.)
+
+  ş  File-access methods using FCBs are familiar to programmers with a CP/M
+     background, and well-behaved CP/M applications require little change in
+     logical flow to run under MS-DOS.
+
+  ş  MS-DOS supplies the size, time, and date for a file to its FCB after
+     the file is opened. The calling program can inspect this information.
+
+  Disadvantages:
+
+  ş  FCBs take up room in the application program's memory space.
+
+  ş  FCBs offer no support for the hierarchical file structure (no access to
+     files outside the current directory).
+
+  ş  FCBs provide no support for file locking/sharing or record locking in
+     networking environments.
+
+  ş  In addition to the read or write call itself, file reads or writes
+     using FCBs require manipulation of the FCB to set record size and
+     record number, plus a previous call to a separate MS-DOS function to
+     set the DTA address.
+
+  ş  Random record I/O using FCBs for a file containing variable-length
+     records is very clumsy and inconvenient.
+
+  ş  You must use extended FCBs, which are incompatible with CP/M anyway, to
+     access or create files with special attributes such as hidden,
+     read-only, or system.
+
+  ş  The FCB file functions have poor error reporting. This situation has
+     been improved somewhat in MS-DOS version 3 because a program can call
+     the added Int 21H Function 59H (Get Extended Error Information) after
+     a failed FCB function to obtain additional information.
+
+  ş  Microsoft discourages use of FCBs. FCBs will make your program more
+     difficult to port to MS OS/2 later because MS OS/2 does not support
+     FCBs in protected mode at all.
+
+
+Using the Handle Functions
+
+  The handle file- and record-management functions access files in a fashion
+  similar to that used under the UNIX/XENIX operating system. Files are
+  designated by an ASCIIZ string (an ASCII character string terminated by a
+  null, or zero, byte) that can contain a drive designator, path, filename,
+  and extension. For example, the file specification
+
+  C:\SYSTEM\COMMAND.COM
+
+  would appear in memory as the following sequence of bytes:
+
+  43 3A 5C 53 59 53 54 45 4D 5C 43 4F 4D 4D 41 4E 44 2E 43 4F 4D 00
+
+  When a program wishes to open or create a file, it passes the address of
+  the ASCIIZ string specifying the file to MS-DOS in the DS:DX registers
+  (Figure 8-6). If the operation is successful, MS-DOS returns a 16-bit
+  handle to the program in the AX register. The program must save this
+  handle for further reference.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+               mov   ah,3dh                  ; function 3dh = open
+               mov   al,2                    ; mode 2 = read/write
+               mov   dx,seg filename         ; address of ASCIIZ
+               mov   ds,dx                   ; file specification
+               mov   dx,offset filename
+               int   21h                     ; request open from DOS
+               jc    error                   ; jump if open failed
+               mov   handle,ax               ; save file handle
+               .
+               .
+               .
+  filename     db    'C:\MYDIR\MYFILE.DAT',0 ; filename
+  handle       dw    0                       ; file handle
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 8-6.  A typical handle file operation. This sequence of code
+  attempts to open the file designated in the ASCIIZ string whose address is
+  passed to MS-DOS in the DS:DX registers.
+
+  When the program requests subsequent operations on the file, it usually
+  places the handle in the BX register before the call to MS-DOS. All the
+  handle functions return with the CPU's carry flag cleared if the operation
+  was successful, or set if the operation failed; in the latter case, the AX
+  register contains a code describing the failure.
+
+  MS-DOS restricts the number of handles that can be active at any one
+  timeÄÄthat is, the number of files and devices that can be open
+  concurrently when using the handle family of functionsÄÄin two different
+  ways:
+
+  ş  The maximum number of concurrently open files in the system, for all
+     active processes combined, is specified by the entry
+
+     FILES=nn
+
+     in the CONFIG.SYS file. This entry determines the number of entries
+     to be allocated in the system file table; under MS-DOS version 3, the
+     default value is 8 and the maximum is 255. After MS-DOS is booted and
+     running, you cannot expand this table to increase the total number of
+     files that can be open. You must use an editor to modify the CONFIG.SYS
+     file and then restart the system.
+
+  ş  The maximum number of concurrently open files for a single process is
+     20, assuming that sufficient entries are also available in the system
+     file table. When a program is loaded, MS-DOS preassigns 5 of its
+     potential 20 handles to the standard devices. Each time the process
+     issues an open or create call, MS-DOS assigns a handle from the
+     process's private allocation of 20, until all the handles are used up
+     or the system file table is full. In MS-DOS versions 3.3 and later, you
+     can expand the per-process limit of 20 handles with a call to Int 21H
+     Function 67H (Set Handle Count).
+
+  The handle file- and record-management calls may be gathered into the
+  following broad classifications for study:
+
+
+  Function                 Action
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  Common handle file operations
+  3CH                     Create file (requires ASCIIZ string).
+  3DH                     Open file (requires ASCIIZ string).
+  3EH                     Close file.
+
+  Common handle record operations
+  42H                     Set file pointer (also used to find file size).
+  3FH                     Read file.
+  40H                     Write file.
+
+  Less commonly used handle operations
+  41H                     Delete file.
+  43H                     Get or modify file attributes.
+  44H                     IOCTL (I/O Control).
+  45H                     Duplicate handle.
+  46H                     Redirect handle.
+  56H                     Rename file.
+  57H                     Get or set file date and time.
+  5AH                     Create temporary file (versions 3.0 and later).
+  5BH                     Create file (fails if file already exists;
+                           versions 3.0 and later).
+  5CH                     Lock or unlock file region (versions 3.0 and
+                           later).
+  67H                     Set handle count (versions 3.3 and later).
+  68H                     Commit file (versions 3.3 and later).
+  6CH                     Extended open file (version 4).
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+  Compare the groups of handle-type functions in the preceding table with
+  the groups of FCB functions outlined earlier, noting the degree of
+  functional overlap. Section 2 of this book, "MS-DOS Functions Reference,"
+  gives detailed specifications for each of the handle functions, along with
+  assembly-language examples.
+
+Handle File-Access Skeleton
+
+  The following is a typical program sequence to access a file using the
+  handle family of functions (Figure 8-7):
+
+  1.  Get the filename from the user by means of the buffered input service
+      (Int 21H Function 0AH) or from the command tail supplied by MS-DOS in
+      the PSP.
+
+  2.  Put a zero at the end of the file specification in order to create an
+      ASCIIZ string.
+
+  3.  Open the file using Int 21H Function 3DH and mode 2 (read/write
+      access), or create the file using Int 21H Function 3CH. (Be sure to
+      set the CX register to zero, so that you don't accidentally make a
+      file with special attributes.) Save the handle that is returned.
+
+  4.  Set the file pointer using Int 21H Function 42H. You may set the
+      file-pointer position relative to one of three different locations:
+      the start of the file, the current pointer position, or the end of the
+      file. If you are performing sequential record I/O, you can usually
+      skip this step because MS-DOS will maintain the file pointer for you
+      automatically.
+
+  5.  Read from the file (Int 21H Function 3FH) or write to the file (Int
+      21H Function 40H). Both of these functions require that the BX
+      register contain the file's handle, the CX register contain the length
+      of the record, and the DS:DX registers point to the data being
+      transferred. Both return the actual number of bytes transferred in the
+      AX register.
+
+      In a read operation, if the number of bytes read is less than the
+      number requested, the end of the file has been reached. In a write
+      operation, if the number of bytes written is less than the number
+      requested, the disk containing the file is full. Neither of these
+      conditions is returned as an error code; that is, the carry flag is
+      not set.
+
+  6.  If the program is not finished processing the file, go to step 4;
+      otherwise, close the file (Int 21H Function 3EH). Any normal exit
+      from the program will also close all active handles.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  recsize      equ     1024                 ; file record size
+               .
+               .
+               .
+               mov   ah,3dh                 ; open input file
+               mov   al,0                   ; mode = read only
+               mov   dx,offset fname1       ; name of input file
+               int   21h
+               jc    no_file                ; jump if no file
+               mov   handle1,ax             ; save token for file
+               .
+               .
+               .
+               mov   ah,3ch                 ; create output file
+               mov   cx,0                   ; attribute = normal
+               mov   dx,offset fname2       ; name of output file
+               int   21h
+               jc    disk_full              ; jump if create fails
+               mov   handle2,ax             ; save token for file
+               .
+  next:        .                            ; process next record
+               .
+               mov   ah,3fh                 ; sequential read from
+               mov   bx,handle1             ; input file
+               mov   cx,recsize
+               mov   dx,offset buffer
+               int   21h
+               jc    bad_read               ; jump if read error
+               or    ax,ax                  ; check bytes transferred
+               jz    file_end               ; jump if end of file
+               .
+               .
+               .
+               mov   ah,40h                 ; sequential write to
+               mov   bx,handle2             ; output file
+               mov   cx,recsize
+               mov   dx,offset buffer
+               int   21h
+               jc    bad_write              ; jump if write error
+               cmp   ax,recsize             ; whole record written?
+               jne   disk_full              ; jump if disk is full
+               .
+               .
+               .
+               jmp   next                   ; process next record
+               .
+  file_end:    .                            ; reached end of input
+               .
+               mov   ah,3eh                 ; close input file
+               mov   bx,handle1
+               int   21h
+               .
+               .
+               .
+               mov   ah,3eh                 ; close output file
+               mov   bx,handle2
+               int   21h
+               .
+               .
+               .
+               mov   ax,4c00h               ; exit with return
+               int   21h                    ; code of zero
+               .
+               .
+               .
+  fname1       db    'OLDFILE.DAT',0        ; name of input file
+  fname2       db    'NEWFILE.DAT',0        ; name of output file
+  handle1      dw    0                      ; token for input file
+  handle2      dw    0                      ; token for output file
+  buffer       db    recsize dup (?)        ; buffer for file I/O
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 8-7.  Skeleton of an assembly-language program that performs
+  sequential processing on an input file and writes the results to an output
+  file using the handle file and record functions. This code assumes that
+  the DS and ES registers have already been set to point to the segment
+  containing the buffers and filenames.
+
+Points to Remember
+
+  Here is a summary of the pros and cons of using the handle file and record
+  operations in your program. Compare this list with the one given earlier
+  in the chapter for the FCB family of functions.
+
+  Advantages:
+
+  ş  The handle calls provide direct support for I/O redirection and pipes
+     with the standard input and output devices in a manner functionally
+     similar to that used by UNIX/XENIX.
+
+  ş  The handle functions provide direct support for directories (the
+     hierarchical file structure) and special file attributes.
+
+  ş  The handle calls support file sharing/locking and record locking in
+     networking environments.
+
+  ş  Using the handle functions, the programmer can open channels to
+     character devices and treat them as files.
+
+  ş  The handle calls make the use of random record access extremely easy.
+     The current file pointer can be moved to any byte offset relative to
+     the start of the file, the end of the file, or the current pointer
+     position. Records of any length, up to an entire segment (65,535
+     bytes), can be read to any memory address in one operation.
+
+  ş  The handle functions have relatively good error reporting in MS-DOS
+     version 2, and error reporting has been enhanced even further in MS-DOS
+     versions 3.0 and later.
+
+  ş  Microsoft strongly encourages use of the handle family of functions in
+     order to provide upward compatibility with MS OS/2.
+
+  Disadvantages:
+
+  ş  There is a limit per program of 20 concurrently open files and devices
+     using handles in MS-DOS versions 2.0 through 3.2.
+
+  ş  Minor gaps still exist in the implementation of the handle functions.
+     For example, you must still use extended FCBs to change volume labels
+     and to access the contents of the special files that implement
+     directories.
+
+
+MS-DOS Error Codes
+
+  When one of the handle file functions fails with the carry flag set, or
+  when a program calls Int 21H Function 59H (Get Extended Error
+  Information) following a failed FCB function or other system service, one
+  of the following error codes may be returned:
+
+
+  Value                    Meaning
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  MS-DOS version 2 error codes
+  01H                      Function number invalid
+  02H                      File not found
+  03H                      Path not found
+  04H                      Too many open files
+  05H                      Access denied
+  06H                      Handle invalid
+  07H                      Memory control blocks destroyed
+  08H                      Insufficient memory
+  09H                      Memory block address invalid
+  0AH (10)                 Environment invalid
+  0BH (11)                 Format invalid
+  0CH (12)                 Access code invalid
+  0DH (13)                 Data invalid
+  0EH (14)                 Unknown unit
+  0FH (15)                 Disk drive invalid
+  10H (16)                 Attempted to remove current directory
+  11H (17)                 Not same device
+  12H (18)                 No more files
+
+  Mappings to critical-error codes
+  13H (19)                 Write-protected disk
+  14H (20)                 Unknown unit
+  15H (21)                 Drive not ready
+  16H (22)                 Unknown command
+  17H (23)                 Data error (CRC)
+  18H (24)                 Bad request-structure length
+  19H (25)                 Seek error
+  1AH (26)                 Unknown media type
+  1BH (27)                 Sector not found
+  1CH (28)                 Printer out of paper
+  1DH (29)                 Write fault
+  1EH (30)                 Read fault
+  1FH (31)                 General failure
+
+  MS-DOS version 3 and later extended error codes
+  20H (32)                 Sharing violation
+  21H (33)                 File-lock violation
+  22H (34)                 Disk change invalid
+  23H (35)                 FCB unavailable
+  24H (36)                 Sharing buffer exceeded
+  25HÄ31H (37Ä49)          Reserved
+  32H (50)                 Unsupported network request
+  33H (51)                 Remote machine not listening
+  34H (52)                 Duplicate name on network
+  35H (53)                 Network name not found
+  36H (54)                 Network busy
+  37H (55)                 Device no longer exists on network
+  38H (56)                 NetBIOS command limit exceeded
+  39H (57)                 Error in network adapter hardware
+  3AH (58)                 Incorrect response from network
+  3BH (59)                 Unexpected network error
+  3CH (60)                 Remote adapter incompatible
+  3DH (61)                 Print queue full
+  3EH (62)                 Not enough room for print file
+  3FH (63)                 Print file was deleted
+  40H (64)                 Network name deleted
+  41H (65)                 Network access denied
+  42H (66)                 Incorrect network device type
+  43H (67)                 Network name not found
+  44H (68)                 Network name limit exceeded
+  45H (69)                 NetBIOS session limit exceeded
+  46H (70)                 Temporary pause
+  47H (71)                 Network request not accepted
+  48H (72)                 Print or disk redirection paused
+  49HÄ4FH (73Ä79)          Reserved
+  50H (80)                 File already exists
+  51H (81)                 Reserved
+  52H (82)                 Cannot make directory
+  53H (83)                 Fail on Int 24H (critical error)
+  54H (84)                 Too many redirections
+  55H (85)                 Duplicate redirection
+  56H (86)                 Invalid password
+  57H (87)                 Invalid parameter
+  58H (88)                 Net write fault
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+  Under MS-DOS versions 3.0 and later, you can also use Int 21H Function
+  59H to obtain other information about the error, such as the error locus
+  and the recommended recovery action.
+
+Critical-Error Handlers
+
+  In Chapter 5, we discussed how an application program can take over the
+  Ctrl-C handler vector (Int 23H) and replace the MS-DOS default handler, to
+  avoid losing control of the computer when the user enters a Ctrl-C or
+  Ctrl-Break at the keyboard. Similarly, MS-DOS provides a
+  critical-error-handler vector (Int 24H) that defines the routine to be
+  called when unrecoverable hardware faults occur. The default MS-DOS
+  critical-error handler is the routine that displays a message describing
+  the error type and the cue
+
+  Abort, Retry, Ignore?
+
+  This message appears after such actions as the following:
+
+  ş  Attempting to open a file on a disk drive that doesn't contain a floppy
+     disk or whose door isn't closed
+
+  ş  Trying to read a disk sector that contains a CRC error
+
+  ş  Trying to print when the printer is off line
+
+  The unpleasant thing about MS-DOS's default critical-error handler is, of
+  course, that if the user enters an A for Abort, the application that is
+  currently executing is terminated abruptly and never has a chance to clean
+  up and make a graceful exit. Intermediate files may be left on the disk,
+  files that have been extended using FCBs are not properly closed so that
+  the directory is updated, interrupt vectors may be left pointing into the
+  transient program area, and so forth.
+
+  To write a truly bombproof MS-DOS application, you must take over the
+  critical-error-handler vector and point it to your own routine, so that
+  your program intercepts all catastrophic hardware errors and handles them
+  appropriately. You can use MS-DOS Int 21H Function 25H to alter the Int
+  24H vector in a well-behaved manner. When your application exits, MS-DOS
+  will automatically restore the previous contents of the Int 24H vector
+  from information saved in the program segment prefix.
+
+  MS-DOS calls the critical-error handler for two general classes of
+  errorsÄÄ disk-related and non-disk-relatedÄÄand passes different
+  information to the handler in the registers for each of these classes.
+
+  For disk-related errors, MS-DOS sets the registers as shown on the
+  following page. (Bits 3Ä5 of the AH register are relevant only in MS-DOS
+  versions 3.1 and later.)
+
+
+  Register           Bit(s)            Significance
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  AH                 7                 0, to signify disk error
+                     6                 Reserved
+                     5                 0 = ignore response not allowed
+                                       1 = ignore response allowed
+                     4                 0 = retry response not allowed
+                                       1 = retry response allowed
+                     3                 0 = fail response not allowed
+                                       1 = fail response allowed
+                     1Ä2               Area where disk error occurred
+                                       00 = MS-DOS area
+                                       01 = file allocation table
+                                       10 = root directory
+                                       11 = files area
+                     0                 0 = read operation
+                                       1 = write operation
+  AL                 0Ä7               Drive code (0 = A, 1 = B, and so
+                                       forth)
+  DI                 0Ä7               Driver error code
+                     8Ä15              Not used
+  BP:SI                                Segment:offset of device-driver
+                                       header
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+  For non-disk-related errors, the interrupt was generated either as the
+  result of a character-device error or because a corrupted memory image of
+  the file allocation table was detected. In this case, MS-DOS sets the
+  registers as follows:
+
+  Register           Bit(s)            Significance
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  AH                 7                 1, to signify a non-disk error
+  DI                 0Ä7               Driver error code
+                     8Ä15              Not used
+  BP:SI                                Segment:offset of device-driver
+                                       header
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  To determine whether the critical error was caused by a character device,
+  use the address in the BP:SI registers to examine the device attribute
+  word at offset 0004H in the presumed device-driver header. If bit 15 is
+  set, then the error was indeed caused by a character device, and the
+  program can inspect the name field of the driver's header to determine the
+  device.
+
+  At entry to a critical-error handler, MS-DOS has already disabled
+  interrupts and set up the stack as shown in Figure 8-8. A critical-error
+  handler cannot use any MS-DOS services except Int 21H Functions 01H
+  through 0CH (Traditional Character I/O), Int 21H Function 30H (Get MS-DOS
+  Version), and Int 21H Function 59H (Get Extended Error Information).
+  These functions use a special stack so that the context of the original
+  function (which generated the critical error) will not be lost.
+
+  ÚÄÄÄÄÄÄÄ¿Ä¿
+  ³ Flags ³ ³
+  ÃÄÄÄÄÄÄÄ´ ³  Flags and CS:IP pushed
+  ³  CS   ³ ÃÄ on stack by original
+  ÃÄÄÄÄÄÄÄ´ ³  Int 21H call
+  ³  IP   ³ ³
+  ÃÄÄÄÄÄÄÄ´ÍµÄSS:SP on entry to
+  ³  ES   ³ ³  Int 21H handler
+  ÃÄÄÄÄÄÄÄ´ ³
+  ³  DS   ³ ³
+  ÃÄÄÄÄÄÄÄ´ ³
+  ³  BP   ³ ³
+  ÃÄÄÄÄÄÄÄ´ ³
+  ³  DI   ³ ³
+  ÃÄÄÄÄÄÄÄ´ ÃÄ Registers at point of
+  ³  SI   ³ ³  original Int 21H call
+  ÃÄÄÄÄÄÄÄ´ ³
+  ³  DX   ³ ³
+  ÃÄÄÄÄÄÄÄ´ ³
+  ³  CX   ³ ³
+  ÃÄÄÄÄÄÄÄ´ ³
+  ³  BX   ³ ³
+  ÃÄÄÄÄÄÄÄ´ ³
+  ³  AX   ³ ³
+  ÃÄÄÄÄÄÄÄ´Íµ
+  ³ Flags ³ ³
+  ÃÄÄÄÄÄÄÄ´ ³
+  ³  CS   ³ ÃÄ Return address for
+  ÃÄÄÄÄÄÄÄ´ ³  Int 24H handler
+  ³  IP   ³ ³
+  ÀÄÄÄÄÄÄÙÄÙ
+        ÀÄÄÄÄÄ SS:SP on entry to
+               Int 24H handler
+
+  Figure 8-8.  The stack at entry to a critical-error handler.
+
+  The critical-error handler should return to MS-DOS by executing an IRET,
+  passing one of the following action codes in the AL register:
+
+  Code               Meaning
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  0                  Ignore the error (MS-DOS acts as though the original
+                     function call had succeeded).
+  1                  Retry the operation.
+  2                  Terminate the process that encountered the error.
+  3                  Fail the function (an error code is returned to the
+                     requesting process). Versions 3.1 and later only.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  The critical-error handler should preserve all other registers and must
+  not modify the device-driver header pointed to by BP:SI. A skeleton
+  example of a critical-error handler is shown in Figure 8-9.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+                                  ; prompt message used by
+                                  ; critical-error handler
+  prompt  db      cr,lf,'Critical Error Occurred: '
+          db      'Abort, Retry, Ignore, Fail? $'
+
+  keys    db      'aArRiIfF'      ; possible user response keys
+  keys_len equ $-keys             ; (both cases of each allowed)
+
+  codes   db      2,2,1,1,0,0,3,3 ; codes returned to MS-DOS kernel
+                                  ; for corresponding response keys
+
+  ;
+  ; This code is executed during program's initialization
+  ; to install the new critical-error handler.
+  ;
+          .
+          .
+          .
+          push    ds              ; save our data segment
+
+          mov     dx,seg int24    ; DS:DX = handler address
+          mov     ds,dx
+          mov     dx,offset int24
+          mov     ax,2524h        ; function 25h = set vector
+          int     21h             ; transfer to MS-DOS
+
+          pop     ds              ; restore data segment
+          .
+          .
+          .
+  ;
+  ; This is the replacement critical-error handler. It
+  ; prompts the user for Abort, Retry, Ignore, or Fail, and
+  ; returns the appropriate code to the MS-DOS kernel.
+  ;
+
+  int24   proc    far             ; entered from MS-DOS kernel
+
+          push    bx              ; save registers
+          push    cx
+          push    dx
+          push    si
+          push    di
+          push    bp
+          push    ds
+          push    es
+  int24a: mov     ax,seg prompt   ; display prompt for user
+          mov     ds,ax           ; using function 9 (print string
+          mov     es,ax           ; terminated by $ character)
+          mov     dx,offset prompt
+          mov     ah,9
+          int     21h
+
+          mov     ah,1            ; get user's response
+          int     21h             ; function 1 = read one character
+
+          mov     di,offset keys  ; look up code for response key
+          mov     cx,keys_len
+          cld
+          repne scasb
+          jnz     int24a          ; prompt again if bad response
+
+                                  ; set AL = action code for MS-DOS
+                                  ; according to key that was entered:
+                                  ; 0 = ignore, 1 = retry, 2 = abort,
+                                  ; 3 = fail
+          mov     al,[di+keys_len-1]
+
+          pop     es              ; restore registers
+          pop     ds
+          pop     bp
+          pop     di
+          pop     si
+          pop     dx
+          pop     cx
+          pop     bx
+          iret                    ; exit critical-error handler
+
+  int24   endp
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 8-9.  A skeleton example of a replacement critical-error handler.
+
+
+Example Programs: DUMP.ASM and DUMP.C
+
+  The programs DUMP.ASM (Figure 8-10) and DUMP.C (Figure 8-11) are
+  parallel examples of the use of the handle file and record functions. The
+  assembly-language version, in particular, illustrates features of a
+  well-behaved MS-DOS utility:
+
+  ş  The program checks the version of MS-DOS to ensure that all the
+     functions it is going to use are really available.
+
+  ş  The program parses the drive, path, and filename from the command tail
+     in the program segment prefix.
+
+  ş  The program uses buffered I/O for speed.
+
+  ş  The program sends error messages to the standard error device.
+
+  ş  The program sends normal program output to the standard output device,
+     so that the dump output appears by default on the system console but
+     can be redirected to other character devices (such as the line printer)
+     or to a file.
+
+  The same features are incorporated into the C version of the program, but
+  some of them are taken care of behind the scenes by the C runtime library.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+          name    dump
+          page    55,132
+          title   DUMP--display file contents
+
+  ;
+  ;  DUMP--Display contents of file in hex and ASCII
+  ;
+  ;  Build:   C>MASM DUMP;
+  ;           C>LINK DUMP;
+  ;
+  ;  Usage:   C>DUMP unit:\path\filename.exe [ >device ]
+  ;
+  ;  Copyright (C) 1988 Ray Duncan
+  ;
+
+  cr      equ     0dh             ; ASCII carriage return
+  lf      equ     0ah             ; ASCII line feed   tab     equ     09h             ; ASCII tab code
+  blank   equ     20h             ; ASCII space code
+
+  cmd     equ     80h             ; buffer for command tail
+
+  blksize equ     16              ; input file record size
+
+  stdin   equ     0               ; standard input handle
+  stdout  equ     1               ; standard output handle
+  stderr  equ     2               ; standard error handle
+  _TEXT   segment word public 'CODE'
+
+          assume  cs:_TEXT,ds:_DATA,es:_DATA,ss:STACK
+
+  dump    proc    far             ; entry point from MS-DOS
+
+          push    ds              ; save DS:0000 for final
+          xor     ax,ax           ; return to MS-DOS, in case
+          push    ax              ; function 4ch can't be used
+
+          mov     ax,_DATA        ; make our data segment
+          mov     ds,ax           ; addressable via DS register
+
+                                  ; check MS-DOS version
+          mov     ax,3000h        ; function 30h = get version
+          int     21h             ; transfer to MS-DOS
+          cmp     al,2            ; major version 2 or later?
+          jae     dump1           ; yes, proceed
+
+                                  ; if MS-DOS 1.x, display
+                                  ; error message and exit
+          mov     dx,offset msg3  ; DS:DX = message address
+          mov     ah,9            ; function 9 = print string
+          int     21h             ; transfer to MS-DOS
+          ret                     ; then exit the old way
+
+  dump1:                          ; check if filename present
+          mov     bx,offset cmd   ; ES:BX = command tail
+          call    argc            ; count command arguments
+          cmp     ax,2            ; are there 2 arguments?
+          je      dump2           ; yes, proceed
+
+                                  ; missing filename, display
+                                  ; error message and exit
+          mov     dx,offset msg2  ; DS:DX = message address
+          mov     cx,msg2_len     ; CX = message length
+          jmp     dump9           ; go display it
+
+  dump2:                          ; get address of filename
+          mov     ax,1            ; AX = argument number
+                                  ; ES:BX still = command tail
+          call    argv            ; returns ES:BX = address,
+                                  ; and AX = length
+
+          mov     di,offset fname ; copy filename to buffer
+          mov     cx,ax           ; CX = length
+  dump3:  mov     al,es:[bx]      ; copy one byte
+          mov     [di],al
+          inc     bx              ; bump string pointers
+          inc     di
+          loop    dump3           ; loop until string done
+          mov     byte ptr [di],0 ; add terminal null byte
+
+          mov     ax,ds           ; make our data segment
+          mov     es,ax           ; addressable by ES too
+                                  ; now open the file
+          mov     ax,3d00h        ; function 3dh = open file
+                                  ; mode 0 = read only
+          mov     dx,offset fname ; DS:DX = filename
+          int     21h             ; transfer to MS-DOS
+          jnc     dump4           ; jump, open successful
+
+                                  ; open failed, display
+                                  ; error message and exit
+          mov     dx,offset msg1  ; DS:DX = message address
+          mov     cx,msg1_len     ; CX = message length
+          jmp     dump9           ; go display it
+
+  dump4:  mov     fhandle,ax      ; save file handle
+
+  dump5:                          ; read block of file data
+          mov     bx,fhandle      ; BX = file handle
+          mov     cx,blksize      ; CX = record length
+          mov     dx,offset fbuff ; DS:DX = buffer
+          mov     ah,3fh          ; function 3fh = read
+          int     21h             ; transfer to MS-DOS
+
+          mov     flen,ax         ; save actual length
+          cmp     ax,0            ; end of file reached?
+          jne     dump6           ; no, proceed
+
+          cmp     word ptr fptr,0 ; was this the first read?
+          jne     dump8           ; no, exit normally
+
+                                  ; display empty file
+                                  ; message and exit
+          mov     dx,offset msg4  ; DS:DX = message address
+          mov     cx,msg4_len     ; CX = length
+          jmp     dump9           ; go display it
+  dump6:                          ; display heading at
+                                  ; each 128-byte boundary
+          test    fptr,07fh       ; time for a heading?
+          jnz     dump7           ; no, proceed
+
+                                  ; display a heading
+          mov     dx,offset hdg   ; DS:DX = heading address
+          mov     cx,hdg_len      ; CX = heading length
+          mov     bx,stdout       ; BX = standard output
+          mov     ah,40h          ; function 40h = write
+          int     21h             ; transfer to MS-DOS
+
+  dump7:  call    conv            ; convert binary record
+                                  ; to formatted ASCII
+
+                                  ; display formatted output
+          mov     dx,offset fout  ; DX:DX = output address
+          mov     cx,fout_len     ; CX = output length
+          mov     bx,stdout       ; BX = standard output
+          mov     ah,40h          ; function 40h = write
+          int     21h             ; transfer to MS-DOS
+          jmp     dump5           ; go get another record
+
+  dump8:                          ; close input file
+          mov     bx,fhandle      ; BX = file handle
+          mov     ah,3eh          ; function 3eh = close
+          int     21h             ; transfer to MS-DOS
+
+          mov     ax,4c00h        ; function 4ch = terminate,
+                                  ; return code = 0
+          int     21h             ; transfer to MS-DOS
+
+  dump9:                          ; display message on
+                                  ; standard error device
+                                  ; DS:DX = message address
+                                  ; CX = message length
+          mov     bx,stderr       ; standard error handle
+          mov     ah,40h          ; function 40h = write
+          int     21h             ; transfer to MS-DOS
+
+          mov     ax,4c01h        ; function 4ch = terminate,
+                                  ; return code = 1
+          int     21h             ; transfer to MS-DOS
+
+  dump    endp
+  conv    proc    near            ; convert block of data
+                                  ; from input file
+
+          mov     di,offset fout  ; clear output format
+          mov     cx,fout_len-2   ; area to blanks
+          mov     al,blank
+          rep stosb
+
+          mov     di,offset fout  ; convert file offset
+          mov     ax,fptr         ; to ASCII for output
+          call    w2a
+
+          mov     bx,0            ; init buffer pointer
+
+  conv1:  mov     al,[fbuff+bx]   ; fetch byte from buffer
+          mov     di,offset foutb ; point to output area
+
+                                  ; format ASCII part...
+                                  ; store '.' as default
+          mov     byte ptr [di+bx],'.'
+
+          cmp     al,blank        ; in range 20h-7eh?
+          jb      conv2           ; jump, not alphanumeric
+
+          cmp     al,7eh          ; in range 20h-7eh?
+          ja      conv2           ; jump, not alphanumeric
+
+          mov     [di+bx],al      ; store ASCII character
+
+  conv2:                          ; format hex part...
+          mov     di,offset fouta ; point to output area
+          add     di,bx           ; base addr + (offset*3)
+          add     di,bx
+          add     di,bx
+          call    b2a             ; convert byte to hex
+
+          inc     bx              ; advance through record
+          cmp     bx,flen         ; entire record converted?
+          jne     conv1           ; no, get another byte
+
+                                  ; update file pointer
+          add     word ptr fptr,blksize
+
+          ret
+
+  conv    endp
+  w2a     proc    near            ; convert word to hex ASCII
+                                  ; call with AX = value
+                                  ;           DI = addr for string
+                                  ; returns AX, DI, CX destroyed
+
+          push    ax              ; save copy of value
+          mov     al,ah
+          call    b2a             ; convert upper byte
+
+          pop     ax              ; get back copy
+          call    b2a             ; convert lower byte
+          ret
+
+  w2a     endp
+
+  b2a     proc    near            ; convert byte to hex ASCII
+                                  ; call with AL = binary value
+                                  ;           DI = addr for string
+                                  ; returns   AX, DI, CX modified
+
+          sub     ah,ah           ; clear upper byte
+          mov     cl,16
+          div     cl              ; divide byte by 16
+          call    ascii           ; quotient becomes the first
+          stosb                   ; ASCII character
+          mov     al,ah
+          call    ascii           ; remainder becomes the
+          stosb                   ; second ASCII character
+          ret
+
+  b2a     endp
+
+  ascii   proc    near            ; convert value 0-0fh in AL
+                                  ; into "hex ASCII" character
+
+          add     al,'0'          ; offset to range 0-9
+          cmp     al,'9'          ; is it > 9?
+          jle     ascii2          ; no, jump
+          add     al,'A'-'9'-1    ; offset to range A-F,
+
+  ascii2: ret                     ; return AL = ASCII char
+
+  ascii   endp
+
+  argc    proc    near            ; count command-line arguments
+                                  ; call with ES:BX = command line
+                                  ; returns   AX = argument count
+          push    bx              ; save original BX and CX
+          push    cx              ; for later
+          mov     ax,1            ; force count >= 1
+
+  argc1:  mov     cx,-1           ; set flag = outside argument
+
+  argc2:  inc     bx              ; point to next character
+          cmp     byte ptr es:[bx],cr
+          je      argc3           ; exit if carriage return
+          cmp     byte ptr es:[bx],blank
+          je      argc1           ; outside argument if ASCII blank
+          cmp     byte ptr es:[bx],tab
+          je      argc1           ; outside argument if ASCII tab
+
+                                  ; otherwise not blank or tab,
+          jcxz    argc2           ; jump if already inside argument
+
+          inc     ax              ; else found argument, count it
+          not     cx              ; set flag = inside argument
+          jmp     argc2           ; and look at next character
+
+  argc3:  pop     cx              ; restore original BX and CX
+          pop     bx
+          ret                     ; return AX = argument count
+
+  argc    endp
+
+  argv    proc    near            ; get address & length of
+                                  ; command line argument
+                                  ; call with ES:BX = command line
+                                  ;           AX    = argument #
+                                  ; returns   ES:BX = address
+                                  ;           AX    = length
+
+          push    cx              ; save original CX and DI
+          push    di
+
+          or      ax,ax           ; is it argument 0?
+          jz      argv8           ; yes, jump to get program name
+
+          xor     ah,ah           ; initialize argument counter
+
+  argv1:  mov     cx,-1           ; set flag = outside argument
+  argv2:  inc     bx              ; point to next character
+          cmp     byte ptr es:[bx],cr
+          je      argv7           ; exit if carriage return
+          cmp     byte ptr es:[bx],blank
+          je      argv1           ; outside argument if ASCII blank
+          cmp     byte ptr es:[bx],tab
+          je      argv1           ; outside argument if ASCII tab
+
+                                  ; if not blank or tab...
+          jcxz    argv2           ; jump if already inside argument
+
+          inc     ah              ; else count arguments found
+          cmp     ah,al           ; is this the one we're looking for?
+          je      argv4           ; yes, go find its length
+          not     cx              ; no, set flag = inside argument
+          jmp     argv2           ; and look at next character
+
+  argv4:                          ; found desired argument, now
+                                  ; determine its length...
+          mov     ax,bx           ; save param starting address
+
+  argv5:  inc     bx              ; point to next character
+          cmp     byte ptr es:[bx],cr
+          je      argv6           ; found end if carriage return
+          cmp     byte ptr es:[bx],blank
+          je      argv6           ; found end if ASCII blank
+          cmp     byte ptr es:[bx],tab
+          jne     argv5           ; found end if ASCII tab
+
+  argv6:  xchg    bx,ax           ; set ES:BX = argument address
+          sub     ax,bx           ; and AX = argument length
+          jmp     argvx           ; return to caller
+
+  argv7:  xor     ax,ax           ; set AX = 0, argument not found
+          jmp     argvx           ; return to caller
+
+  argv8:                          ; special handling for argv = 0
+          mov     ax,3000h        ; check if DOS 3.0 or later
+          int     21h             ; (force AL = 0 in case DOS 1)
+          cmp     al,3
+          jb      argv7           ; DOS 1 or 2, return null param
+          mov     es,es:[2ch]     ; get environment segment from PSP
+          xor     di,di           ; find the program name by
+          xor     al,al           ; first skipping over all the
+          mov     cx,-1           ; environment variables...
+          cld
+  argv9:  repne scasb             ; scan for double null (can't use
+          scasb                   ; SCASW since might be odd addr)
+          jne     argv9           ; loop if it was a single null
+          add     di,2            ; skip count word in environment
+          mov     bx,di           ; save program name address
+          mov     cx,-1           ; now find its length...
+          repne scasb             ; scan for another null byte
+          not     cx              ; convert CX to length
+          dec     cx
+          mov     ax,cx           ; return length in AX
+
+  argvx:                          ; common exit point
+          pop     di              ; restore original CX and DI
+          pop     cx
+          ret                     ; return to caller
+
+  argv    endp
+
+  _TEXT    ends
+
+  _DATA   segment word public 'DATA'
+
+  fname   db      64 dup (0)      ; buffer for input filespec
+
+  fhandle dw      0               ; token from PCDOS for input file
+
+  flen    dw      0               ; actual length read
+
+  fptr    dw      0               ; relative address in file
+
+  fbuff   db      blksize dup (?) ; data from input file
+
+  fout    db      'nnnn'          ; formatted output area
+          db      blank,blank
+  fouta   db      16 dup ('nn',blank)
+          db      blank
+  foutb   db      16 dup (blank),cr,lf
+  fout_len equ    $-fout
+
+  hdg     db      cr,lf           ; heading for each 128 bytes
+          db      7 dup (blank)   ; of formatted output
+          db      '0  1  2  3  4  5  6  7  '
+          db      '8  9  A  B  C  D  E  F',cr,lf
+  hdg_len equ     $-hdg
+  msg1    db      cr,lf
+          db      'dump: file not found'
+          db      cr,lf
+  msg1_len equ    $-msg1
+
+  msg2    db      cr,lf
+          db      'dump: missing file name'
+          db      cr,lf
+  msg2_len equ    $-msg2
+
+  msg3    db      cr,lf
+          db      'dump: wrong MS-DOS version'
+          db      cr,lf,'$'
+
+  msg4    db      cr,lf
+          db      'dump: empty file'
+          db      cr,lf
+  msg4_len equ    $-msg4
+
+  _DATA   ends
+
+  STACK   segment para stack 'STACK'
+
+          db      64 dup (?)
+
+  STACK   ends
+
+          end     dump
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 8-10.  The assembly-language version: DUMP.ASM.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  /*
+      DUMP.C      Displays the binary contents of a file in
+                  hex and ASCII on the standard output device.
+
+      Compile:    C>CL DUMP.C
+
+      Usage:      C>DUMP unit:path\filename.ext
+
+      Copyright (C) 1988 Ray Duncan
+  */
+
+  #include <stdio.h>
+  #include <io.h>
+  #include <fcntl.h>
+  #define REC_SIZE 16               /* input file record size    */
+
+  main(int argc, char *argv[])
+  {
+      int fd;                       /* input file handle         */
+        int status = 0;             /* status from file read     */
+      long fileptr = 0L;            /* current file byte offset  */
+      char filebuf[REC_SIZE];       /* data from file            */
+
+      if(argc != 2)                 /* abort if missing filename */
+      {   fprintf(stderr,"\ndump: wrong number of parameters\n");
+          exit(1);
+      }
+
+                                    /* open file in binary mode,
+                                       abort if open fails       */
+      if((fd = open(argv[1],O_RDONLY | O_BINARY) ) == -1)
+      {   fprintf(stderr, "\ndump: can't find file %s \n", argv[1]);
+          exit(1);
+      }
+
+                                    /* read and dump records
+                                       until end of file         */
+      while((status = read(fd,filebuf,REC_SIZE) ) != 0)
+      {   dump_rec(filebuf, fileptr, status);
+          fileptr += REC_SIZE;
+      }
+
+      close(fd);                    /* close input file          */
+      exit(0);                      /* return success code       */
+  }
+
+  /*
+      Display record (16 bytes) in hex and ASCII on standard output
+  */
+
+  dump_rec(char *filebuf, long fileptr, int length)
+  {
+      int i;                        /* index to current record   */
+
+      if(fileptr % 128 == 0)        /* display heading if needed */
+          printf("\n\n       0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F");
+
+      printf("\n%04lX ",fileptr);   /* display file offset       */
+
+                                    /* display hex equivalent of
+                                       each byte from file       */
+      for(i = 0; i < length; i++)
+          printf(" %02X", (unsigned char) filebuf[i]);
+
+      if(length != 16)              /* spaces if partial record  */
+          for (i=0; i<(16-length); i++) printf("   ");
+
+                                    /* display ASCII equivalent of
+                                       each byte from file       */
+      printf("  ");
+      for(i = 0; i < length; i++)
+      {   if(filebuf[i] < 32 || filebuf[i] > 126) putchar('.');
+          else putchar(filebuf[i]);
+      }
+  }
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 8-11.  The C version: DUMP.C.
+
+  The assembly-language version of the DUMP program contains a number of
+  subroutines that you may find useful in your own programming efforts.
+  These include the following:
+
+  Subroutine  Action
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  argc        Returns the number of command-line arguments.
+  argv        Returns the address and length of a particular command-line
+              argument.
+  w2a         Converts a binary word (16 bits) into hex ASCII for output.
+  b2a         Converts a binary byte (8 bits) into hex ASCII for output.
+  ascii       Converts 4 bits into a single hex ASCII character.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  It is interesting to compare these two equivalent programs. The C program
+  contains only 77 lines, whereas the assembly-language program has 436
+  lines. Clearly, the C source code is less complex and easier to maintain.
+  On the other hand, if size and efficiency are important, the DUMP.EXE file
+  generated by the C compiler is 8563 bytes, whereas the assembly-language
+  DUMP.EXE file is only 1294 bytes and runs twice as fast as the C program.
+
+
+

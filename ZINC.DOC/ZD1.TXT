@@ -1,0 +1,102 @@
+Разрабатывается Пряженцевым Павлом (Pavel Pryazhentsev 2:5020/41.2), не
+имеющем (к его большому сожалению) возможности преобрести фирменный продукт
+фирмы Zinc Software Incorporated.
+
+Черновики!!!!  for Zinc 2.0
+
+Замучался писать про нижний уровень, перехожу к верхнему.
+
+примечание:
+ссылки на members могут указываться с тропинкой классов, разделенных ".", как в
+старой Сишке (как будто доступ до элемента структуры)
+
+символ "(-" означает содержит!!!
+
+
+
+
+-------------------------------------------------------------------------------------------
+
+В некоторых классах определены функции Editor,Store,*New которые служат соответственно
+для редактирования (интерактивного) (объекта), сохранения и загрузки (ранее сохраненного)
+объектов.
+
+
+
+
+1. UIW_BORDER
+
+class EXPORT UIW_BORDER : public UI_WINDOW_OBJECT
+{
+public:
+	// Public members described in UIW_BORDER reference chapter.
+	UIW_BORDER(void);
+	virtual ~UIW_BORDER(void) { }
+	int DataGet(void) { return (width); }
+	void DataSet(int width);
+	virtual int Event(const UI_EVENT &event);
+
+	// Public members described in UI_WINDOW_OBJECT reference chapter.
+#ifdef ZIL_DESIGNER
+	virtual int Editor(const UI_EVENT &event);
+#endif
+#ifdef ZIL_LOAD
+	static UI_WINDOW_OBJECT *New(const char *name, UI_STORAGE *file, USHORT loadFlags)
+		{ return (new UIW_BORDER); }
+#endif
+#ifdef ZIL_STORE
+	virtual void Store(const char *name, UI_STORAGE *file = NULL, USHORT storeFlags = S_NO_FLAGS);
+#endif
+
+protected:
+	// Public members described in UIW_BORDER reference chapter.
+	static int width;
+};
+
+Класс описывает бордюр, которым можно снабдить объект типа "окно" , с корневыми индикаторами (по углам),
+обеспечивающими перемещение и sizing.
+
+Переменные:
+ width - толщина бордюра (только для графического режима).
+
+Функции:
+
+ UIW_BORDER(void) - конструктор класса. Создает объект типа UIW_BORDER и вызывает
+		    конструктор UI_WINDOW_OBJECT(0,0,0,0,WOF_NON_FIELD_REGION,WOAF_OUTSIDE_REGION | WOAF_NON_CURRENT)
+		    и заполняет следующие переменные класса:
+		    windowID[0]=ID_BORDER
+		    search.type=ID_BORDER
+		    search.numberID=NUMID_BORDER
+		    search.stringID="NUMID_BORDER"
+		    ( переменные используются в дальнейшем для поиска объекта и идентификации/передачи
+		     данному объекту event'ов)
+		    Все это означает, что данный объект (UIW_BORDER) не будет заполняемым (внутренее пространство не рассматривается как
+		    принадлежащее объекту), его регион будет лежать снаружи окна (того объекта к которому подцепляется UIW_BORDER)
+		    ( UI_WINDOW window + new UIW_BORDER) и он не может быть текущим.
+ DataGet(void) - возвращает толщину бордюра.
+ DataSet(int width) - устанавливает ширину бордюра.
+ Event(const UI_EVENT &event) - обработчик event'а для объекта.Предварительно преобразует физич. event в логический
+	      посредством вызова int ccode=UI_WINDOW_OBJECT::LogicalEvent(event,ID_BORDER);
+	      Обрабатываются следующие event'ы:
+	      S_CREATE,
+	      S_SIZE - переустановка region'ов (в списке регионов окна), и установка региона бордюра на внешнюю (его) границу.
+
+	      S_DISPLAY_INACTIVE,
+	      S_DISPLAY_ACTIVE - построение бордюра. Если режим графический и нет необходимости в перерисовке
+		 (!UI_WINDOW_OBJECT::NeedsUpdate(event,ccode))- выход,
+		 иначе построение бордюра.
+
+	      L_VIEW,
+	      L_BEGIN_SELECT - производится изменение размеров и предача информации об этом eventManager'у
+		    только в том случае, если объект, окружаемый бордюром может изменяться в размерах
+		    ( не имеет флаг WOAF_NO_SIZE).
+
+	      default - вызов UI_WINDOW_OBJECT::Event(event) (здесь физический event !).
+
+
+
+
+
+
+
+

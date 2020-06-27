@@ -1,0 +1,160 @@
+
+    Sony Control-S Protocol Specifications
+
+               The following  is a reference guide to using a microcomputer
+          to control a VCR equipped with a Control-S port. Apparently there
+          is no documentation on the Control-S protocol available from Sony
+          (at least, that's what their publications  office told  me when I
+          called). Thus,  the following  information is a synthesis of bits
+          and pieces obtained from many sources, including the Sony Service
+          Manual  for  the  RMT-124  IR  controller,  some net.friends, and
+          connecting an  oscilloscope across  the LED  in a  Sony IR remote
+          controller and  observing the  signals sent as various buttons on
+          the controller were pressed. The timings given may not be exactly
+          those  used  by  the  Sony  products,  but  these  have been used
+          successfully in controlling a  Sony  SL-HF900  VCR,  so  I figure
+          they're pretty close. I make no guarantees of accuracy for any of
+          the information contained  in  this  document,  although  I would
+          appreciate  hearing  from  you  if  you find any errors contained
+          herein. I'd  also  like  to  acknowledge  the  assistance of Paul
+          Milazzo ([[Email Removed]]) for his valuable pointers  in the right
+          direction when  I first began to research this topic. Without his
+          response to my usenet post, I might never  have figured  all this
+          stuff out and gotten my controller program working. Thanks, Paul!
+
+
+
+                                Protocol Description
+
+               The Control-S  protocol used  by various Sony video products
+          is simply a demodulated (baseband  TTL)  version  of  the signals
+          sent  by  the  Sony  remote  controllers  (such  as the RMT-124).
+          Another way to think of this is the  Sony remote  controls send a
+          40kHz  IR  carrier  signal  which  is  amplitude modulated by the
+          Control-S signal. The Control-S command word is 12 bits long, and
+          consists of  a 5-bit  device ID  code followed  by a 7-bit button
+          code. The control-S control word is preceded by a 2.4 millisecond
+          TTL logic-1 pulse (start bit) followed by 0.4 ms of logic-0. Each
+          1 bit  in the  control word  is represented  by a  1.2 ms logic-1
+          level followed  by a  0.4 ms logic-0 level, and each 0 bit is 0.8
+          ms high, 0.4 ms low. The end of  the control  packet is  always a
+          TTL logic-0  level, and  the total length of each packet is fixed
+          at 45 ms in length. The  bits in  each control  word are  sent in
+          increasing  bit  position  order  (i.e. low order bit first, high
+          order bit last). As an example,  let's  look  at  the  command to
+          toggle the  power on  a SL-HF900.  The device  ID for  the VCR is
+          00010, and the button code for the power switch is 0010101. Thus,
+          the entire  control word is 000100010101. To send this command to
+          the VCR, we first send out a 2.4 ms start bit, and  then send the
+          bits  in  reverse  order  (i.e.  101010001000).  We then hold the
+          Control-S port  to logic-0  level to  make the  total packet time
+          (i.e. the time since the rising edge of the start pulse) equal to
+          45 ms. 
+
+                                     Interfacing
+
+               To send commands to your VCR, your computer will need a TTL-
+          level binary output port. A standard IBM-PC parallel printer port
+          works  well,  as  does  the  binary  output  portion  of  a  data
+          acquisition  and  control  adapter  (IBM DACA board). Some people
+          have even used a  serial port  (along with  the appropriate level
+          conversion circuitry)  to control their VCRs. As long as the port
+          you use can send a  TTL-level  signal  (0VDC  =  logic-0,  5VDC =
+          logic-1) you  should be OK. Connect the output line from the port
+          to a 1/8" mini phone plug, with the  tip carrying  the TTL signal
+          and  the  ring  grounded.  A  simple software routine can then be
+          written to  toggle  the  status  of  a  bit  in  the  output port
+          corresponding to the output line. Ideally, setting the bit should
+          cause the line to go high; clearing the bit should cause the line
+          to go  low. By  carefully controlling  the pattern and timing the
+          commands may be sent to and properly understood  by the  VCR. The
+          following pseudocode outlines a routine to send a command through
+          a port setup such as that described above:
+
+          begin
+          /* send the start bit */
+          raise Ctrl-S line to TTL logic-1
+          wait 2.4 ms
+          lower Ctrl-S line to logic-0
+          wait 0.4 ms
+
+          /* send each of the 12 bits in the complete control word out */
+          /* the Control-S port one at a time, low order bit first */
+          for current_bit = low_order_bit to high_order_bit do begin
+              raise Ctrl-S line to logic-1
+              if (current_bit is a 1)
+                  wait 1.2 ms  /* high duration of a 1-bit */
+              else
+                  wait 0.8 ms  /* high duration of a 0-bit */
+              lower Ctrl-S line to logic-0
+              wait 0.4 ms  /* low duration of all bits */
+              end
+
+          wait a sufficient time to make the total message duration 45 ms.
+          end
+
+
+
+                               Additional Information
+
+               The following are some  of the  codes I've  discovered while
+          experimenting with the Control-S port software I wrote. Note that
+          not all of these commands work with all VCR models.  For example,
+          button code  22 causes  the SL-HF900 to eject a tape, but the SL-
+          HF400 ignores that command.  If you  come across  any codes which
+          are not listed here, I'd appreciate it if you'd send me a list of
+          the codes you discover.
+
+          Note: All numbers in the following table are base 10.
+
+                                   Device ID Codes
+          1   TV
+          2   VTR1
+          4   VTR2
+
+                                    Button Codes
+          000     1 button 
+          001     2 button 
+          002     3 button 
+          003     4 button 
+          004     5 button 
+          005     6 button 
+          006     7 button 
+          007     8 button 
+          008     9 button 
+          009     10 button/0 button 
+          010     11 button 
+          011     12 button 
+          012     13 button 
+          013     14 button 
+          020     X 2 play w/sound 
+          021     power 
+          022     eject 
+          023     L-CH/R-CH/Stereo 
+          024     stop 
+          025     pause 
+          026     play 
+          027     rewind 
+          028     FF 
+          029     record 
+          032     pause engage 
+          035     X 1/5 play
+          040     reverse visual scan 
+          041     forward visual scan 
+          042     TV/VTR 
+          045     VTR from TV 
+          047     power off 
+          048     single frame reverse/slow reverse play 
+          049     single frame advance/slow forward play 
+          060     aux 
+          070     counter reset 
+          078     TV/VTR 
+          083     index (scan) 
+          106     edit play 
+          107     mark 
+
+
+
+               Well, this ought to  be enough  to get  you started.  If you
+          have any questions, or would like to share some new device/button
+          codes, I can be reached at the following address:

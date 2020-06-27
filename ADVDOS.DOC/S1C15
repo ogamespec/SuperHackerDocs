@@ -1,0 +1,672 @@
+컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+Chapter 15  Filters
+
+  A filter is, essentially, a program that operates on a stream of
+  characters. The source and destination of the character stream can be
+  files, another program, or almost any character device. The transformation
+  applied by the filter to the character stream can range from an operation
+  as simple as character substitution to one as elaborate as generating
+  splines from sets of coordinates.
+
+  The standard MS-DOS package includes three simple filters: SORT, which
+  alphabetically sorts text on a line-by-line basis; FIND, which searches a
+  text stream to match a specified string; and MORE, which displays text one
+  screenful at a time.
+
+
+System Support for Filters
+
+  The operation of a filter program relies on two MS-DOS features that first
+  appeared in version 2.0: standard devices and redirectable I/O.
+
+  The standard devices are represented by five handles that are originally
+  established by COMMAND.COM. Each process inherits these handles from its
+  immediate parent. Thus, the standard device handles are already open when
+  a process acquires control of the system, and it can use them with
+  Interrupt 21H Functions 3FH and 40H for read and write operations
+  without further preliminaries. The default assignments of the standard
+  device handles are as follows:
+
+  Handle             Name                                 Default device
+  컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+  0                  stdin (standard input)               CON
+  1                  stdout (standard output)             CON
+  2                  stderr (standard error)              CON
+  3                  stdaux (standard auxiliary)          AUX
+  4                  stdprn (standard printer)            PRN
+  컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+  The CON device is assigned by default to the system's keyboard and video
+  display. AUX and PRN are respectively associated by default with COM1 (the
+  first physical serial port) and LPT1 (the first parallel printer port).
+  You can use the MODE command to redirect LPT1 to one of the serial ports;
+  the MODE command will also redirect PRN.
+
+  When executing a program by entering its name at the COMMAND.COM prompt,
+  you can redirect the standard input, the standard output, or both from
+  their default device (CON) to another file, a character device, or a
+  process. You do this by including one of the special characters <, >, >>,
+  and | in the command line, in the form shown on the following page.
+
+  Symbol             Effect
+  컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+  < file             Takes standard input from the specified file instead of
+                     the keyboard.
+
+  < device           Takes standard input from the named device instead of
+                     the keyboard.
+
+  > file             Sends standard output to the specified file instead of
+                     the display.
+
+  >> file            Appends standard output to the current contents of the
+                     specified file instead of sending it to the display.
+
+  > device           Sends standard output to the named device instead of
+                     the display.
+
+  p1 | p2            Routes standard output of program p1 to become the
+                     standard input of program p2. (Output of p1 is said to
+                     be piped to p2.)
+  컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+  For example, the command
+
+  C>SORT <MYFILE.TXT >PRN <Enter>
+
+  causes the SORT filter to read its input from the file MYFILE.TXT, sort
+  the lines alphabetically, and write the resulting text to the character
+  device PRN (the logical name for the system's list device).
+
+  The redirection requested by the <, >, >>, and | characters takes place at
+  the level of COMMAND.COM and is invisible to the program it affects. Any
+  other process can achieve a similar effect by redirecting the standard
+  input and standard output with Int 21H Function 46H before calling the
+  EXEC function (Int 21H Function 4BH) to run a child process.
+
+  Note that if a program circumvents MS-DOS to perform its input and output,
+  either by calling ROM BIOS functions or by manipulating the keyboard or
+  video controller directly, redirection commands placed in the program's
+  command line do not have the expected effect.
+
+
+How Filters Work
+
+  By convention, a filter program reads its text from the standard input
+  device and writes the results of its operations to the standard output
+  device. When it reaches the end of the input stream, the filter simply
+  terminates. As a result, filters are both flexible and simple.
+
+  Filter programs are flexible because they do not know, and do not care
+  about, the source of the data they process or the destination of their
+  output. Thus, any character device that has a logical name within the
+  system (CON, AUX, COM1, COM2, PRN, LPT1, LPT2, LPT3, and so on), any file
+  on any block device (local or network) known to the system, or any other
+  program can supply a filter's input or accept its output. If necessary,
+  you can concatenate several functionally simple filters with pipes to
+  perform very complex operations.
+
+  Although flexible, filters are also simple because they rely on their
+  parent processes to supply standard input and standard output handles that
+  have already been appropriately redirected. The parent must open or create
+  any necessary files, check the validity of logical character-device names,
+  and load and execute the preceding or following process in a pipe. The
+  filter concerns itself only with the transformation it applies to the
+  data.
+
+
+Building a Filter
+
+  Creating a new filter for MS-DOS is a straightforward process. In its
+  simplest form, a filter need only use the handle-oriented read (Interrupt
+  21H Function 3FH) and write (Interrupt 21H Function 40H) functions to
+  get characters or lines from standard input and send them to standard
+  output, performing any desired alterations on the text stream on a
+  character-by-character or line-by-line basis.
+
+  Figures 15-1 and 15-2 contain prototype character-oriented filters in
+  both assembly language and C. In these examples, the translate routine,
+  which is called for each character transferred from the standard input to
+  the standard output, does nothing at all. As a result, both filters
+  function rather like a very slow COPY command. You can quickly turn these
+  primitive filters into useful programs by substituting your own translate
+  routine.
+
+  If you try out these programs, you'll notice that the C prototype filter
+  runs much faster than its MASM equivalent. This is because the C runtime
+  library is performing hidden blocking and deblocking of the input and
+  output stream, whereas the MASM filter is doing exactly what it appears to
+  be doing: making two calls to MS-DOS for each character processed. You can
+  easily restore the MASM filter's expected speed advantage by adapting it
+  to read and write lines instead of single characters.
+
+  컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+           name      proto
+           page      55,132
+           title     PROTO.ASM--prototype filter
+  ;
+  ; PROTO.ASM:  prototype character-oriented filter
+  ;
+  ; Copyright 1988 Ray Duncan
+  ;
+
+  stdin   equ     0               ; standard input handle
+  stdout  equ     1               ; standard output handle
+  stderr  equ     2               ; standard error handle
+
+  cr      equ     0dh             ; ASCII carriage return
+  lf      equ     0ah             ; ASCII linefeed
+
+  _TEXT   segment word public 'CODE'
+
+          assume  cs:_TEXT,ds:_DATA,ss:STACK
+
+  main    proc    far             ; entry point from MS-DOS
+
+          mov     ax,_DATA        ; set DS = our data segment
+          mov     ds,ax
+
+  main1:                          ; read char from stdin...
+          mov     dx,offset char  ; DS:DX = buffer address
+          mov     cx,1            ; CX = length to read
+          mov     bx,stdin        ; BX = standard input handle
+          mov     ah,3fh          ; function 3fh = read
+          int     21h             ; transfer to MS-DOS
+          jc      main3           ; if error, terminate
+
+          cmp     ax,1            ; any character read?
+          jne     main2           ; if end of file, terminate
+
+          call    translate       ; translate character
+
+                                  ; write char to stdout...
+          mov     dx,offset char  ; DS:DX = buffer address
+          mov     cx,1            ; CX = length to write
+          mov     bx,stdout       ; BX = standard output handle
+          mov     ah,40h          ; function 40h = write
+          int     21h             ; transfer to MS-DOS
+          jc      main3           ; if error, terminate
+          cmp     ax,1            ; was character written?
+          jne     main3           ; if disk full, terminate
+
+          jmp     main1           ; get another character
+
+  main2:                          ; end of file reached
+          mov     ax,4c00h        ; function 4ch = terminate
+                                  ; return code = 0
+          int     21h             ; transfer to MS-DOS
+
+  main3:                          ; error or disk full
+          mov     ax,4c01h        ; function 4ch = terminate
+                                  ; return code = 1
+          int     21h             ; transfer to MS-DOS
+
+  main    endp
+
+  ;
+  ; Perform any necessary translation on character
+  ; from standard input stored in variable 'char'.
+  ; This example simply leaves character unchanged.
+  ;
+  translate proc  near
+
+          ret                     ; does nothing
+
+  translate endp
+
+  _TEXT   ends
+
+
+  _DATA   segment word public 'DATA'
+
+  char    db      0               ; storage for input character
+
+  _DATA   ends
+
+
+  STACK   segment para stack 'STACK'
+
+          dw      64 dup (?)
+
+  STACK   ends
+
+          end     main            ; defines program entry point
+  컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+  Figure 15-1.  PROTO.ASM, the source code for a prototype
+  character-oriented MASM filter.
+
+  컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+  /*
+      PROTO.C:  prototype character-oriented filter
+
+      Copyright 1988 Ray Duncan
+  */
+
+  #include <stdio.h>
+
+  main(int argc, char *argv[])
+  {
+      char ch;
+
+      while((ch=getchar()) != EOF)    /* read a character            */
+      {
+          ch = translate(ch);         /* translate it if necessary   */
+
+          putchar(ch);                /* write the character         */
+      }
+      exit(0);                        /* terminate at end of file    */
+  }
+
+
+  /*
+      Perform any necessary translation on character
+      from input file. This example simply returns
+      the same character.
+  */
+
+  int translate(char ch)
+  {
+      return (ch);
+  }
+  컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+  Figure 15-2.  PROTO.C, the source code for a prototype character-oriented
+  C filter.
+
+
+The CLEAN Filter
+
+  As a more practical example of MS-DOS filters, let's look at a simple but
+  very useful filter called CLEAN. Figures 15-3 and 15-4 show the
+  assembly-language and C source code for this filter. CLEAN processes a
+  text stream by stripping the high bit from all characters, expanding tabs
+  to spaces, and throwing away all control codes except carriage returns,
+  linefeeds, and formfeeds. Consequently, CLEAN can transform almost any
+  kind of word-processed document file into a plain ASCII text file.
+
+  컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+          name    clean
+          page    55,132
+          title   CLEAN--Text-file filter
+  ;
+  ; CLEAN.ASM     Filter to turn document files into
+  ;               normal text files.
+  ;
+  ; Copyright 1988 Ray Duncan
+  ;
+  ; Build:        C>MASM CLEAN;
+  ;               C>LINK CLEAN;
+  ;
+  ; Usage:        C>CLEAN  <infile  >outfile
+  ;
+  ; All text characters are passed through with high
+  ; bit stripped off. Formfeeds, carriage returns,
+  ; and linefeeds are passed through. Tabs are expanded
+  ; to spaces. All other control codes are discarded.
+  ;
+
+  tab     equ     09h             ; ASCII tab code
+  lf      equ     0ah             ; ASCII linefeed
+  ff      equ     0ch             ; ASCII formfeed
+  cr      equ     0dh             ; ASCII carriage return
+  blank   equ     020h            ; ASCII space code
+  eof     equ     01ah            ; Ctrl-Z end-of-file
+
+  tabsiz  equ     8               ; width of tab stop
+
+  bufsiz  equ     128             ; size of input and
+                                  ; output buffers
+
+  stdin   equ     0000            ; standard input handle
+  stdout  equ     0001            ; standard output handle
+  stderr  equ     0002            ; standard error handle
+
+
+  _TEXT   segment word public 'CODE'
+
+          assume  cs:_TEXT,ds:_DATA,es:_DATA,ss:STACK
+
+  clean   proc    far             ; entry point from MS-DOS
+
+          push    ds              ; save DS:0000 for final
+          xor     ax,ax           ; return to MS-DOS, in case
+          push    ax              ; function 4ch can't be used
+          mov     ax,_DATA        ; make data segment addressable
+          mov     ds,ax
+          mov     es,ax
+
+          mov     ah,30h          ; check version of MS-DOS
+          int     21h
+          cmp     al,2            ; MS-DOS 2.0 or later?
+          jae     clean1          ; jump if version OK
+
+                                  ; MS-DOS 1, display error
+                                  ; message and exit...
+          mov     dx,offset msg1  ; DS:DX = message address
+          mov     ah,9            ; function 9 = display string
+          int     21h             ; transfer to MS-DOS
+          ret                     ; then exit the old way
+
+  clean1: call    init            ; initialize input buffer
+
+  clean2: call    getc            ; get character from input
+          jc      clean9          ; exit if end of stream
+
+          and     al,07fh         ; strip off high bit
+
+          cmp     al,blank        ; is it a control char?
+          jae     clean4          ; no, write it
+
+          cmp     al,eof          ; is it end of file?
+          je      clean8          ; yes, write EOF and exit
+
+          cmp     al,tab          ; is it a tab?
+          je      clean6          ; yes, expand it to spaces
+
+          cmp     al,cr           ; is it a carriage return?
+          je      clean3          ; yes, go process it
+
+          cmp     al,lf           ; is it a linefeed?
+          je      clean3          ; yes, go process it
+
+          cmp     al,ff           ; is it a formfeed?
+          jne     clean2          ; no, discard it
+
+  clean3: mov     column,0        ; if CR, LF, or FF,
+          jmp     clean5          ; reset column to zero
+
+  clean4: inc     column          ; if non-control character,
+                                  ; increment column counter
+  clean5: call    putc            ; write char to stdout
+          jnc     clean2          ; if disk not full,
+                                  ; get another character
+
+                                  ; write failed...
+          mov     dx,offset msg2  ; DS:DX = error message
+          mov     cx,msg2_len     ; CX = message length
+          mov     bx,stderr       ; BX = standard error handle
+          mov     ah,40h          ; function 40h = write
+          int     21h             ; transfer to MS-DOS
+
+          mov     ax,4c01h        ; function 4ch = terminate
+                                  ; return code = 1
+          int     21h             ; transfer to MS-DOS
+
+  clean6: mov     ax,column       ; tab code detected
+          cwd                     ; tabsiz - (column MOD tabsiz)
+          mov     cx,tabsiz       ; is number of spaces needed
+          idiv    cx              ; to move to next tab stop
+          sub     cx,dx
+
+          add     column,cx       ; also update column counter
+
+  clean7: push    cx              ; save spaces counter
+
+          mov     al,blank        ; write an ASCII space
+          call    putc
+
+          pop     cx              ; restore spaces counter
+          loop    clean7          ; loop until tab stop
+
+          jmp     clean2          ; get another character
+
+  clean8: call    putc            ; write EOF mark
+
+  clean9: call    flush           ; write last output buffer
+          mov     ax,4c00h        ; function 4ch = terminate
+                                  ; return code = 0
+          int     21h             ; transfer to MS-DOS
+
+  clean   endp
+
+
+  getc    proc    near            ; get character from stdin
+                                  ; returns carry = 1 if
+                                  ; end of input, else
+                                  ; AL = char, carry = 0
+          mov     bx,iptr         ; get input buffer pointer
+          cmp     bx,ilen         ; end of buffer reached?
+          jne     getc1           ; not yet, jump
+
+                                  ; more data is needed...
+          mov     bx,stdin        ; BX = standard input handle
+          mov     cx,bufsiz       ; CX = length to read
+          mov     dx,offset ibuff ; DS:DX = buffer address
+          mov     ah,3fh          ; function 3fh = read
+          int     21h             ; transfer to MS-DOS
+          jc      getc2           ; jump if read failed
+
+          or      ax,ax           ; was anything read?
+          jz      getc2           ; jump if end of input
+
+          mov     ilen,ax         ; save length of data
+          xor     bx,bx           ; reset buffer pointer
+
+  getc1:  mov     al,[ibuff+bx]   ; get character from buffer
+          inc     bx              ; bump buffer pointer
+
+          mov     iptr,bx         ; save updated pointer
+          clc                     ; return character in AL
+          ret                     ; and carry = 0 (clear)
+
+  getc2:  stc                     ; end of input stream
+          ret                     ; return carry = 1 (set)
+
+  getc    endp
+
+
+  putc    proc    near            ; send character to stdout,
+                                  ; returns carry = 1 if
+                                  ; error, else carry = 0
+
+          mov     bx,optr         ; store character into
+          mov     [obuff+bx],al   ; output buffer
+
+          inc     bx              ; bump buffer pointer
+          cmp     bx,bufsiz       ; buffer full?
+          jne     putc1           ; no, jump
+
+
+          mov     bx,stdout       ; BX = standard output handle
+          mov     cx,bufsiz       ; CX = length to write
+          mov     dx,offset obuff ; DS:DX = buffer address
+          mov     ah,40h          ; function 40h = write
+          int     21h             ; transfer to MS-DOS
+          jc      putc2           ; jump if write failed
+
+          cmp     ax,cx           ; was write complete?
+          jne     putc2           ; jump if disk full
+
+          xor     bx,bx           ; reset buffer pointer
+
+  putc1:  mov     optr,bx         ; save buffer pointer
+          clc                     ; write successful,
+          ret                     ; return carry = 0 (clear)
+
+  putc2:  stc                     ; write failed or disk full,
+          ret                     ; return carry = 1 (set)
+
+  putc    endp
+
+
+  init    proc    near            ; initialize input buffer
+
+          mov     bx,stdin        ; BX = standard input handle
+          mov     cx,bufsiz       ; CX = length to read
+          mov     dx,offset ibuff ; DS:DX = buffer address
+          mov     ah,3fh          ; function 3fh = read
+          int     21h             ; transfer to MS-DOS
+          jc      init1           ; jump if read failed
+          mov     ilen,ax         ; save actual bytes read
+  init1:  ret
+
+  init    endp
+
+
+  flush   proc    near            ; flush output buffer
+
+          mov     cx,optr         ; CX = bytes to write
+          jcxz    flush1          ; exit if buffer empty
+          mov     dx,offset obuff ; DS:DX = buffer address
+          mov     bx,stdout       ; BX = standard output handle
+          mov     ah,40h          ; function 40h = write
+          int     21h             ; transfer to MS-DOS
+  flush1: ret
+
+  flush   endp
+
+  _TEXT   ends
+  _DATA   segment word public 'DATA'
+
+  ibuff   db      bufsiz dup (0)  ; input buffer
+  obuff   db      bufsiz dup (0)  ; output buffer
+
+  iptr    dw      0               ; ibuff pointer
+  ilen    dw      0               ; bytes in ibuff
+  optr    dw      0               ; obuff pointer
+
+  column  dw      0               ; current column counter
+
+  msg1    db      cr,lf
+          db      'clean: need MS-DOS version 2 or greater.'
+          db      cr,lf,'$'
+
+  msg2    db      cr,lf
+          db      'clean: disk is full.'
+          db      cr,lf
+  msg2_len equ    $-msg2
+
+  _DATA   ends
+
+
+  STACK   segment para stack 'STACK'
+
+          dw      64 dup (?)
+
+  STACK   ends
+
+          end     clean
+  컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+  Figure 15-3.  CLEAN.ASM, the source code for the MASM version of the CLEAN
+  filter.
+
+  컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+  /*
+      CLEAN.C     Filter to turn document files into
+                  normal text files.
+
+      Copyright 1988 Ray Duncan
+
+      Compile:    C>CL CLEAN.C
+
+      Usage:      C>CLEAN  <infile >outfile
+
+      All text characters are passed through with high bit stripped
+      off. Formfeeds, carriage returns, and linefeeds are passed
+      through. Tabs are expanded to spaces. All other control codes
+      are discarded.
+  */
+
+  #include <stdio.h>
+
+  #define TAB_WIDTH   8              /* width of a tab stop     */
+  #define TAB     '\x09'             /* ASCII tab character     */
+  #define LF      '\x0A'             /* ASCII linefeed          */
+  #define FF      '\x0C'             /* ASCII formfeed          */
+  #define CR      '\x0D'             /* ASCII carriage return   */
+  #define BLANK   '\x20'             /* ASCII space code        */
+  #define EOFMK   '\x1A'             /* Ctrl-Z end of file      */
+
+
+  main(int argc, char *argv[])
+  {
+      char c;                        /* character from stdin    */
+      int col = 0;                   /* column counter          */
+
+      while((c = getchar()) != EOF)  /* read input character    */
+      {
+          c &= 0x07F;                /* strip high bit          */
+
+          switch(c)                  /* decode character        */
+          {
+              case LF:               /* if linefeed or          */
+              case CR:               /* carriage return,        */
+                  col=0;             /* reset column count      */
+
+              case FF:               /* if formfeed, carriage   */
+                  wchar(c);          /* return, or linefeed,    */
+                  break;             /* pass character through  */
+
+              case TAB:              /* if tab, expand to spaces*/
+                  do wchar(BLANK);
+                  while((++col % TAB_WIDTH) != 0);
+                  break;
+
+              default:               /* discard other control   */
+                  if(c >= BLANK)     /* characters, pass text   */
+                  {                  /* characters through      */
+                      wchar(c);
+                      col++;         /* bump column counter     */
+                  }
+                  break;
+          }
+      }
+      wchar(EOFMK);                  /* write end-of-file mark  */
+      exit(0);
+  }
+
+
+  /*
+      Write a character to the standard output. If
+      write fails, display error message and terminate.
+  */
+
+  wchar(char c)
+  {
+      if((putchar(c) == EOF) && (c != EOFMK))
+      {
+          fputs("clean: disk full",stderr);
+          exit(1);
+      }
+  }
+  컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
+
+  Figure 15-4.  CLEAN.C, the source code for the C version of the CLEAN
+  filter.
+
+  When using the CLEAN filter, you must specify the source and destination
+  files with redirection parameters in the command line; otherwise, CLEAN
+  will simply read the keyboard and write to the display. For example, to
+  filter the document file MYFILE.DOC and leave the result in the file
+  MYFILE.TXT, you would enter the following command:
+
+  C>CLEAN <MYFILE.DOC >MYFILE.TXT  <Enter>
+
+  (Note that the original file, MYFILE.DOC, is unchanged.)
+
+  One valuable application of this filter is to rescue assembly-language
+  source files. If you accidentally edit such a source file in document
+  mode, the resulting file may cause the assembler to generate spurious or
+  confusing error messages. CLEAN lets you turn the source file back into
+  something the assembler can cope with, without losing the time you spent
+  to edit it.
+
+  Another handy application for CLEAN is to list a word-processed document
+  in raw form on the printer, using a command such as
+
+  C>CLEAN <MYFILE.DOC >PRN  <Enter>
+
+  Contrasting the C and assembly-language versions of this filter provides
+  some interesting statistics. The C version contains 79 lines and compiles
+  to a 5889-byte .EXE file, whereas the assembly-language version contains
+  265 lines and builds an 1107-byte .EXE file. The size and execution-speed
+  advantages of implementing such tools in assembly language is obvious,
+  even compared with such an excellent compiler as the Microsoft C
+  Optimizing Compiler. However, you must balance performance considerations
+  against the time and expense required for programming, particularly when a
+  program will not be used very often.
+
+
+

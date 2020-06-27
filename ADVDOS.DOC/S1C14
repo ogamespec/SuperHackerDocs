@@ -1,0 +1,1930 @@
+ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+Chapter 14  Installable Device Drivers
+
+  Device drivers are the modules of an operating system that control the
+  hardware. They isolate the operating-system kernel from the specific
+  characteristics and idiosyncrasies of the peripheral devices interfaced to
+  the central processor. Thus, the driver's relationship to the kernel is
+  analogous to the operating system's relationship to application programs.
+
+  The installable device drivers that were introduced in MS-DOS version 2
+  give the user great flexibility. They allow the user to customize and
+  configure the computer for a wide range of peripheral devices, with a
+  minimum of troublesome interactions and without having to "patch" the
+  operating system. Even the most inexperienced user can install a new
+  device into a system by plugging in a card, copying a driver file to the
+  boot disk, and editing the system configuration file.
+
+  For those inclined to do their own programming, the MS-DOS installable
+  device drivers are interfaced to the hardware-independent kernel through a
+  simple and clearly defined scheme of function codes and data structures.
+  Given adequate information about the hardware, any competent assembly-
+  language programmer can expect to successfully interface even the most
+  bizarre device to MS-DOS without altering the operating system in the
+  slightest and without acquiring any special or proprietary knowledge about
+  its innards.
+
+  In retrospect, installable device drivers have proven to be one of the key
+  usability features of MS-DOS. I feel that they have been largely
+  responsible for the rapid proliferation and competitive pricing of
+  high-speed mass-storage devices for MS-DOS machines, and for the growing
+  confidence of the average user toward "tampering with" (upgrading) his or
+  her machine.
+
+
+MS-DOS Device-Driver Types
+
+  Drivers written for MS-DOS fall into two distinct classes:
+
+  ş  Block-device drivers
+
+  ş  Character-device drivers
+
+  A driver's class determines what functions it must support, how it is
+  viewed by MS-DOS, and how it makes the associated physical device appear
+  to behave when an application program makes a request for I/O.
+
+Character-Device Drivers
+
+  Character-device drivers control peripheral devices that perform input and
+  output one character (or byte) at a time, such as a terminal or printer. A
+  single character-device driver ordinarily supports a single hardware unit.
+  Each character device has a one-to-eight-character logical name, and an
+  application program can use this name to open the device for input or
+  output, as though it were a file. The logical name is strictly a means of
+  identification for MS-DOS and has no physical equivalent on the device.
+
+  MS-DOS's built-in character-device drivers for the console, serial port,
+  and printer are unique in that an application program can access them in
+  three different ways:
+
+  ş  It can open them by name (CON, AUX, PRN, etc.) for input and output,
+     like any other character device.
+
+  ş  It can use the special-purpose MS-DOS function calls (Int 21H Functions
+     01-0CH).
+
+  ş  It can use the default handles (standard input, standard output,
+     standard error, standard auxiliary, and standard printer), which do not
+     need to be opened to be used.
+
+  The number of additional character-device drivers that can be installed is
+  limited only by available memory and by the requirement that each driver
+  have a unique logical name. If more than one driver uses the same logical
+  name, the last driver to be loaded will supersede any others and will
+  receive all I/O requests addressed to that logical name. This fact can
+  occasionally be turned to advantage; for example, it allows the user to
+  replace the system's default CON driver, which does not support cursor
+  positioning or character attributes, with the more powerful ANSI.SYS
+  driver.
+
+  ASCII vs Binary Mode
+
+  MS-DOS regards a handle associated with a character device to be in either
+  ASCII (cooked) mode or binary (raw) mode. The mode affects MS-DOS's
+  buffering of data for read and write requests. The driver itself is not
+  aware of the mode, and the mode does not affect its operation. An
+  application can select the mode of a handle with the IOCTL function (Int
+  21H Function 44H).
+
+  During ASCII-mode input, MS-DOS requests characters one at a time from the
+  driver and places them into its own internal buffer, echoing each to the
+  screen (if the input device is the keyboard) and checking each character
+  for a Ctrl-C (03H). When the number of characters requested by the
+  application program has been received, when a Ctrl-Z is detected, or when
+  the Enter key is pressed (in the case of the keyboard), MS-DOS terminates
+  the input and copies the data from its internal buffer into the requesting
+  program's buffer. Similarly, during ASCII-mode output, MS-DOS passes the
+  characters to the device driver one at a time and checks for a Ctrl-C
+  pending at the keyboard between each character. When a Ctrl-C is detected,
+  MS-DOS aborts the input or output operation and transfers to the routine
+  whose address is stored in the Int 23H vector.
+
+  In binary mode, MS-DOS reads or writes the exact number of bytes requested
+  by the application program, without regard to any control characters such
+  as Enter or Ctrl-C. MS-DOS passes the entire request through to the driver
+  in a single operation, instead of breaking it into single-character reads
+  or writes, and transfers the characters directly to or from the requesting
+  program's buffer.
+
+Block-Device drivers
+
+  Block-device drivers usually control random-access mass-storage devices
+  such as floppy-disk drives and fixed disks, although they can also be used
+  to control non-random-access devices such as magnetic-tape drives. Block
+  devices transfer data in chunks, rather than one byte at a time. The size
+  of the blocks may be either fixed (disk drives) or variable (tape drives).
+
+  A block driver can support more than one hardware unit, map a single
+  physical unit onto two or more logical units, or both. Block devices do
+  not have file-like logical names, as character devices do. Instead, MS-DOS
+  assigns drive designators to the block-device units or logical drives in
+  an alphabetic sequence: A, B, and so forth. Each logical drive contains a
+  file system: boot block, file allocation table, root directory, and so
+  forth. (See Chapter 10.)
+
+  A block-device driver's position in the chain of all drivers determines
+  the first letter assigned to that driver. The number of logical drive
+  units that the driver supports determines the total number of letters
+  assigned to it.
+
+  Block-device drivers always read or write exactly the number of sectors
+  requested (barring hardware or addressing errors) and never filter or
+  otherwise manipulate the contents of the blocks being transferred.
+
+
+Structure of an MS-DOS Device Driver
+
+  A device driver consists of three major parts (Figure 14-1):
+
+  ş  A device header
+
+  ş  A strategy (strat) routine
+
+  ş  An interrupt (intr) routine
+
+  We'll discuss each of these in more detail as we work through this
+  chapter.
+
+  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+  ³                        ³     Initialization      ³
+  ³                        ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+  ³                        ³       Media check       ³
+  ³                        ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+  ³                        ³        Build BPB        ³
+  ³                        ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+  ³                        ³  IOCTL read and write   ³
+  ³                        ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+  ³                        ³         Status          ³
+  ³                        ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+  ³                        ³          Read           ³
+  ³                        ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+  ³                        ³   Write, write/verify   ³
+  ³                        ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+  ³   Interrupt routine    ³    Output until busy    ³
+  ³                        ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+  ³                        ³      Flush buffers      ³
+  ³                        ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+  ³                        ³       Device open       ³
+  ³                        ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+  ³                        ³      Device close       ³
+  ³                        ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+  ³                        ³ Check whether removable ³
+  ³                        ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+  ³                        ³     Generic IOCTL       ³
+  ³                        ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+  ³                        ³ Get/Set logical device  ³
+  ³                        ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+  ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+  ³                 Strategy routine                 ³
+  ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+  ³               Device-driver header               ³
+  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+  Figure 14-1.  General structure of an MS-DOS installable device driver.
+
+The Device Header
+
+  The device header (Figure 14-2) lies at the beginning of the driver. It
+  contains a link to the next driver in the chain, a set of attribute flags
+  for the device (Figure 14-3), offsets to the executable strategy and
+  interrupt routines for the device, and the logical-device name (if it is a
+  character device such as PRN or COM1) or the number of logical units (if
+  it is a block device).
+
+  Byte offset
+
+  00H ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+      ³         Link to next driver, offset          ³
+  02H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³         Link to next driver, segment         ³
+  04H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³            Device attribute word             ³
+  06H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³         Strategy entry point, offset         ³
+  08H ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³        Interrupt entry point, offset         ³
+  0AH ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+      ³  Logical name (8 bytes) if character device  ³
+      ³  Number of units (1 byte) if block device,   ³
+      ³    followed by 7 bytes of reserved space     ³
+      ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+  Figure 14-2.  Device-driver header. The offsets to the strat and intr
+  routines are offsets from the same segment used to point to the device
+  header.
+
+
+  Bit            Significance
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  15             1 if character device, 0 if block device
+  14             1 if IOCTL read and write supported
+  13             for block devices:
+                 1 if BIOS parameter block in boot sector should be used to
+                 determine media characteristics, 0 if media ID byte should
+                 be used
+                 for character devices:
+                 1 if output until busy supported
+  12             Reserved (should be 0)
+  11             1 if open/close/removable media supported (MS-DOS 3.0 and
+                 later)
+  7Ä10           Reserved (should be 0)
+  6              1 if generic IOCTL and get/set logical drive supported
+                 (MS-DOS 3.2 and later)
+  5              Reserved (should be 0)
+  4              1 if CON driver and Int 29H fast-output function supported
+  3              1 if current CLOCK$ device
+  2              1 if current NUL device
+  1              for block devices:
+                 1 if driver supports 32-bit sector addressing (MS-DOS 4.0)
+                 for character devices:
+                 1 if standard output device (stdout)
+  0              1 if current standard input device (stdin)
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+  Figure 14-3.  Device attribute word in device header. In block-device
+  drivers, only bits 6, 11, and 13Ä15 (and bit 1 in MS-DOS version 4.0) have
+  significance; the remainder should always be zero.
+
+The Strategy Routine
+
+  MS-DOS calls the strategy routine (strat) for the device when the driver
+  is first loaded and installed, and again whenever an application program
+  issues an I/O request for the device. MS-DOS passes the strategy routine a
+  double-word pointer to a data structure called a request header. This
+  structure contains information about the type of operation to be
+  performed. In current versions of MS-DOS, the strategy routine never
+  actually performs any I/O operation but simply saves the pointer to the
+  request header. The strat routine must not make any Int 21H function
+  calls.
+
+  The first 13 bytes of the request header are the same for all
+  device-driver functions and are therefore referred to as the static
+  portion of the header. The number and contents of the subsequent bytes
+  vary according to the type of function being requested (Figure 14-4).
+  Both MS-DOS and the driver read and write information in the request
+  header.
+
+  The request header's most important component is a command code, or
+  function number, passed in its third byte to select a driver subfunction
+  such as read, write, or status. Other information passed to the driver in
+  the header includes unit numbers, transfer addresses, and sector or byte
+  counts.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ;
+  ; MS-DOS request header structure definition
+  ;
+  Request         struc                  ; request header template structure
+
+  Rlength         db    ?                ; 0  length of request header
+  Unit            db    ?                ; 1  unit number for this request
+  Command         db    ?                ; 2  request header's command code
+  Status          dw    ?                ; 3  driver's return status word
+  Reserve         db    8 dup (?)        ; 5  reserved area
+  Media           db    ?                ; 13 media descriptor byte
+  Address         dd    ?                ; 14 memory address for transfer
+  Count           dw    ?                ; 18 byte/sector count value
+  Sector          dw    ?                ; 20 starting sector value
+
+  Request         ends                   ; end of request header template
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 14-4.  Format of request header. Only the first 13 bytes are common
+  to all driver functions; the number and definition of the subsequent bytes
+  vary, depending upon the function type. The structure shown here is the
+  one used by the read and write subfunctions of the driver.
+
+The Interrupt Routine
+
+  The last and most complex part of a device driver is the interrupt routine
+  (intr), which MS-DOS calls immediately after it calls the strategy
+  routine. The interrupt routine implements the device driver proper; it
+  performs (or calls other resident routines to perform) the actual input or
+  output operations, based on the information passed in the request header.
+  The strat routine may not make any Int 21H function calls, except for a
+  restricted set during driver initialization.
+
+  When an I/O function is completed, the interrupt routine uses the status
+  field in the request header to inform the DOS kernel about the outcome of
+  the requested I/O operation. It can use other fields in the request header
+  to pass back such useful information as counts of the actual sectors or
+  bytes transferred.
+
+  The interrupt routine usually consists of the following elements:
+
+  ş  A collection of subroutines to implement the various function types
+     that may be requested by MS-DOS (sometimes called the command-code
+     routines)
+
+  ş  A centralized entry point that saves all affected registers, extracts
+     the desired function code from the request header, and branches to the
+     appropriate command-code routine (typically accomplished with a jump
+     table)
+
+  ş  A centralized exit point that stores status and error codes into the
+     request header (Figures 14-5 and 14-6) and restores the previous
+     contents of the affected registers
+
+  The command-code routines that implement the various functions supported
+  by an installable device driver are discussed in detail in the following
+  pages.
+
+  Bit(s)         Significance
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  15             Error
+  12Ä14          Reserved
+  9              Busy
+  8              Done
+  0Ä7            Error code if bit 15 = 1
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 14-5.  Values for the return status word of the request header.
+
+  Code           Meaning
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  0              Write-protect violation
+  1              Unknown unit
+  2              Drive not ready
+  3              Unknown command
+  4              Data error (CRC)
+  5              Bad request-structure length
+  6              Seek error
+  7              Unknown medium
+  8              Sector not found
+  9              Printer out of paper
+  0AH            Write fault
+  0BH            Read fault
+  0CH            General failure
+  0DÄ0EH         Reserved
+  0FH            Invalid disk change (MS-DOS versions 3.0 and later)
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 14-6.  Driver error codes returned in bits 0 through 7 of the
+  return status word of the request header.
+
+  Although its name suggests otherwise, the interrupt routine is never
+  entered asynchronously (on an I/O completion interrupt, for example).
+  Thus, the division of function between strategy and interrupt routines is
+  completely artificial in the current versions of MS-DOS.
+
+
+The Command-Code Routines
+
+  A total of 20 command codes are defined for MS-DOS device drivers. The
+  command codes (which are not consecutive), the names of the associated
+  driver-interrupt routines, and the MS-DOS versions in which they are first
+  supported are as follows:
+
+
+  Command     Function                 Character   Block        MS-DOS
+  code                                 driver      driver       version
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  0           Init (Initialization)    X           X            2.0
+  1           Media Check                          X            2.0
+  2           Build BPB                            X            2.0
+  3           IOCTL Read               X           X            2.0
+  4           Read                     X           X            2.0
+  5           Nondestructive Read      X                        2.0
+  6           Input Status             X                        2.0
+  7           Flush Input Buffers      X                        2.0
+  8           Write                    X           X            2.0
+  9           Write with Verify                    X            2.0
+  10          Output Status            X                        2.0
+  11          Flush Output Buffers     X                        2.0
+  12          IOCTL Write              X           X            2.0
+  13          Device Open              X           X            3.0
+  14          Device Close             X           X            3.0
+  15          Removable Media                      X            3.0
+  16          Output Until Busy        X                        3.0
+  19          Generic IOCTL            X           X            3.2
+  23          Get Logical Device                   X            3.2
+  24          Set Logical Device                   X            3.2
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+  As you can see from the preceding table, a driver's interrupt section must
+  support functions 0 through 12 under all versions of MS-DOS. Drivers
+  tailored for MS-DOS 3.0 and 3.1 can optionally support an additional four
+  functions, and MS-DOS drivers for versions 3.2 and later can support three
+  more (for a total of 20). MS-DOS inspects the bits in the attribute word
+  of the device-driver header to determine which of the optional functions a
+  driver supports, if any.
+
+  Some of the functions are relevant only for character-device drivers and
+  some only for block-device drivers; a few have meaning to both types. In
+  any case, both driver types should have an executable routine present for
+  each function, even if it does nothing except set the done flag in the
+  status word of the request header.
+
+  In the command-code descriptions that follow, RH refers to the request
+  header whose address was passed to the strategy routine in ES:BX, BYTE is
+  an 8-bit parameter, WORD is a 16-bit parameter, and DWORD is a far pointer
+  (a 16-bit offset followed by a 16-bit segment).
+
+Function 00H (0): Driver Initialization
+
+  MS-DOS requests the driver's initialization function (init) only once,
+  when the driver is first loaded. This function performs any necessary
+  device hardware initialization, setup of interrupt vectors, and so forth.
+  The initialization routine must return the address of the position where
+  free memory begins after the driver code (the break address), so that
+  MS-DOS knows where it can build certain control structures and then load
+  the next installable driver. If this is a block-device driver, init must
+  also return the number of units and the address of a BPB pointer array.
+
+  MS-DOS uses the number of units returned by a block driver in the request
+  header to assign drive identifiers. For example, if the current maximum
+  drive is D and the driver being initialized supports four units, MS-DOS
+  will assign it the drive letters E, F, G, and H. Although the
+  device-driver header also has a field for number of units, MS-DOS does not
+  inspect it.
+
+  The BPB pointer array is an array of word offsets to BIOS parameter blocks
+  (Figure 14-7). Each unit defined by the driver must have one entry in the
+  array, although the entries can all point to the same BPB to conserve
+  memory. During the operating-system boot sequence, MS-DOS scans all the
+  BPBs defined by all the units in all the block-device drivers to determine
+  the largest sector size that exists on any device in the system and uses
+  this information to set its cache buffer size.
+
+  The operating-system services that the initialization code can invoke at
+  load time are very limited only Int 21H Functions 01H through 0CH and
+  30H. These are just adequate to check the MS-DOS version number and
+  display a driver-identification or error message.
+
+  Many programmers position the initialization code at the end of the driver
+  and return that address as the location of the first free memory, so that
+  MS-DOS will reclaim the memory occupied by the initialization routine
+  after the routine is finished with its work. If the initialization routine
+  finds that the device is missing or defective and wants to abort the
+  installation of the driver completely so that it does not occupy any
+  memory, it should return number of units as zero and set the free memory
+  address to CS:0000H. (A character-device driver that wants to abort its
+  installation should clear bit 15 of the attribute word in the driver
+  header and then set the units field and free memory address as though it
+  were a block-device driver.)
+
+  Byte(s)                  Contents
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  00Ä01H                   Bytes per sector
+  02H                      Sectors per allocation unit (power of 2)
+  03HÄ04H                  Number of reserved sectors (starting at sector 0)
+  05H                      Number of file allocation tables
+  06HÄ07H                  Maximum number of root-directory entries
+  08HÄ09H                  Total number of sectors in medium
+  0AH                      Media descriptor byte
+  0BHÄ0CH                  Number of sectors occupied by a single FAT
+  0DHÄ0EH                  Sectors per track (versions 3.0 and later)
+  0FHÄ10H                  Number of heads (versions 3.0 and later)
+  11HÄ12H                  Number of hidden sectors (versions 3.0 and later)
+  13HÄ14H                  High-order word of number of hidden sectors
+                           (version 4.0)
+  15HÄ18H                  If bytes 8Ä9 are zero, total number of sectors in
+                           medium (version 4.0)
+  19HÄ1EH                  Reserved, should be zero (version 4.0)
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 14-7.  Structure of a BIOS parameter block (BPB). Every formatted
+  disk contains a copy of its BPB in the boot sector. (See Chapter 10.)
+
+  The initialization function is called with
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 2             BYTE              Command code = 0
+
+  RH + 18            DWORD             Pointer to character after equal sign
+                                       on CONFIG.SYS line that loaded driver
+                                       (this information is read-only)
+
+  RH + 22            BYTE              Drive number for first unit of this
+                                       block driver (0 = A, 1 = B, and so
+                                       forth) (MS-DOS version 3 only)
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  It returns:
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 3             WORD              Status
+
+  RH + 13            BYTE              Number of units (block devices only)
+
+  RH + 14            DWORD             Address of first free memory above
+                                       driver (break address)
+
+  RH + 18            DWORD             BPB pointer array (block devices
+                                       only)
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Function 01H (1): Media Check
+
+  The media-check function applies only to block devices, and in
+  character-device drivers it should do nothing except set the done flag.
+  This function is called when a drive-access call other than a simple file
+  read or write is pending. MS-DOS passes to the function the media
+  descriptor byte for the disk that it assumes is in the drive (Figure
+  14-8). If feasible, the media-check routine returns a code indicating
+  whether the disk has been changed since the last transfer. If the
+  media-check routine can assert that the disk has not been changed, MS-DOS
+  can bypass rereading the FAT before a directory access, which improves
+  overall performance.
+
+  Code                     Meaning
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  0F0H                     3.5", 2-sided, 18-sector
+  0F8H                     fixed disk
+  0F9H                     3.5", 2-sided, 9-sector
+  0F9H                     5.25", 2-sided, 15-sector
+  0FCH                     5.25", 1-sided, 9-sector
+  0FDH                     5.25", 2-sided, 9-sector
+  0FEH                     5.25", 1-sided, 8-sector
+  0FFH                     5.25", 2-sided, 8-sector
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 14-8.  Current valid MS-DOS codes for the media descriptor byte of
+  the request header, assuming bit 13 in the attribute word of the driver
+  header is zero.
+
+  MS-DOS responds to the results of the media-check function in the
+  following ways:
+
+  ş  If the disk has not been changed, MS-DOS proceeds with the disk access.
+
+  ş  If the disk has been changed, MS-DOS invalidates all buffers associated
+     with this unit, including buffers containing data waiting to be written
+     (this data is simply lost), performs a BUILD BPB call, and then reads
+     the disk's FAT and directory.
+
+  ş  If the disk-change status is unknown, the action taken by MS-DOS
+     depends upon the state of its internal buffers. If data that needs to
+     be written out is present in the buffers, MS-DOS assumes no disk change
+     has occurred and writes the data (taking the risk that, if the disk
+     really was changed, the file structure on the new disk may be damaged).
+     If the buffers are empty or have all been previously flushed to the
+     disk, MS-DOS assumes that the disk was changed, and then proceeds as
+     described above for the disk-changed return code.
+
+  If bit 11 of the device-header attribute word is set (that is, the driver
+  supports the optional open/close/removable-media functions), the host
+  system is MS-DOS version 3.0 or later, and the function returns the
+  disk-changed code (-1), the function must also return the segment and
+  offset of the ASCIIZ volume label for the previous disk in the drive. (If
+  the driver does not have the volume label, it can return a pointer to the
+  ASCIIZ string NO NAME.) If MS-DOS determines that the disk was changed
+  with unwritten data still present in its buffers, it issues a
+  critical-error 0FH (invalid disk change). Application programs can trap
+  this critical error and prompt the user to replace the original disk.
+
+  The media-check function is called with
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 1             BYTE              Unit code
+
+  RH + 2             BYTE              Command code = 1
+
+  RH + 13            BYTE              Media descriptor byte
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  It returns
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 3             WORD              Status
+
+  RH + 14            BYTE              Media-change code:
+
+                                       -1 if disk changed
+
+                                       0 if don't know whether disk changed
+
+                                       1 if disk not changed
+
+  RH + 15            DWORD             Pointer to previous volume label, if
+                                       device attribute bit 11 = 1 and disk
+                                       has been changed (MS-DOS versions 3.0
+                                       and later)
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Function 02H (2): Build BIOS Parameter Block (BPB)
+
+  The build BPB function applies only to block devices, and in
+  character-device drivers should do nothing except set the done flag. The
+  kernel uses this function to get a pointer to the valid BPB (see Figure
+  14-7) for the current disk and calls it when the disk-changed code is
+  returned by the media-check routine or the don't-know code is returned and
+  there are no dirty buffers (buffers with changed data that have not yet
+  been written to disk). Thus, a call to this function indicates that the
+  disk has been legally changed.
+
+  The build BPB function receives a pointer to a one-sector buffer in the
+  request header. If bit 13 in the driver header's attribute word is zero,
+  the buffer contains the first sector of the FAT (which includes the media
+  identification byte) and should not be altered by the driver. If bit 13 is
+  set, the driver can use the buffer as scratch space.
+
+  The build BPB function is called with
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 1             BYTE              Unit code
+
+  RH + 2             BYTE              Command code = 2
+
+  RH + 13            BYTE              Media descriptor byte
+
+  RH + 14            DWORD             Buffer address
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  It returns
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 3             WORD              Status
+
+  RH + 18            DWORD             Pointer to new BPB
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Under MS-DOS versions 3.0 and later, if bit 11 of the header's device
+  attribute word is set, this routine should also read the volume label off
+  the disk and save it.
+
+Function 03H (3): I/O-Control Read
+
+  The IOCTL read function allows the device driver to pass information
+  directly to the application program. This function is called only if bit
+  14 is set in the device attribute word. MS-DOS performs no error check on
+  IOCTL I/O calls.
+
+  The IOCTL read function is called with
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 1             BYTE              Unit code (block devices)
+
+  RH + 2             BYTE              Command code = 3
+
+  RH + 13            BYTE              Media descriptor byte
+
+  RH + 14            DWORD             Transfer address
+
+  RH + 18            WORD              Byte/sector count
+
+  RH + 20            WORD              Starting sector number (block
+                                       devices)
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  It returns
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 3             WORD              Status
+
+  RH + 18            WORD              Actual bytes or sectors transferred
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Function 04H (4): Read
+
+  The read function transfers data from the device into the specified memory
+  buffer. If an error is encountered during the read, the function must set
+  the error status and, in addition, report the number of bytes or sectors
+  successfully transferred; it is not sufficient to simply report an error.
+
+  The read function is called with
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 1             BYTE              Unit code (block devices)
+
+  RH + 2             BYTE              Command code = 4
+
+  RH + 13            BYTE              Media descriptor byte
+
+  RH + 14            DWORD             Transfer address
+
+  RH + 18            WORD              Byte/sector count
+
+  RH + 20            WORD              Starting sector number (block
+                                       devices)
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  For block-device read operations in MS-DOS version 4, if the logical unit
+  is larger than 32 MB and bit 1 of the driver's attribute word is set, the
+  following request structure is used instead:
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 1             BYTE              Unit code
+
+  RH + 2             BYTE              Command code = 4
+
+  RH + 13            BYTE              Media descriptor byte
+
+  RH + 14            DWORD             Transfer address
+
+  RH + 18            WORD              Sector count
+
+  RH + 20            WORD              Contains -1 to signal use of 32-bit
+                                       sector number
+
+  RH + 26            DWORD             32-bit starting sector number
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  The read function returns
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 3             WORD              Status
+
+  RH + 18            WORD              Actual bytes or sectors transferred
+
+  RH + 22            DWORD             Pointer to volume label if error 0FH
+                                       is returned (MS-DOS versions 3.0 and
+                                       later)
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Under MS-DOS versions 3.0 and later, this routine can use the count of
+  open files maintained by the open and close functions (0DH and 0EH) and
+  the media descriptor byte to determine whether the disk has been illegally
+  changed.
+
+Function 05H (5): Nondestructive Read
+
+  The nondestructive read function applies only to character devices, and in
+  block devices it should do nothing except set the done flag. It returns
+  the next character that would be obtained with a read function (command
+  code 4), without removing that character from the driver's internal
+  buffer. MS-DOS uses this function to check the console driver for pending
+  Control-C characters during other operations.
+
+  The nondestructive read function is called with
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 2             BYTE              Command code = 5
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  It returns
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 3             WORD              Status
+
+                                       If busy bit = 0, at least one
+                                       character is waiting
+
+                                       If busy bit = 1, no characters are
+                                       waiting
+
+  RH + 13            BYTE              Character (if busy bit = 0)
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Function 06H (6): Input Status
+
+  The input-status function applies only to character devices, and in
+  block-device drivers it should do nothing except set the done flag. This
+  function returns the current input status for the device, allowing MS-DOS
+  to test whether characters are waiting in a type-ahead buffer. If the
+  character device does not have a type-ahead buffer, the input-status
+  routine should always return the busy bit equal to zero, so that MS-DOS
+  will not wait forever to call the read (04H) or nondestructive read (05H)
+  function.
+
+  The input-status function is called with
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 2             BYTE              Command code = 6
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  It returns
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 3             WORD              Status:
+
+                                       If busy bit = 1, read request goes to
+                                       physical device.
+
+                                       If busy bit = 0, characters already
+                                       in device buffer and read request
+                                       returns quickly.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Function 07H (7): Flush Input Buffers
+
+  The flush-input-buffers function applies only to character devices, and in
+  block-device drivers it should do nothing except set the done flag. This
+  function causes any data waiting in the input buffer to be discarded.
+
+  The flush-input-buffers function is called with
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 2             BYTE              Command code = 7
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  It returns
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 3             WORD              Status
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Function 08H (8): Write
+
+  The write function transfers data from the specified memory buffer to the
+  device. If an error is encountered during the write, the write function
+  must set the error status and, in addition, report the number of bytes or
+  sectors successfully transferred; it is not sufficient to simply report an
+  error.
+
+  The write function is called with
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 1             BYTE              Unit code (block devices)
+
+  RH + 2             BYTE              Command code = 8
+
+  RH + 13            BYTE              Media descriptor byte
+
+  RH + 14            DWORD             Transfer address
+
+  RH + 18            WORD              Byte/sector count
+
+  RH + 20            WORD              Starting sector number (block
+                                       devices)
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  For block-device write operations in MS-DOS version 4, if the logical unit
+  is larger than 32 MB and bit 1 of the driver's attribute word is set, the
+  following request structure is used instead:
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 1             BYTE              Unit code
+
+  RH + 2             BYTE              Command code = 8
+
+  RH + 13            BYTE              Media descriptor byte
+
+  RH + 14            DWORD             Transfer address
+
+  RH + 18            WORD              Sector count
+
+  RH + 20            WORD              Contains -1 to signal use of 32-bit
+                                       sector number
+
+  RH + 26            DWORD             32-bit starting sector number
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  The write function returns
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 3             WORD              Status
+
+  RH + 18            WORD              Actual bytes or sectors transferred
+
+  RH + 22            DWORD             Pointer to volume label if error 0FH
+                                       returned (MS-DOS versions 3.0 and
+                                       later)
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Under MS-DOS versions 3.0 and later, this routine can use the reference
+  count of open files maintained by the open and close functions (0DH and
+  0EH) and the media descriptor byte to determine whether the disk has been
+  illegally changed.
+
+Function 09H (9): Write with Verify
+
+  The write-with-verify function transfers data from the specified memory
+  buffer to the device. If feasible, it should perform a read-after-write
+  verification of the data to confirm that the data was written correctly.
+  Otherwise, Function 09H is exactly like Function 08H.
+
+Function 0AH (10): Output Status
+
+  The output-status function applies only to character devices, and in
+  block-device drivers it should do nothing except set the done flag. This
+  function returns the current output status for the device.
+
+  The output-status function is called with
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 2             BYTE              Command code = 10 (0AH)
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  It returns
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 3             WORD              Status:
+
+                                       If busy bit = 1, write request waits
+                                       for completion of current request.
+
+                                       If busy bit = 0, device idle and
+                                       write request starts immediately.
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Function 0BH (11): Flush Output Buffers
+
+  The flush-output-buffers function applies only to character devices, and
+  in block-device drivers it should do nothing except set the done flag.
+  This function empties the output buffer, if any, and discards any pending
+  output requests.
+
+  The flush-output-buffers function is called with
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 2             BYTE              Command code = 11 (0BH)
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  It returns
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 3             WORD              Status
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Function 0CH (12): I/O-Control Write
+
+  The IOCTL write function allows an application program to pass control
+  information directly to the driver. This function is called only if bit 14
+  is set in the device attribute word. MS-DOS performs no error check on
+  IOCTL I/O calls.
+
+  The IOCTL write function is called with
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 1             BYTE              Unit code (block devices)
+
+  RH + 2             BYTE              Command code = 12 (0CH)
+
+  RH + 13            BYTE              Media descriptor byte
+
+  RH + 14            DWORD             Transfer address
+
+  RH + 18            WORD              Byte/sector count
+
+  RH + 20            WORD              Starting sector number (block
+                                       devices)
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  It returns
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 3             WORD              Status
+
+  RH + 18            WORD              Actual bytes or sectors transferred
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Function 0DH (13): Device Open
+
+  The device-open function is supported only under MS-DOS versions 3.0 and
+  later and is called only if bit 11 is set in the device attribute word of
+  the device header.
+
+  On block devices, the device-open function can be used to manage local
+  buffering and to increment a reference count of the number of open files
+  on the device. This capability must be used with care, however, because
+  programs that access files through FCBs frequently fail to close them,
+  thus invalidating the open-files count. One way to protect against this
+  possibility is to reset the open-files count to zero, without flushing the
+  buffers, whenever the answer to a media-change call is yes and a
+  subsequent build BPB call is made to the driver.
+
+  On character devices, the device-open function can be used to send a
+  device-initialization string (which can be set into the driver by an
+  application program by means of an IOCTL write function) or to deny
+  simultaneous access to a character device by more than one process. Note
+  that the predefined handles for the CON, AUX, and PRN devices are always
+  open.
+
+  The device-open function is called with
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 1             BYTE              Unit code (block devices)
+
+  RH + 2             BYTE              Command code = 13 (0DH)
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  It returns
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 3             WORD              Status
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Function 0EH (14): Device Close
+
+  The device-close function is supported only under MS-DOS versions 3.0 and
+  later and is called only if bit 11 is set in the device attribute word of
+  the device header.
+
+  On block devices, this function can be used to manage local buffering and
+  to decrement a reference count of the number of open files on the device;
+  when the count reaches zero, all files have been closed and the driver
+  should flush buffers because the user may change disks.
+
+  On character devices, the device-close function can be used to send a
+  device-dependent post-I/O string such as a formfeed. (This string can be
+  set into the driver by an application program by means of an IOCTL write
+  function.) Note that the predefined handles for the CON, PRN, and AUX
+  devices are never closed.
+
+  The device-close function is called with
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 1             BYTE              Unit code (block devices)
+
+  RH + 2             BYTE              Command code = 14 (0EH)
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  It returns
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 3             WORD              Status
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Function 0FH (15): Removable Media
+
+  The removable-media function is supported only under MS-DOS versions 3.0
+  and later and only on block devices; in character-device drivers it should
+  do nothing except set the done flag. This function is called only if bit
+  11 is set in the device attribute word in the device header.
+
+  The removable-media function is called with
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 1             BYTE              Unit code
+
+  RH + 2             BYTE              Command code = 15 (0FH)
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  It returns
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 3             WORD              Status:
+
+                                       If busy bit = 1, medium nonremovable
+
+                                       If busy bit = 0, medium removable
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Function 10H (16): Output Until Busy
+
+  The output-until-busy function is supported only under MS-DOS versions 3.0
+  and later, and only on character devices; in block-device drivers it
+  should do nothing except set the done flag. This function transfers data
+  from the specifi
+d memory buffer to a device, continuing to transfer bytes
+  until the device is busy. It is called only if bit 13 of the device
+  attribute word is set in the device header.
+
+  This function is an optimization included specifically for the use of
+  print spoolers. It is not an error for this function to return a number of
+  bytes transferred that is less than the number of bytes requested.
+
+  The output-until-busy function is called with
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 2             BYTE              Command code = 16 (10H)
+
+  RH + 14            DWORD             Transfer address
+
+  RH + 18            WORD              Byte count
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  It returns
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 3             WORD              Status
+
+  RH + 18            WORD              Actual bytes transferred
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Function 13H (19) Generic IOCTL
+
+  The generic IOCTL function is supported only under MS-DOS versions 3.2 and
+  later and is called only if bit 6 is set in the device attribute word of
+  the device header. This function corresponds to the MS-DOS generic IOCTL
+  service supplied to application programs by Int 21H Function 44H
+  Subfunctions 0CH and 0DH.
+
+  The generic IOCTL function is passed a category (major) code, a function
+  (minor) code, the contents of the SI and DI registers at the point of the
+  IOCTL call, and the segment and offset of a data buffer. This buffer in
+  turn contains other information whose format depends on the major and
+  minor IOCTL codes passed in the request header. The driver must interpret
+  the major and minor codes in the request header and the contents of the
+  additional buffer to determine which operation it will carry out, then set
+  the done flag in the request-header status word, and return any other
+  applicable information in the request header or the data buffer.
+
+  Services that the generic IOCTL function may invoke, if the driver
+  supports them, include configuration of the driver for nonstandard disk
+  formats, reading and writing entire disk tracks of data, and formatting
+  and verifying tracks. The generic IOCTL function has been designed to be
+  open-ended, so that it can be used to easily extend the device-driver
+  definition under future versions of MS-DOS.
+
+  The generic IOCTL function is called with
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 1             BYTE              Unit number (block devices)
+
+  RH + 2             BYTE              Command code = 19 (13H)
+
+  RH + 13            BYTE              Category (major) code
+
+  RH + 14            BYTE              Function (minor) code
+
+  RH + 15            WORD              SI register contents
+
+  RH + 17            WORD              DI register contents
+
+  RH + 19            DWORD             Address of generic IOCTL data packet
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  It returns
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 3             WORD              Status
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Function 17H (23): Get Logical Device
+
+  The get-logical-device function is supported only under MS-DOS versions
+  3.2 and later and only on block devices; in character-device drivers it
+  should do nothing except set the done bit in the status word. This
+  function is called only if bit 6 is set in the device attribute word of
+  the device header. It corresponds to the get-logical-device-map service
+  supplied to application programs through Int 21H Function 44H Subfunction
+  0EH.
+
+  The get-logical-device function returns a code for the last drive letter
+  used to reference the device; if only one drive letter is assigned to the
+  device, the returned unit code should be zero. Thus, this function can be
+  used to determine whether more than one drive letter is assigned to the
+  same physical device.
+
+  The get-logical-device function is called with
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 1             BYTE              Unit code
+
+  RH + 2             BYTE              Command code = 23 (17H)
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  It returns
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 1             BYTE              Last unit referenced, or zero
+
+  RH + 3             WORD              Status
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+Function 18H (24): Set Logical Device
+
+  The set-logical-device function is supported only under MS-DOS versions
+  3.2 and later and only on block devices; in character-device drivers it
+  should do nothing except set the done bit in the status word. This
+  function is called only if bit 6 is set in the device attribute word of
+  the device header. It corresponds to the set-logical-device-map service
+  supplied to application programs by MS-DOS through Int 21H Function 44H
+  Subfunction 0FH.
+
+  The set-logical-device function informs the driver of the next
+  logical-drive identifier that will be used to reference the physical
+  device. The unit code passed by the MS-DOS kernel in this case is
+  zero-based relative to the number of logical drives supported by this
+  particular driver. For example, if the driver supports two floppy-disk
+  units (A and B), only one physical floppy-disk drive exists in the system,
+  and the set-logical-device function is called with a unit number of 1, the
+  driver is being informed that the next read or write request from the
+  kernel will be directed to drive B.
+
+  The set-logical-device function is called with
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 1             BYTE              Unit code
+
+  RH + 2             BYTE              Command code = 24 (18H)
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  It returns
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  RH + 3             WORD              Status
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+The Processing of a Typical I/O Request
+
+  An application program requests an I/O operation from MS-DOS by loading
+  registers with the appropriate values and executing an Int 21H. This
+  results in the following sequence of actions:
+
+  1.  MS-DOS inspects its internal tables and determines which device driver
+      should receive the I/O request.
+
+  2.  MS-DOS creates a request-header data packet in a reserved area of
+      memory. (Disk I/O requests are transformed from file and record
+      information into logical-sector requests by MS-DOS's interpretation of
+      the disk directory and FAT.)
+
+  3.  MS-DOS calls the device driver's strat entry point, passing the
+      address of the request header in the ES:BX registers.
+
+  4.  The device driver saves the address of the request header in a local
+      variable and performs a FAR RETURN.
+
+  5.  MS-DOS calls the device driver's intr entry point.
+
+  6.  The interrupt routine saves all registers, retrieves the address of
+      the request header that was saved by the strategy routine, extracts
+      the function code, and branches to the appropriate command-code
+      subroutine to perform the function.
+
+  7.  If a data transfer on a block device was requested, the driver's read
+      or write subroutine translates the logical-sector number into a head,
+      track, and physical-sector address for the requested unit and then
+      performs the I/O operation. Because a multiple-sector transfer can be
+      requested in a single request header, a single request by MS-DOS to
+      the driver can result in multiple read or write commands to the disk
+      controller.
+
+  8.  When the requested function is complete, the interrupt routine sets
+      the status word and any other required information into the request
+      header, restores all registers to their state at entry, and performs a
+      FAR RETURN.
+
+  9.  MS-DOS translates the driver's return status into the appropriate
+      return code and carry-flag status for the MS-DOS Int 21H function that
+      was requested and returns control to the application program.
+
+  Note that a single request by an application program can result in MS-DOS
+  passing many request headers to the driver. For example, attempting to
+  open a file in a subdirectory on a previously unaccessed disk drive might
+  require the following actions:
+
+  ş  Reading the disk's boot sector to get the BPB
+
+  ş  Reading from one to many sectors of the root directory to find the
+     entry for the subdirectory and obtain its starting-cluster number
+
+  ş  Reading from one to many sectors of both the FAT and the subdirectory
+     itself to find the entry for the desired file
+
+
+The CLOCK Driver: A Special Case
+
+  MS-DOS uses the CLOCK device for marking file control blocks and directory
+  entries with the date and time, as well as for providing the date and time
+  services to application programs. This device has a unique type of
+  interaction with MS-DOSÄÄa 6-byte sequence is read from or written to the
+  driver that obtains or sets the current date and time. The sequence has
+  the following format:
+
+  ÚÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄ¿
+  ³    0    ³    1    ³    2    ³    3    ³   4     ³    5    ³
+  ³  Days   ³  Days   ³ Minutes ³  Hours  ³Seconds/ ³ Seconds ³
+  ³low byte ³high byte³         ³         ³  100    ³         ³
+  ÀÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÙ
+
+  The value passed for days is a 16-bit integer representing the number of
+  days elapsed since January 1, 1980.
+
+  The clock driver can have any logical-device name because MS-DOS uses the
+  CLOCK bit in the device attribute word of the driver's device header to
+  identify the device, rather than its name. On IBM PC systems, the clock
+  device has the logical-device name CLOCK$.
+
+
+Writing and Installing a Device Driver
+
+  Now that we have discussed the structure and capabilities of installable
+  device drivers for the MS-DOS environment, we can discuss the mechanical
+  steps of assembling and linking them.
+
+Assembly
+
+  Device drivers for MS-DOS always have an origin of zero but are otherwise
+  assembled, linked, and converted into an executable module as though they
+  were .COM files. (Although MS-DOS is also capable of loading installable
+  drivers in the .EXE file format, this introduces unnecessary complexity
+  into writing and debugging drivers and offers no significant advantages.
+  In addition, it is not possible to use .EXE-format drivers with some IBM
+  versions of MS-DOS because the .EXE loader is located in COMMAND.COM,
+  which is not present when the installable device drivers are being
+  loaded.) The driver should not have a declared stack segment and must, in
+  general, follow the other restrictions outlined in Chapter 3 for
+  memory-image (.COM) programs. A driver can be loaded anywhere, so beware
+  that you do not make any assumptions in your code about the driver's
+  location in physical memory. Figure 14-9 presents a skeleton example that
+  you can follow as you read the next few pages.
+
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+          name    driver
+          page    55,132
+          title   DRIVER.ASM Device-Driver Skeleton
+
+  ;
+  ; DRIVER.ASM   MS-DOS device-driver skeleton
+  ;
+  ; The driver command-code routines are stubs only and have
+  ; no effect but to return a nonerror "done" status.
+  ;
+  ; Copyright 1988 Ray Duncan
+  ;
+
+  _TEXT   segment word public 'CODE'
+
+          assume  cs:_TEXT,ds:_TEXT,es:NOTHING
+
+          org     0
+
+  MaxCmd  equ     24              ; maximum allowed command code:
+                                  ; 12 for MS-DOS 2
+                                  ; 16 for MS-DOS 3.0-3.1
+                                  ; 24 for MS-DOS 3.2-3.3
+  cr      equ     0dh             ; ASCII carriage return
+  lf      equ     0ah             ; ASCII linefeed
+  eom     equ     '$'             ; end-of-message signal
+
+
+  Header:                         ; device-driver header
+          dd      -1              ; link to next device driver
+          dw      0c840h          ; device attribute word
+          dw      Strat           ; "strategy" routine entry point
+          dw      Intr            ; "interrupt" routine entry point
+          db      'SKELETON'      ; logical-device name
+
+
+  RHPtr   dd      ?               ; pointer to request header, passed
+                                  ; by MS-DOS kernel to strategy routine
+
+
+  Dispatch:                       ; interrupt-routine command-code
+                                  ; dispatch table:
+          dw      Init            ; 0  = initialize driver
+          dw      MediaChk        ; 1  = media check
+          dw      BuildBPB        ; 2  = build BPB
+          dw      IoctlRd         ; 3  = IOCTL read
+          dw      Read            ; 4  = read
+          dw      NdRead          ; 5  = nondestructive read
+          dw      InpStat         ; 6  = input status
+          dw      InpFlush        ; 7  = flush input buffers
+          dw      Write           ; 8  = write
+          dw      WriteVfy        ; 9  = write with verify
+          dw      OutStat         ; 10 = output status
+          dw      OutFlush        ; 11 = flush output buffers
+          dw      IoctlWt         ; 12 = IOCTL write
+          dw      DevOpen         ; 13 = device open       (MS-DOS 3.0+)
+          dw      DevClose        ; 14 = device close      (MS-DOS 3.0+)
+          dw      RemMedia        ; 15 = removable media  (MS-DOS 3.0+)
+          dw      OutBusy         ; 16 = output until busy (MS-DOS 3.0+)
+          dw      Error           ; 17 = not used
+          dw      Error           ; 18 = not used
+          dw      GenIOCTL        ; 19 = generic IOCTL     (MS-DOS 3.2+)
+          dw      Error           ; 20 = not used
+          dw      Error           ; 21 = not used
+          dw      Error           ; 22 = not used
+          dw      GetLogDev       ; 23 = get logical device (MS-DOS 3.2+)
+          dw      SetLogDev       ; 24 = set logical device (MS-DOS 3.2+)
+  Strat   proc    far             ; device-driver strategy routine,
+                                  ; called by MS-DOS kernel with
+                                  ; ES:BX = address of request header
+
+                                  ; save pointer to request header
+          mov     word ptr cs:[RHPtr],bx
+          mov     word ptr cs:[RHPtr+2],es
+
+          ret                     ; back to MS-DOS kernel
+
+  Strat   endp
+
+
+  Intr    proc  far               ; device-driver interrupt routine,
+                                  ; called by MS-DOS kernel immediately
+                                  ; after call to strategy routine
+
+          push    ax              ; save general registers
+          push    bx
+          push    cx
+          push    dx
+          push    ds
+          push    es
+          push    di
+          push    si
+          push    bp
+
+          push    cs              ; make local data addressable
+          pop     ds              ; by setting DS = CS
+
+          les     di,[RHPtr]      ; let ES:DI = request header
+
+                                  ; get BX = command code
+          mov     bl,es:[di+2]
+          xor     bh,bh
+          cmp     bx,MaxCmd       ; make sure it's legal
+          jle     Intr1           ; jump, function code is ok
+          call    Error           ; set error bit, "unknown command" code
+          jmp     Intr2
+
+  Intr1:  shl     bx,1            ; form index to dispatch table
+                                  ; and branch to command-code routine
+          call    word ptr [bx+Dispatch]
+
+          les     di,[RHPtr]      ; ES:DI = addr of request header
+
+  Intr2:  or      ax,0100h        ; merge 'done' bit into status and
+          mov     es:[di+3],ax    ; store status into request header
+
+          pop     bp              ; restore general registers
+          pop     si
+          pop     di
+          pop     es
+          pop     ds
+          pop     dx
+          pop     cx
+          pop     bx
+          pop     ax
+          ret                     ; back to MS-DOS kernel
+
+
+  ; Command-code routines are called by the interrupt routine
+  ; via the dispatch table with ES:DI pointing to the request
+  ; header.  Each routine should return AX = 0 if function was
+  ; completed successfully or AX = (8000h + error code) if
+  ; function failed.
+
+
+  MediaChk proc   near            ; function 1 = media check
+
+          xor     ax,ax
+          ret
+
+  MediaChk endp
+
+
+  BuildBPB proc   near            ; function 2 = build BPB
+
+          xor     ax,ax
+          ret
+
+  BuildBPB endp
+
+
+  IoctlRd proc    near            ; function 3 = IOCTL read
+
+          xor     ax,ax
+          ret
+
+  IoctlRd endp
+  Read    proc    near            ; function 4 = read (input)
+
+          xor     ax,ax
+          ret
+
+  Read    endp
+
+
+  NdRead  proc    near            ; function 5 = nondestructive read
+
+          xor     ax,ax
+          ret
+
+  NdRead  endp
+
+
+  InpStat proc    near            ; function 6 = input status
+
+          xor     ax,ax
+          ret
+
+  InpStat endp
+
+
+  InpFlush proc   near            ; function 7 = flush input buffers
+
+          xor     ax,ax
+          ret
+
+  InpFlush endp
+
+
+  Write   proc    near            ; function 8 = write (output)
+
+          xor     ax,ax
+          ret
+
+  Write   endp
+
+
+  WriteVfy proc   near            ; function 9 = write with verify
+
+          xor     ax,ax
+          ret
+  endp
+
+
+  OutStat proc    near            ; function 10 = output status
+
+          xor     ax,ax
+          ret
+
+  OutStat endp
+
+
+  OutFlush proc   near            ; function 11 = flush output buffers
+
+          xor     ax,ax
+          ret
+
+  OutFlush endp
+
+
+  IoctlWt proc    near            ; function 12 = IOCTL write
+
+          xor     ax,ax
+          ret
+
+  IoctlWt endp
+
+
+  DevOpen proc    near            ; function 13 = device open
+
+          xor     ax,ax
+          ret
+
+  DevOpen endp
+
+
+  DevClose proc   near            ; function 14 = device close
+
+          xor     ax,ax
+          ret
+
+  DevClose endp
+  RemMedia proc   near            ; function 15 = removable media
+
+          xor     ax,ax
+          ret
+
+  RemMedia endp
+
+
+  OutBusy proc    near            ; function 16 = output until busy
+
+          xor     ax,ax
+          ret
+
+  OutBusy endp
+
+
+  GenIOCTL proc   near            ; function 19 = generic IOCTL
+
+          xor     ax,ax
+          ret
+
+  GenIOCTL endp
+
+
+  GetLogDev proc  near            ; function 23 = get logical device
+
+          xor     ax,ax
+          ret
+
+  GetLogDev endp
+
+
+  SetLogDev proc  near            ; function 24 = set logical device
+
+          xor     ax,ax
+          ret
+
+  SetLogDev endp
+
+
+  Error   proc    near            ; bad command code in request header
+
+          mov     ax,8003h        ; error bit + "unknown command" code
+          ret
+    endp
+
+
+  Init    proc    near            ; function 0 = initialize driver
+
+          push    es              ; save address of request header
+          push    di
+
+          mov     ax,cs           ; convert load address to ASCII
+          mov     bx,offset Ident1
+          call    hexasc
+
+          mov     ah,9            ; display driver sign-on message
+          mov     dx,offset Ident
+          int     21h
+
+          pop     di              ; restore request-header address
+          pop     es
+
+                                  ; set address of free memory
+                                  ; above driver (break address)
+          mov     word ptr es:[di+14],offset Init
+          mov     word ptr es:[di+16],cs
+
+          xor     ax,ax           ; return status
+          ret
+
+  Init    endp
+
+
+  hexasc  proc    near            ; converts word to hex ASCII
+                                  ; call with AX = value,
+                                  ; DS:BX = address for string
+                                  ; returns AX, BX destroyed
+
+          push    cx              ; save registers
+          push    dx
+
+          mov     dx,4            ; initialize character counter
+          mov     cx,4            ; isolate next four bits
+          rol     ax,cl
+          mov     cx,ax
+          and     cx,0fh
+          add     cx,'0'          ; convert to ASCII
+          cmp     cx,'9'          ; is it 0-9?
+          jbe     hexasc2         ; yes, jump
+          add     cx,'A'-'9'-1    ; add fudge factor for A-F
+
+  hexasc2:                        ; store this character
+          mov     [bx],cl
+          inc     bx              ; bump string pointer
+
+          dec     dx              ; count characters converted
+          jnz     hexasc1         ; loop, not four yet
+
+          pop     dx              ; restore registers
+          pop     cx
+          ret                     ; back to caller
+
+  hexasc  endp
+
+
+  Ident   db      cr,lf,lf
+          db      'Advanced MS-DOS Example Device Driver'
+          db      cr,lf
+          db      'Device driver header at: '
+  Ident1  db      'XXXX:0000'
+          db      cr,lf,lf,eom
+
+  Intr    endp
+
+  _TEXT   ends
+
+          end
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 14-9.  DRIVER.ASM: A functional skeleton from which you can
+  implement your own working device driver.
+
+  The driver's device header must be located at the beginning of the file
+  (offset 0000H). Both words in the link field in the header should be set
+  to -1. The attribute word must be set up correctly for the device type and
+  other options. The offsets to the strategy and interrupt routines must be
+  relative to the same segment base as the device header itself. If the
+  driver is for a character device, the name field should be filled in
+  properly with the device's logical name. The logical name can be any legal
+  8-character filename, padded with spaces and without a colon. Beware of
+  accidentally duplicating the names of existing character devices, unless
+  you are intentionally superseding a resident driver.
+
+  MS-DOS calls the strategy and interrupt routines for the device by means
+  of an intersegment call (CALL FAR) when the driver is first loaded and
+  installed and again whenever an application program issues an I/O request
+  for the device. MS-DOS uses the ES:BX registers to pass the strat routine
+  a double-word pointer to the request header; this address should be saved
+  internally in the driver so that it is available for use during the
+  subsequent call to the intr routine.
+
+  The command-code routines for function codes 0 through 12 (0CH) must be
+  present in every installable device driver, regardless of device type.
+  Functions 13 (0DH) and above are optional for drivers used with MS-DOS
+  versions 3.0 and later and can be handled in one of the following ways:
+
+  ş  Don't implement them, and leave the associated bits in the device
+     header cleared. The resulting driver will work in either version 2 or
+     version 3 but does not take full advantage of the augmented
+     functionality of version 3.
+
+  ş  Implement them, and test the MS-DOS version during the initialization
+     sequence, setting bits 6 and 11 of the device header appropriately.
+     Write all command-code routines so that they test this bit and adjust
+     to accommodate the host version of MS-DOS. Such a driver requires more
+     work and testing but will take full advantage of both the version 2 and
+     the version 3 environments.
+
+  ş  Implement them, and assume that all the version 3 facilities are
+     available. With this approach, the resulting driver may not work
+     properly under version 2.
+
+  Remember that device drivers must preserve the integrity of MS-DOS. The
+  driver must preserve all registers, including flags (especially the
+  direction flag and interrupt enable bits), and if the driver makes heavy
+  use of the stack, it should switch to an internal stack of adequate depth
+  (the MS-DOS stack has room for only 40 to 50 bytes when a driver is
+  called).
+
+  If you install a new CON driver, be sure to set the bits for standard
+  input and standard output in the device attribute word in the device
+  header.
+
+  You'll recall that one file can contain multiple drivers. In this case,
+  the device-header link field of each driver should point to the segment
+  offset of the next, all using the same segment base, and the link field
+  for the last driver in the file should be set to -1,-1. The initialization
+  routines for all the drivers in the file should return the same break
+  address.
+
+Linking
+
+  Use the standard MS-DOS linker to transform the .OBJ file that is output
+  from the assembler into a relocatable .EXE module. Then, use the EXE2BIN
+  utility (see Chapter 4) to convert the .EXE file into a memory-image
+  program. The extension on the final driver file can be anything, but .BIN
+  and .SYS are most commonly used in MS-DOS systems, and it is therefore
+  wise to follow one of these conventions.
+
+Installation
+
+  After the driver is assembled, linked, and converted to a .BIN or .SYS
+  file, copy it to the root directory of a bootable disk. If it is a
+  character-device driver, do not use the same name for the file as you used
+  for the logical device listed in the driver's header, or you will not be
+  able to delete, copy, or rename the file after the driver is loaded.
+
+  Use your favorite text editor to add the line
+
+    DEVICE=[D:][PATH]FILENAME.EXT
+
+  to the CONFIG.SYS file on the bootable disk. (In this line, D: is an
+  optional drive designator and FILENAME.EXT is the name of the file
+  containing your new device driver. You can include a path specification in
+  the entry if you prefer not to put the driver file in your root
+  directory.) Now restart your computer system to load the modified
+  CONFIG.SYS file.
+
+  During the MS-DOS boot sequence, the SYSINIT module (which is part of
+  IO.SYS) reads and processes the CONFIG.SYS file. It loads the driver into
+  memory and inspects the device header. If the driver is a character-device
+  driver, SYSINIT links it into the device chain ahead of the other
+  character devices; if it is a block-device driver, SYSINIT places it
+  behind all previously linked block devices and the resident block devices
+  (Figures 14-10, 14-11, and 14-12). It accomplishes the linkage by
+  updating the link field in the device header to point to the segment and
+  offset of the next driver in the chain. The link field of the last driver
+  in the chain contains -1,-1.
+
+  Next, SYSINIT calls the strat routine with a request header that contains
+  a command code of zero, and then it calls the intr routine. The driver
+  executes its initialization routine and returns the break address, telling
+  MS-DOS how much memory to reserve for this driver. Now MS-DOS can proceed
+  to the next entry in the CONFIG.SYS file.
+
+  You cannot supersede a built-in block-device driverÄÄyou can only add
+  supplemental block devices. However, you can override the default system
+  driver for a character device (such as CON) with an installed driver by
+  giving it the same logical-device name in the device header. When
+  processing a character I/O request, MS-DOS always scans the list of
+  installed drivers before it scans the list of default devices and takes
+  the first match.
+
+             NUL
+              ³
+              
+             CON
+              ³
+              
+             AUX
+              ³
+              
+             PRN
+              ³
+              
+            CLOCK
+              ³
+              
+  Any other resident block
+    or character devices
+
+  Figure 14-10.  MS-DOS device-driver chain before any installable device
+  drivers have been loaded.
+
+             NUL
+              ³
+              
+   Installable character-
+       device drivers
+              ³
+              
+             CON
+              ³
+              
+             AUX
+              ³
+              
+             PRN
+              ³
+              
+            CLOCK
+              ³
+              
+  Any other resident block
+    or character devices
+              ³
+              
+     Installable block-
+       device drivers
+
+  Figure 14-11.  MS-DOS device-driver chain after installable device drivers
+  have been loaded.
+
+  Address          Attribute  Strategy    Interrupt  Type  Units Name
+                              routine     routine
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  00E3:0111        8004       0FD5        0FE0       C           NUL
+  0070:0148        8013       008E        0099       C           CON
+  0070:01DD        8000       008E        009F       C           AUX
+  0070:028E        8000       008E        00AE       C           PRN
+  0070:0300        8008       008E        00C3       C           CLOCK
+  0070:03CC        0000       008E        00C9       B     02
+  0070:01EF        8000       008E        009F       C           COM1
+  0070:02A0        8000       008E        00AE       C           LPT1
+  0070:06F0        8000       008E        00B4       C           LPT2
+  0070:0702        8000       008E        00BA       C           LPT3
+  0070:0714        8000       008E        00A5       C           COM2
+  End of
+  device chain
+  ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+  Figure 14-12.  Example listing of device chain under MS-DOS version 2.1,
+  "plain vanilla" IBM PC with no fixed disks or user device drivers.
+  (C=character device, B=block device)
+
+
+Debugging a Device Driver
+
+  The most important thing to remember when testing new device drivers is to
+  maintain adequate backups and a viable fallback position. Don't modify the
+  CONFIG.SYS file and install the new driver on your fixed disk before it is
+  proven! Be prudentÄÄcreate a bootable floppy disk and put the modified
+  CONFIG.SYS file and the new driver on that for debugging. When everything
+  is working properly, copy the finished product to its permanent storage
+  medium.
+
+  The easiest way to test a new device driver is to write a simple
+  assembly-language front-end routine that sets up a simulated request
+  packet and then performs FAR CALLs to the strat and intr entry points,
+  exactly as MS-DOS would. You can then link the driver and the front end
+  together into a .COM or .EXE file that can be run under the control of
+  CodeView or another debugger. This arrangement makes it easy to trace each
+  of the command-code routines individually, to observe the results of the
+  I/O, and to examine the status codes returned in the request header.
+
+  Tracing the installed driver when it is linked into the MS-DOS system in
+  the normal manner is more difficult. Breakpoints must be chosen carefully,
+  to yield the maximum possible information per debugging run. Because
+  current versions of MS-DOS maintain only one request header internally,
+  the request header that was being used by the driver you are tracing will
+  be overwritten as soon as your debugger makes an output request to display
+  information. You will find it helpful to add a routine to your
+  initialization subroutine that displays the driver's load address on the
+  console when you boot MS-DOS; you can then use this address to inspect the
+  device-driver header and set breakpoints within the body of the driver.
+
+  Debugging a device driver can also be somewhat sticky when interrupt
+  handling is involved, especially if the device uses the same
+  interrupt-request priority level (IRQ level) as other peripherals in the
+  system. Cautious, conservative programming is needed to avoid unexpected
+  and unreproducible interactions with other device drivers and interrupt
+  handlers. If possible, prove out the basic logic of the driver using
+  polled I/O, rather than interrupt-driven I/O, and introduce interrupt
+  handling only when you know the rest of the driver's logic to be solid.
+
+  Typical device-driver errors or problems that can cause system crashes or
+  strange system behavior include the following:
+
+  ş  Failure to set the linkage address of the last driver in a file to -1
+
+  ş  Overflow of the MS-DOS stack by driver-initialization code, corrupting
+     the memory image of MS-DOS (can lead to unpredictable behavior during
+     boot; remedy is to use a local stack)
+
+  ş  Incorrect break-address reporting by the initialization routine (can
+     lead to a system crash if the next driver loaded overwrites vital parts
+     of the driver)
+
+  ş  Improper BPBs supplied by the build BPB routine, or incorrect BPB
+     pointer array supplied by the initialization routine (can lead to many
+     confusing problems, ranging from out-of-memory errors to system boot
+     failure)
+
+  ş  Incorrect reporting of the number of bytes or sectors successfully
+     transferred at the time an I/O error occurs (can manifest itself as a
+     system crash after you enter R to the Abort, Retry, Ignore? prompt)
+
+  Although the interface between the DOS kernel and the device driver is
+  fairly simple, it is also quite strict. The command-code routines must
+  perform exactly as they are defined, or the system will behave
+  erratically. Even a very subtle discrepancy in the action of a
+  command-code routine can have unexpectedly large global effects.
+
+
+

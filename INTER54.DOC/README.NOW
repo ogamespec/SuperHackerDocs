@@ -1,0 +1,89 @@
+Here at last the long-delayed new release....  My queue of submissions
+has grown again -- if you've sent in any contributions which don't
+appear in this release but which I've acknowledged, they are still on
+my queue and will appear in the next release.
+
+Since the interrupt list proper has now grown beyond the size that can
+be accomodated by four 360K archives, I am allowing the first four
+archives to grow to 720K each from the current 360K per archive,
+beginning with archive D.
+
+UPCOMING CHANGES
+================
+
+None planned at this time.
+Still on the queue: the rest of the documented REAL/32 API, more
+OpenDOS info, the rest of the TI Professional info, ....
+
+
+WHAT'S NEW
+==========
+
+INTER54
+
+new files:
+	INT2IPF.ZIP
+	PCICFG09.ZIP (this release only -- will become a separate package)
+
+new formatting:
+	a slight addition to divider lines to allow finer-grained
+	division of the Windows VxD services information: a VxD entry
+	now appears as
+
+		--------W-20----Vx0021-----------------------
+		INT 20 P - Microsoft Windows - PageFile DEVICE - SERVICES
+			VxD = 0021h
+			...
+		SeeAlso: INT 20/VxD=0001h
+
+	entries in OPCODES.LST now appear as
+		----------O-AAA------------------------------------
+		OPCODE AAA   -	 ASCII adjust AX after addition
+	to permit cross-references such as
+		SeeAlso: OPCODE "AAA"
+
+new info:
+	many more PCI vendor and device IDs
+	Adaptec AHA-154x, TMC-16x0, and Xirlink XL-22x SCSI adapters
+	POST Memory Manager Specification v1.0
+	S3VBE/Core, S3 SpeedUp
+	MPU-401 MIDI UART
+	Desktop Management Interface extension to PnP BIOS
+
+INTER53
+
+new info:
+	ACPI (Advanced Configuration and Power Interface)
+	Universal Serial Bus OpenHCI
+        PCI configuration registers for various Intel chipsets
+	SCSI Command Data Block and ASPI updates
+        Novell TCP/IP API, Banyan VINES printing
+	additional virus installation checks
+	MODRES
+	Toshiba model IDs
+	lots of MS-DOS7/Win95 info, including various VxD APIs
+	FAT32
+	CardBus
+	InterWave Game API
+	PCI Power Management
+	ATAPI Removable Media Device BIOS Specification
+	updated OPCODES.LST now includes MMX instructions
+
+
+INTER52
+
+new files:
+	MSR.LST		model-specific registers list
+	IL2ME.ZIP	convert to ASMEdit help file
+	INT2TPH.ZIP	convert to Turbo Pascal help file
+	INT2RTF.ZIP	convert to WinHelp RTF file
+new info:
+	TI Professional PC
+	APM v1.2
+	Cherry keyboard chipcard reader
+	KeyRus, Volkov Commander
+	XPACK
+other improvements:
+	enhanced INTLIST.E (now does syntax highlighting)
+	corrected repeated error in Novell NetWare multiplexor functions
+	fixed a variety of incorrect cross-references
